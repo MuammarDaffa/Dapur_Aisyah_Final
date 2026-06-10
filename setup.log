@@ -1,0 +1,331 @@
+[1/3] Generating app key...
+
+   INFO  Application key set successfully.  
+
+[2/3] Installing Breeze scaffolding (Blade)...
+
+   INFO  Installing and building Node dependencies.  
+
+    npm warn cleanup Failed to remove some directories [
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\e:\\TA\\Dapur_Aisyah\\node_modules\\resolve',
+npm warn cleanup     [Error: EPERM: operation not permitted, rmdir 'e:\TA\Dapur_Aisyah\node_modules\resolve\test\resolver\symlinked'] {
+npm warn cleanup       errno: -4048,
+npm warn cleanup       code: 'EPERM',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: 'e:\\TA\\Dapur_Aisyah\\node_modules\\resolve\\test\\resolver\\symlinked'
+npm warn cleanup     }
+npm warn cleanup   ]
+npm warn cleanup ]
+npm error code 1
+npm error path e:\TA\Dapur_Aisyah\node_modules\esbuild
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c node install.js
+npm error node:internal/errors:983
+npm error   const err = new Error(message);
+npm error               ^
+npm error
+npm error Error: Command failed: C:\Program Files\nodejs\node.exe e:\TA\Dapur_Aisyah\node_modules\esbuild\bin\esbuild --version
+npm error fatal error: runtime: cannot allocate memory
+npm error
+npm error runtime stack:
+npm error runtime.throw({0x11f5347?, 0x2542c0d0c00?})
+npm error 	runtime/panic.go:1073 +0x4d fp=0xc6371ff9a0 sp=0xc6371ff970 pc=0xc2f4cd
+npm error runtime.persistentalloc1(0x3fc0, 0x0?, 0x1604460)
+npm error 	runtime/malloc.go:1609 +0x24d fp=0xc6371ff9f0 sp=0xc6371ff9a0 pc=0xbce44d
+npm error runtime.persistentalloc.func1()
+npm error 	runtime/malloc.go:1562 +0x28 fp=0xc6371ffa20 sp=0xc6371ff9f0 pc=0xbce1e8
+npm error runtime.persistentalloc(0x15d1080?, 0x2030000?, 0xc6371ffac8?)
+npm error 	runtime/malloc.go:1561 +0x4a fp=0xc6371ffa68 sp=0xc6371ffa20 pc=0xbce16a
+npm error runtime.(*fixalloc).alloc(0x15d7a40)
+npm error 	runtime/mfixalloc.go:90 +0x77 fp=0xc6371ffaa0 sp=0xc6371ffa68 pc=0xbd7677
+npm error runtime.(*mheap).allocMSpanLocked(0x15c0fc0)
+npm error 	runtime/mheap.go:1117 +0x9f fp=0xc6371ffad0 sp=0xc6371ffaa0 pc=0xbe6cff
+npm error runtime.(*mheap).allocSpan(0x15c0fc0, 0x1, 0x0, 0x10)
+npm error 	runtime/mheap.go:1258 +0x21e fp=0xc6371ffb78 sp=0xc6371ffad0 pc=0xbe6f7e
+npm error runtime.(*mheap).alloc.func1()
+npm error 	runtime/mheap.go:962 +0x5c fp=0xc6371ffbc0 sp=0xc6371ffb78 pc=0xbe699c
+npm error runtime.systemstack(0xc000086000)
+npm error 	runtime/asm_amd64.s:514 +0x49 fp=0xc6371ffbd0 sp=0xc6371ffbc0 pc=0xc35709
+npm error
+npm error goroutine 20 gp=0xc000086540 m=5 mp=0xc000080008 [running]:
+npm error runtime.systemstack_switch()
+npm error 	runtime/asm_amd64.s:479 +0x8 fp=0xc000093d50 sp=0xc000093d40 pc=0xc356a8
+npm error runtime.(*mheap).alloc(0x0?, 0x0?, 0x0?)
+npm error 	runtime/mheap.go:956 +0x5b fp=0xc000093d98 sp=0xc000093d50 pc=0xbe68fb
+npm error runtime.(*mcentral).grow(0x0?)
+npm error 	runtime/mcentral.go:252 +0x36 fp=0xc000093dc8 sp=0xc000093d98 pc=0xbd4256
+npm error runtime.(*mcentral).cacheSpan(0x15d2040)
+npm error 	runtime/mcentral.go:170 +0x405 fp=0xc000093e40 sp=0xc000093dc8 pc=0xbd40e5
+npm error runtime.(*mcache).refill(0x2542bff0a28, 0x0?)
+npm error 	runtime/mcache.go:182 +0x153 fp=0xc000093e80 sp=0xc000093e40 pc=0xbd3713
+npm error runtime.(*mcache).nextFree(0x2542bff0a28, 0x10)
+npm error 	runtime/malloc.go:945 +0x85 fp=0xc000093eb8 sp=0xc000093e80 pc=0xbcdc45
+npm error runtime.mallocgc(0x58, 0x11cbb00, 0x1)
+npm error 	runtime/malloc.go:1161 +0x4cd fp=0xc000093f58 sp=0xc000093eb8 pc=0xc2a8ad
+npm error runtime.newobject(0x0?)
+npm error 	runtime/malloc.go:1386 +0x25 fp=0xc000093f80 sp=0xc000093f58 pc=0xbcdf05
+npm error runtime.(*scavengerState).init(0x15b6be0)
+npm error 	runtime/mgcscavenge.go:363 +0x5a fp=0xc000093fa8 sp=0xc000093f80 pc=0xbe0a5a
+npm error runtime.bgscavenge(0xc00008a000)
+npm error 	runtime/mgcscavenge.go:650 +0x1f fp=0xc000093fc8 sp=0xc000093fa8 pc=0xbe117f
+npm error runtime.gcenable.gowrap2()
+npm error 	runtime/mgc.go:205 +0x25 fp=0xc000093fe0 sp=0xc000093fc8 pc=0xbd78c5
+npm error runtime.goexit({})
+npm error 	runtime/asm_amd64.s:1700 +0x1 fp=0xc000093fe8 sp=0xc000093fe0 pc=0xc376c1
+npm error created by runtime.gcenable in goroutine 1
+npm error 	runtime/mgc.go:205 +0xa5
+npm error
+npm error goroutine 1 gp=0xc000060000 m=nil [chan receive, locked to thread]:
+npm error runtime.gopark(0xc000098000?, 0x254712b1cc8?, 0x10?, 0x0?, 0x0?)
+npm error 	runtime/proc.go:424 +0xce fp=0xc000067e88 sp=0xc000067e68 pc=0xc2f5ee
+npm error runtime.chanrecv(0xc00008a000, 0x0, 0x1)
+npm error 	runtime/chan.go:639 +0x41e fp=0xc000067f00 sp=0xc000067e88 pc=0xbc70de
+npm error runtime.chanrecv1(0x15656f8?, 0x2?)
+npm error 	runtime/chan.go:489 +0x12 fp=0xc000067f28 sp=0xc000067f00 pc=0xbc6c92
+npm error runtime.gcenable()
+npm error 	runtime/mgc.go:207 +0xbd fp=0xc000067f50 sp=0xc000067f28 pc=0xbd787d
+npm error runtime.main()
+npm error 	runtime/proc.go:211 +0x174 fp=0xc000067fe0 sp=0xc000067f50 pc=0xbfb474
+npm error runtime.goexit({})
+npm error 	runtime/asm_amd64.s:1700 +0x1 fp=0xc000067fe8 sp=0xc000067fe0 pc=0xc376c1
+npm error
+npm error goroutine 18 gp=0xc0000861c0 m=nil [force gc (idle)]:
+npm error runtime.gopark(0x0?, 0x0?, 0x0?, 0x0?, 0x0?)
+npm error 	runtime/proc.go:424 +0xce fp=0xc000063fa8 sp=0xc000063f88 pc=0xc2f5ee
+npm error runtime.goparkunlock(...)
+npm error 	runtime/proc.go:430
+npm error runtime.forcegchelper()
+npm error 	runtime/proc.go:337 +0xb8 fp=0xc000063fe0 sp=0xc000063fa8 pc=0xbfb898
+npm error runtime.goexit({})
+npm error 	runtime/asm_amd64.s:1700 +0x1 fp=0xc000063fe8 sp=0xc000063fe0 pc=0xc376c1
+npm error created by runtime.init.7 in goroutine 1
+npm error 	runtime/proc.go:325 +0x1a
+npm error
+npm error goroutine 19 gp=0xc000086380 m=nil [GC sweep wait]:
+npm error runtime.gopark(0x0?, 0x0?, 0x0?, 0x0?, 0x0?)
+npm error 	runtime/proc.go:424 +0xce fp=0xc000065f80 sp=0xc000065f60 pc=0xc2f5ee
+npm error runtime.goparkunlock(...)
+npm error 	runtime/proc.go:430
+npm error runtime.bgsweep(0xc00008a000)
+npm error 	runtime/mgcsweep.go:277 +0x94 fp=0xc000065fc8 sp=0xc000065f80 pc=0xbe31f4
+npm error runtime.gcenable.gowrap1()
+npm error 	runtime/mgc.go:204 +0x25 fp=0xc000065fe0 sp=0xc000065fc8 pc=0xbd7925
+npm error runtime.goexit({})
+npm error 	runtime/asm_amd64.s:1700 +0x1 fp=0xc000065fe8 sp=0xc000065fe0 pc=0xc376c1
+npm error created by runtime.gcenable in goroutine 1
+npm error 	runtime/mgc.go:204 +0x66
+npm error node:child_process:954
+npm error     throw err;
+npm error     ^
+npm error 
+npm error Error: Command failed: e:\TA\Dapur_Aisyah\node_modules\@esbuild\win32-x64\esbuild.exe --version
+npm error     at genericNodeError (node:internal/errors:983:15)
+npm error     at wrappedFn (node:internal/errors:537:14)
+npm error     at checkExecSyncError (node:child_process:915:11)
+npm error     at Object.execFileSync (node:child_process:951:15)
+npm error     at Object.<anonymous> (e:\TA\Dapur_Aisyah\node_modules\esbuild\bin\esbuild:222:28)
+npm error     at Module._compile (node:internal/modules/cjs/loader:1688:14)
+npm error     at Object..js (node:internal/modules/cjs/loader:1820:10)
+npm error     at Module.load (node:internal/modules/cjs/loader:1423:32)
+npm error     at Function._load (node:internal/modules/cjs/loader:1246:12)
+npm error     at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+npm error   status: 2,
+npm error   signal: null,
+npm error   output: [ null, null, null ],
+npm error   pid: 17264,
+npm error   stdout: null,
+npm error   stderr: null
+npm error }
+npm error 
+npm error Node.js v22.18.0
+npm error
+npm error     at genericNodeError (node:internal/errors:983:15)
+npm error     at wrappedFn (node:internal/errors:537:14)
+npm error     at checkExecSyncError (node:child_process:915:11)
+npm error     at Object.execFileSync (node:child_process:951:15)
+npm error     at validateBinaryVersion (e:\TA\Dapur_Aisyah\node_modules\esbuild\install.js:102:28)
+npm error     at e:\TA\Dapur_Aisyah\node_modules\esbuild\install.js:285:5 {
+npm error   status: 1,
+npm error   signal: null,
+npm error   output: [
+npm error     null,
+npm error     Buffer(0) [Uint8Array] [],
+npm error     Buffer(5221) [Uint8Array] [
+npm error       102,  97, 116,  97, 108,  32, 101, 114, 114, 111, 114,  58,
+npm error        32, 114, 117, 110, 116, 105, 109, 101,  58,  32,  99,  97,
+npm error       110, 110, 111, 116,  32,  97, 108, 108, 111,  99,  97, 116,
+npm error       101,  32, 109, 101, 109, 111, 114, 121,  10,  10, 114, 117,
+npm error       110, 116, 105, 109, 101,  32, 115, 116,  97,  99, 107,  58,
+npm error        10, 114, 117, 110, 116, 105, 109, 101,  46, 116, 104, 114,
+npm error       111, 119,  40, 123,  48, 120,  49,  49, 102,  53,  51,  52,
+npm error        55,  63,  44,  32,  48, 120,  50,  53,  52,  50,  99,  48,
+npm error       100,  48,  99,  48,
+npm error       ... 5121 more items
+npm error     ]
+npm error   ],
+npm error   pid: 23260,
+npm error   stdout: Buffer(0) [Uint8Array] [],
+npm error   stderr: Buffer(5221) [Uint8Array] [
+npm error     102,  97, 116,  97, 108,  32, 101, 114, 114, 111, 114,  58,
+npm error      32, 114, 117, 110, 116, 105, 109, 101,  58,  32,  99,  97,
+npm error     110, 110, 111, 116,  32,  97, 108, 108, 111,  99,  97, 116,
+npm error     101,  32, 109, 101, 109, 111, 114, 121,  10,  10, 114, 117,
+npm error     110, 116, 105, 109, 101,  32, 115, 116,  97,  99, 107,  58,
+npm error      10, 114, 117, 110, 116, 105, 109, 101,  46, 116, 104, 114,
+npm error     111, 119,  40, 123,  48, 120,  49,  49, 102,  53,  51,  52,
+npm error      55,  63,  44,  32,  48, 120,  50,  53,  52,  50,  99,  48,
+npm error     100,  48,  99,  48,
+npm error     ... 5121 more items
+npm error   ]
+npm error }
+npm error
+npm error Node.js v22.18.0
+npm error A complete log of this run can be found in: C:\Users\user\AppData\Local\npm-cache\_logs\2026-05-27T19_20_27_049Z-debug-0.log
+
+
+   INFO  Breeze scaffolding installed successfully.  
+
+[3/3] Installing npm dependencies...
+npm warn cleanup Failed to remove some directories [
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\e:\\TA\\Dapur_Aisyah\\node_modules\\sucrase',
+npm warn cleanup     [Error: EPERM: operation not permitted, rmdir 'e:\TA\Dapur_Aisyah\node_modules\sucrase\dist\esm\parser'] {
+npm warn cleanup       errno: -4048,
+npm warn cleanup       code: 'EPERM',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: 'e:\\TA\\Dapur_Aisyah\\node_modules\\sucrase\\dist\\esm\\parser'
+npm warn cleanup     }
+npm warn cleanup   ],
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\e:\\TA\\Dapur_Aisyah\\node_modules\\rxjs',
+npm warn cleanup     [Error: EPERM: operation not permitted, rmdir 'e:\TA\Dapur_Aisyah\node_modules\rxjs\dist\esm5'] {
+npm warn cleanup       errno: -4048,
+npm warn cleanup       code: 'EPERM',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: 'e:\\TA\\Dapur_Aisyah\\node_modules\\rxjs\\dist\\esm5'
+npm warn cleanup     }
+npm warn cleanup   ],
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\e:\\TA\\Dapur_Aisyah\\node_modules\\resolve',
+npm warn cleanup     [Error: EPERM: operation not permitted, rmdir 'e:\TA\Dapur_Aisyah\node_modules\resolve\test'] {
+npm warn cleanup       errno: -4048,
+npm warn cleanup       code: 'EPERM',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: 'e:\\TA\\Dapur_Aisyah\\node_modules\\resolve\\test'
+npm warn cleanup     }
+npm warn cleanup   ]
+npm warn cleanup ]
+npm error code 1
+npm error path e:\TA\Dapur_Aisyah\node_modules\esbuild
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c node install.js
+npm error node:internal/errors:983
+npm error   const err = new Error(message);
+npm error               ^
+npm error
+npm error Error: Command failed: C:\Program Files\nodejs\node.exe e:\TA\Dapur_Aisyah\node_modules\esbuild\bin\esbuild --version
+npm error fatal error: out of memory allocating heap arena map
+npm error
+npm error runtime stack:
+npm error runtime.throw({0x75a6a6?, 0x0?})
+npm error 	runtime/panic.go:1073 +0x4d fp=0x81539ff2e0 sp=0x81539ff2b0 pc=0x18f4cd
+npm error runtime.(*mheap).sysAlloc(0xb20fc0, 0x0?, 0xb313c0, 0x1)
+npm error 	runtime/malloc.go:757 +0x3e9 fp=0x81539ff398 sp=0x81539ff2e0 pc=0x12d609
+npm error runtime.(*mheap).grow(0xb20fc0, 0x2625a00000000?)
+npm error 	runtime/mheap.go:1491 +0x76 fp=0x81539ff418 sp=0x81539ff398 pc=0x1476f6
+npm error runtime.(*mheap).allocSpan(0xb20fc0, 0x1, 0x0, 0x1c)
+npm error 	runtime/mheap.go:1244 +0x1b0 fp=0x81539ff4c0 sp=0x81539ff418 pc=0x146f10
+npm error runtime.(*mheap).alloc.func1()
+npm error 	runtime/mheap.go:962 +0x5c fp=0x81539ff508 sp=0x81539ff4c0 pc=0x14699c
+npm error runtime.(*mheap).alloc(0x1af37f00000001?, 0x10000?, 0x88?)
+npm error 	runtime/mheap.go:956 +0x5b fp=0x81539ff550 sp=0x81539ff508 pc=0x1468fb
+npm error runtime.(*mcentral).grow(0xdc8ef511484c?)
+npm error 	runtime/mcentral.go:252 +0x36 fp=0x81539ff580 sp=0x81539ff550 pc=0x134256
+npm error runtime.(*mcentral).cacheSpan(0xb32940)
+npm error 	runtime/mcentral.go:170 +0x405 fp=0x81539ff5f8 sp=0x81539ff580 pc=0x1340e5
+npm error runtime.(*mcache).refill(0x220b2b30108, 0x70?)
+npm error 	runtime/mcache.go:182 +0x153 fp=0x81539ff638 sp=0x81539ff5f8 pc=0x133713
+npm error runtime.(*mcache).nextFree(0x220b2b30108, 0x1c)
+npm error 	runtime/malloc.go:945 +0x85 fp=0x81539ff670 sp=0x81539ff638 pc=0x12dc45
+npm error runtime.mallocgc(0xc0, 0x6b3560, 0x1)
+npm error 	runtime/malloc.go:1161 +0x4cd fp=0x81539ff710 sp=0x81539ff670 pc=0x18a8ad
+npm error runtime.newobject(0x81539ff770?)
+npm error 	runtime/malloc.go:1386 +0x25 fp=0x81539ff738 sp=0x81539ff710 pc=0x12df05
+npm error internal/cpu.doinit()
+npm error 	internal/cpu/cpu_x86.go:51 +0x1e fp=0x81539ff798 sp=0x81539ff738 pc=0x12227e
+npm error internal/cpu.Initialize({0x0, 0x0})
+npm error 	internal/cpu/cpu.go:139 +0x1d fp=0x81539ff7b8 sp=0x81539ff798 pc=0x121cdd
+npm error runtime.cpuinit(...)
+npm error 	runtime/proc.go:727
+npm error runtime.schedinit()
+npm error 	runtime/proc.go:820 +0xdd fp=0x81539ff810 sp=0x81539ff7b8 pc=0x15c41d
+npm error runtime.rt0_go()
+npm error 	runtime/asm_amd64.s:349 +0x13c fp=0x81539ff818 sp=0x81539ff810 pc=0x19557c
+npm error node:child_process:954
+npm error     throw err;
+npm error     ^
+npm error 
+npm error Error: Command failed: e:\TA\Dapur_Aisyah\node_modules\@esbuild\win32-x64\esbuild.exe --version
+npm error     at genericNodeError (node:internal/errors:983:15)
+npm error     at wrappedFn (node:internal/errors:537:14)
+npm error     at checkExecSyncError (node:child_process:915:11)
+npm error     at Object.execFileSync (node:child_process:951:15)
+npm error     at Object.<anonymous> (e:\TA\Dapur_Aisyah\node_modules\esbuild\bin\esbuild:222:28)
+npm error     at Module._compile (node:internal/modules/cjs/loader:1688:14)
+npm error     at Object..js (node:internal/modules/cjs/loader:1820:10)
+npm error     at Module.load (node:internal/modules/cjs/loader:1423:32)
+npm error     at Function._load (node:internal/modules/cjs/loader:1246:12)
+npm error     at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+npm error   status: 2,
+npm error   signal: null,
+npm error   output: [ null, null, null ],
+npm error   pid: 7912,
+npm error   stdout: null,
+npm error   stderr: null
+npm error }
+npm error 
+npm error Node.js v22.18.0
+npm error
+npm error     at genericNodeError (node:internal/errors:983:15)
+npm error     at wrappedFn (node:internal/errors:537:14)
+npm error     at checkExecSyncError (node:child_process:915:11)
+npm error     at Object.execFileSync (node:child_process:951:15)
+npm error     at validateBinaryVersion (e:\TA\Dapur_Aisyah\node_modules\esbuild\install.js:102:28)
+npm error     at e:\TA\Dapur_Aisyah\node_modules\esbuild\install.js:285:5 {
+npm error   status: 1,
+npm error   signal: null,
+npm error   output: [
+npm error     null,
+npm error     Buffer(0) [Uint8Array] [],
+npm error     Buffer(2831) [Uint8Array] [
+npm error       102,  97, 116,  97, 108,  32, 101, 114, 114, 111, 114,  58,
+npm error        32, 111, 117, 116,  32, 111, 102,  32, 109, 101, 109, 111,
+npm error       114, 121,  32,  97, 108, 108, 111,  99,  97, 116, 105, 110,
+npm error       103,  32, 104, 101,  97, 112,  32,  97, 114, 101, 110,  97,
+npm error        32, 109,  97, 112,  10,  10, 114, 117, 110, 116, 105, 109,
+npm error       101,  32, 115, 116,  97,  99, 107,  58,  10, 114, 117, 110,
+npm error       116, 105, 109, 101,  46, 116, 104, 114, 111, 119,  40, 123,
+npm error        48, 120,  55,  53,  97,  54,  97,  54,  63,  44,  32,  48,
+npm error       120,  48,  63, 125,
+npm error       ... 2731 more items
+npm error     ]
+npm error   ],
+npm error   pid: 22488,
+npm error   stdout: Buffer(0) [Uint8Array] [],
+npm error   stderr: Buffer(2831) [Uint8Array] [
+npm error     102,  97, 116,  97, 108,  32, 101, 114, 114, 111, 114,  58,
+npm error      32, 111, 117, 116,  32, 111, 102,  32, 109, 101, 109, 111,
+npm error     114, 121,  32,  97, 108, 108, 111,  99,  97, 116, 105, 110,
+npm error     103,  32, 104, 101,  97, 112,  32,  97, 114, 101, 110,  97,
+npm error      32, 109,  97, 112,  10,  10, 114, 117, 110, 116, 105, 109,
+npm error     101,  32, 115, 116,  97,  99, 107,  58,  10, 114, 117, 110,
+npm error     116, 105, 109, 101,  46, 116, 104, 114, 111, 119,  40, 123,
+npm error      48, 120,  55,  53,  97,  54,  97,  54,  63,  44,  32,  48,
+npm error     120,  48,  63, 125,
+npm error     ... 2731 more items
+npm error   ]
+npm error }
+npm error
+npm error Node.js v22.18.0
+npm error A complete log of this run can be found in: C:\Users\user\AppData\Local\npm-cache\_logs\2026-05-27T19_20_52_689Z-debug-0.log
