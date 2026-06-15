@@ -33,7 +33,6 @@
                         ['route' => 'admin.dashboard', 'icon' => '📊', 'label' => 'Dashboard'],
                         ['route' => 'admin.orders', 'icon' => '📦', 'label' => 'Pesanan'],
                         ['route' => 'admin.catering.index', 'icon' => '🍲', 'label' => 'Katering'],
-                        ['route' => 'admin.custom-options.index', 'icon' => '⚙️', 'label' => 'Custom Options'],
                         ['route' => 'admin.customers', 'icon' => '👥', 'label' => 'Pelanggan'],
                         ['route' => 'admin.reviews', 'icon' => '⭐', 'label' => 'Ulasan'],
                         ['route' => 'admin.shipping.index', 'icon' => '🚚', 'label' => 'Ongkos Kirim'],

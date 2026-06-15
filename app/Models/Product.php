@@ -14,7 +14,7 @@ class Product extends Model
 
     protected $fillable = [
         'catering_service_id', 'name', 'slug', 'description', 'price',
-        'image', 'is_best_seller', 'available_days', 'is_active',
+        'image', 'is_best_seller', 'available_days', 'is_active', 'status',
     ];
 
     protected function casts(): array
@@ -43,9 +43,32 @@ class Product extends Model
         return $query->where('is_active', true);
     }
 
+    public function scopeAvailable($query)
+    {
+        return $query->where('status', 'tersedia');
+    }
+
     public function scopeBestSeller($query)
     {
         return $query->where('is_best_seller', true);
+    }
+
+    // === Accessors ===
+
+    /**
+     * Cek apakah produk tersedia untuk dipesan.
+     */
+    public function isAvailable(): bool
+    {
+        return $this->status === 'tersedia' && $this->is_active;
+    }
+
+    /**
+     * Cek apakah produk habis.
+     */
+    public function isOutOfStock(): bool
+    {
+        return $this->status === 'habis';
     }
 
     // === Relationships ===

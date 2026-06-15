@@ -13,6 +13,9 @@
                 <div><span class="text-gray-500">Pelanggan:</span><br><b>{{ $order->user->name }}</b><br>{{ $order->user->phone }}<br>{{ $order->user->email }}</div>
                 <div><span class="text-gray-500">Layanan:</span><br><b>{{ $order->cateringService->name ?? '-' }}</b></div>
                 <div><span class="text-gray-500">Tanggal:</span><br><b>{{ $order->order_date->format('d M Y') }}</b></div>
+                @if($order->event_start_time)
+                    <div><span class="text-gray-500">Jam Acara:</span><br><b>{{ \Carbon\Carbon::parse($order->event_start_time)->format('H:i') }} WIB</b></div>
+                @endif
                 <div><span class="text-gray-500">Metode:</span><br><b>{{ ucfirst($order->pickup_method) }}</b></div>
             </div>
             @if($order->pickup_method === 'delivery')

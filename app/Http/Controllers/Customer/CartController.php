@@ -33,6 +33,8 @@ class CartController extends Controller
             'product_id' => 'required_without:custom_option_id|exists:products,id',
             'custom_option_id' => 'required_without:product_id|exists:custom_options,id',
             'quantity' => 'required|integer|min:1',
+            'extras' => 'nullable|array',
+            'extras.*' => 'exists:custom_options,id',
         ]);
 
         $user = auth()->user();
@@ -46,7 +48,7 @@ class CartController extends Controller
             }
         }
 
-        // Cek apakah item sudah ada di keranjang
+        // Simpan produk utama
         $existing = $user->carts()
             ->where('product_id', $validated['product_id'] ?? null)
             ->where('custom_option_id', $validated['custom_option_id'] ?? null)
@@ -58,10 +60,36 @@ class CartController extends Controller
                 'quantity' => $existing->quantity + $validated['quantity'],
             ]);
         } else {
-            $user->carts()->create($validated);
+            $user->carts()->create([
+                'product_id' => $validated['product_id'] ?? null,
+                'custom_option_id' => $validated['custom_option_id'] ?? null,
+                'quantity' => $validated['quantity'],
+            ]);
         }
 
-        return back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
+        // Simpan extras jika ada
+        if (!empty($validated['extras'])) {
+            foreach ($validated['extras'] as $extraId) {
+                $existingExtra = $user->carts()
+                    ->where('custom_option_id', $extraId)
+                    ->whereNull('cart_group_id')
+                    ->first();
+                
+                if ($existingExtra) {
+                    $existingExtra->update([
+                        'quantity' => $existingExtra->quantity + $validated['quantity'],
+                    ]);
+                } else {
+                    $user->carts()->create([
+                        'custom_option_id' => $extraId,
+                        'quantity' => $validated['quantity'],
+                        'item_type' => 'addition',
+                    ]);
+                }
+            }
+        }
+
+        return back()->with('success', 'Produk dan opsi berhasil ditambahkan ke keranjang!');
     }
 
     /**

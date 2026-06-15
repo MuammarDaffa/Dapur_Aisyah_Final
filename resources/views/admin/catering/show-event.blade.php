@@ -57,7 +57,169 @@
         </div>
     </div>
 
+    {{-- ============================================ --}}
+    {{-- Task 13: Section Menu --}}
+    {{-- ============================================ --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-gray-800">🍽️ Menu</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Menu yang tersedia untuk paket katering ini</p>
+            </div>
+            <button type="button" onclick="openOptionModal('menu')" class="px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
+                + Tambah Menu
+            </button>
+        </div>
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50/50">
+                <tr class="text-xs uppercase text-gray-500 tracking-wider">
+                    <th class="px-6 py-3 text-left font-semibold">Nama</th>
+                    <th class="px-6 py-3 text-center font-semibold">Harga</th>
+                    <th class="px-6 py-3 text-center font-semibold">Status</th>
+                    <th class="px-6 py-3 text-center font-semibold">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($menus as $menu)
+                <tr class="hover:bg-orange-50/30 transition-colors">
+                    <td class="px-6 py-4 font-medium text-gray-900">{{ $menu->name }}</td>
+                    <td class="px-6 py-4 text-center font-semibold text-orange-600">Rp {{ number_format($menu->price, 0, ',', '.') }}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $menu->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                            {{ $menu->is_active ? 'Tersedia' : 'Habis' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button type="button" onclick="openEditModal({{ $menu->id }}, '{{ $menu->name }}', {{ $menu->price }}, {{ $menu->is_active ? 'true' : 'false' }}, 'menu')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <form action="{{ route('admin.catering.options.destroy', [$catering, $menu]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus menu ini?')">
+                                @csrf @method('DELETE')
+                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4" class="px-6 py-8 text-center text-gray-400">
+                        <p class="text-2xl mb-1">🍽️</p>
+                        <p class="text-sm">Belum ada menu. Tambahkan menu untuk digunakan dalam paket.</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    {{-- ============================================ --}}
+    {{-- Task 14: Section Penyajian --}}
+    {{-- ============================================ --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-gray-800">🍲 Penyajian</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Tipe penyajian yang tersedia (Lunch Box, Prasmanan, dll)</p>
+            </div>
+            <button type="button" onclick="openOptionModal('serving_type')" class="px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
+                + Tambah Penyajian
+            </button>
+        </div>
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50/50">
+                <tr class="text-xs uppercase text-gray-500 tracking-wider">
+                    <th class="px-6 py-3 text-left font-semibold">Nama</th>
+                    <th class="px-6 py-3 text-center font-semibold">Status</th>
+                    <th class="px-6 py-3 text-center font-semibold">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($servings as $serving)
+                <tr class="hover:bg-orange-50/30 transition-colors">
+                    <td class="px-6 py-4 font-medium text-gray-900">{{ $serving->name }}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $serving->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                            {{ $serving->is_active ? 'Aktif' : 'Nonaktif' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button type="button" onclick="openEditModal({{ $serving->id }}, '{{ $serving->name }}', {{ $serving->price }}, {{ $serving->is_active ? 'true' : 'false' }}, 'serving_type')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <form action="{{ route('admin.catering.options.destroy', [$catering, $serving]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus penyajian ini?')">
+                                @csrf @method('DELETE')
+                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="3" class="px-6 py-8 text-center text-gray-400">
+                        <p class="text-2xl mb-1">🍲</p>
+                        <p class="text-sm">Belum ada penyajian. Contoh: Lunch Box, Prasmanan, Plated Service.</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    {{-- ============================================ --}}
+    {{-- Task 15: Section Extra --}}
+    {{-- ============================================ --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-gray-800">✨ Extra</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Extra tambahan (Sambal, Kerupuk, Air Mineral, dll)</p>
+            </div>
+            <button type="button" onclick="openOptionModal('extra')" class="px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
+                + Tambah Extra
+            </button>
+        </div>
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50/50">
+                <tr class="text-xs uppercase text-gray-500 tracking-wider">
+                    <th class="px-6 py-3 text-left font-semibold">Nama</th>
+                    <th class="px-6 py-3 text-center font-semibold">Harga</th>
+                    <th class="px-6 py-3 text-center font-semibold">Status</th>
+                    <th class="px-6 py-3 text-center font-semibold">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($extras as $extra)
+                <tr class="hover:bg-orange-50/30 transition-colors">
+                    <td class="px-6 py-4 font-medium text-gray-900">{{ $extra->name }}</td>
+                    <td class="px-6 py-4 text-center font-semibold text-orange-600">Rp {{ number_format($extra->price, 0, ',', '.') }}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $extra->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                            {{ $extra->is_active ? 'Aktif' : 'Nonaktif' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button type="button" onclick="openEditModal({{ $extra->id }}, '{{ $extra->name }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }}, 'extra')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <form action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus extra ini?')">
+                                @csrf @method('DELETE')
+                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4" class="px-6 py-8 text-center text-gray-400">
+                        <p class="text-2xl mb-1">✨</p>
+                        <p class="text-sm">Belum ada extra. Contoh: Sambal Tambahan, Kerupuk, Air Mineral.</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    {{-- ============================================ --}}
     {{-- Paket Section --}}
+    {{-- ============================================ --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
             <div>
@@ -140,4 +302,95 @@
         @endif
     </div>
 </div>
+
+{{-- Modal Tambah Option --}}
+<div id="addOptionModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+        <div class="flex items-center justify-between p-6 border-b border-gray-100">
+            <h3 id="addModalTitle" class="text-lg font-bold text-gray-900">Tambah Item</h3>
+            <button onclick="closeOptionModal()" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <form id="addOptionForm" action="{{ route('admin.catering.options.store', $catering) }}" method="POST" class="p-6 space-y-4">
+            @csrf
+            <input type="hidden" name="type" id="addOptionType">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
+                <input type="text" name="name" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="Nama item...">
+            </div>
+            <div id="addPriceField">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
+                <input type="number" name="price" value="0" min="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+            </div>
+            <div class="flex items-center gap-2">
+                <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
+                <span class="text-sm font-medium text-gray-700">Aktif</span>
+            </div>
+            <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Simpan</button>
+        </form>
+    </div>
+</div>
+
+{{-- Modal Edit Option --}}
+<div id="editOptionModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+        <div class="flex items-center justify-between p-6 border-b border-gray-100">
+            <h3 class="text-lg font-bold text-gray-900">Edit Item</h3>
+            <button onclick="closeEditModal()" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <form id="editOptionForm" method="POST" class="p-6 space-y-4">
+            @csrf @method('PUT')
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
+                <input type="text" name="name" id="editName" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+            </div>
+            <div id="editPriceField">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
+                <input type="number" name="price" id="editPrice" value="0" min="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+            </div>
+            <div class="flex items-center gap-2">
+                <input type="checkbox" name="is_active" value="1" id="editActive" class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
+                <span class="text-sm font-medium text-gray-700">Aktif</span>
+            </div>
+            <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Update</button>
+        </form>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+const cateringId = {{ $catering->id }};
+const typeLabels = { menu: 'Menu', serving_type: 'Penyajian', extra: 'Extra' };
+
+function openOptionModal(type) {
+    document.getElementById('addOptionType').value = type;
+    document.getElementById('addModalTitle').textContent = 'Tambah ' + typeLabels[type];
+    // Penyajian: harga default 0, sembunyikan jika tidak relevan
+    document.getElementById('addOptionModal').style.display = 'flex';
+}
+
+function closeOptionModal() {
+    document.getElementById('addOptionModal').style.display = 'none';
+}
+
+function openEditModal(optionId, name, price, isActive, type) {
+    document.getElementById('editName').value = name;
+    document.getElementById('editPrice').value = price;
+    document.getElementById('editActive').checked = isActive;
+    document.getElementById('editOptionForm').action = `/admin/catering/${cateringId}/options/${optionId}`;
+    document.getElementById('editOptionModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editOptionModal').style.display = 'none';
+}
+
+// Close modals when clicking outside
+document.getElementById('addOptionModal')?.addEventListener('click', function(e) { if (e.target === this) closeOptionModal(); });
+document.getElementById('editOptionModal')?.addEventListener('click', function(e) { if (e.target === this) closeEditModal(); });
+</script>
+@endpush
 @endsection

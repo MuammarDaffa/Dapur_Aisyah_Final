@@ -76,6 +76,7 @@
                     <th class="px-6 py-3 text-center font-semibold">Harga</th>
                     <th class="px-6 py-3 text-center font-semibold">Best Seller</th>
                     <th class="px-6 py-3 text-center font-semibold">Status</th>
+                    <th class="px-6 py-3 text-center font-semibold">Ketersediaan</th>
                     <th class="px-6 py-3 text-center font-semibold">Aksi</th>
                 </tr>
             </thead>
@@ -107,6 +108,11 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ ($p->status ?? 'tersedia') === 'tersedia' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700' }}">
+                            {{ ($p->status ?? 'tersedia') === 'tersedia' ? 'Tersedia' : 'Habis' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <a href="{{ route('admin.products.edit', $p) }}" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</a>
                             <form action="{{ route('admin.products.destroy', $p) }}" method="POST" class="inline" onsubmit="return confirm('Hapus produk ini?')">
@@ -118,7 +124,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-400">
                         <p class="text-2xl mb-1">🍽️</p>
                         <p class="text-sm">Belum ada produk untuk katering ini.</p>
                     </td>
@@ -131,40 +137,134 @@
         @endif
     </div>
 
-    {{-- Extra Section --}}
+    {{-- Extra Section (Task 15 — table format with CRUD) --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b bg-gray-50">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-gray-800">✨ Extra Tersedia</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Extra yang dapat dipesan pelanggan untuk produk daily ini</p>
-                </div>
-                <a href="{{ route('admin.custom-options.create') }}" class="text-xs text-orange-500 hover:text-orange-600 font-medium">
-                    Kelola di Custom Options →
-                </a>
+        <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-gray-800">✨ Extra</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Extra tambahan yang dapat dipesan pelanggan</p>
             </div>
+            <button type="button" onclick="openExtraModal()" class="px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
+                + Tambah Extra
+            </button>
         </div>
-        <div class="p-6">
-            @if($extras->count() > 0)
-            <div class="flex flex-wrap gap-2">
-                @foreach($extras as $extra)
-                <div class="inline-flex items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg">
-                    <span class="text-sm font-medium text-orange-700">{{ $extra->name }}</span>
-                    <span class="text-xs text-orange-500">Rp {{ number_format($extra->price, 0, ',', '.') }}</span>
-                    @if(!$extra->is_active)
-                    <span class="px-1.5 py-0.5 text-[10px] rounded bg-gray-200 text-gray-500">Nonaktif</span>
-                    @endif
-                </div>
-                @endforeach
-            </div>
-            @else
-            <div class="text-center py-4 text-gray-400">
-                <p class="text-2xl mb-1">✨</p>
-                <p class="text-sm">Belum ada extra untuk katering ini.</p>
-                <p class="text-xs mt-1">Tambahkan extra melalui menu <a href="{{ route('admin.custom-options.create') }}" class="text-orange-500 hover:underline">Custom Options</a>.</p>
-            </div>
-            @endif
-        </div>
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50/50">
+                <tr class="text-xs uppercase text-gray-500 tracking-wider">
+                    <th class="px-6 py-3 text-left font-semibold">Nama</th>
+                    <th class="px-6 py-3 text-center font-semibold">Harga</th>
+                    <th class="px-6 py-3 text-center font-semibold">Status</th>
+                    <th class="px-6 py-3 text-center font-semibold">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($extras as $extra)
+                <tr class="hover:bg-orange-50/30 transition-colors">
+                    <td class="px-6 py-4 font-medium text-gray-900">{{ $extra->name }}</td>
+                    <td class="px-6 py-4 text-center font-semibold text-orange-600">Rp {{ number_format($extra->price, 0, ',', '.') }}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $extra->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                            {{ $extra->is_active ? 'Aktif' : 'Nonaktif' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button type="button" onclick="openEditExtraModal({{ $extra->id }}, '{{ $extra->name }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }})" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <form action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus extra ini?')">
+                                @csrf @method('DELETE')
+                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4" class="px-6 py-8 text-center text-gray-400">
+                        <p class="text-2xl mb-1">✨</p>
+                        <p class="text-sm">Belum ada extra. Contoh: Sambal Tambahan, Kerupuk, Air Mineral.</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
+
+{{-- Modal Tambah Extra --}}
+<div id="addExtraModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+        <div class="flex items-center justify-between p-6 border-b border-gray-100">
+            <h3 class="text-lg font-bold text-gray-900">Tambah Extra</h3>
+            <button onclick="document.getElementById('addExtraModal').style.display='none'" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <form action="{{ route('admin.catering.options.store', $catering) }}" method="POST" class="p-6 space-y-4">
+            @csrf
+            <input type="hidden" name="type" value="extra">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
+                <input type="text" name="name" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="cth: Sambal Tambahan">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
+                <input type="number" name="price" value="0" min="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+            </div>
+            <div class="flex items-center gap-2">
+                <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
+                <span class="text-sm font-medium text-gray-700">Aktif</span>
+            </div>
+            <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Simpan</button>
+        </form>
+    </div>
+</div>
+
+{{-- Modal Edit Extra --}}
+<div id="editExtraModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+        <div class="flex items-center justify-between p-6 border-b border-gray-100">
+            <h3 class="text-lg font-bold text-gray-900">Edit Extra</h3>
+            <button onclick="document.getElementById('editExtraModal').style.display='none'" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <form id="editExtraForm" method="POST" class="p-6 space-y-4">
+            @csrf @method('PUT')
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
+                <input type="text" name="name" id="editExtraName" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
+                <input type="number" name="price" id="editExtraPrice" value="0" min="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+            </div>
+            <div class="flex items-center gap-2">
+                <input type="checkbox" name="is_active" value="1" id="editExtraActive" class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
+                <span class="text-sm font-medium text-gray-700">Aktif</span>
+            </div>
+            <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Update</button>
+        </form>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+const cateringId = {{ $catering->id }};
+
+function openExtraModal() {
+    document.getElementById('addExtraModal').style.display = 'flex';
+}
+
+function openEditExtraModal(id, name, price, isActive) {
+    document.getElementById('editExtraName').value = name;
+    document.getElementById('editExtraPrice').value = price;
+    document.getElementById('editExtraActive').checked = isActive;
+    document.getElementById('editExtraForm').action = `/admin/catering/${cateringId}/options/${id}`;
+    document.getElementById('editExtraModal').style.display = 'flex';
+}
+
+document.getElementById('addExtraModal')?.addEventListener('click', function(e) { if (e.target === this) this.style.display='none'; });
+document.getElementById('editExtraModal')?.addEventListener('click', function(e) { if (e.target === this) this.style.display='none'; });
+</script>
+@endpush
 @endsection

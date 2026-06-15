@@ -24,7 +24,7 @@
                 <label class="text-xs font-medium text-gray-500 mb-1 block">Hari</label>
                 <select name="day" class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400">
                     <option value="">Semua Hari</option>
-                    @foreach(['senin','selasa','rabu','kamis','jumat','sabtu'] as $day)
+                    @foreach(['senin','selasa','rabu','kamis','jumat','sabtu','minggu'] as $day)
                         <option value="{{ $day }}" {{ request('day') == $day ? 'selected' : '' }}>{{ ucfirst($day) }}</option>
                     @endforeach
                 </select>
@@ -36,7 +36,13 @@
     <!-- Products Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @forelse($products as $product)
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+            @php
+                $isAvailable = $product->isAvailable();
+                $isTodayOnly = is_array($product->available_days) && count($product->available_days) === 1 && in_array($currentDay, $product->available_days);
+                $isPastCutoff = $isTodayOnly && $currentHour >= 10;
+                $canOrder = $isAvailable && !$isPastCutoff;
+            @endphp
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 {{ !$canOrder ? 'opacity-75 grayscale-[0.3]' : '' }}">
                 <div class="relative h-44 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center">
                     @if($product->image)
                         <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
@@ -44,7 +50,10 @@
                         <span class="text-5xl">🍛</span>
                     @endif
                     @if($product->is_best_seller)
-                        <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">🔥 Best Seller</span>
+                        <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">🔥 Best Seller</span>
+                    @endif
+                    @if(!$isAvailable)
+                        <span class="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg">HABIS</span>
                     @endif
                 </div>
                 <div class="p-5">
@@ -54,17 +63,29 @@
                     @if($product->available_days)
                         <div class="flex flex-wrap gap-1 mb-3">
                             @foreach($product->available_days as $day)
-                                <span class="text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full">{{ ucfirst($day) }}</span>
+                                <span class="text-xs {{ $day === $currentDay ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-600' }} px-2 py-0.5 rounded-full">{{ ucfirst($day) }}</span>
                             @endforeach
                         </div>
                     @endif
-                    <div class="flex items-center justify-between">
+                    
+                    @if($isPastCutoff)
+                        <p class="text-xs text-red-500 font-medium mb-3">Pemesanan ditutup (lewat jam 10:00)</p>
+                    @endif
+
+                    <div class="flex items-center justify-between mt-auto">
                         <span class="text-lg font-bold text-orange-600">{{ $product->formatted_price }}</span>
+                        @if($canOrder)
                         <button type="button" onclick="openOrderModal({{ $product->id }})"
                             class="flex items-center space-x-1 px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-xl hover:bg-orange-600 transition-colors shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                             <span>Keranjang</span>
                         </button>
+                        @else
+                        <button type="button" disabled
+                            class="flex items-center space-x-1 px-4 py-2 bg-gray-300 text-gray-500 text-sm font-medium rounded-xl cursor-not-allowed">
+                            <span>Tidak Tersedia</span>
+                        </button>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -79,7 +100,7 @@
     <div class="mt-8">{{ $products->withQueryString()->links() }}</div>
 </div>
 
-{{-- Order Modal --}}
+{{-- Order Modal (Task 3: Tambah Extra) --}}
 <div id="orderModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] flex flex-col transform transition-all">
         {{-- Header --}}
@@ -107,11 +128,22 @@
 
                 {{-- Quantity --}}
                 <div class="mb-6">
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Porsi</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Porsi *</label>
                     <div class="flex items-center gap-3">
                         <button type="button" onclick="changeQty(-1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-colors">−</button>
                         <input type="number" name="quantity" id="modalQty" value="1" min="1" class="w-20 text-center px-3 py-2 rounded-xl border border-gray-200 font-semibold text-gray-900 focus:border-orange-400 focus:ring-2 focus:ring-orange-100" onchange="updateModalTotal()">
                         <button type="button" onclick="changeQty(1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-colors">+</button>
+                    </div>
+                </div>
+
+                {{-- Extras Loading State --}}
+                <div id="modalExtrasLoading" class="text-sm text-gray-500 py-2 hidden">Memuat opsi tambahan...</div>
+
+                {{-- Extras Container --}}
+                <div id="modalExtrasContainer" class="mb-6 hidden">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Extra Tambahan (Opsional)</label>
+                    <div id="modalExtrasList" class="space-y-2">
+                        <!-- Checkboxes will be injected here -->
                     </div>
                 </div>
 
@@ -147,10 +179,9 @@
             ];
         });
     @endphp
-    // Product data for modal
     const productsData = @json($productsJson);
-
     let currentProduct = null;
+    let availableExtras = [];
 
     function openOrderModal(productId) {
         currentProduct = productsData[productId];
@@ -160,6 +191,39 @@
         document.getElementById('modalProductName').textContent = currentProduct.name;
         document.getElementById('modalProductPrice').textContent = formatRupiah(currentProduct.price) + ' / porsi';
         document.getElementById('modalQty').value = 1;
+        
+        document.getElementById('modalExtrasList').innerHTML = '';
+        document.getElementById('modalExtrasContainer').classList.add('hidden');
+        document.getElementById('modalExtrasLoading').classList.remove('hidden');
+
+        // Fetch extras for this service
+        fetch(`/api/service/${currentProduct.service_id}/custom-options`)
+            .then(res => res.json())
+            .then(data => {
+                availableExtras = data.filter(opt => opt.type === 'extra');
+                document.getElementById('modalExtrasLoading').classList.add('hidden');
+                
+                if (availableExtras.length > 0) {
+                    let html = '';
+                    availableExtras.forEach(extra => {
+                        html += `
+                            <label class="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:bg-orange-50 cursor-pointer transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" name="extras[]" value="${extra.id}" data-price="${extra.price}" onchange="updateModalTotal()" class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-400">
+                                    <span class="text-sm font-medium text-gray-700">${extra.name}</span>
+                                </div>
+                                <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
+                            </label>
+                        `;
+                    });
+                    document.getElementById('modalExtrasList').innerHTML = html;
+                    document.getElementById('modalExtrasContainer').classList.remove('hidden');
+                }
+            })
+            .catch(err => {
+                console.error("Gagal memuat extras", err);
+                document.getElementById('modalExtrasLoading').classList.add('hidden');
+            });
 
         updateModalTotal();
         document.getElementById('orderModal').style.display = 'flex';
@@ -180,7 +244,14 @@
     function updateModalTotal() {
         if (!currentProduct) return;
         const qty = parseInt(document.getElementById('modalQty').value) || 1;
-        const total = currentProduct.price * qty;
+        let total = currentProduct.price * qty;
+
+        // Add extras prices
+        const extraCheckboxes = document.querySelectorAll('input[name="extras[]"]:checked');
+        extraCheckboxes.forEach(cb => {
+            total += parseFloat(cb.getAttribute('data-price')) * qty; // Extra dikali porsi
+        });
+
         document.getElementById('modalTotal').textContent = formatRupiah(total);
     }
 
@@ -195,4 +266,3 @@
 </script>
 @endpush
 @endsection
-

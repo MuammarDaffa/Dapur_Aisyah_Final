@@ -33,6 +33,9 @@
                 <div class="grid grid-cols-2 gap-4 text-sm">
                     <div><span class="text-gray-500">Layanan:</span><br><span class="font-medium">{{ $order->cateringService->name ?? '-' }}</span></div>
                     <div><span class="text-gray-500">Tanggal Acara:</span><br><span class="font-medium">{{ $order->order_date->format('d M Y') }}</span></div>
+                    @if($order->event_start_time)
+                        <div><span class="text-gray-500">Jam Acara:</span><br><span class="font-medium">{{ \Carbon\Carbon::parse($order->event_start_time)->format('H:i') }} WIB</span></div>
+                    @endif
                     <div><span class="text-gray-500">Metode:</span><br><span class="font-medium">{{ $order->pickup_method === 'delivery' ? 'Delivery' : 'Pick Up' }}</span></div>
                     <div><span class="text-gray-500">Pembayaran:</span><br><span class="font-medium">{{ $order->payment_method === 'transfer' ? 'Transfer (Midtrans)' : 'COD' }}</span></div>
                 </div>

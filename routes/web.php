@@ -11,8 +11,6 @@ use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
-use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
-use App\Http\Controllers\Admin\CustomOptionController;
 use App\Http\Controllers\Admin\CateringController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
@@ -63,16 +61,16 @@ Route::middleware(['auth', 'role:customer'])->prefix('dashboard')->name('custome
     // Event Configurator
     Route::get('/event/{service}', [CustomerDashboard::class, 'eventConfigurator'])->name('event.configurator');
 
-    // Event Cart Group
-    Route::post('/cart/event-group', [CartController::class, 'storeEventGroup'])->name('cart.event-group');
+    // Event Direct Checkout (Task 6: tanpa keranjang)
+    Route::post('/event/checkout', [CheckoutController::class, 'storeEvent'])->name('event.checkout');
 
-    // Cart
+    // Cart (hanya untuk Daily)
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
     Route::put('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
 
-    // Checkout
+    // Checkout (Daily)
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
@@ -106,19 +104,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Katering (pusat manajemen layanan)
     Route::resource('catering', CateringController::class);
 
-    // Products (tetap dipertahankan, diakses dari detail katering)
+    // Catering Options CRUD (Menu, Penyajian, Extra — inline dari detail katering)
+    Route::post('/catering/{catering}/options', [CateringController::class, 'storeOption'])->name('catering.options.store');
+    Route::put('/catering/{catering}/options/{option}', [CateringController::class, 'updateOption'])->name('catering.options.update');
+    Route::delete('/catering/{catering}/options/{option}', [CateringController::class, 'destroyOption'])->name('catering.options.destroy');
+
+    // Products (diakses dari detail katering, bukan standalone)
     Route::get('/products/search', [AdminProductController::class, 'search'])->name('products.search');
-    Route::resource('products', AdminProductController::class)->except(['show']);
+    Route::resource('products', AdminProductController::class)->except(['index', 'show']);
 
-    // Services (backward compatibility)
-    Route::resource('services', AdminServiceController::class)->except(['show']);
-
-    // Custom Options
-    Route::resource('custom-options', CustomOptionController::class)->except(['show']);
-
-    // Packages (tetap dipertahankan, diakses dari detail katering)
-    Route::resource('packages', PackageController::class)->except(['show']);
-
+    // Packages (diakses dari detail katering, bukan standalone)
+    Route::resource('packages', PackageController::class)->except(['index', 'show']);
 
     // Customers
     Route::get('/customers', [AdminCustomerController::class, 'index'])->name('customers');
@@ -164,12 +160,12 @@ Route::middleware('auth')->group(function () {
 
     // API: Custom options per layanan (grouped by type)
     Route::get('/api/service/{service}/custom-options', function (\App\Models\CateringService $service) {
-        return $service->customOptions()->active()->get(['id', 'type', 'name', 'price', 'min_qty']);
+        return $service->customOptions()->where('is_active', true)->get(['id', 'type', 'name', 'price', 'min_qty']);
     })->name('api.service.options');
 
     // API: Paket per layanan
     Route::get('/api/service/{service}/packages', function (\App\Models\CateringService $service) {
-        return $service->packages()->active()->with('customOptions:id,type,name,price')->get();
+        return $service->packages()->where('is_active', true)->with('customOptions:id,type,name,price')->get();
     })->name('api.service.packages');
 
     // API: Detail paket

@@ -28,10 +28,9 @@ class DashboardController extends Controller
      */
     public function products(Request $request)
     {
-        $query = Product::active()->with('cateringService')
-            ->whereHas('cateringService', function ($q) {
-                $q->whereJsonContains('available_features', 'daily_menu');
-            });
+        $query = Product::with('cateringService')
+            ->available()
+            ->latest();
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
@@ -46,11 +45,17 @@ class DashboardController extends Controller
         }
 
         $products = $query->paginate(12);
+        $services = CateringService::daily()->where('is_active', true)->get();
 
-        // Filter layanan harian saja untuk dropdown filter
-        $services = CateringService::active()->daily()->get();
+        $carbonNow = \Carbon\Carbon::now();
+        $daysMap = [
+            'Sunday' => 'minggu', 'Monday' => 'senin', 'Tuesday' => 'selasa',
+            'Wednesday' => 'rabu', 'Thursday' => 'kamis', 'Friday' => 'jumat', 'Saturday' => 'sabtu'
+        ];
+        $currentDay = $daysMap[$carbonNow->format('l')];
+        $currentHour = (int) $carbonNow->format('H');
 
-        return view('customer.products', compact('products', 'services'));
+        return view('customer.products', compact('products', 'services', 'currentDay', 'currentHour'));
     }
 
     /**
@@ -58,22 +63,19 @@ class DashboardController extends Controller
      */
     public function eventConfigurator(CateringService $service)
     {
-        // Pastikan layanan adalah tipe event
+        // Pastikan ini adalah katering event
         if (!$service->isEvent()) {
-            return redirect()->route('customer.products')
-                ->with('error', 'Layanan ini bukan layanan event.');
+            return redirect()->route('customer.products')->with('error', 'Layanan tidak valid untuk event.');
         }
 
-        $packages = $service->packages()
-            ->active()
-            ->with('customOptions')
-            ->get();
+        $packages = $service->packages()->with(['customOptions' => function ($q) {
+            $q->where('is_active', true);
+        }])->where('is_active', true)->get();
 
-        $customOptions = $service->customOptions()
-            ->active()
-            ->get();
+        $customOptions = $service->customOptions()->where('is_active', true)->get();
+        $districts = \App\Models\District::with('villages')->get();
 
-        return view('customer.event_configurator', compact('service', 'packages', 'customOptions'));
+        return view('customer.event_configurator', compact('service', 'packages', 'customOptions', 'districts'));
     }
 
     public function notifications()

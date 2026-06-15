@@ -82,21 +82,24 @@ class CateringController extends Controller
     }
 
     /**
-     * Detail Katering — menampilkan Produk (Daily) atau Paket (Event).
+     * Detail Katering — menampilkan Produk (Daily) atau Paket+Menu+Penyajian+Extra (Event).
      */
     public function show(CateringService $catering)
     {
         if ($catering->isDaily()) {
             $products = $catering->products()->latest()->paginate(10);
-            $extras = $catering->extras()->active()->get();
+            $extras = $catering->customOptions()->where('type', 'extra')->get();
 
             return view('admin.catering.show-daily', compact('catering', 'products', 'extras'));
         }
 
         if ($catering->isEvent()) {
             $packages = $catering->packages()->with('customOptions')->latest()->paginate(10);
+            $menus = $catering->customOptions()->where('type', 'menu')->get();
+            $servings = $catering->customOptions()->where('type', 'serving_type')->get();
+            $extras = $catering->customOptions()->where('type', 'extra')->get();
 
-            return view('admin.catering.show-event', compact('catering', 'packages'));
+            return view('admin.catering.show-event', compact('catering', 'packages', 'menus', 'servings', 'extras'));
         }
 
         return redirect()->route('admin.catering.index')
@@ -112,37 +115,28 @@ class CateringController extends Controller
     }
 
     /**
-     * Update katering.
+     * Update katering — tipe tidak dapat diubah.
      */
     public function update(Request $request, CateringService $catering)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'description' => 'required|string',
-            'catering_type' => 'required|in:daily,event',
-            'serving_types' => 'nullable|array',
             'min_portion' => 'required|integer|min:1',
             'max_portion' => 'nullable|integer|min:1',
             'base_price' => 'required|numeric|min:0',
             'order_terms' => 'nullable|string',
             'schedule_notes' => 'nullable|string',
-            'service_area' => 'nullable|array',
             'is_active' => 'boolean',
             'image' => 'nullable|image|max:2048',
         ]);
 
-        // Set available_features berdasarkan tipe
-        $validated['available_features'] = $request->catering_type === 'daily'
-            ? ['daily_menu']
-            : ['packages'];
-
+        // Tipe katering tidak boleh diubah — pertahankan available_features yang ada
         $validated['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('services', 'public');
         }
-
-        unset($validated['catering_type']);
 
         $catering->update($validated);
 
@@ -165,5 +159,67 @@ class CateringController extends Controller
             return redirect()->route('admin.catering.index')
                 ->with('error', 'Gagal menghapus katering: ' . $e->getMessage());
         }
+    }
+
+    // =====================================================
+    // Inline CRUD untuk Custom Options (Menu, Penyajian, Extra)
+    // Task 13, 14, 15, 16
+    // =====================================================
+
+    /**
+     * Simpan option baru (Menu/Penyajian/Extra) untuk katering tertentu.
+     */
+    public function storeOption(Request $request, CateringService $catering)
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:menu,serving_type,extra',
+            'name' => 'required|string|max:150',
+            'price' => 'required|numeric|min:0',
+            'is_active' => 'boolean',
+        ]);
+
+        $validated['catering_service_id'] = $catering->id;
+        $validated['is_active'] = $request->boolean('is_active', true);
+
+        CustomOption::create($validated);
+
+        return redirect()->route('admin.catering.show', $catering)
+            ->with('success', ucfirst(str_replace('_', ' ', $validated['type'])) . ' berhasil ditambahkan.');
+    }
+
+    /**
+     * Update option milik katering tertentu.
+     */
+    public function updateOption(Request $request, CateringService $catering, CustomOption $option)
+    {
+        // Pastikan option milik katering ini
+        abort_if($option->catering_service_id !== $catering->id, 403, 'Option bukan milik katering ini.');
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:150',
+            'price' => 'required|numeric|min:0',
+            'is_active' => 'boolean',
+        ]);
+
+        $validated['is_active'] = $request->boolean('is_active', true);
+
+        $option->update($validated);
+
+        return redirect()->route('admin.catering.show', $catering)
+            ->with('success', 'Data berhasil diperbarui.');
+    }
+
+    /**
+     * Hapus option milik katering tertentu.
+     */
+    public function destroyOption(CateringService $catering, CustomOption $option)
+    {
+        // Pastikan option milik katering ini
+        abort_if($option->catering_service_id !== $catering->id, 403, 'Option bukan milik katering ini.');
+
+        $option->delete();
+
+        return redirect()->route('admin.catering.show', $catering)
+            ->with('success', 'Data berhasil dihapus.');
     }
 }

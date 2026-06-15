@@ -42,13 +42,15 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:2048',
             'is_best_seller' => 'boolean',
-            'available_days' => 'nullable|array',
             'is_active' => 'boolean',
+            'available_days' => 'nullable|array',
+            'status' => 'required|in:tersedia,habis',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_best_seller'] = $request->boolean('is_best_seller');
-        $validated['is_active'] = $request->boolean('is_active');
+        $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['status'] = $request->status;
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
@@ -75,12 +77,14 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:2048',
             'is_best_seller' => 'boolean',
-            'available_days' => 'nullable|array',
             'is_active' => 'boolean',
+            'available_days' => 'nullable|array',
+            'status' => 'required|in:tersedia,habis',
         ]);
 
         $validated['is_best_seller'] = $request->boolean('is_best_seller');
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['status'] = $request->status;
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');

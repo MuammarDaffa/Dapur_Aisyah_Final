@@ -24,41 +24,24 @@
                       class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">{{ old('description', $catering->description) }}</textarea>
         </div>
 
-        {{-- Tipe Katering --}}
+        {{-- Tipe Katering (Read-only setelah dibuat) --}}
         @php
             $currentType = $catering->isDaily() ? 'daily' : ($catering->isEvent() ? 'event' : 'daily');
         @endphp
+        <input type="hidden" name="catering_type" value="{{ $currentType }}">
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Katering *</label>
-            <div class="grid grid-cols-2 gap-3">
-                <label class="relative cursor-pointer">
-                    <input type="radio" name="catering_type" value="daily" {{ old('catering_type', $currentType) === 'daily' ? 'checked' : '' }}
-                           class="peer sr-only">
-                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-gray-300">
-                        <div class="flex items-center gap-3">
-                            <span class="text-2xl">📦</span>
-                            <div>
-                                <p class="font-semibold text-gray-800">Daily</p>
-                                <p class="text-xs text-gray-500">Menu harian dengan produk</p>
-                            </div>
-                        </div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Katering</label>
+            <div class="p-4 border-2 rounded-xl {{ $currentType === 'daily' ? 'border-blue-300 bg-blue-50' : 'border-purple-300 bg-purple-50' }}">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">{{ $currentType === 'daily' ? '📦' : '🎉' }}</span>
+                    <div>
+                        <p class="font-semibold text-gray-800">{{ $currentType === 'daily' ? 'Daily' : 'Event' }}</p>
+                        <p class="text-xs text-gray-500">{{ $currentType === 'daily' ? 'Menu harian dengan produk' : 'Acara dengan paket catering' }}</p>
                     </div>
-                </label>
-                <label class="relative cursor-pointer">
-                    <input type="radio" name="catering_type" value="event" {{ old('catering_type', $currentType) === 'event' ? 'checked' : '' }}
-                           class="peer sr-only">
-                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 hover:border-gray-300">
-                        <div class="flex items-center gap-3">
-                            <span class="text-2xl">🎉</span>
-                            <div>
-                                <p class="font-semibold text-gray-800">Event</p>
-                                <p class="text-xs text-gray-500">Acara dengan paket catering</p>
-                            </div>
-                        </div>
-                    </div>
-                </label>
+                    <span class="ml-auto px-2.5 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-600">🔒 Tidak dapat diubah</span>
+                </div>
             </div>
-            @error('catering_type')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+            <p class="text-xs text-gray-400 mt-1">Tipe katering tidak dapat diubah setelah dibuat.</p>
         </div>
 
         {{-- Harga & Porsi --}}

@@ -11,7 +11,7 @@ class Order extends Model
 {
     protected $fillable = [
         'order_number', 'user_id', 'catering_service_id', 'package_id',
-        'order_date', 'pickup_method', 'district_id', 'village_id',
+        'order_date', 'event_start_time', 'pickup_method', 'district_id', 'village_id',
         'address_detail', 'serving_type', 'portion', 'subtotal',
         'shipping_cost', 'total', 'payment_method', 'payment_status',
         'midtrans_snap_token', 'midtrans_transaction_id', 'status',

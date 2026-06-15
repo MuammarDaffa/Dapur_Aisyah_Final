@@ -160,4 +160,156 @@ class CheckoutController extends Controller
                 ->with('success', 'Pesanan berhasil dibuat!');
         });
     }
+
+    /**
+     * Checkout langsung untuk Event (Task 6 & 7)
+     */
+    public function storeEvent(Request $request)
+    {
+        $validated = $request->validate([
+            'catering_service_id' => 'required|exists:catering_services,id',
+            'package_id' => 'required|exists:catering_packages,id',
+            'order_date' => 'required|date|after:today',
+            'event_start_time' => 'required|date_format:H:i',
+            'pickup_method' => 'required|in:delivery,pickup',
+            'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
+            'village_id' => 'required_if:pickup_method,delivery|nullable|exists:villages,id',
+            'address_detail' => 'required_if:pickup_method,delivery|nullable|string',
+            'payment_method' => 'required|in:transfer', // Event wajib transfer
+            'notes' => 'nullable|string',
+            
+            // Item selection
+            'menus' => 'required|array|min:1',
+            'menus.*' => 'exists:custom_options,id',
+            'serving_type_id' => 'required|exists:custom_options,id',
+            'extras' => 'nullable|array',
+            'extras.*.id' => 'exists:custom_options,id',
+            'extras.*.qty' => 'integer|min:1',
+            'total_portions' => 'required|integer|min:1',
+        ]);
+
+        // Validasi H-3 (Task 9)
+        OrderService::validateOrderDate($validated['order_date'], $validated['catering_service_id']);
+
+        return DB::transaction(function () use ($validated) {
+            $user = auth()->user();
+            $package = \App\Models\CateringPackage::findOrFail($validated['package_id']);
+            
+            // Hitung Subtotal
+            $portions = $validated['total_portions'];
+            $subtotal = $package->price * $portions;
+
+            // Tambahkan harga extras
+            if (!empty($validated['extras'])) {
+                foreach ($validated['extras'] as $extraId => $extraData) {
+                    if (!empty($extraData['id']) && $extraData['qty'] > 0) {
+                        $opt = \App\Models\CustomOption::find($extraData['id']);
+                        if ($opt) {
+                            $subtotal += ($opt->price * $extraData['qty']);
+                        }
+                    }
+                }
+            }
+
+            $shippingCost = $validated['pickup_method'] === 'delivery'
+                ? ShippingCost::getCostByDistrict($validated['district_id'])
+                : 0;
+            $total = $subtotal + $shippingCost;
+
+            // Buat order
+            $order = Order::create([
+                'order_number' => OrderService::generateOrderNumber(),
+                'user_id' => $user->id,
+                'catering_service_id' => $validated['catering_service_id'],
+                'package_id' => $validated['package_id'],
+                'order_date' => $validated['order_date'],
+                'event_start_time' => $validated['event_start_time'], // Task 10
+                'pickup_method' => $validated['pickup_method'],
+                'district_id' => $validated['district_id'] ?? null,
+                'village_id' => $validated['village_id'] ?? null,
+                'address_detail' => $validated['address_detail'] ?? null,
+                'portion' => $portions,
+                'subtotal' => $subtotal,
+                'shipping_cost' => $shippingCost,
+                'total' => $total,
+                'payment_method' => $validated['payment_method'],
+                'payment_status' => 'unpaid',
+                'status' => 'pending_payment',
+                'notes' => $validated['notes'] ?? null,
+            ]);
+
+            // Buat OrderItem untuk Paket
+            OrderItem::create([
+                'order_id' => $order->id,
+                'item_name' => 'Paket: ' . $package->name,
+                'quantity' => $portions,
+                'unit_price' => $package->price,
+                'subtotal' => $package->price * $portions,
+            ]);
+
+            // Buat OrderItem untuk Menus (Isi paket, harga 0)
+            foreach ($validated['menus'] as $menuId) {
+                $menu = \App\Models\CustomOption::find($menuId);
+                if ($menu) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'custom_option_id' => $menu->id,
+                        'item_name' => 'Menu: ' . $menu->name,
+                        'quantity' => $portions,
+                        'unit_price' => 0,
+                        'subtotal' => 0,
+                    ]);
+                }
+            }
+
+            // Buat OrderItem untuk Penyajian (Harga 0 atau tambah?)
+            $serving = \App\Models\CustomOption::find($validated['serving_type_id']);
+            if ($serving) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'custom_option_id' => $serving->id,
+                    'item_name' => 'Penyajian: ' . $serving->name,
+                    'quantity' => $portions,
+                    'unit_price' => 0, // asumsikan sudah include
+                    'subtotal' => 0,
+                ]);
+            }
+
+            // Buat OrderItem untuk Extras
+            if (!empty($validated['extras'])) {
+                foreach ($validated['extras'] as $extraData) {
+                    if (!empty($extraData['id']) && $extraData['qty'] > 0) {
+                        $extra = \App\Models\CustomOption::find($extraData['id']);
+                        if ($extra) {
+                            OrderItem::create([
+                                'order_id' => $order->id,
+                                'custom_option_id' => $extra->id,
+                                'item_name' => 'Extra: ' . $extra->name,
+                                'quantity' => $extraData['qty'],
+                                'unit_price' => $extra->price,
+                                'subtotal' => $extra->price * $extraData['qty'],
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            // Buat invoice
+            InvoiceService::createInvoice($order);
+
+            // Buat Midtrans snap token (Task 7)
+            try {
+                $snapToken = PaymentService::createSnapToken($order);
+                $order->update(['midtrans_snap_token' => $snapToken]);
+            } catch (\Exception $e) {
+                \Log::error('Midtrans error: ' . $e->getMessage());
+            }
+
+            // Kirim notifikasi
+            NotificationService::notifyOrderCreated($order);
+
+            return redirect()->route('customer.orders.show', $order)
+                ->with('success', 'Pesanan event berhasil dibuat! Silakan lakukan pembayaran.');
+        });
+    }
 }
