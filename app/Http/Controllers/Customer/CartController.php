@@ -34,7 +34,8 @@ class CartController extends Controller
             'custom_option_id' => 'required_without:product_id|exists:custom_options,id',
             'quantity' => 'required|integer|min:1',
             'extras' => 'nullable|array',
-            'extras.*' => 'exists:custom_options,id',
+            'extras.*.id' => 'exists:custom_options,id',
+            'extras.*.qty' => 'integer|min:1',
         ]);
 
         $user = auth()->user();
@@ -48,12 +49,34 @@ class CartController extends Controller
             }
         }
 
-        // Simpan produk utama
-        $existing = $user->carts()
+        // Clean and Sort extras array so identical selections match in JSON string comparison
+        $extras = [];
+        if (!empty($validated['extras'])) {
+            foreach ($validated['extras'] as $extra) {
+                if (!empty($extra['id']) && !empty($extra['qty']) && $extra['qty'] > 0) {
+                    $extras[] = [
+                        'id' => (int) $extra['id'],
+                        'qty' => (int) $extra['qty']
+                    ];
+                }
+            }
+            // Sort by id for deterministic JSON
+            usort($extras, fn($a, $b) => $a['id'] <=> $b['id']);
+        }
+        $extrasJson = empty($extras) ? null : json_encode($extras);
+
+        // Find existing cart to increment quantity
+        $existingCarts = $user->carts()
             ->where('product_id', $validated['product_id'] ?? null)
             ->where('custom_option_id', $validated['custom_option_id'] ?? null)
             ->whereNull('cart_group_id')
-            ->first();
+            ->get();
+
+        $existing = $existingCarts->first(function ($cart) use ($extrasJson) {
+            $cartExtras = $cart->extras ?? [];
+            usort($cartExtras, fn($a, $b) => $a['id'] <=> $b['id']);
+            return json_encode($cartExtras) === $extrasJson;
+        });
 
         if ($existing) {
             $existing->update([
@@ -64,29 +87,8 @@ class CartController extends Controller
                 'product_id' => $validated['product_id'] ?? null,
                 'custom_option_id' => $validated['custom_option_id'] ?? null,
                 'quantity' => $validated['quantity'],
+                'extras' => empty($extras) ? null : $extras,
             ]);
-        }
-
-        // Simpan extras jika ada
-        if (!empty($validated['extras'])) {
-            foreach ($validated['extras'] as $extraId) {
-                $existingExtra = $user->carts()
-                    ->where('custom_option_id', $extraId)
-                    ->whereNull('cart_group_id')
-                    ->first();
-                
-                if ($existingExtra) {
-                    $existingExtra->update([
-                        'quantity' => $existingExtra->quantity + $validated['quantity'],
-                    ]);
-                } else {
-                    $user->carts()->create([
-                        'custom_option_id' => $extraId,
-                        'quantity' => $validated['quantity'],
-                        'item_type' => 'addition',
-                    ]);
-                }
-            }
         }
 
         return back()->with('success', 'Produk dan opsi berhasil ditambahkan ke keranjang!');

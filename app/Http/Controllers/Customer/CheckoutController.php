@@ -121,6 +121,25 @@ class CheckoutController extends Controller
                     $itemName = $cart->customOption->name;
                 }
 
+                $extrasPrice = 0;
+                if (!empty($cart->extras)) {
+                    $extraIds = array_column($cart->extras, 'id');
+                    $options = \App\Models\CustomOption::whereIn('id', $extraIds)->get()->keyBy('id');
+                    $extraNames = [];
+                    foreach ($cart->extras as $extraData) {
+                        if ($opt = $options->get($extraData['id'])) {
+                            $exPrice = (float) $opt->price * $extraData['qty'];
+                            $extrasPrice += $exPrice;
+                            $extraNames[] = $opt->name . ' ' . $extraData['qty'] . 'x (+Rp' . number_format($exPrice, 0, ',', '.') . ')';
+                        }
+                    }
+                    if (!empty($extraNames)) {
+                        $itemName .= " (Extra: " . implode(', ', $extraNames) . ")";
+                    }
+                }
+
+                $subtotal = ($unitPrice * $cart->quantity) + $extrasPrice;
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $cart->product_id,
@@ -128,7 +147,7 @@ class CheckoutController extends Controller
                     'item_name' => $itemName,
                     'quantity' => $cart->quantity,
                     'unit_price' => $unitPrice,
-                    'subtotal' => $unitPrice * $cart->quantity,
+                    'subtotal' => $subtotal,
                 ]);
             }
 

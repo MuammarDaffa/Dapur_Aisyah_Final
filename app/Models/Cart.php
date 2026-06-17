@@ -9,7 +9,11 @@ class Cart extends Model
 {
     protected $fillable = [
         'user_id', 'cart_group_id', 'product_id', 'custom_option_id',
-        'catering_package_id', 'quantity', 'item_type',
+        'catering_package_id', 'quantity', 'item_type', 'extras'
+    ];
+
+    protected $casts = [
+        'extras' => 'array',
     ];
 
     // === Relationships ===
@@ -75,6 +79,18 @@ class Cart extends Model
             ? (float) $this->product->price
             : ($this->customOption ? (float) $this->customOption->price : 0);
 
-        return $basePrice * $this->quantity;
+        $extrasPrice = 0;
+        if (!empty($this->extras)) {
+            $extraIds = array_column($this->extras, 'id');
+            $extras = \App\Models\CustomOption::whereIn('id', $extraIds)->get()->keyBy('id');
+            
+            foreach ($this->extras as $extraData) {
+                if ($extra = $extras->get($extraData['id'])) {
+                    $extrasPrice += ((float) $extra->price * $extraData['qty']);
+                }
+            }
+        }
+
+        return ($basePrice * $this->quantity) + $extrasPrice;
     }
 }

@@ -74,9 +74,27 @@
                     {{-- Regular Product Item (Harian) --}}
                     @foreach($groupItems as $cart)
                     @php
-                        $unitPrice = $cart->product ? (float) $cart->product->price : ($cart->customOption ? (float) $cart->customOption->price : 0);
+                        $basePrice = $cart->product ? (float) $cart->product->price : ($cart->customOption ? (float) $cart->customOption->price : 0);
+                        $extrasList = collect();
+                        $extrasPrice = 0;
+                        if (!empty($cart->extras)) {
+                            $extraIds = array_column($cart->extras, 'id');
+                            $options = \App\Models\CustomOption::whereIn('id', $extraIds)->get()->keyBy('id');
+                            
+                            foreach ($cart->extras as $extraData) {
+                                if ($opt = $options->get($extraData['id'])) {
+                                    $exPrice = (float) $opt->price * $extraData['qty'];
+                                    $extrasPrice += $exPrice;
+                                    $extrasList->push((object)[
+                                        'name' => $opt->name,
+                                        'qty' => $extraData['qty'],
+                                        'price' => $exPrice,
+                                    ]);
+                                }
+                            }
+                        }
                     @endphp
-                    <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 cart-item" data-unit-price="{{ $unitPrice }}">
+                    <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 cart-item" data-base-price="{{ $basePrice }}" data-extras-price="{{ $extrasPrice }}">
                         <div class="flex items-start justify-between">
                             <div class="flex items-start space-x-4 flex-1">
                                 <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
@@ -88,8 +106,18 @@
                                 </div>
                                 <div class="flex-1">
                                     <h4 class="font-bold text-gray-900">{{ $cart->product->name ?? ($cart->customOption->name ?? 'Item') }}</h4>
+                                    @if($extrasList->isNotEmpty())
+                                        <div class="text-sm text-gray-600 mt-1 mb-1">
+                                            <span class="font-medium">Extra:</span>
+                                            <ul class="list-disc pl-4 mt-0.5 space-y-0.5 text-xs">
+                                                @foreach($extrasList as $ex)
+                                                    <li>{{ $ex->name }} {{ $ex->qty }}x (+Rp {{ number_format($ex->price, 0, ',', '.') }})</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
                                     <p class="text-sm text-orange-500">{{ $cart->product->cateringService->name ?? '' }}</p>
-                                    <p class="text-sm text-gray-600 mt-1">Rp {{ number_format($unitPrice, 0, ',', '.') }} / porsi</p>
+                                    <p class="text-sm text-gray-600 mt-1">Rp {{ number_format($basePrice, 0, ',', '.') }} / porsi</p>
                                 </div>
                             </div>
                             <div class="flex flex-col items-end gap-3 ml-4">
@@ -149,9 +177,10 @@
     function recalcItem(input) {
         const cartItem = input.closest('.cart-item');
         if (!cartItem) return;
-        const unitPrice = parseFloat(cartItem.dataset.unitPrice);
+        const basePrice = parseFloat(cartItem.dataset.basePrice) || 0;
+        const extrasPrice = parseFloat(cartItem.dataset.extrasPrice) || 0;
         const qty = parseInt(input.value) || 1;
-        const subtotal = unitPrice * qty;
+        const subtotal = (basePrice * qty) + extrasPrice;
         cartItem.querySelector('.item-subtotal').textContent = formatRupiah(subtotal);
         recalcTotal();
     }
@@ -159,9 +188,10 @@
     function recalcTotal() {
         let total = 0;
         document.querySelectorAll('.cart-item').forEach(item => {
-            const unitPrice = parseFloat(item.dataset.unitPrice);
+            const basePrice = parseFloat(item.dataset.basePrice) || 0;
+            const extrasPrice = parseFloat(item.dataset.extrasPrice) || 0;
             const qty = parseInt(item.querySelector('.qty-input').value) || 1;
-            total += unitPrice * qty;
+            total += (basePrice * qty) + extrasPrice;
         });
         document.getElementById('cart-total').textContent = formatRupiah(total);
     }

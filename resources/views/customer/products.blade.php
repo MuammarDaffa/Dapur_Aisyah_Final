@@ -207,13 +207,20 @@
                     let html = '';
                     availableExtras.forEach(extra => {
                         html += `
-                            <label class="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:bg-orange-50 cursor-pointer transition-colors">
-                                <div class="flex items-center gap-3">
-                                    <input type="checkbox" name="extras[]" value="${extra.id}" data-price="${extra.price}" onchange="updateModalTotal()" class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-400">
+                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:bg-orange-50 transition-colors">
+                                <label class="flex items-center gap-3 cursor-pointer flex-1">
+                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-price="${extra.price}" id="extra_cb_${extra.id}" onchange="toggleExtra(${extra.id})" class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-400 extra-checkbox">
                                     <span class="text-sm font-medium text-gray-700">${extra.name}</span>
+                                </label>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
+                                    <div class="flex items-center gap-1 transition-opacity duration-200 opacity-0 pointer-events-none" id="extra_qty_container_${extra.id}">
+                                        <button type="button" onclick="changeExtraQty(${extra.id}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors">−</button>
+                                        <input type="number" name="extras[${extra.id}][qty]" id="extra_qty_${extra.id}" value="0" class="w-8 text-center bg-transparent text-sm font-semibold focus:outline-none" readonly>
+                                        <button type="button" onclick="changeExtraQty(${extra.id}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors">+</button>
+                                    </div>
                                 </div>
-                                <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
-                            </label>
+                            </div>
                         `;
                     });
                     document.getElementById('modalExtrasList').innerHTML = html;
@@ -241,15 +248,48 @@
         updateModalTotal();
     }
 
+    function toggleExtra(id) {
+        const cb = document.getElementById('extra_cb_' + id);
+        const qtyContainer = document.getElementById('extra_qty_container_' + id);
+        const qtyInput = document.getElementById('extra_qty_' + id);
+        
+        if (cb.checked) {
+            qtyContainer.classList.remove('opacity-0', 'pointer-events-none');
+            qtyInput.value = 1;
+        } else {
+            qtyContainer.classList.add('opacity-0', 'pointer-events-none');
+            qtyInput.value = 0;
+        }
+        updateModalTotal();
+    }
+
+    function changeExtraQty(id, delta) {
+        const cb = document.getElementById('extra_cb_' + id);
+        if (!cb.checked) return;
+
+        const input = document.getElementById('extra_qty_' + id);
+        let val = parseInt(input.value) + delta;
+        
+        if (val < 1) {
+            cb.checked = false;
+            toggleExtra(id);
+        } else {
+            input.value = val;
+            updateModalTotal();
+        }
+    }
+
     function updateModalTotal() {
         if (!currentProduct) return;
         const qty = parseInt(document.getElementById('modalQty').value) || 1;
         let total = currentProduct.price * qty;
 
-        // Add extras prices
-        const extraCheckboxes = document.querySelectorAll('input[name="extras[]"]:checked');
+        // Add extras prices (Tidak dikali porsi menu)
+        const extraCheckboxes = document.querySelectorAll('.extra-checkbox:checked');
         extraCheckboxes.forEach(cb => {
-            total += parseFloat(cb.getAttribute('data-price')) * qty; // Extra dikali porsi
+            const extraId = cb.value;
+            const extraQty = parseInt(document.getElementById('extra_qty_' + extraId).value) || 0;
+            total += parseFloat(cb.getAttribute('data-price')) * extraQty;
         });
 
         document.getElementById('modalTotal').textContent = formatRupiah(total);
