@@ -216,7 +216,7 @@
                                     <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
                                     <div class="flex items-center gap-1 transition-opacity duration-200 opacity-0 pointer-events-none" id="extra_qty_container_${extra.id}">
                                         <button type="button" onclick="changeExtraQty(${extra.id}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors">−</button>
-                                        <input type="number" name="extras[${extra.id}][qty]" id="extra_qty_${extra.id}" value="0" min="1" oninput="manualExtraQty(${extra.id})" onchange="manualExtraQty(${extra.id})" class="w-10 text-center bg-transparent text-sm font-semibold focus:outline-none" disabled>
+                                        <input type="text" inputmode="numeric" name="extras[${extra.id}][qty]" id="extra_qty_${extra.id}" value="0" oninput="manualExtraQty(${extra.id})" onchange="manualExtraQty(${extra.id})" class="w-10 text-center bg-transparent text-sm font-bold text-gray-900 focus:outline-none" disabled>
                                         <button type="button" onclick="changeExtraQty(${extra.id}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors">+</button>
                                     </div>
                                 </div>
