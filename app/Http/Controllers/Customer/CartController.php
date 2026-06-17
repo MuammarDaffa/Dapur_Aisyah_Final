@@ -154,11 +154,55 @@ class CartController extends Controller
         // Pastikan cart milik user yang login
         abort_if($cart->user_id !== auth()->id(), 403, 'Akses ditolak.');
 
+        if ($cart->cart_group_id) {
+            return back()->with('error', 'Item paket event tidak dapat diubah secara individual.');
+        }
+
         $validated = $request->validate([
             'quantity' => 'required|integer|min:1',
+            'extras' => 'nullable|array',
+            'extras.*.id' => 'exists:custom_options,id',
+            'extras.*.qty' => 'integer|min:1',
         ]);
 
-        $cart->update($validated);
+        $extras = [];
+        if (!empty($validated['extras'])) {
+            foreach ($validated['extras'] as $extra) {
+                if (!empty($extra['id']) && !empty($extra['qty']) && $extra['qty'] > 0) {
+                    $extras[] = [
+                        'id' => (int) $extra['id'],
+                        'qty' => (int) $extra['qty']
+                    ];
+                }
+            }
+            usort($extras, fn($a, $b) => $a['id'] <=> $b['id']);
+        }
+        $extrasJson = empty($extras) ? null : json_encode($extras);
+
+        // Cari jika ada cart item lain yang konfigurasinya sama persis
+        $existing = auth()->user()->carts()
+            ->where('id', '!=', $cart->id)
+            ->where('product_id', $cart->product_id)
+            ->where('custom_option_id', $cart->custom_option_id)
+            ->whereNull('cart_group_id')
+            ->get()
+            ->first(function ($c) use ($extrasJson) {
+                $cExtras = $c->extras ?? [];
+                usort($cExtras, fn($a, $b) => $a['id'] <=> $b['id']);
+                return json_encode($cExtras) === $extrasJson;
+            });
+
+        if ($existing) {
+            $existing->update([
+                'quantity' => $existing->quantity + $validated['quantity'],
+            ]);
+            $cart->delete();
+        } else {
+            $cart->update([
+                'quantity' => $validated['quantity'],
+                'extras' => empty($extras) ? null : $extras,
+            ]);
+        }
 
         return back()->with('success', 'Keranjang berhasil diperbarui.');
     }
