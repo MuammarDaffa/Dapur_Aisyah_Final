@@ -216,7 +216,7 @@
                                     <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
                                     <div class="flex items-center gap-1 transition-opacity duration-200 opacity-0 pointer-events-none" id="extra_qty_container_${extra.id}">
                                         <button type="button" onclick="changeExtraQty(${extra.id}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors">−</button>
-                                        <input type="number" name="extras[${extra.id}][qty]" id="extra_qty_${extra.id}" value="0" class="w-8 text-center bg-transparent text-sm font-semibold focus:outline-none" readonly>
+                                        <input type="number" name="extras[${extra.id}][qty]" id="extra_qty_${extra.id}" value="0" min="1" oninput="manualExtraQty(${extra.id})" onchange="manualExtraQty(${extra.id})" class="w-10 text-center bg-transparent text-sm font-semibold focus:outline-none" disabled>
                                         <button type="button" onclick="changeExtraQty(${extra.id}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors">+</button>
                                     </div>
                                 </div>
@@ -256,19 +256,25 @@
         if (cb.checked) {
             qtyContainer.classList.remove('opacity-0', 'pointer-events-none');
             qtyInput.value = 1;
+            qtyInput.disabled = false;
         } else {
             qtyContainer.classList.add('opacity-0', 'pointer-events-none');
             qtyInput.value = 0;
+            qtyInput.disabled = true;
         }
         updateModalTotal();
     }
 
     function changeExtraQty(id, delta) {
         const cb = document.getElementById('extra_cb_' + id);
+        if (!cb) return;
         if (!cb.checked) return;
 
         const input = document.getElementById('extra_qty_' + id);
-        let val = parseInt(input.value) + delta;
+        if (!input) return;
+
+        let val = parseInt(input.value) || 0;
+        val += delta;
         
         if (val < 1) {
             cb.checked = false;
@@ -277,6 +283,24 @@
             input.value = val;
             updateModalTotal();
         }
+    }
+
+    function manualExtraQty(id) {
+        const cb = document.getElementById('extra_cb_' + id);
+        if (!cb || !cb.checked) return;
+        
+        const input = document.getElementById('extra_qty_' + id);
+        if (!input) return;
+
+        let val = parseInt(input.value);
+        if (isNaN(val) || val < 1) {
+            // Jika kosong/tidak valid saat mengetik, biarkan sementara tapi jangan update total ke NaN
+            // Akan otomatis jadi 1 saat kehilangan fokus atau tambah/kurang
+            if (input.value === "") return;
+            val = 1;
+            input.value = 1;
+        }
+        updateModalTotal();
     }
 
     function updateModalTotal() {
