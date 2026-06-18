@@ -10,7 +10,7 @@
         <p class="text-gray-500">{{ $package->total_portions }} Porsi</p>
     </div>
 
-    <form action="{{ route('customer.event.cart.store') }}" method="POST">
+    <form action="{{ route('customer.event.cart.store') }}" method="POST" onkeydown="return event.key != 'Enter';">
         @csrf
         <input type="hidden" name="catering_service_id" value="{{ $service->id }}">
         <input type="hidden" name="catering_package_id" value="{{ $package->id }}">

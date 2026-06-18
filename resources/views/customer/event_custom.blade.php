@@ -10,7 +10,7 @@
         <p class="text-gray-500">Pilih menu secara bebas dengan minimal pemesanan 30 porsi.</p>
     </div>
 
-    <form id="customForm" action="{{ route('customer.event.cart.store') }}" method="POST">
+    <form id="customForm" action="{{ route('customer.event.cart.store') }}" method="POST" onkeydown="return event.key != 'Enter';">
         @csrf
         <input type="hidden" name="catering_service_id" value="{{ $service->id }}">
 
