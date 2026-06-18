@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Cart extends Model
 {
     protected $fillable = [
-        'user_id', 'cart_group_id', 'product_id', 'custom_option_id',
-        'catering_package_id', 'quantity', 'item_type', 'extras'
+        'user_id', 'catering_service_id', 'cart_group_id', 'product_id',
+        'custom_option_id', 'catering_package_id', 'extras',
+        'quantity', 'item_type', 'serving_type_id',
     ];
 
     protected $casts = [
@@ -38,6 +39,16 @@ class Cart extends Model
         return $this->belongsTo(CateringPackage::class);
     }
 
+    public function cateringService(): BelongsTo
+    {
+        return $this->belongsTo(CateringService::class);
+    }
+
+    public function servingType(): BelongsTo
+    {
+        return $this->belongsTo(CustomOption::class, 'serving_type_id');
+    }
+
     // === Helpers ===
 
     /**
@@ -46,6 +57,14 @@ class Cart extends Model
     public function isEventItem(): bool
     {
         return !empty($this->cart_group_id);
+    }
+
+    /**
+     * Cek apakah item ini adalah harian (bukan event).
+     */
+    public function isDailyItem(): bool
+    {
+        return empty($this->cart_group_id);
     }
 
     /**

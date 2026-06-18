@@ -73,9 +73,8 @@ class DashboardController extends Controller
         }])->where('is_active', true)->get();
 
         $customOptions = $service->customOptions()->where('is_active', true)->get();
-        $districts = \App\Models\District::with('villages')->get();
 
-        return view('customer.event_configurator', compact('service', 'packages', 'customOptions', 'districts'));
+        return view('customer.event_configurator', compact('service', 'packages', 'customOptions'));
     }
 
     public function notifications()

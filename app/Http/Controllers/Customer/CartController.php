@@ -11,22 +11,30 @@ use Illuminate\Support\Str;
 
 class CartController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $carts = auth()->user()->carts()
-            ->with(['product.cateringService', 'customOption', 'cateringPackage'])
+            ->with(['product.cateringService', 'customOption', 'cateringPackage', 'cateringService', 'servingType'])
             ->get();
 
+        // Pisahkan Daily dan Event
+        $dailyCarts = $carts->filter(fn ($c) => $c->isDailyItem());
+        $eventCarts = $carts->filter(fn ($c) => $c->isEventItem());
+
         // Group event items by cart_group_id
-        $groupedCarts = $carts->groupBy(function ($cart) {
-            return $cart->cart_group_id ?? 'ungrouped_' . $cart->id;
-        });
+        $eventGroups = $eventCarts->groupBy('cart_group_id');
 
-        $subtotal = $carts->sum(fn ($cart) => $cart->subtotal);
+        $dailySubtotal = $dailyCarts->sum(fn ($c) => $c->subtotal);
 
-        return view('customer.cart', compact('carts', 'groupedCarts', 'subtotal'));
+        // Active tab dari query param
+        $activeTab = $request->get('tab', $dailyCarts->isNotEmpty() ? 'daily' : ($eventGroups->isNotEmpty() ? 'event' : 'daily'));
+
+        return view('customer.cart', compact('dailyCarts', 'eventGroups', 'dailySubtotal', 'activeTab'));
     }
 
+    /**
+     * Store daily cart item (tidak berubah dari logic lama).
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -39,15 +47,6 @@ class CartController extends Controller
         ]);
 
         $user = auth()->user();
-
-        // CartGuard: cegah mencampur Harian dan Event
-        $existingCarts = $user->carts()->get();
-        if ($existingCarts->isNotEmpty()) {
-            $hasEventItems = $existingCarts->contains(fn ($c) => $c->isEventItem());
-            if ($hasEventItems) {
-                return back()->with('error', 'Selesaikan atau hapus pesanan event yang sedang dibuat terlebih dahulu.');
-            }
-        }
 
         // Clean and Sort extras array so identical selections match in JSON string comparison
         $extras = [];
@@ -63,7 +62,6 @@ class CartController extends Controller
             // Sort by id for deterministic JSON
             usort($extras, fn($a, $b) => $a['id'] <=> $b['id']);
         }
-        $extrasJson = empty($extras) ? null : json_encode($extras);
 
         // Find existing cart to increment quantity
         $existing = $user->carts()
@@ -114,59 +112,104 @@ class CartController extends Controller
 
     /**
      * Simpan seluruh konfigurasi event sekaligus sebagai satu group.
+     * Mendukung mode Paket dan Custom.
      */
     public function storeEventGroup(Request $request)
     {
         $validated = $request->validate([
             'catering_service_id' => 'required|exists:catering_services,id',
             'catering_package_id' => 'nullable|exists:catering_packages,id',
+            'serving_type_id' => 'nullable|exists:custom_options,id',
             'items' => 'required|array|min:1',
             'items.*.custom_option_id' => 'required|exists:custom_options,id',
             'items.*.quantity' => 'required|integer|min:1',
-            'items.*.item_type' => 'required|in:package_item,addition',
+            'items.*.item_type' => 'required|in:package_item,addition,custom_menu',
         ]);
 
         $user = auth()->user();
-
-        // CartGuard: cegah mencampur Harian dan Event atau multiple Event
-        $existingCarts = $user->carts()->get();
-        if ($existingCarts->isNotEmpty()) {
-            $hasDailyItems = $existingCarts->contains(fn ($c) => !$c->isEventItem());
-            if ($hasDailyItems) {
-                return back()->with('error', 'Selesaikan checkout pesanan harian terlebih dahulu.');
-            }
-
-            $hasEventItems = $existingCarts->contains(fn ($c) => $c->isEventItem());
-            if ($hasEventItems) {
-                return back()->with('error', 'Selesaikan atau hapus pesanan event yang sedang dibuat terlebih dahulu.');
-            }
-        }
-
         $groupId = (string) Str::uuid();
 
         // Jika pakai paket, simpan entry paket dulu
         if (!empty($validated['catering_package_id'])) {
             $user->carts()->create([
+                'catering_service_id' => $validated['catering_service_id'],
                 'cart_group_id' => $groupId,
                 'catering_package_id' => $validated['catering_package_id'],
                 'quantity' => 1,
                 'item_type' => 'package',
+                'serving_type_id' => $validated['serving_type_id'] ?? null,
             ]);
         }
 
-        // Simpan semua item (menu, dekorasi, penyajian, extra)
+        // Simpan semua item (menu, extra, dll)
         foreach ($validated['items'] as $item) {
             $user->carts()->create([
+                'catering_service_id' => $validated['catering_service_id'],
                 'cart_group_id' => $groupId,
                 'custom_option_id' => $item['custom_option_id'],
                 'quantity' => $item['quantity'],
                 'item_type' => $item['item_type'],
+                'serving_type_id' => $validated['serving_type_id'] ?? null,
             ]);
         }
 
-        return redirect()->route('customer.cart')->with('success', 'Konfigurasi event berhasil ditambahkan ke keranjang!');
+        return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil ditambahkan ke keranjang!');
     }
 
+    /**
+     * Update seluruh konfigurasi event group (dari modal edit).
+     */
+    public function updateEventGroup(Request $request, string $groupId)
+    {
+        $validated = $request->validate([
+            'catering_service_id' => 'required|exists:catering_services,id',
+            'catering_package_id' => 'nullable|exists:catering_packages,id',
+            'serving_type_id' => 'nullable|exists:custom_options,id',
+            'items' => 'required|array|min:1',
+            'items.*.custom_option_id' => 'required|exists:custom_options,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.item_type' => 'required|in:package_item,addition,custom_menu',
+        ]);
+
+        $user = auth()->user();
+
+        // Pastikan group milik user ini
+        $existingCount = $user->carts()->where('cart_group_id', $groupId)->count();
+        abort_if($existingCount === 0, 404, 'Pesanan event tidak ditemukan.');
+
+        // Hapus semua item lama dalam group
+        $user->carts()->where('cart_group_id', $groupId)->delete();
+
+        // Simpan ulang: paket header jika ada
+        if (!empty($validated['catering_package_id'])) {
+            $user->carts()->create([
+                'catering_service_id' => $validated['catering_service_id'],
+                'cart_group_id' => $groupId,
+                'catering_package_id' => $validated['catering_package_id'],
+                'quantity' => 1,
+                'item_type' => 'package',
+                'serving_type_id' => $validated['serving_type_id'] ?? null,
+            ]);
+        }
+
+        // Simpan ulang items
+        foreach ($validated['items'] as $item) {
+            $user->carts()->create([
+                'catering_service_id' => $validated['catering_service_id'],
+                'cart_group_id' => $groupId,
+                'custom_option_id' => $item['custom_option_id'],
+                'quantity' => $item['quantity'],
+                'item_type' => $item['item_type'],
+                'serving_type_id' => $validated['serving_type_id'] ?? null,
+            ]);
+        }
+
+        return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil diperbarui!');
+    }
+
+    /**
+     * Update daily cart item (tidak berubah).
+     */
     public function update(Request $request, Cart $cart)
     {
         // Pastikan cart milik user yang login
@@ -211,7 +254,7 @@ class CartController extends Controller
         // Jika event item, hapus seluruh group
         if ($cart->cart_group_id) {
             auth()->user()->carts()->where('cart_group_id', $cart->cart_group_id)->delete();
-            return back()->with('success', 'Pesanan event berhasil dihapus dari keranjang.');
+            return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil dihapus dari keranjang.');
         }
 
         $cart->delete();

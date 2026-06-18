@@ -12,23 +12,30 @@ use App\Services\InvoiceService;
 use App\Services\NotificationService;
 use App\Services\OrderService;
 use App\Services\PaymentService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
+    /**
+     * Checkout page untuk Daily (tidak berubah).
+     */
     public function index()
     {
         $user = auth()->user();
-        $carts = $user->carts()->with(['product.cateringService', 'customOption', 'cateringPackage'])->get();
+        $carts = $user->carts()
+            ->whereNull('cart_group_id') // Hanya daily
+            ->with(['product.cateringService', 'customOption', 'cateringPackage'])
+            ->get();
 
         if ($carts->isEmpty()) {
             return redirect()->route('customer.cart')
-                ->with('error', 'Keranjang belanja kosong.');
+                ->with('error', 'Keranjang harian kosong.');
         }
 
-        // Group event items
+        // Group (untuk daily, setiap item = 1 group)
         $groupedCarts = $carts->groupBy(function ($cart) {
-            return $cart->cart_group_id ?? 'ungrouped_' . $cart->id;
+            return 'ungrouped_' . $cart->id;
         });
 
         $districts = District::with('villages')->get();
@@ -37,12 +44,18 @@ class CheckoutController extends Controller
         return view('customer.checkout', compact('carts', 'groupedCarts', 'districts', 'subtotal', 'user'));
     }
 
+    /**
+     * Store daily checkout (tidak berubah).
+     */
     public function store(CheckoutRequest $request)
     {
         $validated = $request->validated();
 
         $user = auth()->user();
-        $carts = $user->carts()->with(['product.cateringService', 'customOption', 'cateringPackage'])->get();
+        $carts = $user->carts()
+            ->whereNull('cart_group_id') // Hanya daily
+            ->with(['product.cateringService', 'customOption', 'cateringPackage'])
+            ->get();
 
         if ($carts->isEmpty()) {
             return back()->with('error', 'Keranjang belanja kosong.');
@@ -154,8 +167,8 @@ class CheckoutController extends Controller
             // Buat invoice
             InvoiceService::createInvoice($order);
 
-            // Hapus keranjang
-            $user->carts()->delete();
+            // Hapus keranjang daily saja
+            $user->carts()->whereNull('cart_group_id')->delete();
 
             // Jika transfer, buat Midtrans snap token
             if ($validated['payment_method'] === 'transfer') {
@@ -181,55 +194,82 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Checkout langsung untuk Event (Task 6 & 7)
+     * Tampilkan halaman checkout untuk 1 event group.
      */
-    public function storeEvent(Request $request)
+    public function showEventCheckout(string $groupId)
+    {
+        $user = auth()->user();
+        $groupItems = $user->carts()
+            ->where('cart_group_id', $groupId)
+            ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
+            ->get();
+
+        if ($groupItems->isEmpty()) {
+            return redirect()->route('customer.cart', ['tab' => 'event'])
+                ->with('error', 'Pesanan event tidak ditemukan.');
+        }
+
+        $packageItem = $groupItems->firstWhere('item_type', 'package');
+        $menuItems = $groupItems->whereIn('item_type', ['package_item', 'custom_menu']);
+        $additionItems = $groupItems->where('item_type', 'addition');
+        $service = $groupItems->first()->cateringService;
+        $servingType = $groupItems->first()->servingType;
+
+        // Hitung subtotal
+        $subtotal = $groupItems->sum(fn ($c) => $c->subtotal);
+
+        $districts = District::with('villages')->get();
+
+        return view('customer.event_checkout', compact(
+            'groupId', 'groupItems', 'packageItem', 'menuItems',
+            'additionItems', 'service', 'servingType', 'subtotal', 'districts'
+        ));
+    }
+
+    /**
+     * Checkout per event group.
+     */
+    public function checkoutEventGroup(Request $request, string $groupId)
     {
         $validated = $request->validate([
-            'catering_service_id' => 'required|exists:catering_services,id',
-            'package_id' => 'required|exists:catering_packages,id',
             'order_date' => 'required|date|after:today',
             'event_start_time' => 'required|date_format:H:i',
             'pickup_method' => 'required|in:delivery,pickup',
             'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
             'village_id' => 'required_if:pickup_method,delivery|nullable|exists:villages,id',
             'address_detail' => 'required_if:pickup_method,delivery|nullable|string',
-            'payment_method' => 'required|in:transfer', // Event wajib transfer
+            'payment_method' => 'required|in:transfer',
             'notes' => 'nullable|string',
-            
-            // Item selection
-            'menus' => 'required|array|min:1',
-            'menus.*' => 'exists:custom_options,id',
-            'serving_type_id' => 'required|exists:custom_options,id',
-            'extras' => 'nullable|array',
-            'extras.*.id' => 'exists:custom_options,id',
-            'extras.*.qty' => 'integer|min:1',
-            'total_portions' => 'required|integer|min:1',
         ]);
 
-        // Validasi H-3 (Task 9)
-        OrderService::validateOrderDate($validated['order_date'], $validated['catering_service_id']);
+        $user = auth()->user();
+        $groupItems = $user->carts()
+            ->where('cart_group_id', $groupId)
+            ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
+            ->get();
 
-        return DB::transaction(function () use ($validated) {
-            $user = auth()->user();
-            $package = \App\Models\CateringPackage::findOrFail($validated['package_id']);
-            
-            // Hitung Subtotal
-            $portions = $validated['total_portions'];
-            $subtotal = $package->price * $portions;
+        if ($groupItems->isEmpty()) {
+            return back()->with('error', 'Pesanan event tidak ditemukan.');
+        }
 
-            // Tambahkan harga extras
-            if (!empty($validated['extras'])) {
-                foreach ($validated['extras'] as $extraId => $extraData) {
-                    if (!empty($extraData['id']) && $extraData['qty'] > 0) {
-                        $opt = \App\Models\CustomOption::find($extraData['id']);
-                        if ($opt) {
-                            $subtotal += ($opt->price * $extraData['qty']);
-                        }
-                    }
-                }
-            }
+        // Tentukan catering service dan package
+        $cateringServiceId = $groupItems->first()->catering_service_id;
+        $packageItem = $groupItems->firstWhere('item_type', 'package');
+        $packageId = $packageItem?->catering_package_id;
 
+        // Validasi H-3
+        OrderService::validateOrderDate($validated['order_date'], $cateringServiceId);
+
+        // Hitung total porsi
+        $menuItems = $groupItems->whereIn('item_type', ['package_item', 'custom_menu']);
+        $totalPortions = $menuItems->sum('quantity');
+
+        // Hitung penyajian
+        $servingType = $groupItems->first()->servingType;
+
+        return DB::transaction(function () use ($validated, $user, $groupItems, $groupId, $cateringServiceId, $packageId, $packageItem, $totalPortions, $servingType) {
+            // Hitung subtotal
+            $subtotal = $groupItems->sum(fn ($c) => $c->subtotal);
             $shippingCost = $validated['pickup_method'] === 'delivery'
                 ? ShippingCost::getCostByDistrict($validated['district_id'])
                 : 0;
@@ -239,15 +279,16 @@ class CheckoutController extends Controller
             $order = Order::create([
                 'order_number' => OrderService::generateOrderNumber(),
                 'user_id' => $user->id,
-                'catering_service_id' => $validated['catering_service_id'],
-                'package_id' => $validated['package_id'],
+                'catering_service_id' => $cateringServiceId,
+                'package_id' => $packageId,
                 'order_date' => $validated['order_date'],
-                'event_start_time' => $validated['event_start_time'], // Task 10
+                'event_start_time' => $validated['event_start_time'],
                 'pickup_method' => $validated['pickup_method'],
                 'district_id' => $validated['district_id'] ?? null,
                 'village_id' => $validated['village_id'] ?? null,
                 'address_detail' => $validated['address_detail'] ?? null,
-                'portion' => $portions,
+                'serving_type' => $servingType?->name,
+                'portion' => $totalPortions,
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shippingCost,
                 'total' => $total,
@@ -257,72 +298,74 @@ class CheckoutController extends Controller
                 'notes' => $validated['notes'] ?? null,
             ]);
 
-            // Buat OrderItem untuk Paket
-            OrderItem::create([
-                'order_id' => $order->id,
-                'item_name' => 'Paket: ' . $package->name,
-                'quantity' => $portions,
-                'unit_price' => $package->price,
-                'subtotal' => $package->price * $portions,
-            ]);
-
-            // Buat OrderItem untuk Menus (Isi paket, harga 0)
-            foreach ($validated['menus'] as $menuId) {
-                $menu = \App\Models\CustomOption::find($menuId);
-                if ($menu) {
+            // Buat OrderItems
+            foreach ($groupItems as $cart) {
+                // Skip package marker
+                if ($cart->item_type === 'package') {
+                    // Simpan sebagai OrderItem paket header
                     OrderItem::create([
                         'order_id' => $order->id,
-                        'custom_option_id' => $menu->id,
-                        'item_name' => 'Menu: ' . $menu->name,
-                        'quantity' => $portions,
-                        'unit_price' => 0,
-                        'subtotal' => 0,
+                        'item_name' => 'Paket: ' . ($cart->cateringPackage?->name ?? 'Paket'),
+                        'quantity' => 1,
+                        'unit_price' => (float) ($cart->cateringPackage?->price ?? 0),
+                        'subtotal' => (float) ($cart->cateringPackage?->price ?? 0),
                     ]);
+                    continue;
                 }
-            }
 
-            // Buat OrderItem untuk Penyajian (Harga 0 atau tambah?)
-            $serving = \App\Models\CustomOption::find($validated['serving_type_id']);
-            if ($serving) {
+                $unitPrice = 0;
+                $itemName = $cart->customOption?->name ?? 'Item';
+
+                if ($cart->item_type === 'package_item') {
+                    // Termasuk dalam paket, harga 0
+                    $unitPrice = 0;
+                    $itemName = 'Menu: ' . $itemName;
+                } elseif ($cart->item_type === 'custom_menu') {
+                    $unitPrice = (float) ($cart->customOption?->price ?? 0);
+                    $itemName = 'Menu: ' . $itemName;
+                } elseif ($cart->item_type === 'addition') {
+                    $unitPrice = (float) ($cart->customOption?->price ?? 0);
+                    $itemName = 'Extra: ' . $itemName;
+                }
+
+                $itemSubtotal = $unitPrice * $cart->quantity;
+
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'custom_option_id' => $serving->id,
-                    'item_name' => 'Penyajian: ' . $serving->name,
-                    'quantity' => $portions,
-                    'unit_price' => 0, // asumsikan sudah include
-                    'subtotal' => 0,
+                    'custom_option_id' => $cart->custom_option_id,
+                    'item_name' => $itemName,
+                    'quantity' => $cart->quantity,
+                    'unit_price' => $unitPrice,
+                    'subtotal' => $itemSubtotal,
                 ]);
             }
 
-            // Buat OrderItem untuk Extras
-            if (!empty($validated['extras'])) {
-                foreach ($validated['extras'] as $extraData) {
-                    if (!empty($extraData['id']) && $extraData['qty'] > 0) {
-                        $extra = \App\Models\CustomOption::find($extraData['id']);
-                        if ($extra) {
-                            OrderItem::create([
-                                'order_id' => $order->id,
-                                'custom_option_id' => $extra->id,
-                                'item_name' => 'Extra: ' . $extra->name,
-                                'quantity' => $extraData['qty'],
-                                'unit_price' => $extra->price,
-                                'subtotal' => $extra->price * $extraData['qty'],
-                            ]);
-                        }
-                    }
-                }
+            // Simpan penyajian sebagai OrderItem
+            if ($servingType) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'custom_option_id' => $servingType->id,
+                    'item_name' => 'Penyajian: ' . $servingType->name,
+                    'quantity' => $totalPortions,
+                    'unit_price' => 0,
+                    'subtotal' => 0,
+                ]);
             }
 
             // Buat invoice
             InvoiceService::createInvoice($order);
 
-            // Buat Midtrans snap token (Task 7)
+            // Buat Midtrans snap token
             try {
                 $snapToken = PaymentService::createSnapToken($order);
                 $order->update(['midtrans_snap_token' => $snapToken]);
             } catch (\Exception $e) {
                 \Log::error('Midtrans error: ' . $e->getMessage());
             }
+
+            // Hapus cart group setelah order dibuat
+            // (items tetap di keranjang jika pembayaran gagal - handled by PaymentController callback)
+            $user->carts()->where('cart_group_id', $groupId)->delete();
 
             // Kirim notifikasi
             NotificationService::notifyOrderCreated($order);

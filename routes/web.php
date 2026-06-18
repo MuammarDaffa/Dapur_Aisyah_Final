@@ -61,10 +61,15 @@ Route::middleware(['auth', 'role:customer'])->prefix('dashboard')->name('custome
     // Event Configurator
     Route::get('/event/{service}', [CustomerDashboard::class, 'eventConfigurator'])->name('event.configurator');
 
-    // Event Direct Checkout (Task 6: tanpa keranjang)
-    Route::post('/event/checkout', [CheckoutController::class, 'storeEvent'])->name('event.checkout');
+    // Event Cart (masukkan ke keranjang event)
+    Route::post('/event/cart', [CartController::class, 'storeEventGroup'])->name('event.cart.store');
+    Route::put('/event/cart/{groupId}', [CartController::class, 'updateEventGroup'])->name('event.cart.update');
 
-    // Cart (hanya untuk Daily)
+    // Event Checkout (per group)
+    Route::get('/event/checkout/{groupId}', [CheckoutController::class, 'showEventCheckout'])->name('event.checkout.show');
+    Route::post('/event/checkout/{groupId}', [CheckoutController::class, 'checkoutEventGroup'])->name('event.checkout.store');
+
+    // Cart (Daily + Event)
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
     Route::put('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
