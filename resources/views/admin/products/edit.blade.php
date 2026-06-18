@@ -1,6 +1,14 @@
 @extends('layouts.admin')
 @section('title', 'Edit Produk')
 @section('content')
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+<style>
+.ts-control { border-radius: 0.5rem; padding: 0.5rem 1rem; border-color: #e5e7eb; }
+.ts-control.focus { border-color: #fb923c; box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.2); }
+</style>
+@endpush
+
 <div class="max-w-2xl">
     <div class="mb-6">
         <a href="{{ url()->previous() }}" class="text-sm text-gray-500 hover:text-orange-500 transition-colors">← Kembali</a>
@@ -25,9 +33,24 @@
         <div><label class="block text-sm font-medium mb-1">Hari Tersedia *</label><select name="available_days" required class="w-full px-4 py-2 rounded-lg border"><option value="" disabled>Pilih Hari</option>@foreach(['senin','selasa','rabu','kamis','jumat','sabtu','minggu'] as $d)<option value="{{ $d }}" {{ old('available_days', $product->available_days) === $d ? 'selected' : '' }}>{{ ucfirst($d) }}</option>@endforeach</select>@error('available_days')<p class="text-red-500 text-sm">{{ $message }}</p>@enderror</div>
         @if(isset($extras) && $extras->count() > 0)
         @php $selectedExtras = $product->extras->pluck('id')->toArray(); @endphp
-        <div><label class="block text-sm font-medium mb-1">Extra Tambahan (Opsional)</label><div class="flex flex-wrap gap-2">@foreach($extras as $extra)<label class="flex items-center gap-1"><input type="checkbox" name="extras[]" value="{{ $extra->id }}" {{ in_array($extra->id, old('extras', $selectedExtras)) ? 'checked' : '' }} class="rounded border-gray-300 text-orange-500"><span class="text-sm">{{ $extra->name }}</span></label>@endforeach</div>@error('extras')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror</div>
+        <div><label class="block text-sm font-medium mb-1">Extra Tambahan (Opsional)</label><select id="extras-select" name="extras[]" multiple class="w-full px-4 py-2 rounded-lg border" placeholder="Pilih Extra...">@foreach($extras as $extra)<option value="{{ $extra->id }}" {{ in_array($extra->id, old('extras', $selectedExtras)) ? 'selected' : '' }}>{{ $extra->name }}</option>@endforeach</select>@error('extras')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror</div>
         @endif
         <button type="submit" class="px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600">Update Produk</button>
     </form>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if(document.getElementById('extras-select')) {
+            new TomSelect('#extras-select',{
+                plugins: ['remove_button'],
+                persist: false,
+                create: false,
+            });
+        }
+    });
+</script>
+@endpush
 @endsection
