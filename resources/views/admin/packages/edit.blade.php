@@ -47,21 +47,12 @@
                     <select name="menu_ids[]" id="menuHiddenSelect" multiple class="hidden"></select>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- Dekorasi -->
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Dekorasi *</label>
-                        <select name="decoration_id" id="decorationSelect" required class="w-full px-4 py-2 rounded-lg border focus:ring-orange-500 focus:border-orange-500">
-                            <option value="">-- Pilih Dekorasi --</option>
-                        </select>
-                    </div>
+                <div>
                     <!-- Penyajian -->
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Penyajian *</label>
-                        <select name="serving_type_id" id="servingSelect" required class="w-full px-4 py-2 rounded-lg border focus:ring-orange-500 focus:border-orange-500">
-                            <option value="">-- Pilih Penyajian --</option>
-                        </select>
-                    </div>
+                    <label class="block text-sm font-medium mb-1">Penyajian *</label>
+                    <select name="serving_type_id" id="servingSelect" required class="w-full px-4 py-2 rounded-lg border focus:ring-orange-500 focus:border-orange-500">
+                        <option value="">-- Pilih Penyajian --</option>
+                    </select>
                 </div>
 
                 <!-- Extra -->
@@ -190,11 +181,9 @@ function loadServiceOptions(callback) {
             msg.classList.add('hidden');
             container.classList.remove('hidden');
             
-            const decSelect = document.getElementById('decorationSelect');
             const srvSelect = document.getElementById('servingSelect');
             
             // Reset
-            decSelect.innerHTML = '<option value="">-- Pilih Dekorasi --</option>';
             srvSelect.innerHTML = '<option value="">-- Pilih Penyajian --</option>';
             multiselectData.menu = [];
             multiselectData.extra = [];
@@ -218,7 +207,6 @@ function loadServiceOptions(callback) {
                 } else {
                     const selectedAttr = isSelected ? 'selected' : '';
                     const optElement = `<option value="${opt.id}" ${selectedAttr}>${opt.name}</option>`;
-                    if (opt.type === 'decoration') decSelect.innerHTML += optElement;
                     if (opt.type === 'serving_type') srvSelect.innerHTML += optElement;
                 }
             });

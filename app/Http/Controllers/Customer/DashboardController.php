@@ -59,22 +59,45 @@ class DashboardController extends Controller
     }
 
     /**
-     * Halaman konfigurasi pesanan event.
+     * Halaman pilih layanan event (Cards)
      */
-    public function eventConfigurator(CateringService $service)
+    public function eventService(CateringService $service)
     {
-        // Pastikan ini adalah katering event
         if (!$service->isEvent()) {
             return redirect()->route('customer.products')->with('error', 'Layanan tidak valid untuk event.');
         }
 
-        $packages = $service->packages()->with(['customOptions' => function ($q) {
+        $packages = $service->packages()->where('is_active', true)->get();
+        return view('customer.event_service', compact('service', 'packages'));
+    }
+
+    /**
+     * Halaman konfigurasi paket event
+     */
+    public function eventPackage(CateringService $service, \App\Models\CateringPackage $package)
+    {
+        if (!$service->isEvent() || $package->catering_service_id !== $service->id || !$package->is_active) {
+            return redirect()->route('customer.event.service', $service)->with('error', 'Paket tidak valid.');
+        }
+
+        $package->load(['customOptions' => function ($q) {
             $q->where('is_active', true);
-        }])->where('is_active', true)->get();
+        }]);
+
+        return view('customer.event_package', compact('service', 'package'));
+    }
+
+    /**
+     * Halaman konfigurasi custom menu event
+     */
+    public function eventCustom(CateringService $service)
+    {
+        if (!$service->isEvent() || !$service->hasFeature('full_custom')) {
+            return redirect()->route('customer.event.service', $service)->with('error', 'Layanan tidak mendukung custom menu.');
+        }
 
         $customOptions = $service->customOptions()->where('is_active', true)->get();
-
-        return view('customer.event_configurator', compact('service', 'packages', 'customOptions'));
+        return view('customer.event_custom', compact('service', 'customOptions'));
     }
 
     public function notifications()

@@ -58,8 +58,10 @@ Route::middleware(['auth', 'role:customer'])->prefix('dashboard')->name('custome
     // Products
     Route::get('/products', [CustomerDashboard::class, 'products'])->name('products');
 
-    // Event Configurator
-    Route::get('/event/{service}', [CustomerDashboard::class, 'eventConfigurator'])->name('event.configurator');
+    // Event Configurator (Split)
+    Route::get('/event/{service}', [CustomerDashboard::class, 'eventService'])->name('event.service');
+    Route::get('/event/{service}/package/{package}', [CustomerDashboard::class, 'eventPackage'])->name('event.package');
+    Route::get('/event/{service}/custom', [CustomerDashboard::class, 'eventCustom'])->name('event.custom');
 
     // Event Cart (masukkan ke keranjang event)
     Route::post('/event/cart', [CartController::class, 'storeEventGroup'])->name('event.cart.store');

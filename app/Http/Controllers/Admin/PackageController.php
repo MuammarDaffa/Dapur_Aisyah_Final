@@ -23,7 +23,7 @@ class PackageController extends Controller
         // Hanya layanan yang punya fitur packages atau full_custom
         $services = CateringService::active()->event()->get();
 
-        return view('admin.packages.index', compact('packages', 'services'));
+        return redirect()->route('admin.dashboard')->with('error', 'Silakan akses paket dari menu layanan katering.');
     }
 
     public function create()
@@ -45,7 +45,6 @@ class PackageController extends Controller
             'is_active' => 'boolean',
             'menu_ids' => 'nullable|array',
             'menu_ids.*' => 'exists:custom_options,id',
-            'decoration_id' => 'nullable|exists:custom_options,id',
             'serving_type_id' => 'nullable|exists:custom_options,id',
             'extra_ids' => 'nullable|array',
             'extra_ids.*' => 'exists:custom_options,id',
@@ -62,9 +61,6 @@ class PackageController extends Controller
         if ($request->has('menu_ids')) {
             $syncIds = $syncIds->merge($request->input('menu_ids'));
         }
-        if ($request->filled('decoration_id')) {
-            $syncIds->push($request->input('decoration_id'));
-        }
         if ($request->filled('serving_type_id')) {
             $syncIds->push($request->input('serving_type_id'));
         }
@@ -75,7 +71,7 @@ class PackageController extends Controller
         // Simpan tanpa quantity tambahan, gunakan default database
         $package->customOptions()->sync($syncIds->toArray());
 
-        return redirect()->route('admin.packages.index')->with('success', 'Paket berhasil ditambahkan.');
+        return redirect()->route('admin.catering.show', $validated['catering_service_id'])->with('success', 'Paket berhasil ditambahkan.');
     }
 
     public function edit(CateringPackage $package)
@@ -98,7 +94,6 @@ class PackageController extends Controller
             'is_active' => 'boolean',
             'menu_ids' => 'nullable|array',
             'menu_ids.*' => 'exists:custom_options,id',
-            'decoration_id' => 'nullable|exists:custom_options,id',
             'serving_type_id' => 'nullable|exists:custom_options,id',
             'extra_ids' => 'nullable|array',
             'extra_ids.*' => 'exists:custom_options,id',
@@ -115,9 +110,6 @@ class PackageController extends Controller
         if ($request->has('menu_ids')) {
             $syncIds = $syncIds->merge($request->input('menu_ids'));
         }
-        if ($request->filled('decoration_id')) {
-            $syncIds->push($request->input('decoration_id'));
-        }
         if ($request->filled('serving_type_id')) {
             $syncIds->push($request->input('serving_type_id'));
         }
@@ -127,12 +119,13 @@ class PackageController extends Controller
 
         $package->customOptions()->sync($syncIds->toArray());
 
-        return redirect()->route('admin.packages.index')->with('success', 'Paket berhasil diperbarui.');
+        return redirect()->route('admin.catering.show', $package->catering_service_id)->with('success', 'Paket berhasil diperbarui.');
     }
 
     public function destroy(CateringPackage $package)
     {
+        $serviceId = $package->catering_service_id;
         $package->delete();
-        return redirect()->route('admin.packages.index')->with('success', 'Paket berhasil dihapus.');
+        return redirect()->route('admin.catering.show', $serviceId)->with('success', 'Paket berhasil dihapus.');
     }
 }
