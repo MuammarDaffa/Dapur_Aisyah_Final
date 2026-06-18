@@ -38,7 +38,7 @@
         @forelse($products as $product)
             @php
                 $isAvailable = $product->isAvailable();
-                $isTodayOnly = is_array($product->available_days) && count($product->available_days) === 1 && in_array($currentDay, $product->available_days);
+                $isTodayOnly = $product->available_days === $currentDay;
                 $isPastCutoff = $isTodayOnly && $currentHour >= 10;
                 $canOrder = $isAvailable && !$isPastCutoff;
             @endphp
@@ -62,9 +62,7 @@
                     <p class="text-xs text-gray-500 mb-3 line-clamp-2">{{ $product->description }}</p>
                     @if($product->available_days)
                         <div class="flex flex-wrap gap-1 mb-3">
-                            @foreach($product->available_days as $day)
-                                <span class="text-xs {{ $day === $currentDay ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-600' }} px-2 py-0.5 rounded-full">{{ ucfirst($day) }}</span>
-                            @endforeach
+                            <span class="text-xs {{ $product->available_days === $currentDay ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-600' }} px-2 py-0.5 rounded-full">{{ ucfirst($product->available_days) }}</span>
                         </div>
                     @endif
                     
@@ -196,8 +194,8 @@
         document.getElementById('modalExtrasContainer').classList.add('hidden');
         document.getElementById('modalExtrasLoading').classList.remove('hidden');
 
-        // Fetch extras for this service
-        fetch(`/api/service/${currentProduct.service_id}/custom-options`)
+        // Fetch extras for this product
+        fetch(`/api/product/${currentProduct.id}/extras`)
             .then(res => res.json())
             .then(data => {
                 availableExtras = data.filter(opt => opt.type === 'extra');

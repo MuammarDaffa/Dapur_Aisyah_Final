@@ -21,7 +21,6 @@ class Product extends Model
     {
         return [
             'price' => 'decimal:2',
-            'available_days' => 'array',
             'is_best_seller' => 'boolean',
             'is_active' => 'boolean',
         ];
@@ -78,6 +77,11 @@ class Product extends Model
         return $this->belongsTo(CateringService::class);
     }
 
+
+    public function extras(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(CustomOption::class, 'custom_option_product');
+    }
 
     public function orderItems(): HasMany
     {

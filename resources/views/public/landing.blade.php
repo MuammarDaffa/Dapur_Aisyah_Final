@@ -81,22 +81,45 @@
                             : (auth()->check() ? route('customer.products', ['service' => $service->id]) : route('register'));
                         $icon = $service->isDaily() ? '🍱' : ($service->isEvent() ? '🎉' : '🍽️');
                     @endphp
-                    <a href="{{ $serviceUrl }}" class="group relative bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-8 border border-orange-100 hover:shadow-xl hover:shadow-orange-100 transition-all duration-300 transform hover:-translate-y-1 block">
-                        <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-500 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
-                            {{ $icon }}
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-3">{{ $service->name }}</h3>
-                        <p class="text-sm text-gray-600 mb-4 line-clamp-3">{{ $service->description }}</p>
-                        <div class="flex items-center justify-between">
-                            <span class="text-lg font-bold text-orange-600">
-                                Mulai Rp {{ number_format($service->base_price, 0, ',', '.') }}
-                            </span>
-                            @if($service->isEvent())
-                                <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">Event</span>
-                            @else
-                                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">Tersedia</span>
-                            @endif
-                        </div>
+                    <a href="{{ $serviceUrl }}" class="group relative bg-white rounded-2xl border border-gray-100 hover:shadow-xl hover:shadow-orange-100 transition-all duration-300 transform hover:-translate-y-1 block overflow-hidden">
+                        @if($service->image)
+                            <div class="h-48 w-full overflow-hidden relative">
+                                <img src="{{ Storage::url($service->image) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                                <h3 class="absolute bottom-4 left-4 text-2xl font-bold text-white mb-0 drop-shadow-md">{{ $service->name }}</h3>
+                            </div>
+                            <div class="p-6">
+                                <p class="text-sm text-gray-600 mb-4 line-clamp-3">{{ $service->description }}</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-lg font-bold text-orange-600">
+                                        Mulai Rp {{ number_format($service->base_price, 0, ',', '.') }}
+                                    </span>
+                                    @if($service->isEvent())
+                                        <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">Event</span>
+                                    @else
+                                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">Tersedia</span>
+                                    @endif
+                                </div>
+                            </div>
+                        @else
+                            <div class="p-8 bg-gradient-to-br from-orange-50 to-amber-50 h-full">
+                                <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-500 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
+                                    {{ $icon }}
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-3">{{ $service->name }}</h3>
+                                <p class="text-sm text-gray-600 mb-4 line-clamp-3">{{ $service->description }}</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-lg font-bold text-orange-600">
+                                        Mulai Rp {{ number_format($service->base_price, 0, ',', '.') }}
+                                    </span>
+                                    @if($service->isEvent())
+                                        <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">Event</span>
+                                    @else
+                                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">Tersedia</span>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
                     </a>
                 @empty
                     <div class="col-span-full text-center text-gray-500 py-8">

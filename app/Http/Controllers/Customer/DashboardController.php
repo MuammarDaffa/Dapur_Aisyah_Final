@@ -41,7 +41,7 @@ class DashboardController extends Controller
         }
 
         if ($request->filled('day')) {
-            $query->whereJsonContains('available_days', $request->day);
+            $query->where('available_days', $request->day);
         }
 
         $products = $query->paginate(12);

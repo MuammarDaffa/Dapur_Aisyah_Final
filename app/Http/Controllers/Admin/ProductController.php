@@ -27,10 +27,15 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products', 'services'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $services = CateringService::active()->get();
-        return view('admin.products.create', compact('services'));
+        $extras = [];
+        if ($request->has('catering_service_id')) {
+            $extras = \App\Models\CustomOption::where('catering_service_id', $request->catering_service_id)
+                        ->where('type', 'extra')->active()->get();
+        }
+        return view('admin.products.create', compact('services', 'extras'));
     }
 
     public function store(Request $request)
@@ -43,8 +48,10 @@ class ProductController extends Controller
             'image' => 'nullable|image|max:2048',
             'is_best_seller' => 'boolean',
             'is_active' => 'boolean',
-            'available_days' => 'nullable|array',
+            'available_days' => 'required|string|in:senin,selasa,rabu,kamis,jumat,sabtu,minggu',
             'status' => 'required|in:tersedia,habis',
+            'extras' => 'nullable|array',
+            'extras.*' => 'exists:custom_options,id',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
@@ -56,7 +63,11 @@ class ProductController extends Controller
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
 
-        Product::create($validated);
+        $product = Product::create($validated);
+
+        if ($request->has('extras')) {
+            $product->extras()->sync($request->extras);
+        }
 
         return redirect()->route('admin.catering.show', $validated['catering_service_id'])
             ->with('success', 'Produk berhasil ditambahkan.');
@@ -65,7 +76,9 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $services = CateringService::active()->get();
-        return view('admin.products.edit', compact('product', 'services'));
+        $extras = \App\Models\CustomOption::where('catering_service_id', $product->catering_service_id)
+                        ->where('type', 'extra')->active()->get();
+        return view('admin.products.edit', compact('product', 'services', 'extras'));
     }
 
     public function update(Request $request, Product $product)
@@ -78,8 +91,10 @@ class ProductController extends Controller
             'image' => 'nullable|image|max:2048',
             'is_best_seller' => 'boolean',
             'is_active' => 'boolean',
-            'available_days' => 'nullable|array',
+            'available_days' => 'required|string|in:senin,selasa,rabu,kamis,jumat,sabtu,minggu',
             'status' => 'required|in:tersedia,habis',
+            'extras' => 'nullable|array',
+            'extras.*' => 'exists:custom_options,id',
         ]);
 
         $validated['is_best_seller'] = $request->boolean('is_best_seller');
@@ -91,6 +106,8 @@ class ProductController extends Controller
         }
 
         $product->update($validated);
+        
+        $product->extras()->sync($request->extras ?? []);
 
         return redirect()->route('admin.catering.show', $product->catering_service_id)
             ->with('success', 'Produk berhasil diperbarui.');

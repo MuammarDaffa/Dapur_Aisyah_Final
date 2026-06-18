@@ -22,7 +22,10 @@
         </div>
         <div><label class="block text-sm font-medium mb-1">Gambar</label><input type="file" name="image" accept="image/*" class="w-full px-4 py-2 rounded-lg border"></div>
         <div class="flex gap-6"><label class="flex items-center gap-2"><input type="checkbox" name="is_best_seller" value="1" class="rounded border-gray-300 text-orange-500"><span class="text-sm">Best Seller</span></label><label class="flex items-center gap-2"><input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500"><span class="text-sm">Aktif</span></label></div>
-        <div><label class="block text-sm font-medium mb-1">Hari Tersedia</label><div class="flex flex-wrap gap-2">@foreach(['senin','selasa','rabu','kamis','jumat','sabtu','minggu'] as $d)<label class="flex items-center gap-1"><input type="checkbox" name="available_days[]" value="{{ $d }}" class="rounded border-gray-300 text-orange-500"><span class="text-sm">{{ ucfirst($d) }}</span></label>@endforeach</div></div>
+        <div><label class="block text-sm font-medium mb-1">Hari Tersedia *</label><select name="available_days" required class="w-full px-4 py-2 rounded-lg border"><option value="" disabled selected>Pilih Hari</option>@foreach(['senin','selasa','rabu','kamis','jumat','sabtu','minggu'] as $d)<option value="{{ $d }}" {{ old('available_days') === $d ? 'selected' : '' }}>{{ ucfirst($d) }}</option>@endforeach</select>@error('available_days')<p class="text-red-500 text-sm">{{ $message }}</p>@enderror</div>
+        @if(isset($extras) && $extras->count() > 0)
+        <div><label class="block text-sm font-medium mb-1">Extra Tambahan (Opsional)</label><div class="flex flex-wrap gap-2">@foreach($extras as $extra)<label class="flex items-center gap-1"><input type="checkbox" name="extras[]" value="{{ $extra->id }}" {{ in_array($extra->id, old('extras', [])) ? 'checked' : '' }} class="rounded border-gray-300 text-orange-500"><span class="text-sm">{{ $extra->name }}</span></label>@endforeach</div>@error('extras')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror</div>
+        @endif
         <button type="submit" class="px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600">Simpan Produk</button>
     </form>
 </div>

@@ -170,6 +170,11 @@ Route::middleware('auth')->group(function () {
         return $service->customOptions()->where('is_active', true)->get(['id', 'type', 'name', 'price', 'min_qty']);
     })->name('api.service.options');
 
+    // API: Extras per produk
+    Route::get('/api/product/{product}/extras', function (\App\Models\Product $product) {
+        return $product->extras()->where('is_active', true)->get(['custom_options.id', 'type', 'name', 'price', 'min_qty']);
+    })->name('api.product.extras');
+
     // API: Paket per layanan
     Route::get('/api/service/{service}/packages', function (\App\Models\CateringService $service) {
         return $service->packages()->where('is_active', true)->with('customOptions:id,type,name,price')->get();

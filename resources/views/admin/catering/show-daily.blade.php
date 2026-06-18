@@ -93,7 +93,7 @@
                             <div>
                                 <p class="font-medium text-gray-900">{{ $p->name }}</p>
                                 @if($p->available_days)
-                                <p class="text-xs text-gray-400 mt-0.5">{{ implode(', ', array_map('ucfirst', $p->available_days)) }}</p>
+                                <p class="text-xs text-gray-400 mt-0.5">{{ ucfirst($p->available_days) }}</p>
                                 @endif
                             </div>
                         </div>

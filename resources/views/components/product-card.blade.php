@@ -41,11 +41,9 @@
         {{-- Available Days --}}
         @if($product->available_days)
             <div class="flex flex-wrap gap-1">
-                @foreach($product->available_days as $day)
-                    <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">
-                        {{ ucfirst($day) }}
-                    </span>
-                @endforeach
+                <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                    {{ ucfirst($product->available_days) }}
+                </span>
             </div>
         @endif
 
