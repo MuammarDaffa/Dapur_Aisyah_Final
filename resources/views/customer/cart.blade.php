@@ -247,6 +247,7 @@
             'price' => $basePrice,
             'quantity' => $c->quantity,
             'service_id' => $serviceId,
+            'product_id' => $c->product_id,
             'extras' => $c->extras ?? [],
             'update_url' => route('customer.cart.update', $c->id),
         ];
@@ -455,7 +456,12 @@
         document.getElementById('dailyModalExtrasContainer').classList.add('hidden');
         document.getElementById('dailyModalExtrasLoading').classList.remove('hidden');
 
-        fetch(`/api/service/${currentDailyCart.service_id}/custom-options`)
+        let extrasUrl = `/api/service/${currentDailyCart.service_id}/custom-options`;
+        if (currentDailyCart.product_id) {
+            extrasUrl = `/api/product/${currentDailyCart.product_id}/extras`;
+        }
+
+        fetch(extrasUrl)
             .then(res => res.json())
             .then(data => {
                 dailyAvailableExtras = data.filter(opt => opt.type === 'extra');
