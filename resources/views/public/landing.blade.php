@@ -77,7 +77,7 @@
                 @forelse($services as $service)
                     @php
                         $serviceUrl = $service->isEvent()
-                            ? (auth()->check() ? route('customer.event.configurator', $service) : route('register'))
+                            ? (auth()->check() ? route('customer.event.service', $service) : route('register'))
                             : (auth()->check() ? route('customer.products', ['service' => $service->id]) : route('register'));
                         $icon = $service->isDaily() ? '🍱' : ($service->isEvent() ? '🎉' : '🍽️');
                     @endphp

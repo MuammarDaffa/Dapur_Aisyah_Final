@@ -65,7 +65,7 @@ class CateringController extends Controller
         // Set available_features berdasarkan tipe
         $validated['available_features'] = $request->catering_type === 'daily'
             ? ['daily_menu']
-            : ['packages'];
+            : ['packages', 'full_custom'];
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_active'] = $request->boolean('is_active');
