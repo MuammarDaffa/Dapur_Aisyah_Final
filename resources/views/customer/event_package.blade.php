@@ -82,14 +82,15 @@
             @if($servings->isNotEmpty())
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Penyajian</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="space-y-2">
                         @foreach($servings as $idx => $serving)
-                            <label class="relative cursor-pointer">
-                                <input type="radio" name="serving_type_id" value="{{ $serving->id }}" class="peer sr-only" {{ $idx === 0 ? 'checked' : '' }}>
-                                <div class="p-4 text-center border-2 rounded-xl peer-checked:border-orange-500 peer-checked:bg-orange-50 transition-colors">
-                                    <span class="font-medium text-gray-900">{{ $serving->name }}</span>
-                                </div>
-                            </label>
+                            <div class="flex items-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                <span class="text-blue-600 font-bold">🍽️</span>
+                                <span class="text-gray-900 font-medium">{{ $serving->name }}</span>
+                                @if($idx === 0)
+                                    <input type="hidden" name="serving_type_id" value="{{ $serving->id }}">
+                                @endif
+                            </div>
                         @endforeach
                     </div>
                 </div>

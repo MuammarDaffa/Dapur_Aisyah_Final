@@ -58,7 +58,7 @@ class ProductController extends Controller
 
         Product::create($validated);
 
-        return redirect()->route('admin.products.index')
+        return redirect()->route('admin.catering.show', $validated['catering_service_id'])
             ->with('success', 'Produk berhasil ditambahkan.');
     }
 
@@ -92,14 +92,15 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        return redirect()->route('admin.products.index')
+        return redirect()->route('admin.catering.show', $product->catering_service_id)
             ->with('success', 'Produk berhasil diperbarui.');
     }
 
     public function destroy(Product $product)
     {
+        $cateringId = $product->catering_service_id;
         $product->delete();
-        return redirect()->route('admin.products.index')
+        return redirect()->route('admin.catering.show', $cateringId)
             ->with('success', 'Produk berhasil dihapus.');
     }
 
