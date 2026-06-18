@@ -66,21 +66,39 @@ class CartController extends Controller
         $extrasJson = empty($extras) ? null : json_encode($extras);
 
         // Find existing cart to increment quantity
-        $existingCarts = $user->carts()
+        $existing = $user->carts()
             ->where('product_id', $validated['product_id'] ?? null)
             ->where('custom_option_id', $validated['custom_option_id'] ?? null)
             ->whereNull('cart_group_id')
-            ->get();
-
-        $existing = $existingCarts->first(function ($cart) use ($extrasJson) {
-            $cartExtras = $cart->extras ?? [];
-            usort($cartExtras, fn($a, $b) => $a['id'] <=> $b['id']);
-            return json_encode($cartExtras) === $extrasJson;
-        });
+            ->first();
 
         if ($existing) {
+            $existingExtras = $existing->extras ?? [];
+            $mergedExtrasMap = [];
+            
+            // Masukkan ekstra yang sudah ada
+            foreach ($existingExtras as $ex) {
+                $mergedExtrasMap[$ex['id']] = $ex['qty'];
+            }
+            
+            // Tambahkan ekstra baru
+            foreach ($extras as $ex) {
+                if (isset($mergedExtrasMap[$ex['id']])) {
+                    $mergedExtrasMap[$ex['id']] += $ex['qty'];
+                } else {
+                    $mergedExtrasMap[$ex['id']] = $ex['qty'];
+                }
+            }
+            
+            $mergedExtras = [];
+            foreach ($mergedExtrasMap as $id => $qty) {
+                $mergedExtras[] = ['id' => $id, 'qty' => $qty];
+            }
+            usort($mergedExtras, fn($a, $b) => $a['id'] <=> $b['id']);
+
             $existing->update([
                 'quantity' => $existing->quantity + $validated['quantity'],
+                'extras' => empty($mergedExtras) ? null : $mergedExtras,
             ]);
         } else {
             $user->carts()->create([
@@ -177,32 +195,10 @@ class CartController extends Controller
             }
             usort($extras, fn($a, $b) => $a['id'] <=> $b['id']);
         }
-        $extrasJson = empty($extras) ? null : json_encode($extras);
-
-        // Cari jika ada cart item lain yang konfigurasinya sama persis
-        $existing = auth()->user()->carts()
-            ->where('id', '!=', $cart->id)
-            ->where('product_id', $cart->product_id)
-            ->where('custom_option_id', $cart->custom_option_id)
-            ->whereNull('cart_group_id')
-            ->get()
-            ->first(function ($c) use ($extrasJson) {
-                $cExtras = $c->extras ?? [];
-                usort($cExtras, fn($a, $b) => $a['id'] <=> $b['id']);
-                return json_encode($cExtras) === $extrasJson;
-            });
-
-        if ($existing) {
-            $existing->update([
-                'quantity' => $existing->quantity + $validated['quantity'],
-            ]);
-            $cart->delete();
-        } else {
-            $cart->update([
-                'quantity' => $validated['quantity'],
-                'extras' => empty($extras) ? null : $extras,
-            ]);
-        }
+        $cart->update([
+            'quantity' => $validated['quantity'],
+            'extras' => empty($extras) ? null : $extras,
+        ]);
 
         return back()->with('success', 'Keranjang berhasil diperbarui.');
     }
