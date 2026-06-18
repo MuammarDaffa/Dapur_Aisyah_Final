@@ -122,7 +122,7 @@ class CartController extends Controller
             'serving_type_id' => 'nullable|exists:custom_options,id',
             'items' => 'required|array|min:1',
             'items.*.custom_option_id' => 'required|exists:custom_options,id',
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.quantity' => 'required|integer|min:0',
             'items.*.item_type' => 'required|in:package_item,addition,custom_menu',
         ]);
 
@@ -143,14 +143,16 @@ class CartController extends Controller
 
         // Simpan semua item (menu, extra, dll)
         foreach ($validated['items'] as $item) {
-            $user->carts()->create([
-                'catering_service_id' => $validated['catering_service_id'],
-                'cart_group_id' => $groupId,
-                'custom_option_id' => $item['custom_option_id'],
-                'quantity' => $item['quantity'],
-                'item_type' => $item['item_type'],
-                'serving_type_id' => $validated['serving_type_id'] ?? null,
-            ]);
+            if ($item['quantity'] > 0) {
+                $user->carts()->create([
+                    'catering_service_id' => $validated['catering_service_id'],
+                    'cart_group_id' => $groupId,
+                    'custom_option_id' => $item['custom_option_id'],
+                    'quantity' => $item['quantity'],
+                    'item_type' => $item['item_type'],
+                    'serving_type_id' => $validated['serving_type_id'] ?? null,
+                ]);
+            }
         }
 
         return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil ditambahkan ke keranjang!');
@@ -167,7 +169,7 @@ class CartController extends Controller
             'serving_type_id' => 'nullable|exists:custom_options,id',
             'items' => 'required|array|min:1',
             'items.*.custom_option_id' => 'required|exists:custom_options,id',
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.quantity' => 'required|integer|min:0',
             'items.*.item_type' => 'required|in:package_item,addition,custom_menu',
         ]);
 
@@ -194,14 +196,16 @@ class CartController extends Controller
 
         // Simpan ulang items
         foreach ($validated['items'] as $item) {
-            $user->carts()->create([
-                'catering_service_id' => $validated['catering_service_id'],
-                'cart_group_id' => $groupId,
-                'custom_option_id' => $item['custom_option_id'],
-                'quantity' => $item['quantity'],
-                'item_type' => $item['item_type'],
-                'serving_type_id' => $validated['serving_type_id'] ?? null,
-            ]);
+            if ($item['quantity'] > 0) {
+                $user->carts()->create([
+                    'catering_service_id' => $validated['catering_service_id'],
+                    'cart_group_id' => $groupId,
+                    'custom_option_id' => $item['custom_option_id'],
+                    'quantity' => $item['quantity'],
+                    'item_type' => $item['item_type'],
+                    'serving_type_id' => $validated['serving_type_id'] ?? null,
+                ]);
+            }
         }
 
         return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil diperbarui!');
