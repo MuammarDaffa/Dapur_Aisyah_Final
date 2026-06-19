@@ -57,7 +57,7 @@ class ProductController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_best_seller'] = $request->boolean('is_best_seller');
-        $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['is_active'] = $request->boolean('is_active');
         $validated['status'] = $request->status;
 
         if ($request->hasFile('image')) {

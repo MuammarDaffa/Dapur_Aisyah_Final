@@ -194,7 +194,7 @@ class CateringController extends Controller
         ]);
 
         $validated['catering_service_id'] = $catering->id;
-        $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['is_active'] = $request->boolean('is_active');
 
         CustomOption::create($validated);
 
@@ -218,7 +218,7 @@ class CateringController extends Controller
             'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
-        $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['is_active'] = $request->boolean('is_active');
 
         $option->update($validated);
 
