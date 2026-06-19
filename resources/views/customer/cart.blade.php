@@ -56,44 +56,39 @@
                     }
                 @endphp
                 <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 cart-item" data-base-price="{{ $basePrice }}" data-extras-price="{{ $extrasPrice }}">
-                    <div class="flex items-start justify-between">
-                        <div class="flex items-start space-x-4 flex-1">
-                            <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
-                                @if($cart->product && $cart->product->image)
-                                    <img src="{{ Storage::url($cart->product->image) }}" alt="{{ $cart->product->name }}" class="w-full h-full object-cover rounded-xl">
-                                @else
-                                    🍛
-                                @endif
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-gray-900">{{ $cart->product->name ?? ($cart->customOption->name ?? 'Item') }}</h4>
-                                @if($extrasList->isNotEmpty())
-                                    <div class="text-sm text-gray-600 mt-1 mb-1">
-                                        <span class="font-medium">Extra:</span>
-                                        <ul class="list-disc pl-4 mt-0.5 space-y-0.5 text-xs">
-                                            @foreach($extrasList as $ex)
-                                                <li>{{ $ex->name }} {{ $ex->qty }}x (+Rp {{ number_format($ex->price, 0, ',', '.') }})</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endif
-                                <p class="text-sm text-orange-500">{{ $cart->product->cateringService->name ?? '' }}</p>
-                                <p class="text-sm text-gray-600 mt-1">Rp {{ number_format($basePrice, 0, ',', '.') }} / porsi</p>
-                            </div>
+                    <div class="flex items-start space-x-4">
+                        <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
+                            @if($cart->product && $cart->product->image)
+                                <img src="{{ Storage::url($cart->product->image) }}" alt="{{ $cart->product->name }}" class="w-full h-full object-cover rounded-xl">
+                            @else
+                                🍛
+                            @endif
                         </div>
-                        <div class="flex flex-col items-end gap-3 ml-4">
-                            <p class="text-lg font-bold text-gray-900 item-subtotal">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</p>
-                            <div class="flex items-center space-x-3">
-                                <span class="text-sm font-medium text-gray-500">{{ $cart->quantity }} porsi</span>
-                                <button type="button" onclick="openDailyEditModal({{ $cart->id }})" class="px-4 py-2 bg-orange-100 text-orange-600 text-xs font-bold rounded-lg hover:bg-orange-200 transition-colors">Ubah Pesanan</button>
+                        <div class="flex-1 w-full">
+                            <div class="flex sm:items-start justify-between flex-col sm:flex-row gap-2">
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-lg">{{ $cart->product->name ?? ($cart->customOption->name ?? 'Item') }}</h4>
+                                    <p class="text-sm font-medium text-gray-700">{{ $cart->quantity }} Porsi</p>
+                                </div>
+                                <p class="text-lg font-bold text-gray-900 item-subtotal">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</p>
                             </div>
-                            <form action="{{ route('customer.cart.destroy', $cart) }}" method="POST">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="flex items-center gap-1 px-3 py-1.5 text-xs text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    Hapus
-                                </button>
-                            </form>
+                            
+                            @if($extrasList->isNotEmpty())
+                                <div class="text-sm text-gray-600 mt-2">
+                                    <span class="font-medium text-gray-800">Extra:</span> 
+                                    {{ collect($extrasList)->map(fn($ex) => $ex->name . ' ×' . $ex->qty)->implode(', ') }}
+                                </div>
+                            @endif
+
+                            <div class="flex items-center justify-end mt-4 space-x-3">
+                                <button type="button" onclick="openDailyEditModal({{ $cart->id }})" class="px-4 py-2 bg-orange-100 text-orange-700 text-sm font-semibold rounded-lg hover:bg-orange-200 transition-colors">Ubah Pesanan</button>
+                                <form action="{{ route('customer.cart.destroy', $cart) }}" method="POST" class="inline">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="px-4 py-2 bg-red-50 text-red-600 text-sm font-semibold rounded-lg hover:bg-red-100 transition-colors">
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
