@@ -26,8 +26,10 @@ class ShippingController extends Controller
     {
         $validated = $request->validate([
             'district_id' => 'required|exists:districts,id|unique:shipping_costs,district_id',
-            'cost' => 'required|numeric|min:0',
+            'cost' => 'required|numeric|min:0|max:1000000000',
             'notes' => 'nullable|string|max:255',
+        ], [
+            'cost.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
         ShippingCost::create($validated);
         return redirect()->route('admin.shipping.index')->with('success', 'Ongkos kirim berhasil ditambahkan.');
@@ -43,8 +45,10 @@ class ShippingController extends Controller
     {
         $validated = $request->validate([
             'district_id' => 'required|exists:districts,id',
-            'cost' => 'required|numeric|min:0',
+            'cost' => 'required|numeric|min:0|max:1000000000',
             'notes' => 'nullable|string|max:255',
+        ], [
+            'cost.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
         $shipping->update($validated);
         return redirect()->route('admin.shipping.index')->with('success', 'Ongkos kirim berhasil diperbarui.');

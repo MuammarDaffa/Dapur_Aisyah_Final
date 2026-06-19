@@ -54,7 +54,7 @@ class CateringController extends Controller
             'serving_types' => 'nullable|array',
             'min_portion' => 'required|integer|min:1',
             'max_portion' => 'nullable|integer|min:1',
-            'base_price' => 'required|numeric|min:0',
+            'base_price' => 'required|numeric|min:0|max:1000000000',
             'order_terms' => 'nullable|string',
             'schedule_notes' => 'nullable|string',
             'minimal_order_days' => 'nullable|integer|min:0',
@@ -62,6 +62,8 @@ class CateringController extends Controller
             'service_area' => 'nullable|array',
             'is_active' => 'boolean',
             'image' => 'nullable|image|max:2048',
+        ], [
+            'base_price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         // Set available_features berdasarkan tipe
@@ -127,13 +129,15 @@ class CateringController extends Controller
             'description' => 'required|string',
             'min_portion' => 'required|integer|min:1',
             'max_portion' => 'nullable|integer|min:1',
-            'base_price' => 'required|numeric|min:0',
+            'base_price' => 'required|numeric|min:0|max:1000000000',
             'order_terms' => 'nullable|string',
             'schedule_notes' => 'nullable|string',
             'minimal_order_days' => 'nullable|integer|min:0',
             'cutoff_time' => 'nullable|date_format:H:i',
             'is_active' => 'boolean',
             'image' => 'nullable|image|max:2048',
+        ], [
+            'base_price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         // Tipe katering tidak boleh diubah — pertahankan available_features yang ada
@@ -179,8 +183,10 @@ class CateringController extends Controller
         $validated = $request->validate([
             'type' => 'required|in:menu,serving_type,extra',
             'name' => 'required|string|max:150',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0|max:1000000000',
             'is_active' => 'boolean',
+        ], [
+            'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         $validated['catering_service_id'] = $catering->id;
@@ -202,8 +208,10 @@ class CateringController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:150',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0|max:1000000000',
             'is_active' => 'boolean',
+        ], [
+            'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);

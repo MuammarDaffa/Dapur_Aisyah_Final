@@ -44,13 +44,15 @@ class ProductController extends Controller
             'catering_service_id' => 'required|exists:catering_services,id',
             'name' => 'required|string|max:150',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0|max:1000000000',
             'image' => 'nullable|image|max:2048',
             'is_best_seller' => 'boolean',
             'is_active' => 'boolean',
             'status' => 'required|in:tersedia,habis',
             'extras' => 'nullable|array',
             'extras.*' => 'exists:custom_options,id',
+        ], [
+            'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
@@ -86,13 +88,15 @@ class ProductController extends Controller
             'catering_service_id' => 'required|exists:catering_services,id',
             'name' => 'required|string|max:150',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0|max:1000000000',
             'image' => 'nullable|image|max:2048',
             'is_best_seller' => 'boolean',
             'is_active' => 'boolean',
             'status' => 'required|in:tersedia,habis',
             'extras' => 'nullable|array',
             'extras.*' => 'exists:custom_options,id',
+        ], [
+            'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         $validated['is_best_seller'] = $request->boolean('is_best_seller');

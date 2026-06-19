@@ -145,9 +145,19 @@
                     input.value = formatRupiah(input.value);
                 }
 
-                // Format saat mengetik
+                // Format saat mengetik dan batasi maksimal 1 Miliar
                 input.addEventListener('input', function(e) {
-                    this.value = formatRupiah(this.value);
+                    let rawValue = this.value.replace(/\./g, '');
+                    if (parseInt(rawValue) > 1000000000) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Batas Maksimal Harga',
+                            text: 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
+                            confirmButtonColor: '#f97316'
+                        });
+                        rawValue = '1000000000';
+                    }
+                    this.value = formatRupiah(rawValue);
                 });
 
                 // Hapus format sebelum submit form

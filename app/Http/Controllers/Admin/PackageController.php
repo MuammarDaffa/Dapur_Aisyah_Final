@@ -38,7 +38,7 @@ class PackageController extends Controller
             'catering_service_id' => 'required|exists:catering_services,id',
             'name' => 'required|string|max:100',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0|max:1000000000',
             'total_portions' => 'required|integer|min:1',
             'min_addition_qty' => 'nullable|integer|min:0',
             'is_custom' => 'boolean',
@@ -48,6 +48,8 @@ class PackageController extends Controller
             'serving_type_id' => 'nullable|exists:custom_options,id',
             'extra_ids' => 'nullable|array',
             'extra_ids.*' => 'exists:custom_options,id',
+        ], [
+            'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         $validated['is_custom'] = $request->boolean('is_custom');
@@ -87,7 +89,7 @@ class PackageController extends Controller
             'catering_service_id' => 'required|exists:catering_services,id',
             'name' => 'required|string|max:100',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0|max:1000000000',
             'total_portions' => 'required|integer|min:1',
             'min_addition_qty' => 'nullable|integer|min:0',
             'is_custom' => 'boolean',
@@ -97,6 +99,8 @@ class PackageController extends Controller
             'serving_type_id' => 'nullable|exists:custom_options,id',
             'extra_ids' => 'nullable|array',
             'extra_ids.*' => 'exists:custom_options,id',
+        ], [
+            'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         $validated['is_custom'] = $request->boolean('is_custom');
