@@ -115,6 +115,66 @@
             }
         });
     }
+
+    // Fungsi Global Format Rupiah
+    function formatRupiah(angka) {
+        if (!angka && angka !== 0) return '';
+        let number_string = angka.toString().replace(/[^,\d]/g, ''),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        return split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Inisialisasi input yang memiliki class rupiah-input
+        const initRupiahInputs = () => {
+            document.querySelectorAll('.rupiah-input').forEach(input => {
+                // Jangan inisialisasi ulang jika sudah
+                if (input.dataset.rupiahInit) return;
+                input.dataset.rupiahInit = "true";
+
+                // Format saat halaman dimuat
+                if (input.value) {
+                    input.value = formatRupiah(input.value);
+                }
+
+                // Format saat mengetik
+                input.addEventListener('input', function(e) {
+                    this.value = formatRupiah(this.value);
+                });
+
+                // Hapus format sebelum submit form
+                const form = input.closest('form');
+                if (form && !form.dataset.rupiahFormInit) {
+                    form.dataset.rupiahFormInit = "true";
+                    form.addEventListener('submit', () => {
+                        form.querySelectorAll('.rupiah-input').forEach(inp => {
+                            inp.value = inp.value.replace(/\./g, '');
+                        });
+                    });
+                }
+            });
+        };
+
+        initRupiahInputs();
+
+        // Observer untuk menangkap elemen baru yang dimasukkan ke DOM (seperti modal Alpine.js / dinamis)
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+                    initRupiahInputs();
+                }
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
     </script>
     @stack('scripts')
 </body>

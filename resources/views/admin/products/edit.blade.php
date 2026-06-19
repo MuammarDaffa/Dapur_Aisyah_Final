@@ -13,7 +13,7 @@
         <div><label class="block text-sm font-medium mb-1">Nama Produk *</label><input type="text" name="name" required value="{{ old('name', $product->name) }}" class="w-full px-4 py-2 rounded-lg border"></div>
         <div><label class="block text-sm font-medium mb-1">Deskripsi</label><textarea name="description" rows="3" class="w-full px-4 py-2 rounded-lg border">{{ old('description', $product->description) }}</textarea></div>
         <div class="grid grid-cols-2 gap-4">
-            <div><label class="block text-sm font-medium mb-1">Harga (Rp) *</label><input type="number" name="price" required value="{{ old('price', $product->price) }}" class="w-full px-4 py-2 rounded-lg border"></div>
+            <div><label class="block text-sm font-medium mb-1">Harga (Rp) *</label><input type="text" name="price" required value="{{ old('price', $product->price) }}" class="w-full px-4 py-2 rounded-lg border rupiah-input"></div>
             <div>
                 <label class="block text-sm font-medium mb-1">Status Produk *</label>
                 <select name="status" class="w-full px-4 py-2 rounded-lg border">

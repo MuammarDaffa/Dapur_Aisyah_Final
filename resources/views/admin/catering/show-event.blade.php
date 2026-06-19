@@ -321,7 +321,7 @@
             </div>
             <div id="addPriceField">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
-                <input type="number" name="price" value="0" min="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                <input type="text" name="price" value="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500 rupiah-input">
             </div>
             <div class="flex items-center gap-2">
                 <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
@@ -349,7 +349,7 @@
             </div>
             <div id="editPriceField">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
-                <input type="number" name="price" id="editPrice" value="0" min="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                <input type="text" name="price" id="editPrice" value="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500 rupiah-input">
             </div>
             <div class="flex items-center gap-2">
                 <input type="checkbox" name="is_active" value="1" id="editActive" class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
@@ -378,7 +378,7 @@ function closeOptionModal() {
 
 function openEditModal(optionId, name, price, isActive, type) {
     document.getElementById('editName').value = name;
-    document.getElementById('editPrice').value = price;
+    document.getElementById('editPrice').value = formatRupiah(price);
     document.getElementById('editActive').checked = isActive;
     document.getElementById('editOptionForm').action = `/admin/catering/${cateringId}/options/${optionId}`;
     document.getElementById('editOptionModal').style.display = 'flex';

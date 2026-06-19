@@ -44,8 +44,7 @@
                 <label for="cost" class="block text-sm font-semibold text-gray-700 mb-1.5">Biaya (Rp) <span class="text-red-500">*</span></label>
                 <div class="relative">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">Rp</span>
-                    <input type="number" name="cost" id="cost" value="{{ old('cost', 20000) }}" required min="0"
-                           class="w-full pl-10 border-gray-300 rounded-xl shadow-sm focus:ring-orange-500 focus:border-orange-500 transition-colors">
+                    <input type="text" name="cost" id="cost" value="{{ old('cost', 20000) }}" required class="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-colors bg-gray-50 focus:bg-white rupiah-input">
                 </div>
                 @error('cost')
                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>

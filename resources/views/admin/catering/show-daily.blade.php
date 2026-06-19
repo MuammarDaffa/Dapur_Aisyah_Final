@@ -258,7 +258,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
-                <input type="number" name="price" value="0" min="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                <input type="text" name="price" value="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500 rupiah-input">
             </div>
             <div class="flex items-center gap-2">
                 <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
@@ -286,7 +286,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
-                <input type="number" name="price" id="editExtraPrice" value="0" min="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                <input type="text" name="price" id="editExtraPrice" value="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500 rupiah-input">
             </div>
             <div class="flex items-center gap-2">
                 <input type="checkbox" name="is_active" value="1" id="editExtraActive" class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
@@ -367,7 +367,7 @@ function openExtraModal() {
 
 function openEditExtraModal(id, name, price, isActive) {
     document.getElementById('editExtraName').value = name;
-    document.getElementById('editExtraPrice').value = price;
+    document.getElementById('editExtraPrice').value = formatRupiah(price);
     document.getElementById('editExtraActive').checked = isActive;
     document.getElementById('editExtraForm').action = `/admin/catering/${cateringId}/options/${id}`;
     document.getElementById('editExtraModal').style.display = 'flex';
