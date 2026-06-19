@@ -9,8 +9,8 @@
         <button type="button" onclick="switchTab('daily')" id="tab-daily"
             class="px-6 py-3 text-sm font-semibold border-b-2 transition-colors {{ $activeTab === 'daily' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700' }}">
             🍱 Daily
-            @if($dailyCarts->isNotEmpty())
-                <span class="ml-1 px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full text-xs font-bold">{{ $dailyCarts->count() }}</span>
+            @if($dailyGroups->isNotEmpty())
+                <span class="ml-1 px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full text-xs font-bold">{{ $dailyGroups->flatten()->count() }}</span>
             @endif
         </button>
         <button type="button" onclick="switchTab('event')" id="tab-event"
@@ -26,84 +26,103 @@
     {{-- TAB DAILY --}}
     {{-- =============================== --}}
     <div id="content-daily" style="{{ $activeTab !== 'daily' ? 'display:none' : '' }}">
-        @if($dailyCarts->isEmpty())
+        @if($dailyGroups->isEmpty())
             <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
                 <p class="text-5xl mb-4">🍱</p>
                 <p class="text-gray-500 font-medium mb-4">Keranjang harian Anda kosong</p>
                 <a href="{{ route('customer.products') }}" class="px-6 py-3 bg-orange-500 text-white font-medium rounded-full hover:bg-orange-600 transition-colors">Lihat Menu →</a>
             </div>
         @else
-            <div class="space-y-4 mb-6">
-                @foreach($dailyCarts as $cart)
+            <div class="space-y-6">
+                @foreach($dailyGroups as $menuDate => $groupItems)
                 @php
-                    $basePrice = $cart->product ? (float) $cart->product->price : ($cart->customOption ? (float) $cart->customOption->price : 0);
-                    $extrasList = collect();
-                    $extrasPrice = 0;
-                    if (!empty($cart->extras)) {
-                        $extraIds = array_column($cart->extras, 'id');
-                        $options = \App\Models\CustomOption::whereIn('id', $extraIds)->get()->keyBy('id');
-                        foreach ($cart->extras as $extraData) {
-                            if ($opt = $options->get($extraData['id'])) {
-                                $exPrice = (float) $opt->price * $extraData['qty'];
-                                $extrasPrice += $exPrice;
-                                $extrasList->push((object)[
-                                    'name' => $opt->name,
-                                    'qty' => $extraData['qty'],
-                                    'price' => $exPrice,
-                                ]);
-                            }
-                        }
-                    }
+                    $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
+                    $formattedDate = $menuDate !== 'unknown' ? \Carbon\Carbon::parse($menuDate)->translatedFormat('l, d F Y') : 'Tanggal Tidak Diketahui';
                 @endphp
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 cart-item" data-base-price="{{ $basePrice }}" data-extras-price="{{ $extrasPrice }}">
-                    <div class="flex items-start space-x-4">
-                        <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
-                            @if($cart->product && $cart->product->image)
-                                <img src="{{ Storage::url($cart->product->image) }}" alt="{{ $cart->product->name }}" class="w-full h-full object-cover rounded-xl">
-                            @else
-                                🍛
-                            @endif
-                        </div>
-                        <div class="flex-1 w-full">
-                            <div class="flex sm:items-start justify-between flex-col sm:flex-row gap-2">
-                                <div>
-                                    <h4 class="font-bold text-gray-900 text-lg">{{ $cart->product->name ?? ($cart->customOption->name ?? 'Item') }}</h4>
-                                    <p class="text-sm font-medium text-gray-700">{{ $cart->quantity }} Porsi</p>
-                                </div>
-                                <p class="text-lg font-bold text-gray-900 item-subtotal">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</p>
+                <div class="bg-white rounded-xl shadow-sm border border-orange-100 overflow-hidden">
+                    {{-- Header --}}
+                    <div class="bg-gradient-to-r from-orange-50 to-amber-50 px-6 py-4 border-b border-orange-100 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">📅</span>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Pengiriman: {{ $formattedDate }}</h4>
+                                <p class="text-sm font-medium text-orange-600">{{ $groupItems->count() }} Menu</p>
                             </div>
-                            
-                            @if($extrasList->isNotEmpty())
-                                <div class="text-sm text-gray-600 mt-2">
-                                    <span class="font-medium text-gray-800">Extra:</span> 
-                                    {{ collect($extrasList)->map(fn($ex) => $ex->name . ' ×' . $ex->qty)->implode(', ') }}
-                                </div>
-                            @endif
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xl font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
+                        </div>
+                    </div>
 
-                            <div class="flex items-center justify-end mt-4 space-x-3">
-                                <button type="button" onclick="openDailyEditModal({{ $cart->id }})" class="px-4 py-2 bg-orange-100 text-orange-700 text-sm font-semibold rounded-lg hover:bg-orange-200 transition-colors">Ubah Pesanan</button>
-                                <form action="{{ route('customer.cart.destroy', $cart) }}" method="POST" class="inline">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="px-4 py-2 bg-red-50 text-red-600 text-sm font-semibold rounded-lg hover:bg-red-100 transition-colors">
-                                        Hapus
-                                    </button>
-                                </form>
+                    {{-- Items --}}
+                    <div class="p-6 space-y-4">
+                        @foreach($groupItems as $cart)
+                        @php
+                            $basePrice = $cart->product ? (float) $cart->product->price : ($cart->customOption ? (float) $cart->customOption->price : 0);
+                            $extrasList = collect();
+                            $extrasPrice = 0;
+                            if (!empty($cart->extras)) {
+                                $extraIds = array_column($cart->extras, 'id');
+                                $options = \App\Models\CustomOption::whereIn('id', $extraIds)->get()->keyBy('id');
+                                foreach ($cart->extras as $extraData) {
+                                    if ($opt = $options->get($extraData['id'])) {
+                                        $exPrice = (float) $opt->price * $extraData['qty'];
+                                        $extrasPrice += $exPrice;
+                                        $extrasList->push((object)[
+                                            'name' => $opt->name,
+                                            'qty' => $extraData['qty'],
+                                            'price' => $exPrice,
+                                        ]);
+                                    }
+                                }
+                            }
+                        @endphp
+                        <div class="flex items-start space-x-4">
+                            <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
+                                @if($cart->product && $cart->product->image)
+                                    <img src="{{ Storage::url($cart->product->image) }}" alt="{{ $cart->product->name }}" class="w-full h-full object-cover rounded-xl">
+                                @else
+                                    🍛
+                                @endif
+                            </div>
+                            <div class="flex-1 w-full">
+                                <div class="flex sm:items-start justify-between flex-col sm:flex-row gap-2">
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 text-lg">{{ $cart->product->name ?? ($cart->customOption->name ?? 'Item') }}</h4>
+                                        <p class="text-sm font-medium text-gray-700">{{ $cart->quantity }} Porsi</p>
+                                    </div>
+                                    <p class="text-lg font-bold text-gray-900">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</p>
+                                </div>
+                                
+                                @if($extrasList->isNotEmpty())
+                                    <div class="text-sm text-gray-600 mt-2">
+                                        <span class="font-medium text-gray-800">Extra:</span> 
+                                        {{ collect($extrasList)->map(fn($ex) => $ex->name . ' ×' . $ex->qty)->implode(', ') }}
+                                    </div>
+                                @endif
+
+                                <div class="flex items-center justify-end mt-4 space-x-3 border-b border-gray-100 pb-4">
+                                    <button type="button" onclick="openDailyEditModal({{ $cart->id }})" class="px-4 py-2 bg-orange-100 text-orange-700 text-sm font-semibold rounded-lg hover:bg-orange-200 transition-colors">Ubah Pesanan</button>
+                                    <form action="{{ route('customer.cart.destroy', $cart) }}" method="POST" class="inline">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="px-4 py-2 bg-red-50 text-red-600 text-sm font-semibold rounded-lg hover:bg-red-100 transition-colors">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
+                        @endforeach
+                    </div>
+
+                    <div class="px-6 py-4 bg-gray-50 flex gap-3">
+                        <a href="{{ route('customer.checkout', ['menu_date' => $menuDate]) }}"
+                            class="flex-1 text-center px-4 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all text-sm">
+                            Checkout untuk Tanggal Ini →
+                        </a>
                     </div>
                 </div>
                 @endforeach
-            </div>
-
-            <!-- Daily Summary -->
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-gray-600">Subtotal (<span id="item-count">{{ $dailyCarts->count() }}</span> item)</span>
-                    <span class="text-xl font-bold text-gray-900" id="cart-total">Rp {{ number_format($dailySubtotal, 0, ',', '.') }}</span>
-                </div>
-                <a href="{{ route('customer.checkout') }}" class="block w-full text-center px-6 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all">
-                    Lanjut ke Checkout →
-                </a>
             </div>
         @endif
     </div>
@@ -232,7 +251,7 @@
 {{-- MODAL: Daily Edit (tetap seperti lama) --}}
 {{-- =============================== --}}
 @php
-    $allDailyCartsJson = $dailyCarts->keyBy('id')->map(function($c) {
+    $allDailyCartsJson = $dailyGroups->flatten()->keyBy('id')->map(function($c) {
         $basePrice = $c->product ? (float) $c->product->price : ($c->customOption ? (float) $c->customOption->price : 0);
         $name = $c->product->name ?? ($c->customOption->name ?? 'Item');
         $serviceId = $c->product->catering_service_id ?? ($c->customOption->catering_service_id ?? null);

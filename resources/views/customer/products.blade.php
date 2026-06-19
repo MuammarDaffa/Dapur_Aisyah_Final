@@ -20,85 +20,163 @@
                     @endforeach
                 </select>
             </div>
-            <div>
-                <label class="text-xs font-medium text-gray-500 mb-1 block">Hari</label>
-                <select name="day" class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400">
-                    <option value="">Semua Hari</option>
-                    @foreach(['senin','selasa','rabu','kamis','jumat','sabtu','minggu'] as $day)
-                        <option value="{{ $day }}" {{ request('day') == $day ? 'selected' : '' }}>{{ ucfirst($day) }}</option>
-                    @endforeach
-                </select>
-            </div>
             <button type="submit" class="px-6 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors">Filter</button>
         </form>
     </div>
 
-    <!-- Products Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        @forelse($products as $product)
-            @php
-                $isAvailable = $product->isAvailable();
-                $isTodayOnly = $product->available_days === $currentDay;
-                $isPastCutoff = $isTodayOnly && $currentHour >= 10;
-                $canOrder = $isAvailable && !$isPastCutoff;
-            @endphp
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 {{ !$canOrder ? 'opacity-75 grayscale-[0.3]' : '' }}">
-                <div class="relative h-44 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center">
-                    @if($product->image)
-                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
-                    @else
-                        <span class="text-5xl">🍛</span>
-                    @endif
-                    @if($product->is_best_seller)
-                        <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">🔥 Best Seller</span>
-                    @endif
-                    @if(!$isAvailable)
-                        <span class="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg">HABIS</span>
-                    @endif
-                </div>
-                <div class="p-5">
-                    <p class="text-xs text-orange-500 font-medium mb-1">{{ $product->cateringService->name ?? '' }}</p>
-                    <h3 class="font-bold text-gray-900 mb-1">{{ $product->name }}</h3>
-                    <p class="text-xs text-gray-500 mb-3 line-clamp-2">{{ $product->description }}</p>
-                    @if($product->available_days)
-                        <div class="flex flex-wrap gap-1 mb-3">
-                            <span class="text-xs {{ $product->available_days === $currentDay ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-600' }} px-2 py-0.5 rounded-full">{{ ucfirst($product->available_days) }}</span>
-                        </div>
-                    @endif
-                    
-                    @if($isPastCutoff)
-                        <p class="text-xs text-red-500 font-medium mb-3">Pemesanan ditutup (lewat jam 10:00)</p>
-                    @endif
+    {{-- ========== PERIODE AKTIF ========== --}}
+    @if($currentPeriods->isNotEmpty())
+    <div class="mb-10">
+        @foreach($currentPeriods as $period)
+        <div class="flex items-center gap-3 mb-4">
+            <h3 class="text-lg font-bold text-gray-800">🟢 Periode Aktif</h3>
+            <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">{{ $period->nama_periode }}</span>
+            <span class="text-xs text-gray-400">{{ $period->formatted_range }}</span>
+        </div>
+        @endforeach
 
-                    <div class="flex items-center justify-between mt-auto">
-                        <span class="text-lg font-bold text-orange-600">{{ $product->formatted_price }}</span>
-                        @if($canOrder)
-                        <button type="button" onclick="openOrderModal({{ $product->id }})"
-                            class="flex items-center space-x-1 px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-xl hover:bg-orange-600 transition-colors shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                            <span>Keranjang</span>
-                        </button>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            @forelse($currentItems as $item)
+                @php
+                    $product = $item->product;
+                    $isPast = $item->isPast();
+                    $canOrder = !$isPast && $item->canOrder() && $product->isAvailable();
+                @endphp
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 {{ !$canOrder ? 'opacity-75 grayscale-[0.3]' : '' }}">
+                    <div class="relative h-44 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center">
+                        @if($product->image)
+                            <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
                         @else
-                        <button type="button" disabled
-                            class="flex items-center space-x-1 px-4 py-2 bg-gray-300 text-gray-500 text-sm font-medium rounded-xl cursor-not-allowed">
-                            <span>Tidak Tersedia</span>
-                        </button>
+                            <span class="text-5xl">🍛</span>
+                        @endif
+                        @if($product->is_best_seller)
+                            <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">🔥 Best Seller</span>
+                        @endif
+                        @if(!$product->isAvailable())
+                            <span class="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg">HABIS</span>
+                        @elseif($isPast)
+                            <span class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                <span class="bg-red-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full">Pesanan sudah lewat hari</span>
+                            </span>
+                        @elseif(!$canOrder)
+                            <span class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                <span class="bg-orange-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full">Melewati batas pemesanan</span>
+                            </span>
                         @endif
                     </div>
-                </div>
-            </div>
-        @empty
-            <div class="col-span-full text-center py-12 text-gray-500">
-                <p class="text-5xl mb-3">🍽️</p>
-                <p class="font-medium">Belum ada menu tersedia.</p>
-            </div>
-        @endforelse
-    </div>
+                    <div class="p-5">
+                        <p class="text-xs text-orange-500 font-medium mb-1">{{ $product->cateringService->name ?? '' }}</p>
+                        <h3 class="font-bold text-gray-900 mb-1">{{ $product->name }}</h3>
+                        <p class="text-xs text-gray-500 mb-2 line-clamp-2">{{ $product->description }}</p>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-medium">📅 {{ $item->formatted_date }}</span>
+                        </div>
 
-    <div class="mt-8">{{ $products->withQueryString()->links() }}</div>
+                        <div class="flex items-center justify-between mt-auto">
+                            <span class="text-lg font-bold text-orange-600">{{ $product->formatted_price }}</span>
+                            @if($canOrder)
+                            <button type="button" onclick="openOrderModal({{ $product->id }}, '{{ $item->menu_date->format('Y-m-d') }}')"
+                                class="flex items-center space-x-1 px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-xl hover:bg-orange-600 transition-colors shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                <span>Keranjang</span>
+                            </button>
+                            @else
+                            <button type="button" disabled
+                                class="flex items-center space-x-1 px-4 py-2 bg-gray-300 text-gray-500 text-sm font-medium rounded-xl cursor-not-allowed">
+                                <span>Tidak Tersedia</span>
+                            </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full text-center py-12 text-gray-500">
+                    <p class="text-5xl mb-3">🍽️</p>
+                    <p class="font-medium">Belum ada menu untuk periode ini.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+    @endif
+
+    {{-- ========== PERIODE BERIKUTNYA ========== --}}
+    <div class="mb-10">
+        @if($upcomingPeriods->isNotEmpty())
+            @foreach($upcomingPeriods as $period)
+            <div class="flex items-center gap-3 mb-4">
+                <h3 class="text-lg font-bold text-gray-800">📅 Periode Berikutnya</h3>
+                <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">{{ $period->nama_periode }}</span>
+                <span class="text-xs text-gray-400">{{ $period->formatted_range }}</span>
+            </div>
+            @endforeach
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @forelse($upcomingItems as $item)
+                    @php
+                        $product = $item->product;
+                        $canOrder = $item->canOrder() && $product->isAvailable();
+                    @endphp
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 {{ !$canOrder ? 'opacity-75 grayscale-[0.3]' : '' }}">
+                        <div class="relative h-44 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+                            @if($product->image)
+                                <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                            @else
+                                <span class="text-5xl">🍛</span>
+                            @endif
+                            @if($product->is_best_seller)
+                                <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">🔥 Best Seller</span>
+                            @endif
+                            @if(!$product->isAvailable())
+                                <span class="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg">HABIS</span>
+                            @elseif(!$canOrder)
+                                <span class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                    <span class="bg-orange-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full">Melewati batas pemesanan</span>
+                                </span>
+                            @endif
+                        </div>
+                        <div class="p-5">
+                            <p class="text-xs text-blue-500 font-medium mb-1">{{ $product->cateringService->name ?? '' }}</p>
+                            <h3 class="font-bold text-gray-900 mb-1">{{ $product->name }}</h3>
+                            <p class="text-xs text-gray-500 mb-2 line-clamp-2">{{ $product->description }}</p>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">📅 {{ $item->formatted_date }}</span>
+                            </div>
+
+                            <div class="flex items-center justify-between mt-auto">
+                                <span class="text-lg font-bold text-orange-600">{{ $product->formatted_price }}</span>
+                                @if($canOrder)
+                                <button type="button" onclick="openOrderModal({{ $product->id }}, '{{ $item->menu_date->format('Y-m-d') }}')"
+                                    class="flex items-center space-x-1 px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-xl hover:bg-orange-600 transition-colors shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                    <span>Keranjang</span>
+                                </button>
+                                @else
+                                <button type="button" disabled
+                                    class="flex items-center space-x-1 px-4 py-2 bg-gray-300 text-gray-500 text-sm font-medium rounded-xl cursor-not-allowed">
+                                    <span>Tidak Tersedia</span>
+                                </button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-full text-center py-12 text-gray-500">
+                        <p class="text-5xl mb-3">🍽️</p>
+                        <p class="font-medium">Belum ada menu untuk periode berikutnya.</p>
+                    </div>
+                @endforelse
+            </div>
+        @else
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
+                <p class="text-3xl mb-2">📅</p>
+                <p class="font-medium text-gray-600">Menu periode berikutnya belum tersedia.</p>
+                <p class="text-sm text-gray-400 mt-1">Silakan cek kembali nanti untuk menu terbaru.</p>
+            </div>
+        @endif
+    </div>
 </div>
 
-{{-- Order Modal (Task 3: Tambah Extra) --}}
+{{-- Order Modal --}}
 <div id="orderModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] flex flex-col transform transition-all">
         {{-- Header --}}
@@ -114,6 +192,7 @@
             <form id="orderForm" action="{{ route('customer.cart.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="product_id" id="modalProductId">
+                <input type="hidden" name="menu_date" id="modalMenuDate">
 
                 {{-- Product Info --}}
                 <div class="flex items-center space-x-4 mb-6 bg-orange-50/50 rounded-xl p-4">
@@ -121,6 +200,7 @@
                     <div>
                         <h4 id="modalProductName" class="font-bold text-gray-900"></h4>
                         <p id="modalProductPrice" class="text-orange-600 font-semibold text-sm"></p>
+                        <p id="modalMenuDateLabel" class="text-xs text-gray-500 mt-0.5"></p>
                     </div>
                 </div>
 
@@ -167,27 +247,29 @@
 
 @push('scripts')
 <script>
-    @php
-        $productsJson = $products->getCollection()->keyBy('id')->map(function($p) {
-            return [
-                'id' => $p->id,
-                'name' => $p->name,
-                'price' => (float) $p->price,
-                'service_id' => $p->catering_service_id,
-            ];
-        });
-    @endphp
-    const productsData = @json($productsJson);
+    // Build products data from all menu items
+    const productsData = {
+        @foreach($currentItems->merge($upcomingItems) as $item)
+        {{ $item->product->id }}: {
+            id: {{ $item->product->id }},
+            name: @json($item->product->name),
+            price: {{ (float) $item->product->price }},
+            service_id: {{ $item->product->catering_service_id }},
+        },
+        @endforeach
+    };
     let currentProduct = null;
     let availableExtras = [];
 
-    function openOrderModal(productId) {
+    function openOrderModal(productId, menuDate) {
         currentProduct = productsData[productId];
         if (!currentProduct) return;
 
         document.getElementById('modalProductId').value = currentProduct.id;
+        document.getElementById('modalMenuDate').value = menuDate;
         document.getElementById('modalProductName').textContent = currentProduct.name;
         document.getElementById('modalProductPrice').textContent = formatRupiah(currentProduct.price) + ' / porsi';
+        document.getElementById('modalMenuDateLabel').textContent = '📅 ' + menuDate;
         document.getElementById('modalQty').value = 1;
         
         document.getElementById('modalExtrasList').innerHTML = '';
@@ -292,8 +374,6 @@
 
         let val = parseInt(input.value);
         if (isNaN(val) || val < 1) {
-            // Jika kosong/tidak valid saat mengetik, biarkan sementara tapi jangan update total ke NaN
-            // Akan otomatis jadi 1 saat kehilangan fokus atau tambah/kurang
             if (input.value === "") return;
             val = 1;
             input.value = 1;

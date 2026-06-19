@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboard;
+use App\Http\Controllers\Admin\MenuPeriodController;
 use App\Http\Controllers\Customer\ProfileController;
 use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\CheckoutController;
@@ -78,8 +79,8 @@ Route::middleware(['auth', 'role:customer'])->prefix('dashboard')->name('custome
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
 
     // Checkout (Daily)
-    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
-    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/checkout/{menu_date?}', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout/{menu_date?}', [CheckoutController::class, 'store'])->name('checkout.store');
 
     // Orders
     Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders');
@@ -115,6 +116,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/catering/{catering}/options', [CateringController::class, 'storeOption'])->name('catering.options.store');
     Route::put('/catering/{catering}/options/{option}', [CateringController::class, 'updateOption'])->name('catering.options.update');
     Route::delete('/catering/{catering}/options/{option}', [CateringController::class, 'destroyOption'])->name('catering.options.destroy');
+
+    // Menu Mingguan (Menu Periods — nested under catering)
+    Route::get('/catering/{catering}/menu-periods', [MenuPeriodController::class, 'index'])->name('menu-periods.index');
+    Route::post('/catering/{catering}/menu-periods', [MenuPeriodController::class, 'store'])->name('menu-periods.store');
+    Route::get('/catering/{catering}/menu-periods/{period}', [MenuPeriodController::class, 'show'])->name('menu-periods.show');
+    Route::put('/catering/{catering}/menu-periods/{period}', [MenuPeriodController::class, 'update'])->name('menu-periods.update');
+    Route::delete('/catering/{catering}/menu-periods/{period}', [MenuPeriodController::class, 'destroy'])->name('menu-periods.destroy');
+    Route::post('/catering/{catering}/menu-periods/{period}/assign', [MenuPeriodController::class, 'assignProduct'])->name('menu-periods.assign');
+    Route::delete('/catering/{catering}/menu-periods/{period}/remove/{item}', [MenuPeriodController::class, 'removeProduct'])->name('menu-periods.remove');
 
     // Products (diakses dari detail katering, bukan standalone)
     Route::get('/products/search', [AdminProductController::class, 'search'])->name('products.search');

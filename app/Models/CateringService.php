@@ -14,6 +14,7 @@ class CateringService extends Model
     protected $fillable = [
         'name', 'slug', 'description', 'serving_types', 'min_portion',
         'max_portion', 'base_price', 'order_terms', 'schedule_notes',
+        'minimal_order_days', 'cutoff_time',
         'service_area', 'available_features', 'is_active', 'image',
     ];
 
@@ -102,6 +103,11 @@ class CateringService extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function menuPeriods(): HasMany
+    {
+        return $this->hasMany(MenuPeriod::class);
     }
 
 

@@ -14,7 +14,7 @@ class Product extends Model
 
     protected $fillable = [
         'catering_service_id', 'name', 'slug', 'description', 'price',
-        'image', 'is_best_seller', 'available_days', 'is_active', 'status',
+        'image', 'is_best_seller', 'is_active', 'status',
     ];
 
     protected function casts(): array
@@ -81,6 +81,11 @@ class Product extends Model
     public function extras(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(CustomOption::class, 'custom_option_product');
+    }
+
+    public function menuPeriodItems(): HasMany
+    {
+        return $this->hasMany(\App\Models\MenuPeriodItem::class);
     }
 
     public function orderItems(): HasMany

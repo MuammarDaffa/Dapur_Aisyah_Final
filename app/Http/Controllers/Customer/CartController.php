@@ -21,15 +21,16 @@ class CartController extends Controller
         $dailyCarts = $carts->filter(fn ($c) => $c->isDailyItem());
         $eventCarts = $carts->filter(fn ($c) => $c->isEventItem());
 
+        // Group daily items by menu_date
+        $dailyGroups = $dailyCarts->groupBy(fn ($c) => $c->menu_date ? $c->menu_date->format('Y-m-d') : 'unknown');
+
         // Group event items by cart_group_id
         $eventGroups = $eventCarts->groupBy('cart_group_id');
 
-        $dailySubtotal = $dailyCarts->sum(fn ($c) => $c->subtotal);
-
         // Active tab dari query param
-        $activeTab = $request->get('tab', $dailyCarts->isNotEmpty() ? 'daily' : ($eventGroups->isNotEmpty() ? 'event' : 'daily'));
+        $activeTab = $request->get('tab', $dailyGroups->isNotEmpty() ? 'daily' : ($eventGroups->isNotEmpty() ? 'event' : 'daily'));
 
-        return view('customer.cart', compact('dailyCarts', 'eventGroups', 'dailySubtotal', 'activeTab'));
+        return view('customer.cart', compact('dailyGroups', 'eventGroups', 'activeTab'));
     }
 
     /**
@@ -41,6 +42,7 @@ class CartController extends Controller
             'product_id' => 'required_without:custom_option_id|exists:products,id',
             'custom_option_id' => 'required_without:product_id|exists:custom_options,id',
             'quantity' => 'required|integer|min:1',
+            'menu_date' => 'nullable|date',
             'extras' => 'nullable|array',
             'extras.*.id' => 'exists:custom_options,id',
             'extras.*.qty' => 'integer|min:1',
@@ -67,6 +69,7 @@ class CartController extends Controller
         $existing = $user->carts()
             ->where('product_id', $validated['product_id'] ?? null)
             ->where('custom_option_id', $validated['custom_option_id'] ?? null)
+            ->where('menu_date', $validated['menu_date'] ?? null)
             ->whereNull('cart_group_id')
             ->first();
 
@@ -103,6 +106,7 @@ class CartController extends Controller
                 'product_id' => $validated['product_id'] ?? null,
                 'custom_option_id' => $validated['custom_option_id'] ?? null,
                 'quantity' => $validated['quantity'],
+                'menu_date' => $validated['menu_date'] ?? null,
                 'extras' => empty($extras) ? null : $extras,
             ]);
         }

@@ -18,19 +18,26 @@ use Illuminate\Support\Facades\DB;
 class CheckoutController extends Controller
 {
     /**
-     * Checkout page untuk Daily (tidak berubah).
+     * Checkout page untuk Daily.
      */
-    public function index()
+    public function index($menu_date = null)
     {
         $user = auth()->user();
-        $carts = $user->carts()
+        $cartsQuery = $user->carts()
             ->whereNull('cart_group_id') // Hanya daily
-            ->with(['product.cateringService', 'customOption', 'cateringPackage'])
-            ->get();
+            ->with(['product.cateringService', 'customOption', 'cateringPackage']);
+            
+        if ($menu_date && $menu_date !== 'unknown') {
+            $cartsQuery->whereDate('menu_date', $menu_date);
+        } else {
+            $cartsQuery->whereNull('menu_date');
+        }
+        
+        $carts = $cartsQuery->get();
 
         if ($carts->isEmpty()) {
             return redirect()->route('customer.cart')
-                ->with('error', 'Keranjang harian kosong.');
+                ->with('error', 'Keranjang harian kosong atau tanggal tidak valid.');
         }
 
         // Group (untuk daily, setiap item = 1 group)
@@ -40,25 +47,38 @@ class CheckoutController extends Controller
 
         $districts = District::with('villages')->get();
         $subtotal = $carts->sum(fn ($cart) => $cart->subtotal);
+        
+        $orderDate = $menu_date && $menu_date !== 'unknown' ? $menu_date : date('Y-m-d');
+        
+        // Pass cutoff data if available
+        $firstCart = $carts->first();
+        $service = $firstCart->product ? $firstCart->product->cateringService : ($firstCart->customOption ? $firstCart->customOption->cateringService : null);
 
-        return view('customer.checkout', compact('carts', 'groupedCarts', 'districts', 'subtotal', 'user'));
+        return view('customer.checkout', compact('carts', 'groupedCarts', 'districts', 'subtotal', 'user', 'orderDate', 'menu_date', 'service'));
     }
 
     /**
-     * Store daily checkout (tidak berubah).
+     * Store daily checkout.
      */
-    public function store(CheckoutRequest $request)
+    public function store(CheckoutRequest $request, $menu_date = null)
     {
         $validated = $request->validated();
 
         $user = auth()->user();
-        $carts = $user->carts()
+        $cartsQuery = $user->carts()
             ->whereNull('cart_group_id') // Hanya daily
-            ->with(['product.cateringService', 'customOption', 'cateringPackage'])
-            ->get();
+            ->with(['product.cateringService', 'customOption', 'cateringPackage']);
+            
+        if ($menu_date && $menu_date !== 'unknown') {
+            $cartsQuery->whereDate('menu_date', $menu_date);
+        } else {
+            $cartsQuery->whereNull('menu_date');
+        }
+        
+        $carts = $cartsQuery->get();
 
         if ($carts->isEmpty()) {
-            return back()->with('error', 'Keranjang belanja kosong.');
+            return back()->with('error', 'Keranjang belanja kosong atau tanggal tidak valid.');
         }
 
         // Tentukan catering service dan package
@@ -167,8 +187,12 @@ class CheckoutController extends Controller
             // Buat invoice
             InvoiceService::createInvoice($order);
 
-            // Hapus keranjang daily saja
-            $user->carts()->whereNull('cart_group_id')->delete();
+            // Hapus keranjang daily saja yang sudah dicheckout
+            if ($menu_date && $menu_date !== 'unknown') {
+                $user->carts()->whereNull('cart_group_id')->whereDate('menu_date', $menu_date)->delete();
+            } else {
+                $user->carts()->whereNull('cart_group_id')->whereNull('menu_date')->delete();
+            }
 
             // Jika transfer, buat Midtrans snap token
             if ($validated['payment_method'] === 'transfer') {

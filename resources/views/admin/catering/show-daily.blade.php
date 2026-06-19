@@ -30,9 +30,14 @@
                         @endif
                     </div>
                 </div>
-                <a href="{{ route('admin.catering.edit', $catering) }}" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-                    ✏️ Edit Katering
-                </a>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('admin.menu-periods.index', $catering) }}" class="px-4 py-2 text-sm font-medium text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
+                        📅 Menu Mingguan
+                    </a>
+                    <a href="{{ route('admin.catering.edit', $catering) }}" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                        ✏️ Edit Katering
+                    </a>
+                </div>
             </div>
 
             {{-- Info Grid --}}
@@ -76,7 +81,6 @@
                     <th class="px-6 py-3 text-center font-semibold">Harga</th>
                     <th class="px-6 py-3 text-center font-semibold">Best Seller</th>
                     <th class="px-6 py-3 text-center font-semibold">Status</th>
-                    <th class="px-6 py-3 text-center font-semibold">Ketersediaan</th>
                     <th class="px-6 py-3 text-center font-semibold">Aksi</th>
                 </tr>
             </thead>
@@ -92,9 +96,6 @@
                             @endif
                             <div>
                                 <p class="font-medium text-gray-900">{{ $p->name }}</p>
-                                @if($p->available_days)
-                                <p class="text-xs text-gray-400 mt-0.5">{{ ucfirst($p->available_days) }}</p>
-                                @endif
                             </div>
                         </div>
                     </td>
@@ -105,11 +106,6 @@
                     <td class="px-6 py-4 text-center">
                         <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $p->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
                             {{ $p->is_active ? 'Aktif' : 'Nonaktif' }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ ($p->status ?? 'tersedia') === 'tersedia' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700' }}">
-                            {{ ($p->status ?? 'tersedia') === 'tersedia' ? 'Tersedia' : 'Habis' }}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-center">
@@ -124,7 +120,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-8 text-center text-gray-400">
+                    <td colspan="5" class="px-6 py-8 text-center text-gray-400">
                         <p class="text-2xl mb-1">🍽️</p>
                         <p class="text-sm">Belum ada produk untuk katering ini.</p>
                     </td>

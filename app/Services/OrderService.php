@@ -33,10 +33,10 @@ class OrderService
     }
 
     /**
-     * Validasi tanggal pemesanan berdasarkan jenis layanan.
+     * Validasi tanggal pemesanan berdasarkan cutoff layanan.
      *
-     * - Katering Harian: H-1 sebelum jam 21:00 WIB
-     * - Katering Acara Kantoran: H-3 sebelum tanggal acara
+     * Menggunakan minimal_order_days dan cutoff_time dari CateringService.
+     * Berlaku untuk semua jenis layanan (Daily, Event, dll).
      *
      * @throws ValidationException
      */
@@ -47,37 +47,30 @@ class OrderService
         }
 
         $service = CateringService::find($cateringServiceId);
-        if (!$service) {
+        if (!$service || !$service->minimal_order_days) {
             return;
         }
 
-        $orderDateCarbon = Carbon::parse($orderDate);
+        $orderDateCarbon = Carbon::parse($orderDate)->startOfDay();
         $now = Carbon::now();
+        $today = Carbon::today();
 
-        // Cek apakah ini katering harian menggunakan fitur
-        $isDaily = $service->isDaily();
-        // Cek apakah ini katering acara menggunakan fitur
-        $isEvent = $service->isEvent();
+        // Hitung selisih hari
+        $daysUntil = (int) $today->diffInDays($orderDateCarbon, false);
 
-        if ($isDaily) {
-            // Pemesanan harian: H-1 sebelum jam 21:00
-            $deadline = $now->copy()->setTime(21, 0, 0);
-            $minDate = $now->isBefore($deadline)
-                ? Carbon::tomorrow()
-                : Carbon::now()->addDays(2);
+        // Cek minimal hari
+        if ($daysUntil < $service->minimal_order_days) {
+            throw ValidationException::withMessages([
+                'order_date' => "Pesanan untuk layanan {$service->name} harus dilakukan minimal {$service->minimal_order_days} hari sebelum tanggal acara.",
+            ]);
+        }
 
-            if ($orderDateCarbon->lt($minDate)) {
+        // Cek cutoff jam (hanya jika tepat pada batas hari minimal)
+        if ($daysUntil == $service->minimal_order_days && $service->cutoff_time) {
+            $cutoffTime = substr($service->cutoff_time, 0, 5); // Format H:i
+            if ($now->format('H:i') >= $cutoffTime) {
                 throw ValidationException::withMessages([
-                    'order_date' => 'Pemesanan katering harian minimal H-1 sebelum jam 21:00 WIB.',
-                ]);
-            }
-        } elseif ($isEvent) {
-            // Pemesanan acara: H-3 sebelum tanggal acara
-            $minDate = $now->copy()->addDays(3)->startOfDay();
-
-            if ($orderDateCarbon->lt($minDate)) {
-                throw ValidationException::withMessages([
-                    'order_date' => 'Pemesanan katering acara kantoran/event minimal H-3 sebelum tanggal acara.',
+                    'order_date' => "Pesanan untuk layanan {$service->name} harus dilakukan sebelum pukul {$cutoffTime} untuk minimal {$service->minimal_order_days} hari sebelum tanggal acara.",
                 ]);
             }
         }
@@ -97,30 +90,25 @@ class OrderService
             ]);
         }
 
-        // Validasi batas waktu pembatalan
-        $orderDate = Carbon::parse($order->order_date);
-        $now = Carbon::now();
+        // Validasi batas waktu pembatalan menggunakan cutoff dari layanan
+        if ($order->cateringService && $order->cateringService->minimal_order_days) {
+            $orderDate = Carbon::parse($order->order_date);
+            $now = Carbon::now();
+            $service = $order->cateringService;
 
-        if ($order->cateringService) {
-            $isDaily = $order->cateringService->isDaily();
-            $isEvent = $order->cateringService->isEvent();
+            $cancellationDeadline = $orderDate->copy()->subDays($service->minimal_order_days);
 
-            if ($isDaily) {
-                // H-1 sebelum jam 21:00
-                $cancellationDeadline = $orderDate->copy()->subDay()->setTime(21, 0, 0);
-                if ($now->gte($cancellationDeadline)) {
-                    throw ValidationException::withMessages([
-                        'cancellation' => 'Pembatalan katering harian hanya bisa dilakukan maksimal H-1 sebelum jam 21:00.',
-                    ]);
-                }
-            } elseif ($isEvent) {
-                // H-3 sebelum acara
-                $cancellationDeadline = $orderDate->copy()->subDays(3)->startOfDay();
-                if ($now->gte($cancellationDeadline)) {
-                    throw ValidationException::withMessages([
-                        'cancellation' => 'Pembatalan katering acara kantoran/event hanya bisa dilakukan maksimal H-3 sebelum acara.',
-                    ]);
-                }
+            if ($service->cutoff_time) {
+                $cutoffParts = explode(':', substr($service->cutoff_time, 0, 5));
+                $cancellationDeadline->setTime((int) $cutoffParts[0], (int) $cutoffParts[1], 0);
+            } else {
+                $cancellationDeadline->startOfDay();
+            }
+
+            if ($now->gte($cancellationDeadline)) {
+                throw ValidationException::withMessages([
+                    'cancellation' => "Pembatalan layanan {$service->name} hanya bisa dilakukan maksimal {$service->minimal_order_days} hari sebelum tanggal acara.",
+                ]);
             }
         }
     }

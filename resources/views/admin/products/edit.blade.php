@@ -24,7 +24,6 @@
         </div>
         <div><label class="block text-sm font-medium mb-1">Gambar</label><input type="file" name="image" accept="image/*" class="w-full px-4 py-2 rounded-lg border">@if($product->image)<p class="text-xs text-gray-500 mt-1">📷 Sudah ada gambar. Upload baru untuk mengganti.</p>@endif</div>
         <div class="flex gap-6"><label class="flex items-center gap-2"><input type="checkbox" name="is_best_seller" value="1" {{ $product->is_best_seller?'checked':'' }} class="rounded border-gray-300 text-orange-500"><span class="text-sm">Best Seller</span></label><label class="flex items-center gap-2"><input type="checkbox" name="is_active" value="1" {{ $product->is_active?'checked':'' }} class="rounded border-gray-300 text-orange-500"><span class="text-sm">Aktif</span></label></div>
-        <div><label class="block text-sm font-medium mb-1">Hari Tersedia *</label><select name="available_days" required class="w-full px-4 py-2 rounded-lg border"><option value="" disabled>Pilih Hari</option>@foreach(['senin','selasa','rabu','kamis','jumat','sabtu','minggu'] as $d)<option value="{{ $d }}" {{ old('available_days', $product->available_days) === $d ? 'selected' : '' }}>{{ ucfirst($d) }}</option>@endforeach</select>@error('available_days')<p class="text-red-500 text-sm">{{ $message }}</p>@enderror</div>
         @if(isset($extras) && $extras->count() > 0)
         @php $selectedExtras = $product->extras->pluck('id')->toArray() ?? []; @endphp
         <div class="space-y-3" id="extra-selector-container">

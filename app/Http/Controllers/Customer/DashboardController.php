@@ -24,38 +24,59 @@ class DashboardController extends Controller
     }
 
     /**
-     * Halaman produk - hanya menampilkan produk dari layanan Harian (daily_menu).
+     * Halaman produk - menampilkan produk dari Menu Mingguan (Periode Aktif + Berikutnya).
      */
     public function products(Request $request)
     {
-        $query = Product::with('cateringService')
-            ->available()
-            ->latest();
-
-        if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
-        }
-
-        if ($request->filled('service')) {
-            $query->where('catering_service_id', $request->service);
-        }
-
-        if ($request->filled('day')) {
-            $query->where('available_days', $request->day);
-        }
-
-        $products = $query->paginate(12);
         $services = CateringService::daily()->where('is_active', true)->get();
 
-        $carbonNow = \Carbon\Carbon::now();
-        $daysMap = [
-            'Sunday' => 'minggu', 'Monday' => 'senin', 'Tuesday' => 'selasa',
-            'Wednesday' => 'rabu', 'Thursday' => 'kamis', 'Friday' => 'jumat', 'Saturday' => 'sabtu'
-        ];
-        $currentDay = $daysMap[$carbonNow->format('l')];
-        $currentHour = (int) $carbonNow->format('H');
+        // Ambil semua layanan daily yang aktif
+        $serviceIds = $services->pluck('id');
 
-        return view('customer.products', compact('products', 'services', 'currentDay', 'currentHour'));
+        // Periode Aktif (mencakup hari ini)
+        $currentPeriods = \App\Models\MenuPeriod::whereIn('catering_service_id', $serviceIds)
+            ->active()
+            ->current()
+            ->with(['items.product.cateringService', 'items.menuPeriod.cateringService', 'cateringService'])
+            ->get();
+
+        // Periode Berikutnya (start_date > today), ambil yang paling dekat per layanan
+        $upcomingPeriods = \App\Models\MenuPeriod::whereIn('catering_service_id', $serviceIds)
+            ->active()
+            ->upcoming()
+            ->orderBy('start_date')
+            ->with(['items.product.cateringService', 'items.menuPeriod.cateringService', 'cateringService'])
+            ->get()
+            ->unique('catering_service_id');
+
+        // Filter berdasarkan pencarian
+        $search = $request->search;
+        $serviceFilter = $request->service;
+
+        // Kumpulkan items dari periode aktif
+        $currentItems = collect();
+        foreach ($currentPeriods as $period) {
+            foreach ($period->items as $item) {
+                if ($search && !str_contains(strtolower($item->product->name), strtolower($search))) continue;
+                if ($serviceFilter && $item->product->catering_service_id != $serviceFilter) continue;
+                $currentItems->push($item);
+            }
+        }
+
+        // Kumpulkan items dari periode berikutnya
+        $upcomingItems = collect();
+        foreach ($upcomingPeriods as $period) {
+            foreach ($period->items as $item) {
+                if ($search && !str_contains(strtolower($item->product->name), strtolower($search))) continue;
+                if ($serviceFilter && $item->product->catering_service_id != $serviceFilter) continue;
+                $upcomingItems->push($item);
+            }
+        }
+
+        return view('customer.products', compact(
+            'services', 'currentPeriods', 'upcomingPeriods',
+            'currentItems', 'upcomingItems'
+        ));
     }
 
     /**

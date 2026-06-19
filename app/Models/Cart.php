@@ -10,11 +10,12 @@ class Cart extends Model
     protected $fillable = [
         'user_id', 'catering_service_id', 'cart_group_id', 'product_id',
         'custom_option_id', 'catering_package_id', 'extras',
-        'quantity', 'item_type', 'serving_type_id',
+        'quantity', 'item_type', 'serving_type_id', 'menu_date',
     ];
 
     protected $casts = [
         'extras' => 'array',
+        'menu_date' => 'date',
     ];
 
     // === Relationships ===
