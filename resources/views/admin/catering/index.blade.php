@@ -14,28 +14,22 @@
     </div>
 
     {{-- Filters --}}
-    <form action="{{ route('admin.catering.index') }}" method="GET" class="flex flex-wrap gap-3 items-center">
-        <div class="relative flex-1 min-w-[200px] max-w-xs">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari katering..."
-                   class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:ring-orange-500 focus:border-orange-500">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
-        </div>
+    <div class="flex flex-wrap gap-3 items-center">
         <div class="flex gap-2">
-            <a href="{{ route('admin.catering.index', ['search' => request('search')]) }}"
+            <a href="{{ route('admin.catering.index') }}"
                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-colors {{ !request('type') ? 'bg-gray-800 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
                 Semua
             </a>
-            <a href="{{ route('admin.catering.index', ['search' => request('search'), 'type' => 'daily']) }}"
+            <a href="{{ route('admin.catering.index', ['type' => 'daily']) }}"
                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request('type') === 'daily' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
                 📦 Daily
             </a>
-            <a href="{{ route('admin.catering.index', ['search' => request('search'), 'type' => 'event']) }}"
+            <a href="{{ route('admin.catering.index', ['type' => 'event']) }}"
                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request('type') === 'event' ? 'bg-purple-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
                 🎉 Event
             </a>
         </div>
-        <button type="submit" class="px-4 py-2.5 bg-gray-200 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors">Filter</button>
-    </form>
+    </div>
 
     {{-- Table --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
