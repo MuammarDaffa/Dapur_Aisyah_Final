@@ -97,9 +97,9 @@
                         <div class="flex items-center justify-center gap-2">
                             <a href="{{ route('admin.menu-periods.show', [$catering, $period]) }}" class="px-3 py-1.5 text-xs font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">Detail</a>
                             <button type="button" onclick="openEditPeriodModal({{ $period->id }}, '{{ $period->nama_periode }}', '{{ $period->start_date->format('Y-m-d') }}', '{{ $period->end_date->format('Y-m-d') }}')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
-                            <form action="{{ route('admin.menu-periods.destroy', [$catering, $period]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus periode ini beserta isinya?')">
+                            <form id="form-delete-period-{{ $period->id }}" action="{{ route('admin.menu-periods.destroy', [$catering, $period]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
-                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                                <button type="button" onclick="confirmDelete('form-delete-period-{{ $period->id }}', 'Hapus periode ini beserta isinya?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
                             </form>
                         </div>
                     </td>
@@ -165,9 +165,9 @@
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <a href="{{ route('admin.products.edit', $p) }}" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</a>
-                            <form action="{{ route('admin.products.destroy', $p) }}" method="POST" class="inline" onsubmit="return confirm('Hapus produk ini?')">
+                            <form id="form-delete-product-{{ $p->id }}" action="{{ route('admin.products.destroy', $p) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
-                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                                <button type="button" onclick="confirmDelete('form-delete-product-{{ $p->id }}', 'Hapus produk ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
                             </form>
                         </div>
                     </td>
@@ -220,9 +220,9 @@
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <button type="button" onclick="openEditExtraModal({{ $extra->id }}, '{{ $extra->name }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }})" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
-                            <form action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus extra ini?')">
+                            <form id="form-delete-extra-{{ $extra->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
-                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                                <button type="button" onclick="confirmDelete('form-delete-extra-{{ $extra->id }}', 'Hapus extra ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
                             </form>
                         </div>
                     </td>
@@ -389,6 +389,24 @@ document.getElementById('addExtraModal')?.addEventListener('click', function(e) 
 document.getElementById('editExtraModal')?.addEventListener('click', function(e) { if (e.target === this) this.style.display='none'; });
 document.getElementById('addPeriodModal')?.addEventListener('click', function(e) { if (e.target === this) this.style.display='none'; });
 document.getElementById('editPeriodModal')?.addEventListener('click', function(e) { if (e.target === this) this.style.display='none'; });
+
+function confirmDelete(formId, message) {
+    Swal.fire({
+        title: 'Konfirmasi Hapus',
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById(formId).submit();
+        }
+    });
+}
 </script>
 @endpush
 @endsection
