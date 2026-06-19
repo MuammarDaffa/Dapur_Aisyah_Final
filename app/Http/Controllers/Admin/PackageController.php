@@ -121,7 +121,12 @@ class PackageController extends Controller
             $syncIds = $syncIds->merge($request->input('extra_ids'));
         }
 
-        $package->customOptions()->sync($syncIds->toArray());
+        $syncResult = $package->customOptions()->sync($syncIds->toArray());
+        $wasSyncChanged = !empty($syncResult['attached']) || !empty($syncResult['detached']) || !empty($syncResult['updated']);
+
+        if (!$package->wasChanged() && !$wasSyncChanged) {
+            return redirect()->route('admin.catering.show', $package->catering_service_id);
+        }
 
         return redirect()->route('admin.catering.show', $package->catering_service_id)->with('success', 'Paket berhasil diperbarui.');
     }

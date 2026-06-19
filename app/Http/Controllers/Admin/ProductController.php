@@ -109,7 +109,12 @@ class ProductController extends Controller
 
         $product->update($validated);
         
-        $product->extras()->sync($request->extras ?? []);
+        $syncResult = $product->extras()->sync($request->extras ?? []);
+        $wasSyncChanged = !empty($syncResult['attached']) || !empty($syncResult['detached']) || !empty($syncResult['updated']);
+
+        if (!$product->wasChanged() && !$wasSyncChanged) {
+            return redirect()->route('admin.catering.show', $product->catering_service_id);
+        }
 
         return redirect()->route('admin.catering.show', $product->catering_service_id)
             ->with('success', 'Produk berhasil diperbarui.');

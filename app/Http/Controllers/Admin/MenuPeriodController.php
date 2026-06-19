@@ -94,6 +94,10 @@ class MenuPeriodController extends Controller
 
         $period->update($validated);
 
+        if (!$period->wasChanged()) {
+            return redirect()->route('admin.menu-periods.show', [$catering, $period]);
+        }
+
         return redirect()->route('admin.menu-periods.show', [$catering, $period])
             ->with('success', 'Periode menu berhasil diperbarui.');
     }

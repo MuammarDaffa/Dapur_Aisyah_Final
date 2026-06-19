@@ -149,6 +149,10 @@ class CateringController extends Controller
 
         $catering->update($validated);
 
+        if (!$catering->wasChanged()) {
+            return redirect()->route('admin.catering.index');
+        }
+
         return redirect()->route('admin.catering.index')->with('success', 'Katering berhasil diperbarui.');
     }
 
@@ -217,6 +221,10 @@ class CateringController extends Controller
         $validated['is_active'] = $request->boolean('is_active', true);
 
         $option->update($validated);
+
+        if (!$option->wasChanged()) {
+            return redirect()->route('admin.catering.show', $catering);
+        }
 
         return redirect()->route('admin.catering.show', $catering)
             ->with('success', 'Data berhasil diperbarui.');

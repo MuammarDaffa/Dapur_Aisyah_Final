@@ -51,6 +51,9 @@ class ShippingController extends Controller
             'cost.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
         $shipping->update($validated);
+        if (!$shipping->wasChanged()) {
+            return redirect()->route('admin.shipping.index');
+        }
         return redirect()->route('admin.shipping.index')->with('success', 'Ongkos kirim berhasil diperbarui.');
     }
 
