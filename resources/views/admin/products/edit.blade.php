@@ -57,8 +57,9 @@
             @error('extras')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
         </div>
         @endif
-        <div class="flex justify-end pt-2">
-            <button type="submit" class="px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600">Update Produk</button>
+        <div class="flex justify-end gap-3 pt-2">
+            <a href="{{ url()->previous() }}" class="px-6 py-2.5 text-gray-700 bg-gray-100 font-medium rounded-lg hover:bg-gray-200 transition-colors">Batal</a>
+            <button type="submit" class="px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Update Produk</button>
         </div>
     </form>
 </div>

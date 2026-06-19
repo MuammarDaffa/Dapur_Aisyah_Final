@@ -327,7 +327,10 @@
                 <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
                 <span class="text-sm font-medium text-gray-700">Aktif</span>
             </div>
-            <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Simpan</button>
+            <div class="flex gap-3">
+                <button type="button" onclick="document.getElementById('addOptionModal').style.display='none'" class="w-full px-6 py-2.5 text-gray-700 bg-gray-100 font-medium rounded-lg hover:bg-gray-200 transition-colors">Batal</button>
+                <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Simpan</button>
+            </div>
         </form>
     </div>
 </div>
@@ -355,7 +358,10 @@
                 <input type="checkbox" name="is_active" value="1" id="editActive" class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
                 <span class="text-sm font-medium text-gray-700">Aktif</span>
             </div>
-            <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Update</button>
+            <div class="flex gap-3">
+                <button type="button" onclick="document.getElementById('editOptionModal').style.display='none'" class="w-full px-6 py-2.5 text-gray-700 bg-gray-100 font-medium rounded-lg hover:bg-gray-200 transition-colors">Batal</button>
+                <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Update</button>
+            </div>
         </form>
     </div>
 </div>

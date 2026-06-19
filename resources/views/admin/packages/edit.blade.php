@@ -69,12 +69,16 @@
             </div>
         </div>
 
-        <div class="flex gap-4 pt-4 border-t">
-            <label class="flex items-center gap-2"><input type="checkbox" name="is_custom" value="1" {{ $package->is_custom ? 'checked' : '' }} class="rounded border-gray-300 text-orange-500"><span class="text-sm">Paket Custom</span></label>
-            <label class="flex items-center gap-2"><input type="checkbox" name="is_active" value="1" {{ $package->is_active ? 'checked' : '' }} class="rounded border-gray-300 text-orange-500"><span class="text-sm">Aktif</span></label>
+        <div class="flex justify-between items-center pt-4 border-t">
+            <div class="flex gap-4">
+                <label class="flex items-center gap-2"><input type="checkbox" name="is_custom" value="1" {{ $package->is_custom ? 'checked' : '' }} class="rounded border-gray-300 text-orange-500"><span class="text-sm">Paket Custom</span></label>
+                <label class="flex items-center gap-2"><input type="checkbox" name="is_active" value="1" {{ $package->is_active ? 'checked' : '' }} class="rounded border-gray-300 text-orange-500"><span class="text-sm">Aktif</span></label>
+            </div>
+            <div class="flex gap-3">
+                <a href="{{ route('admin.catering.show', $package->catering_service_id) }}" class="px-6 py-2.5 text-gray-700 bg-gray-100 font-medium rounded-lg hover:bg-gray-200 transition-colors">Batal</a>
+                <button type="submit" class="px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Update Paket</button>
+            </div>
         </div>
-
-        <button type="submit" class="px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600">Update Paket</button>
     </form>
 </div>
 
