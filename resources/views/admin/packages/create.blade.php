@@ -2,18 +2,38 @@
 @section('title', 'Tambah Paket')
 @section('content')
 <div class="max-w-3xl">
+    <div class="mb-6">
+        @php
+            $backService = request('catering_service_id') ? collect($services)->firstWhere('id', request('catering_service_id')) : null;
+        @endphp
+        @if($backService)
+            <a href="{{ route('admin.catering.show', $backService->id) }}" class="text-sm text-gray-500 hover:text-orange-500 transition-colors font-medium">← Kembali ke detail katering: {{ $backService->name }}</a>
+        @else
+            <a href="{{ url()->previous() }}" class="text-sm text-gray-500 hover:text-orange-500 transition-colors font-medium">← Kembali</a>
+        @endif
+    </div>
     <form action="{{ route('admin.packages.store') }}" method="POST" class="bg-white rounded-xl p-6 shadow-sm border space-y-5" id="packageForm">
         @csrf
 
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium mb-1">Layanan Event *</label>
-                <select name="catering_service_id" id="serviceSelect" required class="w-full px-4 py-2 rounded-lg border" onchange="loadServiceOptions()">
-                    <option value="">-- Pilih Layanan --</option>
-                    @foreach($services as $s)
-                    <option value="{{ $s->id }}">{{ $s->name }}</option>
-                    @endforeach
-                </select>
+                @if(request('catering_service_id'))
+                    @php
+                        $selectedService = collect($services)->firstWhere('id', request('catering_service_id'));
+                    @endphp
+                    <div class="w-full px-4 py-2 rounded-lg border bg-gray-50 text-gray-700 font-medium">
+                        {{ $selectedService ? $selectedService->name : 'Layanan tidak ditemukan' }}
+                    </div>
+                    <input type="hidden" name="catering_service_id" id="serviceSelect" value="{{ request('catering_service_id') }}">
+                @else
+                    <select name="catering_service_id" id="serviceSelect" required class="w-full px-4 py-2 rounded-lg border" onchange="loadServiceOptions()">
+                        <option value="">-- Pilih Layanan --</option>
+                        @foreach($services as $s)
+                        <option value="{{ $s->id }}" {{ old('catering_service_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                        @endforeach
+                    </select>
+                @endif
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">Nama Paket *</label>
@@ -221,12 +241,12 @@ function loadServiceOptions(callback) {
         });
 }
 
-// For edit.blade.php
-if (window.existingOptionIds && window.existingOptionIds.length > 0) {
-    document.addEventListener('DOMContentLoaded', () => {
+// Init load if service is pre-selected (via query param or old value)
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('serviceSelect').value) {
         loadServiceOptions();
-    });
-}
+    }
+});
 </script>
 @endpush
 @endsection

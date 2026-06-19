@@ -5,7 +5,14 @@
 
 <div class="max-w-2xl">
     <div class="mb-6">
-        <a href="{{ url()->previous() }}" class="text-sm text-gray-500 hover:text-orange-500 transition-colors">← Kembali</a>
+        @php
+            $backService = request('catering_service_id') ? \App\Models\CateringService::find(request('catering_service_id')) : null;
+        @endphp
+        @if($backService)
+            <a href="{{ route('admin.catering.show', $backService->id) }}" class="text-sm text-gray-500 hover:text-orange-500 transition-colors font-medium">← Kembali ke detail katering: {{ $backService->name }}</a>
+        @else
+            <a href="{{ url()->previous() }}" class="text-sm text-gray-500 hover:text-orange-500 transition-colors font-medium">← Kembali</a>
+        @endif
     </div>
     <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-xl p-6 shadow-sm border space-y-4">
         @csrf
