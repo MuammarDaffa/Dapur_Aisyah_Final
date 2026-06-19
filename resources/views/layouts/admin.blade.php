@@ -185,6 +185,24 @@
         });
         observer.observe(document.body, { childList: true, subtree: true });
     });
+
+    window.confirmDelete = function(formId, message) {
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: message,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    };
     </script>
     @stack('scripts')
 </body>

@@ -92,9 +92,9 @@
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <button type="button" onclick="openEditModal({{ $menu->id }}, '{{ $menu->name }}', {{ $menu->price }}, {{ $menu->is_active ? 'true' : 'false' }}, 'menu')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
-                            <form action="{{ route('admin.catering.options.destroy', [$catering, $menu]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus menu ini?')">
+                            <form id="form-delete-menu-{{ $menu->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $menu]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
-                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                                <button type="button" onclick="confirmDelete('form-delete-menu-{{ $menu->id }}', 'Hapus menu ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
                             </form>
                         </div>
                     </td>
@@ -144,9 +144,9 @@
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <button type="button" onclick="openEditModal({{ $serving->id }}, '{{ $serving->name }}', {{ $serving->price }}, {{ $serving->is_active ? 'true' : 'false' }}, 'serving_type')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
-                            <form action="{{ route('admin.catering.options.destroy', [$catering, $serving]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus penyajian ini?')">
+                            <form id="form-delete-serving-{{ $serving->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $serving]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
-                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                                <button type="button" onclick="confirmDelete('form-delete-serving-{{ $serving->id }}', 'Hapus penyajian ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
                             </form>
                         </div>
                     </td>
@@ -198,9 +198,9 @@
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <button type="button" onclick="openEditModal({{ $extra->id }}, '{{ $extra->name }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }}, 'extra')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
-                            <form action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus extra ini?')">
+                            <form id="form-delete-extra-{{ $extra->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
-                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                                <button type="button" onclick="confirmDelete('form-delete-extra-{{ $extra->id }}', 'Hapus extra ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
                             </form>
                         </div>
                     </td>
@@ -280,9 +280,9 @@
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <a href="{{ route('admin.packages.edit', $pkg) }}" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</a>
-                            <form action="{{ route('admin.packages.destroy', $pkg) }}" method="POST" class="inline" onsubmit="return confirm('Hapus paket ini?')">
+                            <form id="form-delete-package-{{ $pkg->id }}" action="{{ route('admin.packages.destroy', $pkg) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
-                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                                <button type="button" onclick="confirmDelete('form-delete-package-{{ $pkg->id }}', 'Hapus paket ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
                             </form>
                         </div>
                     </td>
