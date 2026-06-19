@@ -5,7 +5,7 @@
     {{-- Header --}}
     <div class="flex items-center justify-between">
         <div>
-            <a href="{{ route('admin.menu-periods.index', $catering) }}" class="text-sm text-gray-500 hover:text-orange-500 transition-colors">← Kembali ke Daftar Periode</a>
+            <a href="{{ route('admin.catering.show', $catering) }}" class="text-sm text-gray-500 hover:text-orange-500 transition-colors">← Kembali ke Detail Katering</a>
             <h2 class="text-xl font-bold text-gray-900 mt-1">📅 {{ $period->nama_periode }}</h2>
             <p class="text-sm text-gray-500 mt-0.5">{{ $period->formatted_range }}</p>
         </div>

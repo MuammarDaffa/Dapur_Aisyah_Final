@@ -107,7 +107,7 @@ class MenuPeriodController extends Controller
 
         $period->delete();
 
-        return redirect()->route('admin.menu-periods.index', $catering)
+        return redirect()->route('admin.catering.show', $catering)
             ->with('success', 'Periode menu berhasil dihapus.');
     }
 

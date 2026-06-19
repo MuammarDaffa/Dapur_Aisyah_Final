@@ -31,9 +31,6 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('admin.menu-periods.index', $catering) }}" class="px-4 py-2 text-sm font-medium text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
-                        📅 Menu Mingguan
-                    </a>
                     <a href="{{ route('admin.catering.edit', $catering) }}" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                         ✏️ Edit Katering
                     </a>
@@ -60,6 +57,63 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    {{-- Menu Mingguan Section --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-gray-800">📅 Menu Mingguan</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Daftar periode menu untuk katering ini</p>
+            </div>
+            <button type="button" onclick="openPeriodModal()" class="px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
+                + Tambah Periode
+            </button>
+        </div>
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50/50">
+                <tr class="text-xs uppercase text-gray-500 tracking-wider">
+                    <th class="px-6 py-3 text-left font-semibold">Nama Periode</th>
+                    <th class="px-6 py-3 text-center font-semibold">Tanggal Mulai</th>
+                    <th class="px-6 py-3 text-center font-semibold">Tanggal Selesai</th>
+                    <th class="px-6 py-3 text-center font-semibold">Jumlah Menu</th>
+                    <th class="px-6 py-3 text-center font-semibold">Status</th>
+                    <th class="px-6 py-3 text-center font-semibold">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($periods as $period)
+                <tr class="hover:bg-orange-50/30 transition-colors">
+                    <td class="px-6 py-4 font-medium text-gray-900">{{ $period->nama_periode }}</td>
+                    <td class="px-6 py-4 text-center text-gray-700">{{ $period->start_date->format('d-m-Y') }}</td>
+                    <td class="px-6 py-4 text-center text-gray-700">{{ $period->end_date->format('d-m-Y') }}</td>
+                    <td class="px-6 py-4 text-center font-semibold text-gray-900">{{ $period->items_count }}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $period->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                            {{ $period->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <a href="{{ route('admin.menu-periods.show', [$catering, $period]) }}" class="px-3 py-1.5 text-xs font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">Detail</a>
+                            <button type="button" onclick="openEditPeriodModal({{ $period->id }}, '{{ $period->nama_periode }}', '{{ $period->start_date->format('Y-m-d') }}', '{{ $period->end_date->format('Y-m-d') }}')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <form action="{{ route('admin.menu-periods.destroy', [$catering, $period]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus periode ini beserta isinya?')">
+                                @csrf @method('DELETE')
+                                <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-400">
+                        <p class="text-2xl mb-1">📅</p>
+                        <p class="text-sm">Belum ada periode menu mingguan.</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 
     {{-- Produk Section --}}
@@ -243,6 +297,66 @@
     </div>
 </div>
 
+{{-- Modal Tambah Periode --}}
+<div id="addPeriodModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+        <div class="flex items-center justify-between p-6 border-b border-gray-100">
+            <h3 class="text-lg font-bold text-gray-900">Tambah Periode Menu</h3>
+            <button onclick="document.getElementById('addPeriodModal').style.display='none'" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <form action="{{ route('admin.menu-periods.store', $catering) }}" method="POST" class="p-6 space-y-4">
+            @csrf
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Periode *</label>
+                <input type="text" name="nama_periode" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="cth: Minggu 1 Juli 2026">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai *</label>
+                    <input type="date" name="start_date" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Selesai *</label>
+                    <input type="date" name="end_date" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                </div>
+            </div>
+            <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Simpan Periode</button>
+        </form>
+    </div>
+</div>
+
+{{-- Modal Edit Periode --}}
+<div id="editPeriodModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+        <div class="flex items-center justify-between p-6 border-b border-gray-100">
+            <h3 class="text-lg font-bold text-gray-900">Edit Periode Menu</h3>
+            <button onclick="document.getElementById('editPeriodModal').style.display='none'" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <form id="editPeriodForm" method="POST" class="p-6 space-y-4">
+            @csrf @method('PUT')
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Periode *</label>
+                <input type="text" name="nama_periode" id="editPeriodNamaPeriode" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai *</label>
+                    <input type="date" name="start_date" id="editPeriodStartDate" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Selesai *</label>
+                    <input type="date" name="end_date" id="editPeriodEndDate" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                </div>
+            </div>
+            <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Update Periode</button>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
 <script>
 const cateringId = {{ $catering->id }};
@@ -259,8 +373,22 @@ function openEditExtraModal(id, name, price, isActive) {
     document.getElementById('editExtraModal').style.display = 'flex';
 }
 
+function openPeriodModal() {
+    document.getElementById('addPeriodModal').style.display = 'flex';
+}
+
+function openEditPeriodModal(id, nama_periode, start_date, end_date) {
+    document.getElementById('editPeriodNamaPeriode').value = nama_periode;
+    document.getElementById('editPeriodStartDate').value = start_date;
+    document.getElementById('editPeriodEndDate').value = end_date;
+    document.getElementById('editPeriodForm').action = `/admin/catering/${cateringId}/menu-periods/${id}`;
+    document.getElementById('editPeriodModal').style.display = 'flex';
+}
+
 document.getElementById('addExtraModal')?.addEventListener('click', function(e) { if (e.target === this) this.style.display='none'; });
 document.getElementById('editExtraModal')?.addEventListener('click', function(e) { if (e.target === this) this.style.display='none'; });
+document.getElementById('addPeriodModal')?.addEventListener('click', function(e) { if (e.target === this) this.style.display='none'; });
+document.getElementById('editPeriodModal')?.addEventListener('click', function(e) { if (e.target === this) this.style.display='none'; });
 </script>
 @endpush
 @endsection
