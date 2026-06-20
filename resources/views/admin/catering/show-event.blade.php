@@ -321,7 +321,7 @@
             </div>
             <div id="addPriceField">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
-                <input type="text" name="price" value="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500 rupiah-input">
+                <input type="text" name="price" id="addPrice" value="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500 rupiah-input">
             </div>
             <div class="flex items-center gap-2">
                 <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
@@ -374,7 +374,16 @@ const typeLabels = { menu: 'Menu', serving_type: 'Penyajian', extra: 'Extra' };
 function openOptionModal(type) {
     document.getElementById('addOptionType').value = type;
     document.getElementById('addModalTitle').textContent = 'Tambah ' + typeLabels[type];
-    // Penyajian: harga default 0, sembunyikan jika tidak relevan
+    
+    // Penyajian: harga tidak diperlukan (0)
+    if (type === 'serving_type') {
+        document.getElementById('addPriceField').style.display = 'none';
+        document.getElementById('addPrice').value = '0';
+    } else {
+        document.getElementById('addPriceField').style.display = 'block';
+        document.getElementById('addPrice').value = '0';
+    }
+    
     document.getElementById('addOptionModal').style.display = 'flex';
 }
 
@@ -384,7 +393,16 @@ function closeOptionModal() {
 
 function openEditModal(optionId, name, price, isActive, type) {
     document.getElementById('editName').value = name;
-    document.getElementById('editPrice').value = formatRupiah(price);
+    
+    // Penyajian: harga tidak diperlukan (0)
+    if (type === 'serving_type') {
+        document.getElementById('editPriceField').style.display = 'none';
+        document.getElementById('editPrice').value = '0';
+    } else {
+        document.getElementById('editPriceField').style.display = 'block';
+        document.getElementById('editPrice').value = formatRupiah(price);
+    }
+    
     document.getElementById('editActive').checked = isActive;
     document.getElementById('editOptionForm').action = `/admin/catering/${cateringId}/options/${optionId}`;
     document.getElementById('editOptionModal').style.display = 'flex';
