@@ -44,7 +44,8 @@
                                 </select>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Detail Alamat</label>
-                                <textarea name="address_detail" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Nama jalan, nomor rumah, patokan...">{{ old('address_detail') }}</textarea>
+                                <textarea name="address_detail" id="address_detail_input" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Nama jalan, nomor rumah, patokan..." oninput="validateCheckout()">{{ old('address_detail') }}</textarea>
+                                <p id="address_error" class="text-sm text-red-500 mt-1 hidden">⚠️ Detail alamat wajib diisi untuk pengiriman.</p>
                                 @error('address_detail') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
                             </div>
                             <!-- Peta Lokasi (Leaflet.js) -->
@@ -58,6 +59,7 @@
                                     <p class="text-xs text-gray-400" id="coord-display">Koordinat belum dipilih</p>
                                 </div>
                                 <span id="geocode-status" class="hidden"></span>
+                                <p id="map_error" class="text-sm text-red-500 mt-2 font-medium hidden">⚠️ Anda wajib menandai lokasi pengiriman di peta.</p>
                                 @error('district_id')
                                     <p class="text-sm text-red-500 mt-2 font-medium">⚠️ Anda harus menandai lokasi pengiriman di peta dengan benar.</p>
                                 @enderror
@@ -141,7 +143,7 @@
                             <span class="text-orange-600" id="total-display">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
                     </div>
-                    <button type="submit" class="w-full mt-4 px-6 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all">
+                    <button type="submit" id="submit-btn" class="w-full mt-4 px-6 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                         Buat Pesanan →
                     </button>
                 </div>
@@ -248,7 +250,43 @@ function reverseGeocode(lat, lng) {
         .catch(err => {
             statusEl.innerHTML = '❌ Gagal menghubungi server peta.';
             statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
+            validateCheckout();
         });
+}
+
+// === Validate Form ===
+function validateCheckout() {
+    const method = document.getElementById('pickup_method').value;
+    const btn = document.getElementById('submit-btn');
+    
+    if (method === 'delivery') {
+        const address = document.getElementById('address_detail_input').value.trim();
+        const districtId = document.getElementById('district_id').value;
+        const addressError = document.getElementById('address_error');
+        const mapError = document.getElementById('map_error');
+        
+        let isValid = true;
+        
+        if (address === '') {
+            addressError.classList.remove('hidden');
+            isValid = false;
+        } else {
+            addressError.classList.add('hidden');
+        }
+        
+        if (districtId === '') {
+            mapError.classList.remove('hidden');
+            isValid = false;
+        } else {
+            mapError.classList.add('hidden');
+        }
+        
+        btn.disabled = !isValid;
+    } else {
+        document.getElementById('address_error').classList.add('hidden');
+        document.getElementById('map_error').classList.add('hidden');
+        btn.disabled = false;
+    }
 }
 
 // === Toggle Delivery ===
@@ -266,6 +304,7 @@ function toggleDelivery() {
             setTimeout(() => map.invalidateSize(), 100);
         }
     }
+    validateCheckout();
 }
 
 // === Load Shipping ===
@@ -291,6 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('pickup_method').value === 'delivery') {
         setTimeout(initMap, 200);
     }
+    validateCheckout();
 });
 </script>
 @endpush
