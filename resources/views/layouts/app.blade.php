@@ -141,14 +141,28 @@
     @if(session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                Swal.fire({ icon: 'success', title: 'Berhasil!', text: '{{ session("success") }}', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: 'Berhasil!', 
+                    text: '{{ session("success") }}', 
+                    showConfirmButton: true, 
+                    confirmButtonText: 'Oke',
+                    confirmButtonColor: '#f97316'
+                });
             });
         </script>
     @endif
     @if(session('error'))
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                Swal.fire({ icon: 'error', title: 'Gagal!', text: '{{ session("error") }}', toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true });
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Gagal!', 
+                    text: '{{ session("error") }}', 
+                    showConfirmButton: true, 
+                    confirmButtonText: 'Oke',
+                    confirmButtonColor: '#ef4444'
+                });
             });
         </script>
     @endif
