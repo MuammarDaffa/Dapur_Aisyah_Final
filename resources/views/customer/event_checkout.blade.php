@@ -65,7 +65,7 @@
                                 </select>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Detail Alamat Lengkap *</label>
-                                <textarea name="address_detail" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400" placeholder="Nama jalan, RT/RW, patokan...">{{ old('address_detail') }}</textarea>
+                                <textarea name="address_detail" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Nama jalan, RT/RW, patokan...">{{ old('address_detail') }}</textarea>
                                 @error('address_detail') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                             <!-- Peta Lokasi (Leaflet.js) -->
@@ -79,6 +79,9 @@
                                     <p class="text-xs text-gray-400" id="coord-display">Koordinat belum dipilih</p>
                                 </div>
                                 <span id="geocode-status" class="hidden"></span>
+                                @error('district_id')
+                                    <p class="text-sm text-red-500 mt-2 font-medium">⚠️ Anda harus menandai lokasi pengiriman di peta dengan benar.</p>
+                                @enderror
                             </div>
                         </div>
                     </div>

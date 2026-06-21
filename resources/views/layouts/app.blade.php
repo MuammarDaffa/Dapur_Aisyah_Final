@@ -167,6 +167,21 @@
         </script>
     @endif
 
+    @if($errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validasi Gagal!',
+                    html: `{!! implode('<br>', $errors->all()) !!}`,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Perbaiki',
+                    confirmButtonColor: '#ef4444'
+                });
+            });
+        </script>
+    @endif
+
     <!-- Page Content -->
     <main>
         @yield('content')
