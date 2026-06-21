@@ -56,15 +56,8 @@ class OrderController extends Controller
             return back()->with('error', $e->validator->errors()->first());
         }
 
-        // Update status pesanan
-        $order->update([
-            'status' => 'cancelled',
-            'cancellation_reason' => $validated['cancellation_reason'],
-            'cancelled_at' => now(),
-        ]);
-
-        // Kirim notifikasi
-        NotificationService::notifyStatusChanged($order->fresh());
+        // Gunakan OrderService untuk update status agar logika refund_status berjalan
+        OrderService::updateStatus($order, 'cancelled', $validated['cancellation_reason']);
 
         return back()->with('success', 'Pesanan berhasil dibatalkan.');
     }
