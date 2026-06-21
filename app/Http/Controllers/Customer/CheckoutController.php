@@ -102,7 +102,7 @@ class CheckoutController extends Controller
         // Validasi tanggal pemesanan berdasarkan jenis layanan
         OrderService::validateOrderDate($validated['order_date'], $cateringServiceId);
 
-        return DB::transaction(function () use ($validated, $user, $carts, $cateringServiceId, $packageId) {
+        return DB::transaction(function () use ($validated, $user, $carts, $cateringServiceId, $packageId, $menu_date) {
             // Hitung biaya
             $subtotal = $carts->sum(fn ($cart) => $cart->subtotal);
             $shippingCost = $validated['pickup_method'] === 'delivery'
