@@ -47,7 +47,12 @@ class OrderService
         }
 
         $service = CateringService::find($cateringServiceId);
-        if (!$service || !$service->minimal_order_days) {
+        if (!$service) {
+            return;
+        }
+
+        // Jika keduanya kosong, berarti tidak ada aturan cutoff sama sekali
+        if (is_null($service->minimal_order_days) && is_null($service->cutoff_time)) {
             return;
         }
 
@@ -57,20 +62,21 @@ class OrderService
 
         // Hitung selisih hari
         $daysUntil = (int) $today->diffInDays($orderDateCarbon, false);
+        $minDays = $service->minimal_order_days ?? 0;
 
         // Cek minimal hari
-        if ($daysUntil < $service->minimal_order_days) {
+        if ($daysUntil < $minDays) {
             throw ValidationException::withMessages([
-                'order_date' => "Pesanan untuk layanan {$service->name} harus dilakukan minimal {$service->minimal_order_days} hari sebelum tanggal acara.",
+                'order_date' => "Pesanan untuk layanan {$service->name} harus dilakukan minimal {$minDays} hari sebelum tanggal acara.",
             ]);
         }
 
         // Cek cutoff jam (hanya jika tepat pada batas hari minimal)
-        if ($daysUntil == $service->minimal_order_days && $service->cutoff_time) {
+        if ($daysUntil == $minDays && $service->cutoff_time) {
             $cutoffTime = substr($service->cutoff_time, 0, 5); // Format H:i
             if ($now->format('H:i') >= $cutoffTime) {
                 throw ValidationException::withMessages([
-                    'order_date' => "Pesanan untuk layanan {$service->name} harus dilakukan sebelum pukul {$cutoffTime} untuk minimal {$service->minimal_order_days} hari sebelum tanggal acara.",
+                    'order_date' => "Pesanan untuk layanan {$service->name} harus dilakukan sebelum pukul {$cutoffTime} untuk pengiriman {$minDays} hari kemudian.",
                 ]);
             }
         }
@@ -91,24 +97,29 @@ class OrderService
         }
 
         // Validasi batas waktu pembatalan menggunakan cutoff dari layanan
-        if ($order->cateringService && $order->cateringService->minimal_order_days) {
-            $orderDate = Carbon::parse($order->order_date);
-            $now = Carbon::now();
+        // Validasi batas waktu pembatalan menggunakan cutoff dari layanan
+        if ($order->cateringService) {
             $service = $order->cateringService;
+            
+            if (!is_null($service->minimal_order_days) || !is_null($service->cutoff_time)) {
+                $orderDate = Carbon::parse($order->order_date);
+                $now = Carbon::now();
+                $minDays = $service->minimal_order_days ?? 0;
 
-            $cancellationDeadline = $orderDate->copy()->subDays($service->minimal_order_days);
+                $cancellationDeadline = $orderDate->copy()->subDays($minDays);
 
-            if ($service->cutoff_time) {
-                $cutoffParts = explode(':', substr($service->cutoff_time, 0, 5));
-                $cancellationDeadline->setTime((int) $cutoffParts[0], (int) $cutoffParts[1], 0);
-            } else {
-                $cancellationDeadline->startOfDay();
-            }
+                if ($service->cutoff_time) {
+                    $cutoffParts = explode(':', substr($service->cutoff_time, 0, 5));
+                    $cancellationDeadline->setTime((int) $cutoffParts[0], (int) $cutoffParts[1], 0);
+                } else {
+                    $cancellationDeadline->startOfDay();
+                }
 
-            if ($now->gte($cancellationDeadline)) {
-                throw ValidationException::withMessages([
-                    'cancellation' => "Pembatalan layanan {$service->name} hanya bisa dilakukan maksimal {$service->minimal_order_days} hari sebelum tanggal acara.",
-                ]);
+                if ($now->gte($cancellationDeadline)) {
+                    throw ValidationException::withMessages([
+                        'cancellation' => "Pembatalan layanan {$service->name} hanya bisa dilakukan sebelum tenggat waktu ({$minDays} hari sebelumnya).",
+                    ]);
+                }
             }
         }
     }
