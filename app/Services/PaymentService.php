@@ -77,4 +77,39 @@ class PaymentService
 
         return $signature === $notification['signature_key'];
     }
+
+    public static function checkAndSyncStatus(Order $order): void
+    {
+        if ($order->payment_status === 'paid' || $order->status === 'cancelled') {
+            return; // No need to sync if already paid or cancelled
+        }
+
+        self::configureMidtrans();
+
+        try {
+            $status = \Midtrans\Transaction::status($order->order_number);
+
+            $transactionStatus = $status->transaction_status;
+            $fraudStatus = $status->fraud_status ?? null;
+
+            if ($transactionStatus === 'capture' || $transactionStatus === 'settlement') {
+                if ($fraudStatus === 'accept' || $fraudStatus === null) {
+                    $order->update([
+                        'payment_status' => 'paid',
+                        'status' => 'processing',
+                        'midtrans_transaction_id' => $status->transaction_id ?? null,
+                    ]);
+
+                    NotificationService::notifyPaymentSuccess($order);
+                }
+            } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
+                $order->update([
+                    'payment_status' => 'failed',
+                    'midtrans_transaction_id' => $status->transaction_id ?? null,
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Midtrans sync error: ' . $e->getMessage());
+        }
+    }
 }

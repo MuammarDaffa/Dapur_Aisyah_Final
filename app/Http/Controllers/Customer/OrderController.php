@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\NotificationService;
 use App\Services\OrderService;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -29,6 +30,13 @@ class OrderController extends Controller
         abort_unless($order->user_id === auth()->id(), 403);
 
         $order->load(['items', 'cateringService', 'invoice', 'review', 'district', 'village']);
+
+        // Sync dengan Midtrans jika masih pending/unpaid (berguna untuk testing local tanpa webhook)
+        if ($order->payment_status === 'unpaid' && $order->midtrans_snap_token) {
+            PaymentService::checkAndSyncStatus($order);
+            // Refresh model setelah sync
+            $order->refresh();
+        }
 
         return view('customer.orders.show', compact('order'));
     }
