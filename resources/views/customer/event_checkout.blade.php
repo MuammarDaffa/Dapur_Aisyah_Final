@@ -57,26 +57,12 @@
                         </div>
 
                         <div id="eventAddressSection" class="space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan (Otomatis dari Peta)</label>
-                                    <select name="district_id" id="district_id" class="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 focus:border-orange-400 pointer-events-none" readonly>
-                                        <option value="">-- Pilih dari peta di bawah --</option>
-                                        @foreach($districts as $district)
-                                            <option value="{{ $district->id }}" data-lat="{{ $district->latitude ?? '' }}" data-lng="{{ $district->longitude ?? '' }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <p class="text-xs text-orange-500 mt-1">Kecamatan akan terisi otomatis setelah Anda menggeser pin di peta.</p>
-                                    @error('district_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kelurahan/Desa *</label>
-                                    <select name="village_id" id="eventVillage" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400">
-                                        <option value="">Pilih Kelurahan</option>
-                                    </select>
-                                    @error('village_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                                </div>
-                            </div>
+                                <select name="district_id" id="district_id" class="hidden">
+                                    <option value="">-- Pilih dari peta di bawah --</option>
+                                    @foreach($districts as $district)
+                                        <option value="{{ $district->id }}" data-lat="{{ $district->latitude ?? '' }}" data-lng="{{ $district->longitude ?? '' }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
+                                    @endforeach
+                                </select>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Detail Alamat Lengkap *</label>
                                 <textarea name="address_detail" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400" placeholder="Nama jalan, RT/RW, patokan...">{{ old('address_detail') }}</textarea>
@@ -262,7 +248,7 @@
                         statusEl.innerHTML = '❌ Gagal mendeteksi wilayah. Silakan geser pin ke area permukiman.';
                         statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
                         document.getElementById('district_id').value = "";
-                        loadVillages("");
+                        loadEventShippingCost();
                         return;
                     }
 
@@ -276,7 +262,7 @@
                         if (select.options[i].text.toLowerCase() === districtName.toLowerCase()) {
                             select.selectedIndex = i;
                             matchFound = true;
-                            loadVillages(select.options[i].value);
+                            loadEventShippingCost();
                             break;
                         }
                     }
@@ -288,7 +274,7 @@
                         statusEl.innerHTML = `⚠️ Lokasi terdeteksi sebagai <b>${districtName}</b> (Di luar jangkauan wilayah kami)`;
                         statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
                         document.getElementById('district_id').value = "";
-                        loadVillages("");
+                        loadEventShippingCost();
                     }
                 }
             })
@@ -314,28 +300,8 @@
         }
     }
 
-    function loadVillages(districtId) {
-        const villageSelect = document.getElementById('eventVillage');
-        villageSelect.innerHTML = '<option value="">Memuat...</option>';
-
-        if (districtId) {
-            fetch(`/api/villages/${districtId}`)
-                .then(res => res.json())
-                .then(data => {
-                    villageSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
-                    data.forEach(v => {
-                        villageSelect.innerHTML += `<option value="${v.id}">${v.name}</option>`;
-                    });
-                });
-            loadEventShippingCost();
-        } else {
-            villageSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
-            loadEventShippingCost();
-        }
-    }
-
     function loadEventShippingCost() {
-        const districtId = document.getElementById('eventDistrict').value;
+        const districtId = document.getElementById('district_id').value;
         const pickupMethod = document.querySelector('input[name="pickup_method"]:checked')?.value;
 
         if (districtId && pickupMethod === 'delivery') {

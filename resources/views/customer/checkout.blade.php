@@ -36,22 +36,12 @@
                             </select>
                         </div>
                         <div id="delivery-fields" class="{{ old('pickup_method') == 'delivery' ? '' : 'hidden' }} space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan (Otomatis dari Peta)</label>
-                                <select name="district_id" id="district_id" class="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 focus:border-orange-400 pointer-events-none" readonly>
+                                <select name="district_id" id="district_id" class="hidden">
                                     <option value="">-- Pilih dari peta di bawah --</option>
                                     @foreach($districts as $district)
                                         <option value="{{ $district->id }}" data-lat="{{ $district->latitude ?? '' }}" data-lng="{{ $district->longitude ?? '' }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
                                     @endforeach
                                 </select>
-                                <p class="text-xs text-orange-500 mt-1">Kecamatan akan terisi otomatis setelah Anda menggeser pin di peta.</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kelurahan</label>
-                                <select name="village_id" id="village_id" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400">
-                                    <option value="">-- Pilih Kelurahan --</option>
-                                </select>
-                            </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Detail Alamat</label>
                                 <textarea name="address_detail" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400" placeholder="Nama jalan, nomor rumah, patokan...">{{ old('address_detail') }}</textarea>
@@ -221,7 +211,7 @@ function reverseGeocode(lat, lng) {
                     statusEl.innerHTML = '❌ Gagal mendeteksi wilayah. Silakan geser pin ke area permukiman.';
                     statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
                     document.getElementById('district_id').value = "";
-                    loadVillages("");
+                    loadShippingCost("");
                     return;
                 }
 
@@ -235,7 +225,7 @@ function reverseGeocode(lat, lng) {
                     if (select.options[i].text.toLowerCase() === districtName.toLowerCase()) {
                         select.selectedIndex = i;
                         matchFound = true;
-                        loadVillages(select.options[i].value);
+                        loadShippingCost(select.options[i].value);
                         break;
                     }
                 }
@@ -247,7 +237,7 @@ function reverseGeocode(lat, lng) {
                     statusEl.innerHTML = `⚠️ Lokasi terdeteksi sebagai <b>${districtName}</b> (Di luar jangkauan wilayah kami)`;
                     statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
                     document.getElementById('district_id').value = "";
-                    loadVillages("");
+                    loadShippingCost("");
                 }
             }
         })
@@ -274,18 +264,13 @@ function toggleDelivery() {
     }
 }
 
-// === Load Villages & Shipping ===
-function loadVillages(districtId) {
-    if (!districtId) return;
-    fetch(`/api/villages/${districtId}`)
-        .then(r => r.json())
-        .then(data => {
-            const sel = document.getElementById('village_id');
-            sel.innerHTML = '<option value="">-- Pilih Kelurahan --</option>';
-            data.forEach(v => {
-                sel.innerHTML += `<option value="${v.id}">${v.name}</option>`;
-            });
-        });
+// === Load Shipping ===
+function loadShippingCost(districtId) {
+    if (!districtId) {
+        document.getElementById('shipping-display').textContent = 'Rp 0';
+        document.getElementById('total-display').textContent = 'Rp {{ number_format($subtotal, 0, ",", ".") }}';
+        return;
+    }
 
     fetch(`/api/shipping-cost/${districtId}`)
         .then(r => r.json())
@@ -295,8 +280,6 @@ function loadVillages(districtId) {
             const total = {{ $subtotal }} + cost;
             document.getElementById('total-display').textContent = 'Rp ' + Number(total).toLocaleString('id-ID');
         });
-
-    // Pindah peta ke kecamatan dihapus karena sekarang dropdown yang mengikuti peta, bukan peta mengikuti dropdown
 }
 
 // Init map jika delivery sudah dipilih (misal old value)

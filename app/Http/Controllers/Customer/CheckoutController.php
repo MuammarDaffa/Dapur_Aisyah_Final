@@ -255,7 +255,7 @@ class CheckoutController extends Controller
             'event_start_time' => 'required|date_format:H:i',
             'pickup_method' => 'required|in:delivery,pickup',
             'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
-            'village_id' => 'required_if:pickup_method,delivery|nullable|exists:villages,id',
+            'village_id' => 'nullable|exists:villages,id',
             'address_detail' => 'required_if:pickup_method,delivery|nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
