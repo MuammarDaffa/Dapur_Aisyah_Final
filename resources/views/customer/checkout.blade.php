@@ -1,5 +1,9 @@
 @extends('layouts.app')
 @section('title', 'Checkout')
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<style>#map{height:250px;border-radius:12px;z-index:0;}</style>
+@endpush
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <h2 class="text-2xl font-bold text-gray-900 mb-6">📋 <span class="text-orange-500">Checkout</span></h2>
@@ -33,13 +37,14 @@
                         </div>
                         <div id="delivery-fields" class="{{ old('pickup_method') == 'delivery' ? '' : 'hidden' }} space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
-                                <select name="district_id" id="district_id" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400" onchange="loadVillages(this.value)">
-                                    <option value="">-- Pilih Kecamatan --</option>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan (Otomatis dari Peta)</label>
+                                <select name="district_id" id="district_id" class="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 focus:border-orange-400 pointer-events-none" readonly>
+                                    <option value="">-- Pilih dari peta di bawah --</option>
                                     @foreach($districts as $district)
-                                        <option value="{{ $district->id }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
+                                        <option value="{{ $district->id }}" data-lat="{{ $district->latitude ?? '' }}" data-lng="{{ $district->longitude ?? '' }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
                                     @endforeach
                                 </select>
+                                <p class="text-xs text-orange-500 mt-1">Kecamatan akan terisi otomatis setelah Anda menggeser pin di peta.</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Kelurahan</label>
@@ -51,6 +56,18 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Detail Alamat</label>
                                 <textarea name="address_detail" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400" placeholder="Nama jalan, nomor rumah, patokan...">{{ old('address_detail') }}</textarea>
                             </div>
+                            <!-- Peta Lokasi (Leaflet.js) -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">📍 Tandai Lokasi Pengiriman di Peta</label>
+                                <p class="text-xs text-gray-500 mb-2">Klik pada peta untuk menentukan titik lokasi pengiriman yang tepat.</p>
+                                <div id="map"></div>
+                                <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
+                                <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
+                                <div class="flex justify-between items-center mt-2">
+                                    <p class="text-xs text-gray-400" id="coord-display">Koordinat belum dipilih</p>
+                                </div>
+                                <span id="geocode-status" class="hidden"></span>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Catatan (Opsional)</label>
@@ -58,10 +75,11 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Metode Pembayaran *</label>
-                            <select name="payment_method" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400">
-                                <option value="transfer" {{ old('payment_method') == 'transfer' ? 'selected' : '' }}>Transfer Bank (Midtrans)</option>
-                                <option value="cod" {{ old('payment_method') == 'cod' ? 'selected' : '' }}>Bayar di Tempat (COD)</option>
-                            </select>
+                            <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                <p class="text-sm text-blue-800 font-medium">💳 Transfer Bank (Midtrans)</p>
+                                <p class="text-xs text-blue-600">Semua pembayaran dilakukan melalui Midtrans Payment Gateway.</p>
+                            </div>
+                            <input type="hidden" name="payment_method" value="transfer">
                         </div>
                     </div>
                 </div>
@@ -139,16 +157,124 @@
 </div>
 
 @push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
+// === Peta Leaflet ===
+let map, marker;
+const defaultLat = -0.0263; // Pontianak
+const defaultLng = 109.3425;
+
+function initMap() {
+    const pontianakBounds = [
+        [-0.15, 109.20], // South West
+        [0.08, 109.45]   // North East
+    ];
+
+    map = L.map('map', {
+        maxBounds: pontianakBounds,
+        maxBoundsViscosity: 1.0,
+        minZoom: 11
+    }).setView([defaultLat, defaultLng], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19,
+        bounds: pontianakBounds
+    }).addTo(map);
+
+    marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+
+    marker.on('dragend', function (e) {
+        const pos = marker.getLatLng();
+        setCoordinates(pos.lat, pos.lng);
+        reverseGeocode(pos.lat, pos.lng);
+    });
+
+    map.on('click', function (e) {
+        marker.setLatLng(e.latlng);
+        setCoordinates(e.latlng.lat, e.latlng.lng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+
+    // Invalidate size after a brief delay to handle hidden container
+    setTimeout(() => map.invalidateSize(), 300);
+}
+
+function setCoordinates(lat, lng) {
+    document.getElementById('latitude').value = lat.toFixed(8);
+    document.getElementById('longitude').value = lng.toFixed(8);
+    document.getElementById('coord-display').textContent = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+}
+
+function reverseGeocode(lat, lng) {
+    const statusEl = document.getElementById('geocode-status');
+    statusEl.innerHTML = '⏳ Mendeteksi kecamatan...';
+    statusEl.className = 'text-xs text-orange-500 font-medium mt-2 block';
+
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.address) {
+                let districtName = data.address.city_district || data.address.suburb || data.address.town || data.address.county || '';
+                
+                if (!districtName) {
+                    statusEl.innerHTML = '❌ Gagal mendeteksi wilayah. Silakan geser pin ke area permukiman.';
+                    statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
+                    document.getElementById('district_id').value = "";
+                    loadVillages("");
+                    return;
+                }
+
+                if (!districtName.toLowerCase().startsWith('kecamatan')) {
+                    districtName = 'Kecamatan ' + districtName;
+                }
+
+                const select = document.getElementById('district_id');
+                let matchFound = false;
+                for (let i = 0; i < select.options.length; i++) {
+                    if (select.options[i].text.toLowerCase() === districtName.toLowerCase()) {
+                        select.selectedIndex = i;
+                        matchFound = true;
+                        loadVillages(select.options[i].value);
+                        break;
+                    }
+                }
+
+                if (matchFound) {
+                    statusEl.innerHTML = `✅ Lokasi: <b>${districtName}</b>`;
+                    statusEl.className = 'text-xs text-green-600 font-medium mt-2 block';
+                } else {
+                    statusEl.innerHTML = `⚠️ Lokasi terdeteksi sebagai <b>${districtName}</b> (Di luar jangkauan wilayah kami)`;
+                    statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
+                    document.getElementById('district_id').value = "";
+                    loadVillages("");
+                }
+            }
+        })
+        .catch(err => {
+            statusEl.innerHTML = '❌ Gagal menghubungi server peta.';
+            statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
+        });
+}
+
+// === Toggle Delivery ===
 function toggleDelivery() {
     const method = document.getElementById('pickup_method').value;
     document.getElementById('delivery-fields').classList.toggle('hidden', method !== 'delivery');
     if (method !== 'delivery') {
         document.getElementById('shipping-display').textContent = 'Gratis';
         document.getElementById('total-display').textContent = 'Rp {{ number_format($subtotal, 0, ",", ".") }}';
+    } else {
+        // Init map ketika delivery dipilih pertama kali
+        if (!map) {
+            setTimeout(initMap, 100);
+        } else {
+            setTimeout(() => map.invalidateSize(), 100);
+        }
     }
 }
 
+// === Load Villages & Shipping ===
 function loadVillages(districtId) {
     if (!districtId) return;
     fetch(`/api/villages/${districtId}`)
@@ -169,7 +295,16 @@ function loadVillages(districtId) {
             const total = {{ $subtotal }} + cost;
             document.getElementById('total-display').textContent = 'Rp ' + Number(total).toLocaleString('id-ID');
         });
+
+    // Pindah peta ke kecamatan dihapus karena sekarang dropdown yang mengikuti peta, bukan peta mengikuti dropdown
 }
+
+// Init map jika delivery sudah dipilih (misal old value)
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('pickup_method').value === 'delivery') {
+        setTimeout(initMap, 200);
+    }
+});
 </script>
 @endpush
 @endsection

@@ -11,18 +11,27 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="font-sans antialiased bg-gray-100">
+<body class="font-sans antialiased bg-gray-100" x-data="{ sidebarOpen: false }">
     <div class="min-h-screen flex">
+        <!-- Mobile Overlay -->
+        <div x-show="sidebarOpen" @click="sidebarOpen = false"
+             x-transition:enter="transition-opacity ease-out duration-300"
+             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-in duration-200"
+             x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-black/50 z-40 md:hidden"></div>
+
         <!-- Sidebar -->
-        <aside x-data="{ open: true }" :class="open ? 'w-64' : 'w-20'" class="bg-gradient-to-b from-gray-900 to-gray-800 text-gray-300 transition-all duration-300 fixed inset-y-0 left-0 z-40 overflow-y-auto">
+        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+               class="bg-gradient-to-b from-gray-900 to-gray-800 text-gray-300 w-64 fixed inset-y-0 left-0 z-50 overflow-y-auto transition-transform duration-300 md:translate-x-0">
             <div class="p-4 flex items-center justify-between">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-2" x-show="open">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-2">
                     <span class="text-xl">🍲</span>
                     <span class="text-lg font-bold text-white">Admin Panel</span>
                 </a>
-                <button @click="open = !open" class="text-gray-400 hover:text-white">
+                <button @click="sidebarOpen = false" class="text-gray-400 hover:text-white md:hidden">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
@@ -42,10 +51,11 @@
 
                 @foreach($menuItems as $item)
                     <a href="{{ route($item['route']) }}"
+                       @click="sidebarOpen = false"
                        class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-all
                               {{ request()->routeIs($item['route'] . '*') ? 'bg-orange-500/20 text-orange-400 font-medium' : 'hover:bg-white/5 hover:text-white' }}">
                         <span class="text-lg">{{ $item['icon'] }}</span>
-                        <span class="ml-3" x-show="open">{{ $item['label'] }}</span>
+                        <span class="ml-3">{{ $item['label'] }}</span>
                     </a>
                 @endforeach
             </nav>
@@ -56,20 +66,28 @@
                     @csrf
                     <button type="button" onclick="confirmLogout('logout-form-admin')" class="flex items-center w-full px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-all">
                         <span class="text-lg">🚪</span>
-                        <span class="ml-3" x-show="open">Keluar</span>
+                        <span class="ml-3">Keluar</span>
                     </button>
                 </form>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <div x-data="{ sidebarOpen: true }" :class="sidebarOpen ? 'ml-64' : 'ml-20'" class="flex-1 transition-all duration-300 ml-64">
+        <div class="flex-1 transition-all duration-300 md:ml-64">
             <!-- Top Bar -->
             <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
-                <div class="px-6 py-4 flex justify-between items-center">
-                    <h1 class="text-xl font-semibold text-gray-800">@yield('title', 'Dashboard')</h1>
+                <div class="px-4 sm:px-6 py-4 flex justify-between items-center">
                     <div class="flex items-center space-x-3">
-                        <span class="text-sm text-gray-500">{{ auth()->user()->name }}</span>
+                        <!-- Hamburger (mobile) -->
+                        <button @click="sidebarOpen = true" class="text-gray-600 hover:text-gray-800 md:hidden">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                        <h1 class="text-lg sm:text-xl font-semibold text-gray-800">@yield('title', 'Dashboard')</h1>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-sm text-gray-500 hidden sm:inline">{{ auth()->user()->name }}</span>
                         <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </div>
@@ -78,7 +96,7 @@
             </header>
 
             <!-- Page Content -->
-            <main class="p-6">
+            <main class="p-4 sm:p-6">
                 @if(session('success'))
                     <script>
                         document.addEventListener('DOMContentLoaded', () => {

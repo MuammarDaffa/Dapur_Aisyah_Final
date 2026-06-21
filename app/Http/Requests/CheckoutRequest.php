@@ -21,9 +21,11 @@ class CheckoutRequest extends FormRequest
             'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
             'village_id' => 'required_if:pickup_method,delivery|nullable|exists:villages,id',
             'address_detail' => 'required_if:pickup_method,delivery|nullable|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'serving_type' => 'nullable|string|max:50',
             'portion' => 'nullable|integer|min:1',
-            'payment_method' => 'required|in:transfer,cod',
+            'payment_method' => 'required|in:transfer',
             'notes' => 'nullable|string|max:500',
         ];
     }
@@ -44,7 +46,7 @@ class CheckoutRequest extends FormRequest
             'portion.integer' => 'Jumlah porsi harus berupa angka.',
             'portion.min' => 'Jumlah porsi minimal 1.',
             'payment_method.required' => 'Metode pembayaran wajib dipilih.',
-            'payment_method.in' => 'Metode pembayaran harus transfer atau COD.',
+            'payment_method.in' => 'Metode pembayaran harus transfer (Midtrans).',
             'notes.max' => 'Catatan maksimal 500 karakter.',
         ];
     }

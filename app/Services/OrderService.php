@@ -138,6 +138,11 @@ class OrderService
         if ($newStatus === 'cancelled') {
             $data['cancelled_at'] = now();
             $data['cancellation_reason'] = $cancellationReason;
+
+            // Jika pesanan sudah dibayar, set refund_status = 'pending'
+            if ($order->payment_status === 'paid') {
+                $data['refund_status'] = 'pending';
+            }
         }
 
         $order->update($data);

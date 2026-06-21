@@ -121,14 +121,16 @@ class CheckoutController extends Controller
                 'district_id' => $validated['district_id'] ?? null,
                 'village_id' => $validated['village_id'] ?? null,
                 'address_detail' => $validated['address_detail'] ?? null,
+                'latitude' => $validated['latitude'] ?? null,
+                'longitude' => $validated['longitude'] ?? null,
                 'serving_type' => $validated['serving_type'] ?? null,
                 'portion' => $validated['portion'] ?? null,
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shippingCost,
                 'total' => $total,
-                'payment_method' => $validated['payment_method'],
+                'payment_method' => 'transfer',
                 'payment_status' => 'unpaid',
-                'status' => $validated['payment_method'] === 'cod' ? 'processing' : 'pending_payment',
+                'status' => 'pending_payment',
                 'notes' => $validated['notes'] ?? null,
             ]);
 
@@ -195,18 +197,11 @@ class CheckoutController extends Controller
             }
 
             // Jika transfer, buat Midtrans snap token
-            if ($validated['payment_method'] === 'transfer') {
-                try {
-                    $snapToken = PaymentService::createSnapToken($order);
-                    $order->update(['midtrans_snap_token' => $snapToken]);
-                } catch (\Exception $e) {
-                    \Log::error('Midtrans error: ' . $e->getMessage());
-                }
-            }
-
-            // COD langsung status processing
-            if ($validated['payment_method'] === 'cod') {
-                $order->update(['payment_status' => 'paid']);
+            try {
+                $snapToken = PaymentService::createSnapToken($order);
+                $order->update(['midtrans_snap_token' => $snapToken]);
+            } catch (\Exception $e) {
+                \Log::error('Midtrans error: ' . $e->getMessage());
             }
 
             // Kirim notifikasi pesanan dibuat
@@ -262,6 +257,8 @@ class CheckoutController extends Controller
             'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
             'village_id' => 'required_if:pickup_method,delivery|nullable|exists:villages,id',
             'address_detail' => 'required_if:pickup_method,delivery|nullable|string',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'payment_method' => 'required|in:transfer',
             'notes' => 'nullable|string',
         ]);
@@ -311,12 +308,14 @@ class CheckoutController extends Controller
                 'district_id' => $validated['district_id'] ?? null,
                 'village_id' => $validated['village_id'] ?? null,
                 'address_detail' => $validated['address_detail'] ?? null,
+                'latitude' => $validated['latitude'] ?? null,
+                'longitude' => $validated['longitude'] ?? null,
                 'serving_type' => $servingType?->name,
                 'portion' => $totalPortions,
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shippingCost,
                 'total' => $total,
-                'payment_method' => $validated['payment_method'],
+                'payment_method' => 'transfer',
                 'payment_status' => 'unpaid',
                 'status' => 'pending_payment',
                 'notes' => $validated['notes'] ?? null,

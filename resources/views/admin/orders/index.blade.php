@@ -19,7 +19,8 @@
     </form>
 </div>
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <table class="w-full text-sm">
+    <div class="overflow-x-auto">
+    <table class="w-full text-sm min-w-[800px]">
         <thead class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
             <tr>
                 <th class="px-6 py-3 text-left">Order</th>
@@ -55,6 +56,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 <div class="mt-4">{{ $orders->withQueryString()->links() }}</div>
 @endsection

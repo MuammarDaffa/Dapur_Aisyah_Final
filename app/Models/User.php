@@ -2,21 +2,24 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
         'phone',
+        'old_phone',
         'email',
         'password',
         'role',
+        'status_suspend',
     ];
 
     protected $hidden = [
@@ -56,6 +59,26 @@ class User extends Authenticatable
             'owner' => 'owner.dashboard',
             default => 'customer.dashboard',
         };
+    }
+
+    // === Suspend Status Checks ===
+
+    public function isSuspended(): bool
+    {
+        return $this->status_suspend === 'suspended';
+    }
+
+    public function isPendingVerification(): bool
+    {
+        return $this->status_suspend === 'pending_verification';
+    }
+
+    /**
+     * Apakah user sedang diblokir (suspended ATAU pending_verification)?
+     */
+    public function isBlocked(): bool
+    {
+        return in_array($this->status_suspend, ['suspended', 'pending_verification']);
     }
 
     // === Relationships ===

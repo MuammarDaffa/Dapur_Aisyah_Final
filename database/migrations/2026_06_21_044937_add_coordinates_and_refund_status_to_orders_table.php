@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            //
+            $table->decimal('latitude', 10, 8)->nullable()->after('address_detail');
+            $table->decimal('longitude', 11, 8)->nullable()->after('latitude');
+            $table->string('refund_status', 20)->default('none')->after('payment_status');
+            // none | pending | refunded
         });
     }
 
@@ -22,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            //
+            $table->dropColumn(['latitude', 'longitude', 'refund_status']);
         });
     }
 };

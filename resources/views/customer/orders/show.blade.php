@@ -37,7 +37,7 @@
                         <div><span class="text-gray-500">Jam Acara:</span><br><span class="font-medium">{{ \Carbon\Carbon::parse($order->event_start_time)->format('H:i') }} WIB</span></div>
                     @endif
                     <div><span class="text-gray-500">Metode:</span><br><span class="font-medium">{{ $order->pickup_method === 'delivery' ? 'Delivery' : 'Pick Up' }}</span></div>
-                    <div><span class="text-gray-500">Pembayaran:</span><br><span class="font-medium">{{ $order->payment_method === 'transfer' ? 'Transfer (Midtrans)' : 'COD' }}</span></div>
+                    <div><span class="text-gray-500">Pembayaran:</span><br><span class="font-medium">Transfer (Midtrans)</span></div>
                 </div>
                 @if($order->pickup_method === 'delivery')
                     <div class="mt-4 pt-4 border-t border-gray-100 text-sm">
@@ -50,6 +50,12 @@
                     <div class="mt-4 pt-4 border-t border-gray-100 text-sm">
                         <p class="text-gray-500 mb-1">Catatan:</p>
                         <p>{{ $order->notes }}</p>
+                    </div>
+                @endif
+                @if($order->cancellation_reason)
+                    <div class="mt-4 pt-4 border-t border-gray-100 text-sm">
+                        <p class="text-red-600 font-medium mb-1">Alasan Pembatalan:</p>
+                        <p>{{ $order->cancellation_reason }}</p>
                     </div>
                 @endif
             </div>
@@ -137,6 +143,21 @@
                             Batalkan Pesanan
                         </button>
                     </form>
+                @endif
+
+                {{-- Tombol Refund WhatsApp --}}
+                @if($order->status === 'cancelled' && ($order->refund_status ?? 'none') === 'pending')
+                    @php
+                        $waNumber = '6289655951299';
+                        $waText = urlencode("Halo Admin Dapur Aisyah,\n\nSaya ingin mengajukan refund untuk pesanan:\n- No. Order: {$order->order_number}\n- Total: Rp " . number_format($order->total, 0, ',', '.') . "\n\nMohon bantuannya. Terima kasih.");
+                        $waUrl = "https://wa.me/{$waNumber}?text={$waText}";
+                    @endphp
+                    <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl">
+                        <p class="text-sm text-green-800 font-medium mb-2">💰 Pesanan Anda telah dibatalkan dan memenuhi syarat refund.</p>
+                        <a href="{{ $waUrl }}" target="_blank" class="block w-full px-6 py-3 bg-green-600 text-white font-semibold text-center rounded-xl hover:bg-green-700 transition-colors">
+                            📱 Ajukan Refund via WhatsApp
+                        </a>
+                    </div>
                 @endif
 
                 @if($order->invoice)

@@ -48,7 +48,7 @@ Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('
 | Customer Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:customer'])->prefix('dashboard')->name('customer.')->group(function () {
+Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('customer.')->group(function () {
     Route::get('/', [CustomerDashboard::class, 'index'])->name('dashboard');
 
     // Profile
@@ -64,23 +64,26 @@ Route::middleware(['auth', 'role:customer'])->prefix('dashboard')->name('custome
     Route::get('/event/{service}/package/{package}', [CustomerDashboard::class, 'eventPackage'])->name('event.package');
     Route::get('/event/{service}/custom', [CustomerDashboard::class, 'eventCustom'])->name('event.custom');
 
-    // Event Cart (masukkan ke keranjang event)
-    Route::post('/event/cart', [CartController::class, 'storeEventGroup'])->name('event.cart.store');
-    Route::put('/event/cart/{groupId}', [CartController::class, 'updateEventGroup'])->name('event.cart.update');
+    // === Rute dilindungi not_suspended ===
+    Route::middleware('not_suspended')->group(function () {
+        // Event Cart (masukkan ke keranjang event)
+        Route::post('/event/cart', [CartController::class, 'storeEventGroup'])->name('event.cart.store');
+        Route::put('/event/cart/{groupId}', [CartController::class, 'updateEventGroup'])->name('event.cart.update');
 
-    // Event Checkout (per group)
-    Route::get('/event/checkout/{groupId}', [CheckoutController::class, 'showEventCheckout'])->name('event.checkout.show');
-    Route::post('/event/checkout/{groupId}', [CheckoutController::class, 'checkoutEventGroup'])->name('event.checkout.store');
+        // Event Checkout (per group)
+        Route::get('/event/checkout/{groupId}', [CheckoutController::class, 'showEventCheckout'])->name('event.checkout.show');
+        Route::post('/event/checkout/{groupId}', [CheckoutController::class, 'checkoutEventGroup'])->name('event.checkout.store');
 
-    // Cart (Daily + Event)
-    Route::get('/cart', [CartController::class, 'index'])->name('cart');
-    Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
-    Route::put('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
+        // Cart (Daily + Event)
+        Route::get('/cart', [CartController::class, 'index'])->name('cart');
+        Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+        Route::put('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
+        Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
 
-    // Checkout (Daily)
-    Route::get('/checkout/{menu_date?}', [CheckoutController::class, 'index'])->name('checkout');
-    Route::post('/checkout/{menu_date?}', [CheckoutController::class, 'store'])->name('checkout.store');
+        // Checkout (Daily)
+        Route::get('/checkout/{menu_date?}', [CheckoutController::class, 'index'])->name('checkout');
+        Route::post('/checkout/{menu_date?}', [CheckoutController::class, 'store'])->name('checkout.store');
+    });
 
     // Orders
     Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders');
@@ -136,6 +139,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Customers
     Route::get('/customers', [AdminCustomerController::class, 'index'])->name('customers');
     Route::get('/customers/{user}', [AdminCustomerController::class, 'show'])->name('customers.show');
+    Route::put('/customers/{user}/suspend', [AdminCustomerController::class, 'suspend'])->name('customers.suspend');
+    Route::put('/customers/{user}/activate', [AdminCustomerController::class, 'activate'])->name('customers.activate');
 
     // Reviews
     Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews');

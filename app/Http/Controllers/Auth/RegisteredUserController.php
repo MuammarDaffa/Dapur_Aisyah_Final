@@ -33,8 +33,10 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'phone' => ['required', 'string', 'max:20', 'regex:/^(\+62|08)[0-9]{8,13}$/'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:150', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:150', 'unique:'.User::class, 'regex:/^[a-zA-Z0-9._%+\-]+@gmail\.com$/i'],
             'password' => ['required', 'confirmed', Rules\Password::min(8)],
+        ], [
+            'email.regex' => 'Pendaftaran hanya dapat menggunakan email Gmail (@gmail.com).',
         ]);
 
         $user = User::create([

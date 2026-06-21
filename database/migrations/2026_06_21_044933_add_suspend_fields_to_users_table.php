@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->string('status_suspend', 30)->default('active')->after('role');
+            // active | suspended | pending_verification
+            $table->string('old_phone', 20)->nullable()->after('phone');
         });
     }
 
@@ -22,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->dropColumn(['status_suspend', 'old_phone']);
         });
     }
 };
