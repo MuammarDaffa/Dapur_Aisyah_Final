@@ -42,10 +42,19 @@
                                         <option value="{{ $district->id }}" data-lat="{{ $district->latitude ?? '' }}" data-lng="{{ $district->longitude ?? '' }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
                                     @endforeach
                                 </select>
+                            
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Detail Alamat</label>
-                                <textarea name="address_detail" id="address_detail_input" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Nama jalan, nomor rumah, patokan..." oninput="validateCheckout()">{{ old('address_detail') }}</textarea>
-                                <p id="address_error" class="text-sm text-red-500 mt-1 hidden">⚠️ Detail alamat wajib diisi untuk pengiriman.</p>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Berdasarkan Peta</label>
+                                <div id="osm-address-display" class="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 min-h-[42px]">
+                                    Lokasi belum ditandai di peta.
+                                </div>
+                                <input type="hidden" name="osm_address" id="osm_address">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Detail Patokan/Blok/No. Rumah *</label>
+                                <textarea name="address_detail" id="address_detail_input" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateCheckout()">{{ old('address_detail') }}</textarea>
+                                <p id="address_error" class="text-sm text-red-500 mt-1 hidden">⚠️ Detail patokan alamat wajib diisi untuk pengiriman.</p>
                                 @error('address_detail') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
                             </div>
                             <!-- Peta Lokasi (Leaflet.js) -->
@@ -55,7 +64,7 @@
                                 <div id="map"></div>
                                 <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
                                 <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
-                                <div class="flex justify-between items-center mt-2">
+                                <div class="flex justify-between items-center mt-2 hidden">
                                     <p class="text-xs text-gray-400" id="coord-display">Koordinat belum dipilih</p>
                                 </div>
                                 <span id="geocode-status" class="hidden"></span>
@@ -204,8 +213,12 @@ function setCoordinates(lat, lng) {
 
 function reverseGeocode(lat, lng) {
     const statusEl = document.getElementById('geocode-status');
+    const addressDisplay = document.getElementById('osm-address-display');
+    const osmAddressInput = document.getElementById('osm_address');
+
     statusEl.innerHTML = '⏳ Mendeteksi kecamatan...';
     statusEl.className = 'text-xs text-orange-500 font-medium mt-2 block';
+    addressDisplay.innerHTML = '<span class="text-gray-400 italic">⏳ Mengambil alamat dari peta...</span>';
 
     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
         .then(res => res.json())
@@ -213,6 +226,14 @@ function reverseGeocode(lat, lng) {
             if (data && data.address) {
                 let districtName = data.address.city_district || data.address.suburb || data.address.town || data.address.county || '';
                 
+                if (data.display_name) {
+                    addressDisplay.innerHTML = `<span class="font-medium text-gray-800">${data.display_name}</span>`;
+                    osmAddressInput.value = data.display_name;
+                } else {
+                    addressDisplay.innerHTML = '<span class="text-red-500">Alamat tidak dapat diurai secara detail.</span>';
+                    osmAddressInput.value = '';
+                }
+
                 if (!districtName) {
                     statusEl.innerHTML = '❌ Gagal mendeteksi wilayah. Silakan geser pin ke area permukiman.';
                     statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
@@ -250,6 +271,8 @@ function reverseGeocode(lat, lng) {
         .catch(err => {
             statusEl.innerHTML = '❌ Gagal menghubungi server peta.';
             statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
+            addressDisplay.innerHTML = '<span class="text-red-500">❌ Gagal mengambil alamat dari peta.</span>';
+            osmAddressInput.value = '';
             validateCheckout();
         });
 }

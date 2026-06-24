@@ -63,6 +63,13 @@ class CheckoutController extends Controller
     public function store(CheckoutRequest $request, $menu_date = null)
     {
         $validated = $request->validated();
+        
+        $finalAddressDetail = $validated['address_detail'] ?? null;
+        if (!empty($validated['osm_address']) && $finalAddressDetail) {
+            $finalAddressDetail = $validated['osm_address'] . "\nDetail Patokan: " . $finalAddressDetail;
+        } else if (!empty($validated['osm_address'])) {
+            $finalAddressDetail = $validated['osm_address'];
+        }
 
         $user = auth()->user();
         $cartsQuery = $user->carts()
@@ -120,7 +127,7 @@ class CheckoutController extends Controller
                 'pickup_method' => $validated['pickup_method'],
                 'district_id' => $validated['district_id'] ?? null,
                 'village_id' => $validated['village_id'] ?? null,
-                'address_detail' => $validated['address_detail'] ?? null,
+                'address_detail' => $finalAddressDetail,
                 'latitude' => $validated['latitude'] ?? null,
                 'longitude' => $validated['longitude'] ?? null,
                 'serving_type' => $validated['serving_type'] ?? null,
@@ -257,11 +264,19 @@ class CheckoutController extends Controller
             'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
             'village_id' => 'nullable|exists:villages,id',
             'address_detail' => 'required_if:pickup_method,delivery|nullable|string',
+            'osm_address' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'payment_method' => 'required|in:transfer',
             'notes' => 'nullable|string',
         ]);
+
+        $finalAddressDetail = $validated['address_detail'] ?? null;
+        if (!empty($validated['osm_address']) && $finalAddressDetail) {
+            $finalAddressDetail = $validated['osm_address'] . "\nDetail Patokan: " . $finalAddressDetail;
+        } else if (!empty($validated['osm_address'])) {
+            $finalAddressDetail = $validated['osm_address'];
+        }
 
         $user = auth()->user();
         $groupItems = $user->carts()
@@ -307,7 +322,7 @@ class CheckoutController extends Controller
                 'pickup_method' => $validated['pickup_method'],
                 'district_id' => $validated['district_id'] ?? null,
                 'village_id' => $validated['village_id'] ?? null,
-                'address_detail' => $validated['address_detail'] ?? null,
+                'address_detail' => $finalAddressDetail,
                 'latitude' => $validated['latitude'] ?? null,
                 'longitude' => $validated['longitude'] ?? null,
                 'serving_type' => $servingType?->name,

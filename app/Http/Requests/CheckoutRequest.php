@@ -21,6 +21,7 @@ class CheckoutRequest extends FormRequest
             'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
             'village_id' => 'nullable|exists:villages,id',
             'address_detail' => 'required_if:pickup_method,delivery|nullable|string|max:255',
+            'osm_address' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'serving_type' => 'nullable|string|max:50',

@@ -56,27 +56,15 @@
                             </div>
                         </div>
 
-                        <div id="eventAddressSection" class="space-y-4">
-                                <select name="district_id" id="district_id" class="hidden">
-                                    <option value="">-- Pilih dari peta di bawah --</option>
-                                    @foreach($districts as $district)
-                                        <option value="{{ $district->id }}" data-lat="{{ $district->latitude ?? '' }}" data-lng="{{ $district->longitude ?? '' }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
-                                    @endforeach
-                                </select>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Detail Alamat Lengkap *</label>
-                                <textarea name="address_detail" id="address_detail_input" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Nama jalan, RT/RW, patokan..." oninput="validateEventCheckout()">{{ old('address_detail') }}</textarea>
-                                <p id="address_error" class="text-sm text-red-500 mt-1 hidden">⚠️ Detail alamat wajib diisi untuk pengiriman.</p>
-                                @error('address_detail') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
+                        <div id="eventAddressSection" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
                             <!-- Peta Lokasi (Leaflet.js) -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">📍 Tandai Lokasi Acara di Peta</label>
                                 <p class="text-xs text-gray-500 mb-2">Klik pada peta untuk menentukan titik lokasi pengiriman yang tepat.</p>
-                                <div id="eventMap"></div>
+                                <div id="eventMap" class="w-full h-64 rounded-xl border border-gray-200 z-0"></div>
                                 <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
                                 <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
-                                <div class="flex justify-between items-center mt-2">
+                                <div class="flex justify-between items-center mt-2 hidden">
                                     <p class="text-xs text-gray-400" id="coord-display">Koordinat belum dipilih</p>
                                 </div>
                                 <span id="geocode-status" class="hidden"></span>
@@ -84,6 +72,31 @@
                                 @error('district_id')
                                     <p class="text-sm text-red-500 mt-2 font-medium">⚠️ Anda harus menandai lokasi pengiriman di peta dengan benar.</p>
                                 @enderror
+                            </div>
+
+                            <!-- Detail Alamat -->
+                            <div class="space-y-4">
+                                <select name="district_id" id="district_id" class="hidden">
+                                    <option value="">-- Pilih dari peta di bawah --</option>
+                                    @foreach($districts as $district)
+                                        <option value="{{ $district->id }}" data-lat="{{ $district->latitude ?? '' }}" data-lng="{{ $district->longitude ?? '' }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
+                                    @endforeach
+                                </select>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Berdasarkan Peta</label>
+                                    <div id="osm-address-display" class="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 min-h-[42px]">
+                                        Lokasi belum ditandai di peta.
+                                    </div>
+                                    <input type="hidden" name="osm_address" id="osm_address">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Detail Patokan/Blok/No. Rumah *</label>
+                                    <textarea name="address_detail" id="address_detail_input" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateEventCheckout()">{{ old('address_detail') }}</textarea>
+                                    <p id="address_error" class="text-sm text-red-500 mt-1 hidden">⚠️ Detail patokan alamat wajib diisi untuk pengiriman.</p>
+                                    @error('address_detail') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -240,14 +253,26 @@
 
     function reverseGeocode(lat, lng) {
         const statusEl = document.getElementById('geocode-status');
+        const addressDisplay = document.getElementById('osm-address-display');
+        const osmAddressInput = document.getElementById('osm_address');
+        
         statusEl.innerHTML = '⏳ Mendeteksi kecamatan...';
         statusEl.className = 'text-xs text-orange-500 font-medium mt-2 block';
+        addressDisplay.innerHTML = '<span class="text-gray-400 italic">⏳ Mengambil alamat dari peta...</span>';
 
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
             .then(res => res.json())
             .then(data => {
                 if (data && data.address) {
                     let districtName = data.address.city_district || data.address.suburb || data.address.town || data.address.county || '';
+                    
+                    if (data.display_name) {
+                        addressDisplay.innerHTML = `<span class="font-medium text-gray-800">${data.display_name}</span>`;
+                        osmAddressInput.value = data.display_name;
+                    } else {
+                        addressDisplay.innerHTML = '<span class="text-red-500">Alamat tidak dapat diurai secara detail.</span>';
+                        osmAddressInput.value = '';
+                    }
                     
                     if (!districtName) {
                         statusEl.innerHTML = '❌ Gagal mendeteksi wilayah. Silakan geser pin ke area permukiman.';
@@ -286,6 +311,8 @@
             .catch(err => {
                 statusEl.innerHTML = '❌ Gagal menghubungi server peta.';
                 statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
+                addressDisplay.innerHTML = '<span class="text-red-500">❌ Gagal mengambil alamat dari peta.</span>';
+                osmAddressInput.value = '';
                 validateEventCheckout();
             });
     }
