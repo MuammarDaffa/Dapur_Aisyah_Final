@@ -137,7 +137,13 @@
     // Fungsi Global Format Rupiah
     function formatRupiah(angka) {
         if (!angka && angka !== 0) return '';
-        let number_string = angka.toString().replace(/[^,\d]/g, ''),
+        // Konversi ke string dan hapus angka di belakang koma (titik desimal dari database) jika ada
+        let string_angka = angka.toString();
+        if(!isNaN(string_angka) && string_angka.includes('.')) {
+            string_angka = Math.round(parseFloat(string_angka)).toString();
+        }
+        
+        let number_string = string_angka.replace(/[^,\d]/g, ''),
             split = number_string.split(','),
             sisa = split[0].length % 3,
             rupiah = split[0].substr(0, sisa),
