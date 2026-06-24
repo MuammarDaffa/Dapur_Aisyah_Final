@@ -67,6 +67,9 @@
                                 <div id="eventMap" class="w-full h-[400px] rounded-xl border-2 border-gray-200 z-0 shadow-sm"></div>
                                 <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
                                 <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
+                                <div class="flex justify-between items-center mt-2 hidden">
+                                    <p class="text-xs text-gray-400" id="coord-display">Koordinat belum dipilih</p>
+                                </div>
                                 <span id="geocode-status" class="hidden"></span>
                                 <p id="map_error" class="text-sm text-red-500 mt-2 font-medium hidden">⚠️ Anda wajib menandai lokasi pengiriman di peta.</p>
                                 @error('district_id')
