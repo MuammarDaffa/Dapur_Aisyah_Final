@@ -27,12 +27,6 @@ class CheckoutController extends Controller
             ->whereNull('cart_group_id') // Hanya daily
             ->with(['product.cateringService', 'customOption', 'cateringPackage']);
             
-        if ($menu_date && $menu_date !== 'unknown') {
-            $cartsQuery->whereDate('menu_date', $menu_date);
-        } else {
-            $cartsQuery->whereNull('menu_date');
-        }
-        
         $carts = $cartsQuery->get();
 
         if ($carts->isEmpty()) {
@@ -48,13 +42,13 @@ class CheckoutController extends Controller
         $districts = District::with('villages')->get();
         $subtotal = $carts->sum(fn ($cart) => $cart->subtotal);
         
-        $orderDate = $menu_date && $menu_date !== 'unknown' ? $menu_date : date('Y-m-d');
+        $orderDate = $carts->min('menu_date') ? $carts->min('menu_date')->format('Y-m-d') : date('Y-m-d');
         
         // Pass cutoff data if available
         $firstCart = $carts->first();
         $service = $firstCart->product ? $firstCart->product->cateringService : ($firstCart->customOption ? $firstCart->customOption->cateringService : null);
 
-        return view('customer.checkout', compact('carts', 'groupedCarts', 'districts', 'subtotal', 'user', 'orderDate', 'menu_date', 'service'));
+        return view('customer.checkout', compact('carts', 'groupedCarts', 'districts', 'subtotal', 'user', 'orderDate', 'service'));
     }
 
     /**
@@ -76,12 +70,6 @@ class CheckoutController extends Controller
             ->whereNull('cart_group_id') // Hanya daily
             ->with(['product.cateringService', 'customOption', 'cateringPackage']);
             
-        if ($menu_date && $menu_date !== 'unknown') {
-            $cartsQuery->whereDate('menu_date', $menu_date);
-        } else {
-            $cartsQuery->whereNull('menu_date');
-        }
-        
         $carts = $cartsQuery->get();
 
         if ($carts->isEmpty()) {
@@ -109,7 +97,7 @@ class CheckoutController extends Controller
         // Validasi tanggal pemesanan berdasarkan jenis layanan
         OrderService::validateOrderDate($validated['order_date'], $cateringServiceId);
 
-        return DB::transaction(function () use ($validated, $user, $carts, $cateringServiceId, $packageId, $menu_date) {
+        return DB::transaction(function () use ($validated, $user, $carts, $cateringServiceId, $packageId, $menu_date, $finalAddressDetail) {
             // Hitung biaya
             $subtotal = $carts->sum(fn ($cart) => $cart->subtotal);
             $shippingCost = $validated['pickup_method'] === 'delivery'
@@ -123,7 +111,7 @@ class CheckoutController extends Controller
                 'user_id' => $user->id,
                 'catering_service_id' => $cateringServiceId,
                 'package_id' => $packageId,
-                'order_date' => $validated['order_date'],
+                'order_date' => $carts->min('menu_date') ? $carts->min('menu_date')->format('Y-m-d') : date('Y-m-d'),
                 'pickup_method' => $validated['pickup_method'],
                 'district_id' => $validated['district_id'] ?? null,
                 'village_id' => $validated['village_id'] ?? null,
@@ -179,6 +167,11 @@ class CheckoutController extends Controller
                         $itemName .= " (Extra: " . implode(', ', $extraNames) . ")";
                     }
                 }
+                
+                // Append menu date specifically for daily items since they are checked out together
+                if ($cart->menu_date) {
+                    $itemName .= " [Kirim: " . $cart->menu_date->format('d M Y') . "]";
+                }
 
                 $subtotal = ($unitPrice * $cart->quantity) + $extrasPrice;
 
@@ -196,12 +189,8 @@ class CheckoutController extends Controller
             // Buat invoice
             InvoiceService::createInvoice($order);
 
-            // Hapus keranjang daily saja yang sudah dicheckout
-            if ($menu_date && $menu_date !== 'unknown') {
-                $user->carts()->whereNull('cart_group_id')->whereDate('menu_date', $menu_date)->delete();
-            } else {
-                $user->carts()->whereNull('cart_group_id')->whereNull('menu_date')->delete();
-            }
+            // Hapus semua keranjang daily yang sudah dicheckout
+            $user->carts()->whereNull('cart_group_id')->delete();
 
             // Jika transfer, buat Midtrans snap token
             try {
@@ -303,7 +292,7 @@ class CheckoutController extends Controller
         // Hitung penyajian
         $servingType = $groupItems->first()->servingType;
 
-        return DB::transaction(function () use ($validated, $user, $groupItems, $groupId, $cateringServiceId, $packageId, $packageItem, $totalPortions, $servingType) {
+        return DB::transaction(function () use ($validated, $user, $groupItems, $groupId, $cateringServiceId, $packageId, $packageItem, $totalPortions, $servingType, $finalAddressDetail) {
             // Hitung subtotal
             $subtotal = $groupItems->sum(fn ($c) => $c->subtotal);
             $shippingCost = $validated['pickup_method'] === 'delivery'

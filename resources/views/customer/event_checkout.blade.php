@@ -44,36 +44,21 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Metode Pengiriman *</label>
-                            <div class="flex gap-4">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" name="pickup_method" value="delivery" checked class="text-orange-500 focus:ring-orange-500" onchange="toggleEventAddress(true)">
-                                    <span>Diantar (Delivery)</span>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <label class="relative flex flex-col p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-orange-300 transition-all [&:has(input:checked)]:border-orange-500 [&:has(input:checked)]:bg-orange-50">
+                                    <input type="radio" name="pickup_method" value="delivery" checked class="absolute top-4 right-4 text-orange-500 focus:ring-orange-500" onchange="toggleEventAddress(true)">
+                                    <span class="font-bold text-gray-900 mb-1">🚚 Diantar (Delivery)</span>
+                                    <span class="text-sm text-gray-500">Pesanan akan diantar ke lokasi acara Anda.</span>
                                 </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" name="pickup_method" value="pickup" class="text-orange-500 focus:ring-orange-500" onchange="toggleEventAddress(false)">
-                                    <span>Ambil Sendiri (Pickup)</span>
+                                <label class="relative flex flex-col p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-orange-300 transition-all [&:has(input:checked)]:border-orange-500 [&:has(input:checked)]:bg-orange-50">
+                                    <input type="radio" name="pickup_method" value="pickup" class="absolute top-4 right-4 text-orange-500 focus:ring-orange-500" onchange="toggleEventAddress(false)">
+                                    <span class="font-bold text-gray-900 mb-1">🏪 Ambil Sendiri (Pickup)</span>
+                                    <span class="text-sm text-gray-500">Ambil pesanan langsung di dapur kami.</span>
                                 </label>
                             </div>
                         </div>
 
-                        <div id="eventAddressSection" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
-                            <!-- Peta Lokasi (Leaflet.js) -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">📍 Tandai Lokasi Acara di Peta</label>
-                                <p class="text-xs text-gray-500 mb-2">Klik pada peta untuk menentukan titik lokasi pengiriman yang tepat.</p>
-                                <div id="eventMap" class="w-full h-64 rounded-xl border border-gray-200 z-0"></div>
-                                <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
-                                <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
-                                <div class="flex justify-between items-center mt-2 hidden">
-                                    <p class="text-xs text-gray-400" id="coord-display">Koordinat belum dipilih</p>
-                                </div>
-                                <span id="geocode-status" class="hidden"></span>
-                                <p id="map_error" class="text-sm text-red-500 mt-2 font-medium hidden">⚠️ Anda wajib menandai lokasi pengiriman di peta.</p>
-                                @error('district_id')
-                                    <p class="text-sm text-red-500 mt-2 font-medium">⚠️ Anda harus menandai lokasi pengiriman di peta dengan benar.</p>
-                                @enderror
-                            </div>
-
+                        <div id="eventAddressSection" class="space-y-6 mt-6">
                             <!-- Detail Alamat -->
                             <div class="space-y-4">
                                 <select name="district_id" id="district_id" class="hidden">
@@ -84,19 +69,33 @@
                                 </select>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Berdasarkan Peta</label>
-                                    <div id="osm-address-display" class="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 min-h-[42px]">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Alamat Berdasarkan Peta</label>
+                                    <div id="osm-address-display" class="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 min-h-[56px] flex items-center">
                                         Lokasi belum ditandai di peta.
                                     </div>
                                     <input type="hidden" name="osm_address" id="osm_address">
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Detail Patokan/Blok/No. Rumah *</label>
-                                    <textarea name="address_detail" id="address_detail_input" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateEventCheckout()">{{ old('address_detail') }}</textarea>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Detail Patokan/Blok/No. Rumah *</label>
+                                    <textarea name="address_detail" id="address_detail_input" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateEventCheckout()">{{ old('address_detail') }}</textarea>
                                     <p id="address_error" class="text-sm text-red-500 mt-1 hidden">⚠️ Detail patokan alamat wajib diisi untuk pengiriman.</p>
                                     @error('address_detail') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
+                            </div>
+
+                            <!-- Peta Lokasi (Leaflet.js) -->
+                            <div class="mt-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">📍 Tandai Lokasi Acara di Peta</label>
+                                <p class="text-sm text-gray-500 mb-3">Geser peta dan klik untuk menentukan titik lokasi pengiriman yang tepat.</p>
+                                <div id="eventMap" class="w-full h-[400px] rounded-xl border-2 border-gray-200 z-0 shadow-sm"></div>
+                                <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
+                                <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
+                                <span id="geocode-status" class="hidden"></span>
+                                <p id="map_error" class="text-sm text-red-500 mt-2 font-medium hidden">⚠️ Anda wajib menandai lokasi pengiriman di peta.</p>
+                                @error('district_id')
+                                    <p class="text-sm text-red-500 mt-2 font-medium">⚠️ Anda harus menandai lokasi pengiriman di peta dengan benar.</p>
+                                @enderror
                             </div>
                         </div>
                     </div>

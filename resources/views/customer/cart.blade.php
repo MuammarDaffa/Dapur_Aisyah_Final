@@ -115,14 +115,21 @@
                         @endforeach
                     </div>
 
-                    <div class="px-6 py-4 bg-gray-50 flex gap-3">
-                        <a href="{{ route('customer.checkout', ['menu_date' => $menuDate]) }}"
-                            class="flex-1 text-center px-4 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all text-sm">
-                            Checkout untuk Tanggal Ini →
-                        </a>
-                    </div>
                 </div>
                 @endforeach
+
+                <!-- Tombol Checkout Global untuk Semua Daily -->
+                <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex flex-col sm:flex-row justify-between items-center gap-4 sticky bottom-4 z-10">
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-lg">Total Seluruh Pesanan Daily</h4>
+                        <p class="text-2xl font-bold text-orange-600">Rp {{ number_format($dailyGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</p>
+                        <p class="text-sm text-gray-500 mt-1">Satu kali checkout untuk seluruh menu harian.</p>
+                    </div>
+                    <a href="{{ route('customer.checkout') }}"
+                        class="w-full sm:w-auto text-center px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl hover:shadow-lg transition-all text-lg flex items-center justify-center gap-2">
+                        Checkout Semua Menu Daily 🛒
+                    </a>
+                </div>
             </div>
         @endif
     </div>

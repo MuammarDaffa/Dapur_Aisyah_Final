@@ -16,7 +16,7 @@ class CheckoutRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_date' => 'required|date|after_or_equal:today',
+            'order_date' => 'nullable|date',
             'pickup_method' => 'required|in:pickup,delivery',
             'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
             'village_id' => 'nullable|exists:villages,id',
