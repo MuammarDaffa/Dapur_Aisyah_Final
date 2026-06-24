@@ -20,6 +20,7 @@
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <h3 class="font-bold text-gray-900 mb-4">📅 Informasi Acara</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
                             @php
                                 $minDays = $service->minimal_order_days ?? 3;
                                 $minDate = \Carbon\Carbon::now()->addDays($minDays)->format('Y-m-d');
@@ -59,6 +60,20 @@
                         </div>
 
                         <div id="eventAddressSection" class="space-y-6 mt-6">
+                            <!-- Peta Lokasi (Leaflet.js) -->
+                            <div class="mt-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">📍 Tandai Lokasi Acara di Peta</label>
+                                <p class="text-sm text-gray-500 mb-3">Geser peta dan klik untuk menentukan titik lokasi pengiriman yang tepat.</p>
+                                <div id="eventMap" class="w-full h-[400px] rounded-xl border-2 border-gray-200 z-0 shadow-sm"></div>
+                                <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
+                                <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
+                                <span id="geocode-status" class="hidden"></span>
+                                <p id="map_error" class="text-sm text-red-500 mt-2 font-medium hidden">⚠️ Anda wajib menandai lokasi pengiriman di peta.</p>
+                                @error('district_id')
+                                    <p class="text-sm text-red-500 mt-2 font-medium">⚠️ Anda harus menandai lokasi pengiriman di peta dengan benar.</p>
+                                @enderror
+                            </div>
+
                             <!-- Detail Alamat -->
                             <div class="space-y-4">
                                 <select name="district_id" id="district_id" class="hidden">
@@ -82,20 +97,6 @@
                                     <p id="address_error" class="text-sm text-red-500 mt-1 hidden">⚠️ Detail patokan alamat wajib diisi untuk pengiriman.</p>
                                     @error('address_detail') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
-                            </div>
-
-                            <!-- Peta Lokasi (Leaflet.js) -->
-                            <div class="mt-4">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">📍 Tandai Lokasi Acara di Peta</label>
-                                <p class="text-sm text-gray-500 mb-3">Geser peta dan klik untuk menentukan titik lokasi pengiriman yang tepat.</p>
-                                <div id="eventMap" class="w-full h-[400px] rounded-xl border-2 border-gray-200 z-0 shadow-sm"></div>
-                                <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
-                                <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
-                                <span id="geocode-status" class="hidden"></span>
-                                <p id="map_error" class="text-sm text-red-500 mt-2 font-medium hidden">⚠️ Anda wajib menandai lokasi pengiriman di peta.</p>
-                                @error('district_id')
-                                    <p class="text-sm text-red-500 mt-2 font-medium">⚠️ Anda harus menandai lokasi pengiriman di peta dengan benar.</p>
-                                @enderror
                             </div>
                         </div>
                     </div>

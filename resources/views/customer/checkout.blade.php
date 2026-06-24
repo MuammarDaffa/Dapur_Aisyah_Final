@@ -7,7 +7,7 @@
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <h2 class="text-2xl font-bold text-gray-900 mb-6">📋 <span class="text-orange-500">Checkout</span></h2>
-    <form action="{{ route('customer.checkout.store', ['menu_date' => $menu_date]) }}" method="POST">
+    <form action="{{ route('customer.checkout.store') }}" method="POST">
         @csrf
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 space-y-6">
