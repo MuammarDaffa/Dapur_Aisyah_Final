@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class CustomOption extends Model
 {
     protected $fillable = [
-        'catering_service_id', 'type', 'name', 'price', 'min_qty', 'is_active', 'image', 'description',
+        'catering_service_id', 'type', 'name', 'price', 'min_qty', 'is_active', 'image', 'items',
     ];
 
     protected function casts(): array
@@ -18,6 +18,7 @@ class CustomOption extends Model
             'price' => 'decimal:2',
             'min_qty' => 'integer',
             'is_active' => 'boolean',
+            'items' => 'array',
         ];
     }
 

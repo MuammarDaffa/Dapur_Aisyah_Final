@@ -189,16 +189,24 @@ class CateringController extends Controller
             'name' => 'required|string|max:150',
             'price' => 'required|numeric|min:0|max:1000000000',
             'is_active' => 'boolean',
-            'description' => 'nullable|string',
+            'items' => 'exclude_unless:type,menu|required|array|min:1',
+            'items.*' => 'required|string|max:150',
             'image' => 'nullable|image|max:2048',
         ], [
             'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
+            'items.required' => 'Minimal 1 item menu harus ditambahkan.',
+            'items.min' => 'Minimal 1 item menu harus ditambahkan.',
             'image.image' => 'File harus berupa gambar.',
             'image.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
 
         $validated['catering_service_id'] = $catering->id;
         $validated['is_active'] = $request->boolean('is_active');
+        
+        // Remove items array if type is not menu, though exclude_unless handles this.
+        if ($request->type !== 'menu') {
+            $validated['items'] = null;
+        }
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('custom_options', 'public');
@@ -222,13 +230,27 @@ class CateringController extends Controller
             'name' => 'required|string|max:150',
             'price' => 'required|numeric|min:0|max:1000000000',
             'is_active' => 'boolean',
-            'description' => 'nullable|string',
+            'items' => 'nullable|array',
+            'items.*' => 'required|string|max:150',
             'image' => 'nullable|image|max:2048',
         ], [
             'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
+            'items.required' => 'Minimal 1 item menu harus ditambahkan.',
             'image.image' => 'File harus berupa gambar.',
             'image.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
+
+        // Validate items specifically if it's a menu
+        if ($option->type === 'menu') {
+            $request->validate([
+                'items' => 'required|array|min:1',
+            ], [
+                'items.required' => 'Minimal 1 item menu harus ditambahkan.',
+                'items.min' => 'Minimal 1 item menu harus ditambahkan.',
+            ]);
+        } else {
+            $validated['items'] = null;
+        }
 
         $validated['is_active'] = $request->boolean('is_active');
 

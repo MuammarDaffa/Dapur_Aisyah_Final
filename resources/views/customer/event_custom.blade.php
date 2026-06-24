@@ -26,21 +26,38 @@
                 <h3 class="text-lg font-bold text-gray-900 mb-4">Pilih Menu</h3>
                 <div class="space-y-3">
                     @foreach($menus as $idx => $menu)
-                        <div class="flex items-center justify-between p-4 border rounded-xl hover:bg-orange-50 transition-colors">
-                            <label class="flex items-center gap-3 cursor-pointer flex-1">
-                                <input type="checkbox" id="custom_menu_{{ $idx }}" data-id="{{ $menu->id }}" data-price="{{ $menu->price }}"
-                                    class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-menu-cb" onchange="toggleCustomMenu({{ $idx }})">
-                                <div>
-                                    <span class="font-medium text-gray-900">{{ $menu->name }}</span>
-                                    <p class="text-sm text-orange-600 font-semibold">Rp {{ number_format($menu->price, 0, ',', '.') }} / porsi</p>
+                        <div class="border rounded-xl overflow-hidden hover:border-orange-200 transition-colors">
+                            <div class="flex items-center justify-between p-4 hover:bg-orange-50/50">
+                                <label class="flex items-center gap-3 cursor-pointer flex-1">
+                                    <input type="checkbox" id="custom_menu_{{ $idx }}" data-id="{{ $menu->id }}" data-price="{{ $menu->price }}"
+                                        class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-menu-cb" onchange="toggleCustomMenu({{ $idx }})">
+                                    <div>
+                                        <span class="font-medium text-gray-900">{{ $menu->name }}</span>
+                                        <div class="flex items-center gap-2 mt-0.5">
+                                            <p class="text-sm text-orange-600 font-semibold">Rp {{ number_format($menu->price, 0, ',', '.') }} / porsi</p>
+                                            @if($menu->items && count($menu->items) > 0)
+                                                <span class="text-gray-300 text-xs">•</span>
+                                                <button type="button" onclick="toggleMenuDetail({{ $idx }}, event)" class="text-xs font-semibold text-blue-600 hover:text-blue-800 focus:outline-none">Lihat Detail</button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </label>
+                                <div class="flex items-center gap-2 opacity-0 pointer-events-none transition-opacity" id="custom_menu_qty_container_{{ $idx }}">
+                                    <button type="button" onclick="changeCustomQty({{ $idx }}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
+                                    <input type="number" id="custom_menu_input_{{ $idx }}" value="0" min="0"
+                                        class="w-16 text-center border rounded-lg py-1 font-semibold" onchange="recalcCustom()">
+                                    <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
                                 </div>
-                            </label>
-                            <div class="flex items-center gap-2 opacity-0 pointer-events-none transition-opacity" id="custom_menu_qty_container_{{ $idx }}">
-                                <button type="button" onclick="changeCustomQty({{ $idx }}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
-                                <input type="number" id="custom_menu_input_{{ $idx }}" value="0" min="0"
-                                    class="w-16 text-center border rounded-lg py-1 font-semibold" onchange="recalcCustom()">
-                                <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
                             </div>
+                            @if($menu->items && count($menu->items) > 0)
+                            <div id="menu_detail_{{ $idx }}" class="hidden border-t border-gray-100 bg-gray-50 p-4">
+                                <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                                    @foreach($menu->items as $item)
+                                        <li>{{ $item }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>
@@ -186,6 +203,15 @@
         }
         input.value = val;
         recalcCustom();
+    }
+
+    function toggleMenuDetail(idx, event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const detailPanel = document.getElementById('menu_detail_' + idx);
+        if (detailPanel) {
+            detailPanel.classList.toggle('hidden');
+        }
     }
 
     function recalcCustom() {

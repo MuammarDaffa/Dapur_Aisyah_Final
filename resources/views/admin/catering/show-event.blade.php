@@ -91,7 +91,7 @@
                     </td>
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
-                            <button type="button" data-desc="{{ $menu->description ?? '' }}" onclick="openEditModal({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->price }}, {{ $menu->is_active ? 'true' : 'false' }}, 'menu', this)" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <button type="button" data-items="{{ json_encode($menu->items ?? []) }}" onclick="openEditModal({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->price }}, {{ $menu->is_active ? 'true' : 'false' }}, 'menu', this)" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
                             <form id="form-delete-menu-{{ $menu->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $menu]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button type="button" onclick="confirmDelete('form-delete-menu-{{ $menu->id }}', 'Hapus menu ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
@@ -143,7 +143,7 @@
                     </td>
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
-                            <button type="button" data-desc="{{ $serving->description ?? '' }}" onclick="openEditModal({{ $serving->id }}, '{{ addslashes($serving->name) }}', {{ $serving->price }}, {{ $serving->is_active ? 'true' : 'false' }}, 'serving_type', this)" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <button type="button" data-items="{{ json_encode($serving->items ?? []) }}" onclick="openEditModal({{ $serving->id }}, '{{ addslashes($serving->name) }}', {{ $serving->price }}, {{ $serving->is_active ? 'true' : 'false' }}, 'serving_type', this)" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
                             <form id="form-delete-serving-{{ $serving->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $serving]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button type="button" onclick="confirmDelete('form-delete-serving-{{ $serving->id }}', 'Hapus penyajian ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
@@ -197,7 +197,7 @@
                     </td>
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
-                            <button type="button" data-desc="{{ $extra->description ?? '' }}" onclick="openEditModal({{ $extra->id }}, '{{ addslashes($extra->name) }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }}, 'extra', this)" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <button type="button" data-items="{{ json_encode($extra->items ?? []) }}" onclick="openEditModal({{ $extra->id }}, '{{ addslashes($extra->name) }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }}, 'extra', this)" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
                             <form id="form-delete-extra-{{ $extra->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button type="button" onclick="confirmDelete('form-delete-extra-{{ $extra->id }}', 'Hapus extra ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
@@ -319,9 +319,14 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
                 <input type="text" name="name" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="Nama item...">
             </div>
-            <div id="addDescField" style="display:none;">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                <textarea name="description" rows="2" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="Deskripsi..."></textarea>
+            <div id="addItemsField" style="display:none;">
+                <div class="flex items-center justify-between mb-2">
+                    <label class="block text-sm font-medium text-gray-700">Item Menu *</label>
+                    <button type="button" onclick="addAddMenuItem()" class="text-xs text-orange-600 font-semibold hover:text-orange-700">+ Tambah Item</button>
+                </div>
+                <div id="addItemsContainer" class="space-y-2">
+                    <!-- Dynamic item inputs will go here -->
+                </div>
             </div>
             <div id="addImageField" style="display:none;">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
@@ -360,9 +365,14 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
                 <input type="text" name="name" id="editName" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
             </div>
-            <div id="editDescField" style="display:none;">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                <textarea name="description" id="editDesc" rows="2" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="Deskripsi..."></textarea>
+            <div id="editItemsField" style="display:none;">
+                <div class="flex items-center justify-between mb-2">
+                    <label class="block text-sm font-medium text-gray-700">Item Menu *</label>
+                    <button type="button" onclick="addEditMenuItem()" class="text-xs text-orange-600 font-semibold hover:text-orange-700">+ Tambah Item</button>
+                </div>
+                <div id="editItemsContainer" class="space-y-2">
+                    <!-- Dynamic item inputs will go here -->
+                </div>
             </div>
             <div id="editImageField" style="display:none;">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Gambar (Kosongkan jika tidak diubah)</label>
@@ -393,13 +403,19 @@ function openOptionModal(type) {
     document.getElementById('addOptionType').value = type;
     document.getElementById('addModalTitle').textContent = 'Tambah ' + typeLabels[type];
     
-    // Tampilkan field desc & image hanya untuk menu
+    // Tampilkan field items & image hanya untuk menu
     if (type === 'menu') {
-        document.getElementById('addDescField').style.display = 'block';
+        document.getElementById('addItemsField').style.display = 'block';
         document.getElementById('addImageField').style.display = 'block';
+        
+        // Reset items
+        const container = document.getElementById('addItemsContainer');
+        container.innerHTML = '';
+        addAddMenuItem(); // add one empty input by default
     } else {
-        document.getElementById('addDescField').style.display = 'none';
+        document.getElementById('addItemsField').style.display = 'none';
         document.getElementById('addImageField').style.display = 'none';
+        document.getElementById('addItemsContainer').innerHTML = '';
     }
     
     // Penyajian: harga tidak diperlukan (0)
@@ -421,20 +437,31 @@ function closeOptionModal() {
 function openEditModal(optionId, name, price, isActive, type, btnElement) {
     document.getElementById('editName').value = name;
     
-    // Ambil deskripsi dari tombol jika ada
-    if(btnElement && btnElement.getAttribute('data-desc')) {
-        document.getElementById('editDesc').value = btnElement.getAttribute('data-desc');
-    } else {
-        document.getElementById('editDesc').value = '';
-    }
-    
-    // Tampilkan field desc & image hanya untuk menu
+    // Tampilkan field items & image hanya untuk menu
     if (type === 'menu') {
-        document.getElementById('editDescField').style.display = 'block';
+        document.getElementById('editItemsField').style.display = 'block';
         document.getElementById('editImageField').style.display = 'block';
+        
+        const container = document.getElementById('editItemsContainer');
+        container.innerHTML = '';
+        
+        // Parse items dari btnElement
+        let items = [];
+        if(btnElement && btnElement.getAttribute('data-items')) {
+            try {
+                items = JSON.parse(btnElement.getAttribute('data-items'));
+            } catch(e) {}
+        }
+        
+        if (items && items.length > 0) {
+            items.forEach(item => addEditMenuItem(item));
+        } else {
+            addEditMenuItem(); // minimal 1 item
+        }
     } else {
-        document.getElementById('editDescField').style.display = 'none';
+        document.getElementById('editItemsField').style.display = 'none';
         document.getElementById('editImageField').style.display = 'none';
+        document.getElementById('editItemsContainer').innerHTML = '';
     }
     
     // Penyajian: harga tidak diperlukan (0)
@@ -458,6 +485,31 @@ function closeEditModal() {
 // Close modals when clicking outside
 document.getElementById('addOptionModal')?.addEventListener('click', function(e) { if (e.target === this) closeOptionModal(); });
 document.getElementById('editOptionModal')?.addEventListener('click', function(e) { if (e.target === this) closeEditModal(); });
+
+// Dynamic items UI logic
+function addAddMenuItem(value = '') {
+    const container = document.getElementById('addItemsContainer');
+    container.insertAdjacentHTML('beforeend', `
+        <div class="flex items-center gap-2">
+            <input type="text" name="items[]" value="${value}" required class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="Misal: Nasi Putih">
+            <button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+        </div>
+    `);
+}
+
+function addEditMenuItem(value = '') {
+    const container = document.getElementById('editItemsContainer');
+    container.insertAdjacentHTML('beforeend', `
+        <div class="flex items-center gap-2">
+            <input type="text" name="items[]" value="${value}" required class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="Misal: Nasi Putih">
+            <button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+        </div>
+    `);
+}
 </script>
 @endpush
 @endsection
