@@ -36,11 +36,16 @@
         @endforeach
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @forelse($currentItems as $item)
+            @php
+                // Filter out items that are past
+                $displayItems = $currentItems->filter(function($item) {
+                    return !$item->isPast();
+                });
+            @endphp
+            @forelse($displayItems as $item)
                 @php
                     $product = $item->product;
-                    $isPast = $item->isPast();
-                    $canOrder = !$isPast && $item->canOrder() && $product->isAvailable();
+                    $canOrder = $item->canOrder() && $product->isAvailable();
                 @endphp
                 <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 {{ !$canOrder ? 'opacity-75 grayscale-[0.3]' : '' }}">
                     <div class="relative h-44 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center">
@@ -54,10 +59,6 @@
                         @endif
                         @if(!$product->isAvailable())
                             <span class="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg">HABIS</span>
-                        @elseif($isPast)
-                            <span class="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                <span class="bg-red-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full">Pesanan sudah lewat hari</span>
-                            </span>
                         @elseif(!$canOrder)
                             <span class="absolute inset-0 bg-black/30 flex items-center justify-center">
                                 <span class="bg-orange-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full">Melewati batas pemesanan</span>
