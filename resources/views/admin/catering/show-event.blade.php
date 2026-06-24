@@ -91,7 +91,7 @@
                     </td>
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
-                            <button type="button" onclick="openEditModal({{ $menu->id }}, '{{ $menu->name }}', {{ $menu->price }}, {{ $menu->is_active ? 'true' : 'false' }}, 'menu')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <button type="button" data-desc="{{ $menu->description ?? '' }}" onclick="openEditModal({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->price }}, {{ $menu->is_active ? 'true' : 'false' }}, 'menu', this)" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
                             <form id="form-delete-menu-{{ $menu->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $menu]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button type="button" onclick="confirmDelete('form-delete-menu-{{ $menu->id }}', 'Hapus menu ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
@@ -143,7 +143,7 @@
                     </td>
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
-                            <button type="button" onclick="openEditModal({{ $serving->id }}, '{{ $serving->name }}', {{ $serving->price }}, {{ $serving->is_active ? 'true' : 'false' }}, 'serving_type')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <button type="button" data-desc="{{ $serving->description ?? '' }}" onclick="openEditModal({{ $serving->id }}, '{{ addslashes($serving->name) }}', {{ $serving->price }}, {{ $serving->is_active ? 'true' : 'false' }}, 'serving_type', this)" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
                             <form id="form-delete-serving-{{ $serving->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $serving]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button type="button" onclick="confirmDelete('form-delete-serving-{{ $serving->id }}', 'Hapus penyajian ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
@@ -197,7 +197,7 @@
                     </td>
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
-                            <button type="button" onclick="openEditModal({{ $extra->id }}, '{{ $extra->name }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }}, 'extra')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <button type="button" data-desc="{{ $extra->description ?? '' }}" onclick="openEditModal({{ $extra->id }}, '{{ addslashes($extra->name) }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }}, 'extra', this)" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
                             <form id="form-delete-extra-{{ $extra->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button type="button" onclick="confirmDelete('form-delete-extra-{{ $extra->id }}', 'Hapus extra ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
@@ -312,12 +312,20 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <form id="addOptionForm" action="{{ route('admin.catering.options.store', $catering) }}" method="POST" class="p-6 space-y-4">
+        <form id="addOptionForm" action="{{ route('admin.catering.options.store', $catering) }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
             @csrf
             <input type="hidden" name="type" id="addOptionType">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
                 <input type="text" name="name" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="Nama item...">
+            </div>
+            <div id="addDescField" style="display:none;">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                <textarea name="description" rows="2" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="Deskripsi..."></textarea>
+            </div>
+            <div id="addImageField" style="display:none;">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
+                <input type="file" name="image" accept="image/*" class="w-full px-4 py-2.5 rounded-lg border border-gray-200">
             </div>
             <div id="addPriceField">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
@@ -344,11 +352,21 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <form id="editOptionForm" method="POST" class="p-6 space-y-4">
-            @csrf @method('PUT')
+        <form id="editOptionForm" action="" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="type" id="editOptionType">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
                 <input type="text" name="name" id="editName" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+            </div>
+            <div id="editDescField" style="display:none;">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                <textarea name="description" id="editDesc" rows="2" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="Deskripsi..."></textarea>
+            </div>
+            <div id="editImageField" style="display:none;">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Gambar (Kosongkan jika tidak diubah)</label>
+                <input type="file" name="image" accept="image/*" class="w-full px-4 py-2.5 rounded-lg border border-gray-200">
             </div>
             <div id="editPriceField">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
@@ -375,6 +393,15 @@ function openOptionModal(type) {
     document.getElementById('addOptionType').value = type;
     document.getElementById('addModalTitle').textContent = 'Tambah ' + typeLabels[type];
     
+    // Tampilkan field desc & image hanya untuk menu
+    if (type === 'menu') {
+        document.getElementById('addDescField').style.display = 'block';
+        document.getElementById('addImageField').style.display = 'block';
+    } else {
+        document.getElementById('addDescField').style.display = 'none';
+        document.getElementById('addImageField').style.display = 'none';
+    }
+    
     // Penyajian: harga tidak diperlukan (0)
     if (type === 'serving_type') {
         document.getElementById('addPriceField').style.display = 'none';
@@ -391,8 +418,24 @@ function closeOptionModal() {
     document.getElementById('addOptionModal').style.display = 'none';
 }
 
-function openEditModal(optionId, name, price, isActive, type) {
+function openEditModal(optionId, name, price, isActive, type, btnElement) {
     document.getElementById('editName').value = name;
+    
+    // Ambil deskripsi dari tombol jika ada
+    if(btnElement && btnElement.getAttribute('data-desc')) {
+        document.getElementById('editDesc').value = btnElement.getAttribute('data-desc');
+    } else {
+        document.getElementById('editDesc').value = '';
+    }
+    
+    // Tampilkan field desc & image hanya untuk menu
+    if (type === 'menu') {
+        document.getElementById('editDescField').style.display = 'block';
+        document.getElementById('editImageField').style.display = 'block';
+    } else {
+        document.getElementById('editDescField').style.display = 'none';
+        document.getElementById('editImageField').style.display = 'none';
+    }
     
     // Penyajian: harga tidak diperlukan (0)
     if (type === 'serving_type') {

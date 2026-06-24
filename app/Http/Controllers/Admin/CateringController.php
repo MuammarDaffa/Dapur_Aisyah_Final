@@ -189,12 +189,20 @@ class CateringController extends Controller
             'name' => 'required|string|max:150',
             'price' => 'required|numeric|min:0|max:1000000000',
             'is_active' => 'boolean',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|max:2048',
         ], [
             'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
 
         $validated['catering_service_id'] = $catering->id;
         $validated['is_active'] = $request->boolean('is_active');
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('custom_options', 'public');
+        }
 
         CustomOption::create($validated);
 
@@ -214,11 +222,22 @@ class CateringController extends Controller
             'name' => 'required|string|max:150',
             'price' => 'required|numeric|min:0|max:1000000000',
             'is_active' => 'boolean',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|max:2048',
         ], [
             'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
+
+        if ($request->hasFile('image')) {
+            if ($option->image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($option->image);
+            }
+            $validated['image'] = $request->file('image')->store('custom_options', 'public');
+        }
 
         $option->update($validated);
 
