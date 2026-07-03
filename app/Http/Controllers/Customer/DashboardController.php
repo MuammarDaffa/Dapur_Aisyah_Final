@@ -49,16 +49,10 @@ class DashboardController extends Controller
             ->get()
             ->unique('catering_service_id');
 
-        // Filter berdasarkan pencarian
-        $search = $request->search;
-        $serviceFilter = $request->service;
-
         // Kumpulkan items dari periode aktif
         $currentItems = collect();
         foreach ($currentPeriods as $period) {
             foreach ($period->items as $item) {
-                if ($search && !str_contains(strtolower($item->product->name), strtolower($search))) continue;
-                if ($serviceFilter && $item->product->catering_service_id != $serviceFilter) continue;
                 $currentItems->push($item);
             }
         }
@@ -67,8 +61,6 @@ class DashboardController extends Controller
         $upcomingItems = collect();
         foreach ($upcomingPeriods as $period) {
             foreach ($period->items as $item) {
-                if ($search && !str_contains(strtolower($item->product->name), strtolower($search))) continue;
-                if ($serviceFilter && $item->product->catering_service_id != $serviceFilter) continue;
                 $upcomingItems->push($item);
             }
         }

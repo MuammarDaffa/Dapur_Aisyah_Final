@@ -58,7 +58,6 @@ class CateringController extends Controller
             'order_terms' => 'nullable|string',
             'schedule_notes' => 'nullable|string',
             'minimal_order_days' => 'nullable|integer|min:0',
-            'cutoff_time' => 'nullable|date_format:H:i',
             'service_area' => 'nullable|array',
             'is_active' => 'boolean',
             'image' => 'nullable|image|max:2048',
@@ -133,7 +132,6 @@ class CateringController extends Controller
             'order_terms' => 'nullable|string',
             'schedule_notes' => 'nullable|string',
             'minimal_order_days' => 'nullable|integer|min:0',
-            'cutoff_time' => 'nullable|date_format:H:i',
             'is_active' => 'boolean',
             'image' => 'nullable|image|max:2048',
         ], [

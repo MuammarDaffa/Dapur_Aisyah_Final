@@ -4,26 +4,6 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <h2 class="text-2xl font-bold text-gray-900 mb-6">Menu <span class="text-orange-500">Kami</span></h2>
 
-    <!-- Filters -->
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-6">
-        <form action="{{ route('customer.products') }}" method="GET" class="flex flex-wrap gap-4 items-end">
-            <div class="flex-1 min-w-[200px]">
-                <label class="text-xs font-medium text-gray-500 mb-1 block">Cari Menu</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Nama menu..." class="w-full px-4 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100">
-            </div>
-            <div>
-                <label class="text-xs font-medium text-gray-500 mb-1 block">Layanan</label>
-                <select name="service" class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400">
-                    <option value="">Semua Layanan</option>
-                    @foreach($services as $service)
-                        <option value="{{ $service->id }}" {{ request('service') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <button type="submit" class="px-6 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors">Filter</button>
-        </form>
-    </div>
-
     {{-- ========== PERIODE AKTIF ========== --}}
     @if($currentPeriods->isNotEmpty())
     <div class="mb-10">

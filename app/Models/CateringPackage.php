@@ -10,7 +10,7 @@ class CateringPackage extends Model
 {
     protected $fillable = [
         'catering_service_id', 'name', 'description', 'price',
-        'total_portions', 'min_addition_qty',
+        'total_portions',
         'is_custom', 'is_active',
     ];
 
@@ -19,7 +19,6 @@ class CateringPackage extends Model
         return [
             'price' => 'decimal:2',
             'total_portions' => 'integer',
-            'min_addition_qty' => 'integer',
             'is_custom' => 'boolean',
             'is_active' => 'boolean',
         ];

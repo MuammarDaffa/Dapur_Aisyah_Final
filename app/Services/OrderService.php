@@ -35,7 +35,7 @@ class OrderService
     /**
      * Validasi tanggal pemesanan berdasarkan cutoff layanan.
      *
-     * Menggunakan minimal_order_days dan cutoff_time dari CateringService.
+     * Menggunakan minimal_order_days dari CateringService.
      * Berlaku untuk semua jenis layanan (Daily, Event, dll).
      *
      * @throws ValidationException
@@ -51,13 +51,12 @@ class OrderService
             return;
         }
 
-        // Jika keduanya kosong, berarti tidak ada aturan cutoff sama sekali
-        if (is_null($service->minimal_order_days) && is_null($service->cutoff_time)) {
+        // Jika minimal_order_days kosong, berarti tidak ada aturan cutoff sama sekali
+        if (is_null($service->minimal_order_days)) {
             return;
         }
 
         $orderDateCarbon = Carbon::parse($orderDate)->startOfDay();
-        $now = Carbon::now();
         $today = Carbon::today();
 
         // Hitung selisih hari
@@ -69,16 +68,6 @@ class OrderService
             throw ValidationException::withMessages([
                 'order_date' => "Pesanan untuk layanan {$service->name} harus dilakukan minimal {$minDays} hari sebelum tanggal acara.",
             ]);
-        }
-
-        // Cek cutoff jam (hanya jika tepat pada batas hari minimal)
-        if ($daysUntil == $minDays && $service->cutoff_time) {
-            $cutoffTime = substr($service->cutoff_time, 0, 5); // Format H:i
-            if ($now->format('H:i') >= $cutoffTime) {
-                throw ValidationException::withMessages([
-                    'order_date' => "Pesanan untuk layanan {$service->name} harus dilakukan sebelum pukul {$cutoffTime} untuk pengiriman {$minDays} hari kemudian.",
-                ]);
-            }
         }
     }
 
@@ -97,23 +86,15 @@ class OrderService
         }
 
         // Validasi batas waktu pembatalan menggunakan cutoff dari layanan
-        // Validasi batas waktu pembatalan menggunakan cutoff dari layanan
         if ($order->cateringService) {
             $service = $order->cateringService;
             
-            if (!is_null($service->minimal_order_days) || !is_null($service->cutoff_time)) {
+            if (!is_null($service->minimal_order_days)) {
                 $orderDate = Carbon::parse($order->order_date);
                 $now = Carbon::now();
                 $minDays = $service->minimal_order_days ?? 0;
 
-                $cancellationDeadline = $orderDate->copy()->subDays($minDays);
-
-                if ($service->cutoff_time) {
-                    $cutoffParts = explode(':', substr($service->cutoff_time, 0, 5));
-                    $cancellationDeadline->setTime((int) $cutoffParts[0], (int) $cutoffParts[1], 0);
-                } else {
-                    $cancellationDeadline->startOfDay();
-                }
+                $cancellationDeadline = $orderDate->copy()->subDays($minDays)->startOfDay();
 
                 if ($now->gte($cancellationDeadline)) {
                     throw ValidationException::withMessages([

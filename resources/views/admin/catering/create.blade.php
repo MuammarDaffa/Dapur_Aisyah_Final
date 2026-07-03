@@ -101,19 +101,11 @@
                 <h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">⏰ Pengaturan Cutoff Pemesanan</h4>
                 <p class="text-xs text-gray-500 mt-0.5">Batas waktu minimal pemesanan untuk layanan ini</p>
             </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Minimal Hari Pemesanan</label>
-                    <input type="number" name="minimal_order_days" value="{{ old('minimal_order_days') }}" min="0" placeholder="cth: 3"
-                           class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
-                    <p class="text-xs text-gray-400 mt-1">Jumlah hari minimal sebelum tanggal acara/pengiriman</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Batas Jam Pemesanan</label>
-                    <input type="time" name="cutoff_time" value="{{ old('cutoff_time') }}"
-                           class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
-                    <p class="text-xs text-gray-400 mt-1">Kosongkan jika hanya validasi hari, tanpa batas jam</p>
-                </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Minimal Hari Pemesanan</label>
+                <input type="number" name="minimal_order_days" value="{{ old('minimal_order_days') }}" min="0" placeholder="cth: 3"
+                       class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                <p class="text-xs text-gray-400 mt-1">Jumlah hari minimal sebelum tanggal acara/pengiriman</p>
             </div>
         </div>
 

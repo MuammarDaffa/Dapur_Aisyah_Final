@@ -54,7 +54,6 @@ class PackageController extends Controller
 
         $validated['is_custom'] = $request->boolean('is_custom');
         $validated['is_active'] = $request->boolean('is_active');
-        $validated['min_addition_qty'] = $validated['min_addition_qty'] ?? 0;
 
         $package = CateringPackage::create($validated);
 
@@ -105,7 +104,6 @@ class PackageController extends Controller
 
         $validated['is_custom'] = $request->boolean('is_custom');
         $validated['is_active'] = $request->boolean('is_active');
-        $validated['min_addition_qty'] = $validated['min_addition_qty'] ?? 0;
 
         $package->update($validated);
 

@@ -43,10 +43,9 @@
 
         <div><label class="block text-sm font-medium mb-1">Deskripsi</label><textarea name="description" rows="2" class="w-full px-4 py-2 rounded-lg border">{{ old('description') }}</textarea></div>
 
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 gap-4">
             <div><label class="block text-sm font-medium mb-1">Harga Paket (Rp) *</label><input type="text" name="price" required value="{{ old('price') }}" class="w-full px-4 py-2 rounded-lg border rupiah-input"></div>
             <div><label class="block text-sm font-medium mb-1">Total Porsi *</label><input type="number" name="total_portions" required value="{{ old('total_portions') }}" min="1" class="w-full px-4 py-2 rounded-lg border"></div>
-            <div><label class="block text-sm font-medium mb-1">Min. Tambahan</label><input type="number" name="min_addition_qty" value="{{ old('min_addition_qty', 0) }}" min="0" class="w-full px-4 py-2 rounded-lg border"><p class="text-xs text-gray-500 mt-1">0 = tanpa minimum</p></div>
         </div>
 
         {{-- Custom Options Selector --}}

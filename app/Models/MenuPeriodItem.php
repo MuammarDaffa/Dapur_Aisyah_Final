@@ -61,25 +61,17 @@ class MenuPeriodItem extends Model
 
         // Cek cutoff dari layanan via periode
         $service = $this->menuPeriod?->cateringService;
-        if (!$service || (is_null($service->minimal_order_days) && is_null($service->cutoff_time))) {
+        if (!$service || is_null($service->minimal_order_days)) {
             // Tanpa cutoff, selama belum lewat, bisa dipesan
             return !$this->isPast();
         }
 
-        $now = Carbon::now();
         $today = Carbon::today();
         $daysUntil = $today->diffInDays($this->menu_date, false);
         $minDays = $service->minimal_order_days ?? 0;
 
         if ($daysUntil < $minDays) {
             return false;
-        }
-
-        if ($daysUntil == $minDays && $service->cutoff_time) {
-            $cutoff = Carbon::createFromFormat('H:i', substr($service->cutoff_time, 0, 5));
-            if ($now->format('H:i') >= $cutoff->format('H:i')) {
-                return false;
-            }
         }
 
         return true;

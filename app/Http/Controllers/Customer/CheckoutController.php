@@ -248,7 +248,6 @@ class CheckoutController extends Controller
     {
         $validated = $request->validate([
             'order_date' => 'required|date|after:today',
-            'event_start_time' => 'required|date_format:H:i',
             'pickup_method' => 'required|in:delivery,pickup',
             'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
             'village_id' => 'nullable|exists:villages,id',
@@ -307,7 +306,6 @@ class CheckoutController extends Controller
                 'catering_service_id' => $cateringServiceId,
                 'package_id' => $packageId,
                 'order_date' => $validated['order_date'],
-                'event_start_time' => $validated['event_start_time'],
                 'pickup_method' => $validated['pickup_method'],
                 'district_id' => $validated['district_id'] ?? null,
                 'village_id' => $validated['village_id'] ?? null,

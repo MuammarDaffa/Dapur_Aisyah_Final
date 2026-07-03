@@ -2,10 +2,10 @@
 
 @php
     $steps = [
-        'pending_payment' => ['label' => 'Menunggu Pembayaran', 'icon' => '💳'],
-        'processing'      => ['label' => 'Diproses',           'icon' => '👨‍🍳'],
-        'on_delivery'     => ['label' => 'Sedang Dikirim',     'icon' => '🚚'],
-        'completed'       => ['label' => 'Selesai',            'icon' => '✅'],
+        'pending_payment' => ['label' => 'Menunggu Pembayaran', 'icon' => '1'],
+        'processing'      => ['label' => 'Diproses',           'icon' => '2'],
+        'on_delivery'     => ['label' => 'Sedang Dikirim',     'icon' => '3'],
+        'completed'       => ['label' => 'Selesai',            'icon' => '4'],
     ];
 
     $isCancelled = $currentStatus === 'cancelled';
