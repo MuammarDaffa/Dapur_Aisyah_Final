@@ -144,8 +144,8 @@ class CheckoutController extends Controller
                     $unitPrice = (float) $cart->product->price;
                     $itemName = $cart->product->name;
                 } elseif ($cart->customOption) {
-                    // Package items → price 0 (sudah termasuk harga paket)
-                    $unitPrice = $cart->item_type === 'package_item'
+                    // Package items & extras → price 0 (sudah termasuk harga paket)
+                    $unitPrice = in_array($cart->item_type, ['package_item', 'package_extra'])
                         ? 0
                         : (float) $cart->customOption->price;
                     $itemName = $cart->customOption->name;
@@ -347,6 +347,10 @@ class CheckoutController extends Controller
                     // Termasuk dalam paket, harga 0
                     $unitPrice = 0;
                     $itemName = 'Menu: ' . $itemName;
+                } elseif ($cart->item_type === 'package_extra') {
+                    // Termasuk dalam paket, harga 0
+                    $unitPrice = 0;
+                    $itemName = 'Extra: ' . $itemName;
                 } elseif ($cart->item_type === 'custom_menu') {
                     $unitPrice = (float) ($cart->customOption?->price ?? 0);
                     $itemName = 'Menu: ' . $itemName;

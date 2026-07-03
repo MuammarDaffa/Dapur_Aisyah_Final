@@ -7,7 +7,7 @@
     <div class="mb-6">
         <a href="{{ route('customer.event.service', $service->id) }}" class="text-sm text-orange-500 hover:text-orange-600">← Kembali ke Layanan</a>
         <h2 class="text-2xl font-bold text-gray-900 mt-2">Custom Menu</h2>
-        <p class="text-gray-500">Pilih menu secara bebas dengan minimal pemesanan 30 porsi.</p>
+        <p class="text-gray-500">Pilih menu secara bebas dengan minimal pemesanan {{ $service->min_portion }} porsi per menu yang dipilih.</p>
     </div>
 
     <form id="customForm" action="{{ route('customer.event.cart.store') }}" method="POST" onkeydown="return event.key != 'Enter';">
@@ -65,10 +65,10 @@
                 {{-- Porsi Indicator --}}
                 <div class="mt-4 p-4 rounded-xl border border-yellow-200 bg-yellow-50" id="custom-portion-indicator">
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-sm font-semibold text-gray-700">Minimal: <span class="text-orange-600">30 porsi</span></span>
+                        <span class="text-sm font-semibold text-gray-700">Minimal per menu: <span class="text-orange-600">{{ $service->min_portion }} porsi</span></span>
                         <span class="text-sm font-semibold text-gray-700">Total Dipilih: <span id="custom-total-portions" class="text-blue-600">0</span></span>
                     </div>
-                    <p id="custom-portion-msg" class="text-sm font-medium mt-1 text-yellow-700">⚠️ Kurang 30 porsi lagi. Minimal 30 porsi.</p>
+                    <p id="custom-portion-msg" class="text-sm font-medium mt-1 text-yellow-700">⚠️ Silakan pilih menu.</p>
                 </div>
             </div>
 
@@ -143,7 +143,7 @@
 
 @push('scripts')
 <script>
-    const CUSTOM_MIN_PORTIONS = 30;
+    const CUSTOM_MIN_PORTIONS = {{ $service->min_portion }};
 
     function formatRupiah(value) {
         return 'Rp ' + Number(value).toLocaleString('id-ID');
@@ -218,6 +218,7 @@
         let totalPortions = 0;
         let subtotalMenu = 0;
         let subtotalExtra = 0;
+        let isAnyMenuUnderMin = false;
 
         document.querySelectorAll('.custom-menu-cb:checked').forEach(cb => {
             const price = parseFloat(cb.dataset.price);
@@ -225,6 +226,10 @@
             const qty = parseInt(document.getElementById('custom_menu_input_' + idx).value) || 0;
             totalPortions += qty;
             subtotalMenu += price * qty;
+            
+            if (qty < CUSTOM_MIN_PORTIONS) {
+                isAnyMenuUnderMin = true;
+            }
         });
 
         document.querySelectorAll('.custom-extra-cb:checked').forEach(cb => {
@@ -244,10 +249,15 @@
         const btn = document.getElementById('custom-submit-btn');
         const hasServing = document.querySelector('.custom-serving-radio:checked');
 
-        if (totalPortions < CUSTOM_MIN_PORTIONS) {
+        if (totalPortions === 0) {
             indicator.className = 'mt-4 p-4 rounded-xl border border-yellow-200 bg-yellow-50';
-            msg.textContent = `⚠️ Kurang ${CUSTOM_MIN_PORTIONS - totalPortions} porsi lagi. Minimal ${CUSTOM_MIN_PORTIONS} porsi.`;
+            msg.textContent = `⚠️ Silakan pilih menu (minimal ${CUSTOM_MIN_PORTIONS} porsi per menu).`;
             msg.className = 'text-sm font-medium mt-1 text-yellow-700';
+            btn.disabled = true;
+        } else if (isAnyMenuUnderMin) {
+            indicator.className = 'mt-4 p-4 rounded-xl border border-red-200 bg-red-50';
+            msg.textContent = `❌ Setiap menu yang dipilih harus minimal ${CUSTOM_MIN_PORTIONS} porsi.`;
+            msg.className = 'text-sm font-medium mt-1 text-red-700';
             btn.disabled = true;
         } else if (!hasServing && document.querySelector('.custom-serving-radio')) {
             indicator.className = 'mt-4 p-4 rounded-xl border border-blue-200 bg-blue-50';

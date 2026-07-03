@@ -84,8 +84,8 @@ class Cart extends Model
      */
     public function getSubtotalAttribute(): float
     {
-        // Item paket (isi paket) → harga 0, sudah termasuk harga paket
-        if ($this->item_type === 'package_item') {
+        // Item paket (isi paket atau extra paket) → harga 0, sudah termasuk harga paket
+        if (in_array($this->item_type, ['package_item', 'package_extra'])) {
             return 0;
         }
 

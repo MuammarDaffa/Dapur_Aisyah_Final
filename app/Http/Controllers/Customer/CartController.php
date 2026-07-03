@@ -127,8 +127,36 @@ class CartController extends Controller
             'items' => 'required|array|min:1',
             'items.*.custom_option_id' => 'required|exists:custom_options,id',
             'items.*.quantity' => 'required|integer|min:0',
-            'items.*.item_type' => 'required|in:package_item,addition,custom_menu',
+            'items.*.item_type' => 'required|in:package_item,addition,custom_menu,package_extra',
         ]);
+
+        $service = \App\Models\CateringService::findOrFail($validated['catering_service_id']);
+        $minPortion = $service->min_portion;
+
+        $package = null;
+        if (!empty($validated['catering_package_id'])) {
+            $package = \App\Models\CateringPackage::findOrFail($validated['catering_package_id']);
+        }
+
+        $totalPackagePortions = 0;
+
+        foreach ($validated['items'] as $item) {
+            if ($item['quantity'] > 0) {
+                if (in_array($item['item_type'], ['custom_menu', 'package_item'])) {
+                    if ($item['quantity'] < $minPortion) {
+                        return back()->with('error', "Porsi setiap menu minimal {$minPortion} porsi.");
+                    }
+                }
+
+                if ($item['item_type'] === 'package_item') {
+                    $totalPackagePortions += $item['quantity'];
+                }
+            }
+        }
+
+        if ($package && $totalPackagePortions !== $package->total_portions) {
+            return back()->with('error', "Total porsi menu harus sama dengan total porsi paket ({$package->total_portions} porsi).");
+        }
 
         $user = auth()->user();
         $groupId = (string) Str::uuid();
@@ -174,8 +202,36 @@ class CartController extends Controller
             'items' => 'required|array|min:1',
             'items.*.custom_option_id' => 'required|exists:custom_options,id',
             'items.*.quantity' => 'required|integer|min:0',
-            'items.*.item_type' => 'required|in:package_item,addition,custom_menu',
+            'items.*.item_type' => 'required|in:package_item,addition,custom_menu,package_extra',
         ]);
+
+        $service = \App\Models\CateringService::findOrFail($validated['catering_service_id']);
+        $minPortion = $service->min_portion;
+
+        $package = null;
+        if (!empty($validated['catering_package_id'])) {
+            $package = \App\Models\CateringPackage::findOrFail($validated['catering_package_id']);
+        }
+
+        $totalPackagePortions = 0;
+
+        foreach ($validated['items'] as $item) {
+            if ($item['quantity'] > 0) {
+                if (in_array($item['item_type'], ['custom_menu', 'package_item'])) {
+                    if ($item['quantity'] < $minPortion) {
+                        return back()->with('error', "Porsi setiap menu minimal {$minPortion} porsi.");
+                    }
+                }
+
+                if ($item['item_type'] === 'package_item') {
+                    $totalPackagePortions += $item['quantity'];
+                }
+            }
+        }
+
+        if ($package && $totalPackagePortions !== $package->total_portions) {
+            return back()->with('error', "Total porsi menu harus sama dengan total porsi paket ({$package->total_portions} porsi).");
+        }
 
         $user = auth()->user();
 

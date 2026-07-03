@@ -70,7 +70,7 @@
                                 <span class="text-gray-900 font-medium">{{ $extra->name }}</span>
                                 <span class="text-green-600 text-sm font-medium ml-auto">FREE</span>
                                 <input type="hidden" name="items[{{ $menus->count() + $idx }}][custom_option_id]" value="{{ $extra->id }}">
-                                <input type="hidden" name="items[{{ $menus->count() + $idx }}][item_type]" value="addition">
+                                <input type="hidden" name="items[{{ $menus->count() + $idx }}][item_type]" value="package_extra">
                                 <input type="hidden" name="items[{{ $menus->count() + $idx }}][quantity]" value="{{ $package->total_portions }}">
                             </div>
                         @endforeach
@@ -116,6 +116,7 @@
 @push('scripts')
 <script>
     const targetPortions = {{ $package->total_portions }};
+    const minPortion = {{ $service->min_portion }};
 
     function changePkgQty(idx, delta) {
         const input = document.getElementById('pkg_qty_' + idx);
@@ -127,8 +128,14 @@
 
     function recalcPkgPortions() {
         let total = 0;
+        let isAnyUnderMin = false;
+        
         document.querySelectorAll('.pkg-qty-input').forEach(input => {
-            total += parseInt(input.value) || 0;
+            const val = parseInt(input.value) || 0;
+            total += val;
+            if (val > 0 && val < minPortion) {
+                isAnyUnderMin = true;
+            }
         });
 
         document.getElementById('pkg-selected').textContent = total;
@@ -141,7 +148,13 @@
         const msg = document.getElementById('pkg-portion-msg');
         const btn = document.getElementById('pkg-submit-btn');
 
-        if (total < targetPortions) {
+        if (isAnyUnderMin) {
+            bar.className = 'h-3 rounded-full transition-all duration-300 bg-red-500';
+            indicator.className = 'mb-4 p-4 rounded-xl border border-red-200 bg-red-50';
+            msg.textContent = `❌ Porsi setiap menu minimal ${minPortion} porsi.`;
+            msg.className = 'text-sm mt-2 font-medium text-red-700';
+            btn.disabled = true;
+        } else if (total < targetPortions) {
             bar.className = 'h-3 rounded-full transition-all duration-300 bg-yellow-500';
             indicator.className = 'mb-4 p-4 rounded-xl border border-yellow-200 bg-yellow-50';
             msg.textContent = `⚠️ Kurang ${targetPortions - total} porsi lagi.`;
