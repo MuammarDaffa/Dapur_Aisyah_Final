@@ -73,9 +73,7 @@
         <table class="w-full text-sm">
             <thead class="bg-gray-50/50">
                 <tr class="text-xs uppercase text-gray-500 tracking-wider">
-                    <th class="px-6 py-3 text-left font-semibold">Nama Periode</th>
-                    <th class="px-6 py-3 text-center font-semibold">Tanggal Mulai</th>
-                    <th class="px-6 py-3 text-center font-semibold">Tanggal Selesai</th>
+                    <th class="px-6 py-3 text-left font-semibold">Rentang Tanggal</th>
                     <th class="px-6 py-3 text-center font-semibold">Jumlah Menu</th>
                     <th class="px-6 py-3 text-center font-semibold">Status</th>
                     <th class="px-6 py-3 text-center font-semibold">Aksi</th>
@@ -84,9 +82,7 @@
             <tbody class="divide-y divide-gray-100">
                 @forelse($periods as $period)
                 <tr class="hover:bg-orange-50/30 transition-colors">
-                    <td class="px-6 py-4 font-medium text-gray-900">{{ $period->nama_periode }}</td>
-                    <td class="px-6 py-4 text-center text-gray-700">{{ $period->start_date->format('d-m-Y') }}</td>
-                    <td class="px-6 py-4 text-center text-gray-700">{{ $period->end_date->format('d-m-Y') }}</td>
+                    <td class="px-6 py-4 font-medium text-gray-900">{{ $period->formatted_range }}</td>
                     <td class="px-6 py-4 text-center font-semibold text-gray-900">{{ $period->items_count }}</td>
                     <td class="px-6 py-4 text-center">
                         <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $period->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
@@ -96,7 +92,7 @@
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <a href="{{ route('admin.menu-periods.show', [$catering, $period]) }}" class="px-3 py-1.5 text-xs font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">Detail</a>
-                            <button type="button" onclick="openEditPeriodModal({{ $period->id }}, '{{ $period->nama_periode }}', '{{ $period->start_date->format('Y-m-d') }}', '{{ $period->end_date->format('Y-m-d') }}')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+                            <button type="button" onclick="openEditPeriodModal({{ $period->id }}, '{{ $period->start_date->format('Y-m-d') }}', '{{ $period->end_date->format('Y-m-d') }}')" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
                             <form id="form-delete-period-{{ $period->id }}" action="{{ route('admin.menu-periods.destroy', [$catering, $period]) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button type="button" onclick="confirmDelete('form-delete-period-{{ $period->id }}', 'Hapus periode ini beserta isinya?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
@@ -106,7 +102,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-8 text-center text-gray-400">
+                    <td colspan="4" class="px-6 py-8 text-center text-gray-400">
                         <p class="text-2xl mb-1">📅</p>
                         <p class="text-sm">Belum ada periode menu mingguan.</p>
                     </td>
@@ -314,10 +310,6 @@
         </div>
         <form action="{{ route('admin.menu-periods.store', $catering) }}" method="POST" class="p-6 space-y-4">
             @csrf
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Periode *</label>
-                <input type="text" name="nama_periode" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="cth: Minggu 1 Juli 2026">
-            </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai *</label>
@@ -347,10 +339,6 @@
         </div>
         <form id="editPeriodForm" method="POST" class="p-6 space-y-4">
             @csrf @method('PUT')
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Periode *</label>
-                <input type="text" name="nama_periode" id="editPeriodNamaPeriode" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
-            </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai *</label>
@@ -389,8 +377,7 @@ function openPeriodModal() {
     document.getElementById('addPeriodModal').style.display = 'flex';
 }
 
-function openEditPeriodModal(id, nama_periode, start_date, end_date) {
-    document.getElementById('editPeriodNamaPeriode').value = nama_periode;
+function openEditPeriodModal(id, start_date, end_date) {
     document.getElementById('editPeriodStartDate').value = start_date;
     document.getElementById('editPeriodEndDate').value = end_date;
     document.getElementById('editPeriodForm').action = `/admin/catering/${cateringId}/menu-periods/${id}`;

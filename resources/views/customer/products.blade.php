@@ -7,14 +7,6 @@
     {{-- ========== PERIODE AKTIF ========== --}}
     @if($currentPeriods->isNotEmpty())
     <div class="mb-10">
-        @foreach($currentPeriods as $period)
-        <div class="flex items-center gap-3 mb-4">
-            <h3 class="text-lg font-bold text-gray-800">🟢 Periode Aktif</h3>
-            <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">{{ $period->nama_periode }}</span>
-            <span class="text-xs text-gray-400">{{ $period->formatted_range }}</span>
-        </div>
-        @endforeach
-
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             @php
                 // Filter out items that are past
@@ -83,14 +75,6 @@
     {{-- ========== PERIODE BERIKUTNYA ========== --}}
     @if($upcomingPeriods->isNotEmpty())
     <div class="mb-10">
-        @foreach($upcomingPeriods as $period)
-        <div class="flex items-center gap-3 mb-4">
-            <h3 class="text-lg font-bold text-gray-800">🔵 Periode Berikutnya</h3>
-            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">{{ $period->nama_periode }}</span>
-            <span class="text-xs text-gray-400">{{ $period->formatted_range }}</span>
-        </div>
-        @endforeach
-
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             @forelse($upcomingItems as $item)
                 @php

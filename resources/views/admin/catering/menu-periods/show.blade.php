@@ -1,13 +1,12 @@
 @extends('layouts.admin')
-@section('title', 'Detail Periode: ' . $period->nama_periode)
+@section('title', 'Detail Periode: ' . $period->formatted_range)
 @section('content')
 <div class="space-y-6">
     {{-- Header --}}
     <div class="flex items-center justify-between">
         <div>
             <a href="{{ route('admin.catering.show', $catering) }}" class="text-sm text-gray-500 hover:text-orange-500 transition-colors">← Kembali ke Detail Katering</a>
-            <h2 class="text-xl font-bold text-gray-900 mt-1">📅 {{ $period->nama_periode }}</h2>
-            <p class="text-sm text-gray-500 mt-0.5">{{ $period->formatted_range }}</p>
+            <h2 class="text-xl font-bold text-gray-900 mt-1">📅 Periode: {{ $period->formatted_range }}</h2>
         </div>
         <div class="flex items-center gap-2">
             @if($period->isCurrent())
@@ -125,10 +124,6 @@
         </div>
         <form action="{{ route('admin.menu-periods.update', [$catering, $period]) }}" method="POST" class="p-6 space-y-4">
             @csrf @method('PUT')
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Periode *</label>
-                <input type="text" name="nama_periode" required value="{{ $period->nama_periode }}" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
-            </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai *</label>

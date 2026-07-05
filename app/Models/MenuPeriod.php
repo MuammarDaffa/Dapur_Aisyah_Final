@@ -13,7 +13,7 @@ class MenuPeriod extends Model
     use HasFactory;
 
     protected $fillable = [
-        'catering_service_id', 'nama_periode', 'start_date', 'end_date', 'is_active',
+        'catering_service_id', 'start_date', 'end_date', 'is_active',
     ];
 
     protected function casts(): array
