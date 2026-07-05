@@ -73,6 +73,9 @@ class CheckoutController extends Controller
         $carts = $cartsQuery->get();
 
         if ($carts->isEmpty()) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['message' => 'Keranjang belanja kosong atau tanggal tidak valid.'], 400);
+            }
             return back()->with('error', 'Keranjang belanja kosong atau tanggal tidak valid.');
         }
 
@@ -97,7 +100,7 @@ class CheckoutController extends Controller
         // Validasi tanggal pemesanan berdasarkan jenis layanan
         OrderService::validateOrderDate($validated['order_date'], $cateringServiceId);
 
-        return DB::transaction(function () use ($validated, $user, $carts, $cateringServiceId, $packageId, $menu_date, $finalAddressDetail) {
+        return DB::transaction(function () use ($request, $validated, $user, $carts, $cateringServiceId, $packageId, $menu_date, $finalAddressDetail) {
             // Hitung biaya
             $subtotal = $carts->sum(fn ($cart) => $cart->subtotal);
             $shippingCost = $validated['pickup_method'] === 'delivery'
@@ -203,6 +206,16 @@ class CheckoutController extends Controller
             // Kirim notifikasi pesanan dibuat
             NotificationService::notifyOrderCreated($order);
 
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'order_id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'snap_token' => $order->midtrans_snap_token,
+                    'redirect_url' => route('customer.orders.show', $order),
+                ]);
+            }
+
             return redirect()->route('customer.orders.show', $order)
                 ->with('success', 'Pesanan berhasil dibuat!');
         });
@@ -291,7 +304,7 @@ class CheckoutController extends Controller
         // Hitung penyajian
         $servingType = $groupItems->first()->servingType;
 
-        return DB::transaction(function () use ($validated, $user, $groupItems, $groupId, $cateringServiceId, $packageId, $packageItem, $totalPortions, $servingType, $finalAddressDetail) {
+        return DB::transaction(function () use ($request, $validated, $user, $groupItems, $groupId, $cateringServiceId, $packageId, $packageItem, $totalPortions, $servingType, $finalAddressDetail) {
             // Hitung subtotal
             $subtotal = $groupItems->sum(fn ($c) => $c->subtotal);
             $shippingCost = $validated['pickup_method'] === 'delivery'
@@ -398,6 +411,16 @@ class CheckoutController extends Controller
 
             // Kirim notifikasi
             NotificationService::notifyOrderCreated($order);
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'order_id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'snap_token' => $order->midtrans_snap_token,
+                    'redirect_url' => route('customer.orders.show', $order),
+                ]);
+            }
 
             return redirect()->route('customer.orders.show', $order)
                 ->with('success', 'Pesanan event berhasil dibuat! Silakan lakukan pembayaran.');
