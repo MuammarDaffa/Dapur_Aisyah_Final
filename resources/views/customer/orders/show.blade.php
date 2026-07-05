@@ -127,88 +127,14 @@
                     </button>
                 @endif
 
-                @php
-                    $isProcessing = $order->status === 'processing';
-                    $isEvent = $order->cateringService?->isEvent() ?? false;
-                    $refundPercent = 100;
-                    $timeElapsedStr = '';
-                    
-                    if ($isProcessing) {
-                        $paymentTime = $order->updated_at;
-                        $now = now();
-                        
-                        if ($isEvent) {
-                            $hoursPassed = $paymentTime->diffInHours($now);
-                            $refundPercent = $hoursPassed <= 24 ? 100 : 50;
-                            $timeElapsedStr = $hoursPassed . ' jam';
-                        } else {
-                            $minutesPassed = $paymentTime->diffInMinutes($now);
-                            $refundPercent = $minutesPassed <= 10 ? 100 : 50;
-                            $timeElapsedStr = $minutesPassed . ' menit';
-                        }
-                    }
-                @endphp
-
                 @if(in_array($order->status, ['pending_payment', 'processing']))
-                    <button type="button" onclick="document.getElementById('cancelModal').classList.remove('hidden')" class="w-full mt-3 px-6 py-2.5 border border-red-300 text-red-600 font-medium rounded-xl hover:bg-red-50 transition-colors">
+                    <form id="cancelOrderForm" action="{{ route('customer.orders.cancel', $order) }}" method="POST" class="hidden">
+                        @csrf @method('PUT')
+                        <input type="hidden" name="cancellation_reason" value="Dibatalkan oleh pelanggan">
+                    </form>
+                    <button type="button" onclick="confirmCancelOrder()" class="w-full mt-3 px-6 py-2.5 border border-red-300 text-red-600 font-medium rounded-xl hover:bg-red-50 transition-colors">
                         Batalkan Pesanan
                     </button>
-
-                    <!-- Cancel Modal -->
-                    <div id="cancelModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="document.getElementById('cancelModal').classList.add('hidden')"></div>
-                            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                                <form action="{{ route('customer.orders.cancel', $order) }}" method="POST">
-                                    @csrf @method('PUT')
-                                    <input type="hidden" name="cancellation_reason" value="Dibatalkan oleh pelanggan">
-                                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                        <div class="sm:flex sm:items-start">
-                                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                                <span class="text-2xl">⚠️</span>
-                                            </div>
-                                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                                                    Batalkan Pesanan
-                                                </h3>
-                                                <div class="mt-2">
-                                                    <p class="text-sm text-gray-500 mb-3">Apakah Anda yakin ingin membatalkan pesanan ini?</p>
-                                                    
-                                                    @if($isProcessing)
-                                                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-3">
-                                                            <h4 class="font-semibold text-blue-800 text-sm mb-1">Informasi Refund</h4>
-                                                            <p class="text-sm text-blue-700">
-                                                                Waktu berlalu sejak pembayaran: <strong>{{ $timeElapsedStr }}</strong><br>
-                                                                Syarat Refund Anda: <strong>{{ $refundPercent }}%</strong>
-                                                            </p>
-                                                            <p class="text-xs text-blue-600 mt-2">
-                                                                * Ketentuan: Event (<= 24 jam: 100%, > 24 jam: 50%). Daily (<= 10 menit: 100%, > 10 menit: 50%).
-                                                            </p>
-                                                        </div>
-                                                    @else
-                                                        <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-4 mb-3">
-                                                            <p class="text-sm text-yellow-700">
-                                                                Pesanan ini belum dibayar. Pembatalan tidak memerlukan proses refund.
-                                                            </p>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-                                        <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:w-auto sm:text-sm">
-                                            Ya, Batalkan
-                                        </button>
-                                        <button type="button" onclick="document.getElementById('cancelModal').classList.add('hidden')" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
-                                            Tutup
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                 @endif
 
                 {{-- Tombol Refund WhatsApp --}}
@@ -255,6 +181,23 @@ function payNow() {
     });
 }
 @endif
+
+function confirmCancelOrder() {
+    Swal.fire({
+        title: 'Batalkan Pesanan',
+        text: 'Apakah Anda yakin ingin membatalkan pesanan ini?',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, Batalkan',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('cancelOrderForm').submit();
+        }
+    });
+}
 </script>
 @if($order->midtrans_snap_token)
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
