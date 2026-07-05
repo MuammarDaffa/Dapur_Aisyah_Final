@@ -32,18 +32,17 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:100'],
-            'phone' => ['required', 'string', 'max:20', 'regex:/^(\+62|08)[0-9]{8,13}$/', 'unique:'.User::class],
-            'password' => ['required', Rules\Password::min(8)],
+            'phone' => ['required', 'string', 'max:20', 'regex:/^(\+62|08)[0-9]{8,13}$/'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:150', 'unique:'.User::class, 'regex:/^[a-zA-Z0-9._%+\-]+@gmail\.com$/i'],
+            'password' => ['required', 'confirmed', Rules\Password::min(8)],
+        ], [
+            'email.regex' => 'Pendaftaran hanya dapat menggunakan email Gmail (@gmail.com).',
         ]);
-
-        // Auto-generate a unique email placeholder from phone number
-        $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone);
-        $email = $cleanPhone . '@dapur-aisyah.local';
 
         $user = User::create([
             'name' => $request->name,
             'phone' => $request->phone,
-            'email' => $email,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'customer',
         ]);
