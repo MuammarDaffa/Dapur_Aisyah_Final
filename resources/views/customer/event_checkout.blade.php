@@ -11,7 +11,7 @@
         <h2 class="text-2xl font-bold text-gray-900 mt-2">📋 Checkout <span class="text-orange-500">Event</span></h2>
     </div>
 
-    <form action="{{ route('customer.event.checkout.store', $groupId) }}" method="POST">
+    <form id="event-checkout-form" action="{{ route('customer.event.checkout.store', $groupId) }}" method="POST">
         @csrf
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {{-- Form Section --}}
@@ -190,7 +190,7 @@
                     </div>
 
                     <button type="submit" id="event-submit-btn" class="w-full mt-4 px-6 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-lg rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                        Pesan & Bayar via Midtrans
+                        Bayar Sekarang
                     </button>
                 </div>
             </div>
@@ -394,6 +394,70 @@
         setTimeout(initEventMap, 200);
         validateEventCheckout();
     });
+
+    document.getElementById('event-checkout-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        validateEventCheckout();
+        const btn = document.getElementById('event-submit-btn');
+        if (btn.disabled) {
+            return;
+        }
+
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Memproses...';
+
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                let errorMsg = data.message || 'Terjadi kesalahan saat memproses pesanan.';
+                if (data.errors) {
+                    errorMsg = Object.values(data.errors).flat().join('\n');
+                }
+                alert(errorMsg);
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                return;
+            }
+
+            if (data.success && data.snap_token && window.snap) {
+                window.snap.pay(data.snap_token, {
+                    onSuccess: function(result) {
+                        window.location.href = data.redirect_url;
+                    },
+                    onPending: function(result) {
+                        window.location.href = data.redirect_url;
+                    },
+                    onError: function(result) {
+                        alert('Pembayaran gagal atau dibatalkan.');
+                        window.location.href = data.redirect_url;
+                    },
+                    onClose: function() {
+                        window.location.href = data.redirect_url;
+                    }
+                });
+            } else {
+                window.location.href = data.redirect_url || '{{ route("customer.orders") }}';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan koneksi saat memproses pesanan.');
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    });
 </script>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 @endpush
 @endsection
