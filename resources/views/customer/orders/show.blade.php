@@ -4,10 +4,6 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <a href="{{ route('customer.orders') }}" class="inline-flex items-center text-sm text-orange-500 hover:text-orange-600 mb-6">← Kembali ke Pesanan</a>
 
-    <!-- Order Status Stepper -->
-    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
-        <x-order-stepper :currentStatus="$order->status" />
-    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
