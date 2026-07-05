@@ -28,7 +28,11 @@ class DashboardController extends Controller
      */
     public function products(Request $request)
     {
-        $services = CateringService::daily()->where('is_active', true)->get();
+        $servicesQuery = CateringService::daily()->where('is_active', true);
+        if ($request->filled('service')) {
+            $servicesQuery->where('id', $request->service);
+        }
+        $services = $servicesQuery->get();
 
         // Ambil semua layanan daily yang aktif
         $serviceIds = $services->pluck('id');

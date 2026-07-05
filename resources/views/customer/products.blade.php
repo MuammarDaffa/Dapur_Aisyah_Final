@@ -80,6 +80,84 @@
     </div>
     @endif
 
+    {{-- ========== PERIODE BERIKUTNYA ========== --}}
+    @if($upcomingPeriods->isNotEmpty())
+    <div class="mb-10">
+        @foreach($upcomingPeriods as $period)
+        <div class="flex items-center gap-3 mb-4">
+            <h3 class="text-lg font-bold text-gray-800">🔵 Periode Berikutnya</h3>
+            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">{{ $period->nama_periode }}</span>
+            <span class="text-xs text-gray-400">{{ $period->formatted_range }}</span>
+        </div>
+        @endforeach
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            @forelse($upcomingItems as $item)
+                @php
+                    $product = $item->product;
+                    $canOrder = $item->canOrder() && $product->isAvailable();
+                @endphp
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 {{ !$canOrder ? 'opacity-75 grayscale-[0.3]' : '' }}">
+                    <div class="relative h-44 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center">
+                        @if($product->image)
+                            <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                        @else
+                            <span class="text-5xl">🍛</span>
+                        @endif
+                        @if($product->is_best_seller)
+                            <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">🔥 Best Seller</span>
+                        @endif
+                        @if(!$product->isAvailable())
+                            <span class="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg">HABIS</span>
+                        @elseif(!$canOrder)
+                            <span class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                <span class="bg-orange-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full">Melewati batas pemesanan</span>
+                            </span>
+                        @endif
+                    </div>
+                    <div class="p-5">
+                        <p class="text-xs text-orange-500 font-medium mb-1">{{ $product->cateringService->name ?? '' }}</p>
+                        <h3 class="font-bold text-gray-900 mb-1">{{ $product->name }}</h3>
+                        <p class="text-xs text-gray-500 mb-2 line-clamp-2">{{ $product->description }}</p>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-medium">📅 {{ $item->formatted_date }}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between mt-auto">
+                            <span class="text-lg font-bold text-orange-600">{{ $product->formatted_price }}</span>
+                            @if($canOrder)
+                            <button type="button" onclick="openOrderModal({{ $product->id }}, '{{ $item->menu_date->format('Y-m-d') }}')"
+                                class="flex items-center space-x-1 px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-xl hover:bg-orange-600 transition-colors shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                <span>Keranjang</span>
+                            </button>
+                            @else
+                            <button type="button" disabled
+                                class="flex items-center space-x-1 px-4 py-2 bg-gray-300 text-gray-500 text-sm font-medium rounded-xl cursor-not-allowed">
+                                <span>Tidak Tersedia</span>
+                            </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full text-center py-12 text-gray-500">
+                    <p class="text-5xl mb-3">🍽️</p>
+                    <p class="font-medium">Belum ada menu untuk periode ini.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+    @endif
+
+    @if($currentPeriods->isEmpty() && $upcomingPeriods->isEmpty())
+    <div class="text-center py-16 text-gray-500 bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+        <p class="text-6xl mb-4">🍽️</p>
+        <h3 class="text-lg font-bold text-gray-800 mb-1">Belum Ada Menu yang Dijadwalkan</h3>
+        <p class="text-sm text-gray-500">Menu untuk layanan katering ini belum tersedia untuk periode saat ini maupun berikutnya.</p>
+    </div>
+    @endif
+
 </div>
 
 {{-- Order Modal --}}
