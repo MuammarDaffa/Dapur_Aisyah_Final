@@ -35,22 +35,27 @@ class DashboardController extends Controller
         $services = $servicesQuery->get();
         $serviceIds = $services->pluck('id');
 
-        // Ambil jadwal aktif yang belum berakhir (end_date >= today)
+        // Gunakan string tanggal hari ini (Y-m-d) dalam zona waktu lokal (Asia/Jakarta)
+        // Ini memastikan komparasi di database (SQL) maupun di collection mutlak akurat tanpa bias waktu/UTC
+        $todayDateString = \Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d');
+
+        // Ambil jadwal aktif yang belum berakhir (end_date >= hari ini)
         $schedules = \App\Models\MenuPeriod::whereIn('catering_service_id', $serviceIds)
             ->active()
-            ->where('end_date', '>=', \Carbon\Carbon::today())
-            ->with(['items' => function ($q) {
-                $q->orderBy('menu_date');
+            ->whereDate('end_date', '>=', $todayDateString)
+            ->with(['items' => function ($q) use ($todayDateString) {
+                // Filter langsung di level query database: hanya ambil menu dengan tanggal >= hari ini (misal >= 2026-07-07)
+                // Menu yang tanggalnya sudah lewat (misal 2026-07-06) disembunyikan / tidak dimuat
+                $q->whereDate('menu_date', '>=', $todayDateString)
+                  ->orderBy('menu_date', 'asc');
             }, 'items.product.cateringService', 'cateringService'])
             ->get();
 
         // Kumpulkan semua menu items dari jadwal yang valid
-        // Filter agar hanya menampilkan tanggal >= hari ini (dan sembunyikan yang sudah lewat)
         $items = collect();
-        $today = \Carbon\Carbon::today();
         foreach ($schedules as $schedule) {
             foreach ($schedule->items as $item) {
-                if ($item->menu_date->greaterThanOrEqualTo($today)) {
+                if ($item->menu_date && $item->menu_date->format('Y-m-d') >= $todayDateString) {
                     $items->push($item);
                 }
             }
