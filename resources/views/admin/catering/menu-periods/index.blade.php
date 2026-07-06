@@ -152,18 +152,28 @@
 </div>
 
 @push('scripts')
+@php
+    $productsJson = $products->map(function($p) {
+        return [
+            'id' => $p->id,
+            'name' => $p->name,
+            'price_label' => 'Rp ' . number_format($p->price, 0, ',', '.')
+        ];
+    })->values()->all();
+
+    $scheduleItems = $schedule && $schedule->items ? $schedule->items->map(function($i) {
+        return [
+            'menu_date' => $i->menu_date->format('Y-m-d'),
+            'product_id' => $i->product_id
+        ];
+    })->all() : [];
+
+    $oldItemsJson = old('items', $scheduleItems);
+@endphp
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const products = @json($products->map(fn($p) => [
-        'id' => $p->id,
-        'name' => $p->name,
-        'price_label' => 'Rp ' . number_format($p->price, 0, ',', '.')
-    ]));
-
-    const oldItems = @json(old('items', $schedule?->items?->map(fn($i) => [
-        'menu_date' => $i->menu_date->format('Y-m-d'),
-        'product_id' => $i->product_id
-    ]) ?? []));
+    const products = {!! json_encode($productsJson) !!};
+    const oldItems = {!! json_encode($oldItemsJson) !!};
 
     const inputStart = document.getElementById('input_start_date');
     const inputEnd = document.getElementById('input_end_date');

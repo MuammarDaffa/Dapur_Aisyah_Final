@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,35 +31,7 @@ class MenuPeriod extends Model
         return $query->where('is_active', true);
     }
 
-    /**
-     * Periode yang mencakup tanggal hari ini.
-     */
-    public function scopeCurrent($query)
-    {
-        $today = Carbon::today();
-        return $query->where('start_date', '<=', $today)
-                     ->where('end_date', '>=', $today);
-    }
-
-    /**
-     * Periode setelah periode aktif (start_date > today).
-     */
-    public function scopeUpcoming($query)
-    {
-        $today = Carbon::today();
-        return $query->where('start_date', '>', $today);
-    }
-
     // === Accessors ===
-
-    /**
-     * Apakah periode ini mencakup hari ini?
-     */
-    public function isCurrent(): bool
-    {
-        $today = Carbon::today();
-        return $this->start_date->lte($today) && $this->end_date->gte($today);
-    }
 
     /**
      * Formatted range tanggal.
