@@ -67,112 +67,82 @@
 
     {{-- Jadwal Menu Mingguan Section --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" id="schedule_section">
-        <div class="px-6 py-4 border-b bg-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <h3 class="font-bold text-gray-800">Jadwal Menu Mingguan</h3>
-                <p class="text-xs text-gray-500 mt-0.5">Atur rentang tanggal dan menu harian yang akan ditampilkan kepada pelanggan</p>
-                @if($currentSchedule)
-                <div class="mt-2 inline-flex flex-wrap items-center gap-2 bg-orange-50/70 border border-orange-100 px-3 py-1.5 rounded-lg text-xs">
-                    <span class="font-semibold text-gray-700">Rentang Aktif:</span>
-                    <span class="text-orange-600 font-bold">{{ $currentSchedule->formatted_range }}</span>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-orange-100 text-orange-800">
-                        {{ $currentSchedule->items_count }} Hari / Menu
-                    </span>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 text-green-700">
-                        Aktif
-                    </span>
+        <div class="px-6 py-4 border-b bg-gray-50">
+            <h3 class="font-bold text-gray-800">Jadwal Menu Mingguan</h3>
+            <p class="text-xs text-gray-500 mt-0.5">Atur rentang tanggal dan menu harian yang akan ditampilkan kepada pelanggan</p>
+        </div>
+
+        {{-- Form Pengaturan Jadwal --}}
+        <form action="{{ route('admin.menu-periods.store', $catering) }}" method="POST" id="schedule_form">
+            @csrf
+            <div class="p-6 bg-white border-b border-gray-100">
+                <div class="flex flex-col md:flex-row items-end gap-4">
+                    <div class="flex-1 w-full">
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Mulai <span class="text-red-500">*</span></label>
+                        <input type="date" id="input_start_date" name="start_date" 
+                            value="{{ old('start_date', $currentSchedule?->start_date?->format('Y-m-d') ?? now()->format('Y-m-d')) }}"
+                            class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-white" required>
+                    </div>
+                    <div class="flex-1 w-full">
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Selesai <span class="text-red-500">*</span></label>
+                        <input type="date" id="input_end_date" name="end_date" 
+                            value="{{ old('end_date', $currentSchedule?->end_date?->format('Y-m-d') ?? now()->addDays(6)->format('Y-m-d')) }}"
+                            class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-white" required>
+                    </div>
+                    <div class="w-full md:w-auto">
+                        <button type="button" id="btn_generate" 
+                            class="w-full md:w-auto px-5 py-2 bg-gray-900 text-white text-xs font-semibold rounded-lg hover:bg-orange-500 transition-colors shadow-sm flex items-center justify-center gap-1.5 h-[38px]">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            <span>Buat Jadwal</span>
+                        </button>
+                    </div>
                 </div>
-                @else
-                <div class="mt-2 inline-flex items-center gap-1.5 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg text-xs text-gray-600">
-                    <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span>Belum ada jadwal menu yang diatur.</span>
-                </div>
-                @endif
+                <p class="text-[11px] text-gray-400 mt-2">
+                    Tekan tombol <strong class="text-gray-600">Buat Jadwal</strong> untuk membentuk daftar tanggal di bawah, lalu pilih produk menu untuk setiap tanggal.
+                </p>
             </div>
-            <button type="button" id="btn_toggle_schedule" onclick="toggleScheduleEditor()"
-               class="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm flex-shrink-0">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                <span id="btn_toggle_schedule_text">Atur Jadwal Menu</span>
-            </button>
-        </div>
 
-        {{-- Editor Container (Inline) --}}
-        <div id="schedule_editor_container" class="border-t border-gray-100 bg-white" style="{{ $currentSchedule || $errors->any() || old('items') ? '' : 'display: none;' }}">
-            <form action="{{ route('admin.menu-periods.store', $catering) }}" method="POST" id="schedule_form">
-                @csrf
-                <div class="p-6 bg-gray-50/30 border-b border-gray-100">
-                    <div class="flex flex-col md:flex-row items-end gap-4">
-                        <div class="flex-1 w-full">
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Mulai <span class="text-red-500">*</span></label>
-                            <input type="date" id="input_start_date" name="start_date" 
-                                value="{{ old('start_date', $currentSchedule?->start_date?->format('Y-m-d') ?? now()->format('Y-m-d')) }}"
-                                class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-white" required>
-                        </div>
-                        <div class="flex-1 w-full">
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Selesai <span class="text-red-500">*</span></label>
-                            <input type="date" id="input_end_date" name="end_date" 
-                                value="{{ old('end_date', $currentSchedule?->end_date?->format('Y-m-d') ?? now()->addDays(6)->format('Y-m-d')) }}"
-                                class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-white" required>
-                        </div>
-                        <div class="w-full md:w-auto">
-                            <button type="button" id="btn_generate" 
-                                class="w-full md:w-auto px-5 py-2 bg-gray-900 text-white text-xs font-semibold rounded-lg hover:bg-orange-500 transition-colors shadow-sm flex items-center justify-center gap-1.5 h-[38px]">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                <span>Buat Jadwal</span>
-                            </button>
-                        </div>
-                    </div>
-                    <p class="text-[11px] text-gray-400 mt-2">
-                        Tekan tombol <strong class="text-gray-600">Buat Jadwal</strong> untuk membentuk daftar tanggal di bawah, lalu pilih produk menu untuk setiap tanggal.
-                    </p>
-                </div>
+            {{-- Tabel Jadwal --}}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50/50 border-b border-gray-100">
+                        <tr class="text-xs uppercase text-gray-500 tracking-wider">
+                            <th class="px-6 py-3 text-left font-semibold w-1/4">Tanggal</th>
+                            <th class="px-6 py-3 text-left font-semibold w-1/4">Hari</th>
+                            <th class="px-6 py-3 text-left font-semibold w-1/2">Produk Menu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule_tbody" class="divide-y divide-gray-100 bg-white">
+                        {{-- Rows akan di-generate via JavaScript --}}
+                    </tbody>
+                </table>
+            </div>
 
-                {{-- Tabel Jadwal --}}
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-50/50 border-b border-gray-100">
-                            <tr class="text-xs uppercase text-gray-500 tracking-wider">
-                                <th class="px-6 py-3 text-left font-semibold w-1/4">Tanggal</th>
-                                <th class="px-6 py-3 text-left font-semibold w-1/4">Hari</th>
-                                <th class="px-6 py-3 text-left font-semibold w-1/2">Produk Menu</th>
-                            </tr>
-                        </thead>
-                        <tbody id="schedule_tbody" class="divide-y divide-gray-100 bg-white">
-                            {{-- Rows akan di-generate via JavaScript --}}
-                        </tbody>
-                    </table>
+            {{-- Empty State jika belum generate --}}
+            <div id="table_empty_state" class="py-12 text-center bg-white">
+                <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-orange-50 flex items-center justify-center text-orange-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
+                <p class="text-sm font-semibold text-gray-700">Daftar Tanggal Belum Dibuat</p>
+                <p class="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
+                    Silakan tentukan Tanggal Mulai dan Tanggal Selesai di atas, kemudian klik tombol <strong class="text-gray-600 font-medium">Buat Jadwal</strong>.
+                </p>
+            </div>
 
-                {{-- Empty State jika belum generate --}}
-                <div id="table_empty_state" class="py-12 text-center bg-white">
-                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-orange-50 flex items-center justify-center text-orange-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-700">Daftar Tanggal Belum Dibuat</p>
-                    <p class="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
-                        Silakan tentukan Tanggal Mulai dan Tanggal Selesai di atas, kemudian klik tombol <strong class="text-gray-600 font-medium">Buat Jadwal</strong>.
-                    </p>
+            {{-- Footer Simpan --}}
+            <div id="table_footer" class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between" style="display: none;">
+                <span class="text-xs text-gray-500">
+                    Total: <strong id="badge_count" class="text-gray-800 font-semibold">0 hari</strong>
+                </span>
+                <div>
+                    <button type="submit" id="btn_save_schedule"
+                        class="inline-flex items-center gap-1.5 px-6 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Simpan Jadwal</span>
+                    </button>
                 </div>
-
-                {{-- Footer Simpan --}}
-                <div id="table_footer" class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between" style="display: none;">
-                    <span class="text-xs text-gray-500">
-                        Total: <strong id="badge_count" class="text-gray-800 font-semibold">0 hari</strong>
-                    </span>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="toggleScheduleEditor(false)" 
-                            class="px-4 py-2 bg-gray-200/80 text-gray-700 text-xs font-medium rounded-lg hover:bg-gray-300/80 transition-colors">
-                            Tutup
-                        </button>
-                        <button type="submit" id="btn_save_schedule"
-                            class="inline-flex items-center gap-1.5 px-6 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span>Simpan Jadwal</span>
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 
     {{-- Produk Section --}}
@@ -404,24 +374,6 @@ document.getElementById('addExtraModal')?.addEventListener('click', function(e) 
 document.getElementById('editExtraModal')?.addEventListener('click', function(e) { if (e.target === this) this.style.display='none'; });
 
 // === Jadwal Menu Mingguan Script ===
-function toggleScheduleEditor(forceOpen = null) {
-    const container = document.getElementById('schedule_editor_container');
-    const btnText = document.getElementById('btn_toggle_schedule_text');
-    if (!container) return;
-
-    const isHidden = container.style.display === 'none';
-    const shouldOpen = forceOpen !== null ? forceOpen : isHidden;
-
-    if (shouldOpen) {
-        container.style.display = 'block';
-        if (btnText) btnText.textContent = 'Tutup Editor Jadwal';
-        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    } else {
-        container.style.display = 'none';
-        if (btnText) btnText.textContent = 'Atur Jadwal Menu';
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     const products = {!! json_encode($productsJson) !!};
     const oldItems = {!! json_encode($oldItemsJson) !!};
@@ -433,12 +385,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const emptyState = document.getElementById('table_empty_state');
     const tableFooter = document.getElementById('table_footer');
     const badgeCount = document.getElementById('badge_count');
-    const btnToggleText = document.getElementById('btn_toggle_schedule_text');
-    const editorContainer = document.getElementById('schedule_editor_container');
-
-    if (editorContainer && editorContainer.style.display !== 'none' && btnToggleText) {
-        btnToggleText.textContent = 'Tutup Editor Jadwal';
-    }
 
     const indonesianDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     const indonesianMonths = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
