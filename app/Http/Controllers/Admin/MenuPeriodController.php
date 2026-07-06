@@ -17,20 +17,7 @@ class MenuPeriodController extends Controller
      */
     public function index(CateringService $catering)
     {
-        abort_if(!$catering->isDaily(), 404, 'Menu Mingguan hanya untuk layanan harian.');
-
-        // Ambil jadwal tunggal untuk katering ini (jika ada)
-        $schedule = $catering->menuPeriods()
-            ->with(['items' => function ($q) {
-                $q->orderBy('menu_date');
-            }])
-            ->latest('start_date')
-            ->first();
-
-        // Ambil produk aktif milik layanan ini
-        $products = $catering->products()->active()->get();
-
-        return view('admin.catering.menu-periods.index', compact('catering', 'schedule', 'products'));
+        return redirect()->route('admin.catering.show', $catering);
     }
 
     /**
@@ -103,7 +90,7 @@ class MenuPeriodController extends Controller
             MenuPeriodItem::insert($itemsData);
         });
 
-        return redirect()->route('admin.menu-periods.index', $catering)
+        return redirect()->route('admin.catering.show', $catering)
             ->with('success', 'Jadwal menu mingguan berhasil disimpan.');
     }
 }

@@ -91,10 +91,15 @@ class CateringController extends Controller
     {
         if ($catering->isDaily()) {
             $products = $catering->products()->latest()->paginate(10);
+            $allProducts = $catering->products()->active()->get();
             $extras = $catering->customOptions()->where('type', 'extra')->get();
-            $currentSchedule = $catering->menuPeriods()->withCount('items')->latest('start_date')->first();
+            $currentSchedule = $catering->menuPeriods()
+                ->with(['items' => fn($q) => $q->orderBy('menu_date')])
+                ->withCount('items')
+                ->latest('start_date')
+                ->first();
 
-            return view('admin.catering.show-daily', compact('catering', 'products', 'extras', 'currentSchedule'));
+            return view('admin.catering.show-daily', compact('catering', 'products', 'allProducts', 'extras', 'currentSchedule'));
         }
 
         if ($catering->isEvent()) {
