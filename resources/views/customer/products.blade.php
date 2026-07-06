@@ -59,7 +59,7 @@
                             <span class="text-xs text-orange-600 font-semibold uppercase tracking-wider">{{ $product->cateringService->name ?? '' }}</span>
                             <span class="inline-flex items-center gap-1 text-xs bg-orange-50 text-orange-700 px-2.5 py-1 rounded-full font-semibold border border-orange-100">
                                 <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                <span>{{ $item->formatted_date }}</span>
+                                <span>{{ $item->day_name }}</span>
                             </span>
                         </div>
                         <h3 class="font-bold text-gray-900 text-base mb-1 leading-snug">{{ $product->name }}</h3>

@@ -45,15 +45,18 @@ class DashboardController extends Controller
             ->get();
 
         // Kumpulkan semua menu items dari jadwal yang valid
-        // Filter agar tidak menampilkan hari yang sudah lewat (isPast() == false)
+        // Filter agar hanya menampilkan tanggal >= hari ini (dan sembunyikan yang sudah lewat)
         $items = collect();
+        $today = \Carbon\Carbon::today();
         foreach ($schedules as $schedule) {
             foreach ($schedule->items as $item) {
-                if (!$item->isPast()) {
+                if ($item->menu_date->greaterThanOrEqualTo($today)) {
                     $items->push($item);
                 }
             }
         }
+        // Urutkan menu berdasarkan tanggal secara ascending (terdekat ke terjauh)
+        $items = $items->sortBy('menu_date')->values();
 
         return view('customer.products', compact('services', 'schedules', 'items'));
     }
