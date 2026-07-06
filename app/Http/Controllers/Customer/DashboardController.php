@@ -24,7 +24,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * Halaman produk - menampilkan produk dari Menu Mingguan (Periode Aktif + Berikutnya).
+     * Halaman produk - menampilkan produk dari Menu Mingguan.
      */
     public function products(Request $request)
     {
@@ -33,46 +33,29 @@ class DashboardController extends Controller
             $servicesQuery->where('id', $request->service);
         }
         $services = $servicesQuery->get();
-
-        // Ambil semua layanan daily yang aktif
         $serviceIds = $services->pluck('id');
 
-        // Periode Aktif (mencakup hari ini)
-        $currentPeriods = \App\Models\MenuPeriod::whereIn('catering_service_id', $serviceIds)
+        // Ambil jadwal aktif yang belum berakhir (end_date >= today)
+        $schedules = \App\Models\MenuPeriod::whereIn('catering_service_id', $serviceIds)
             ->active()
-            ->current()
-            ->with(['items.product.cateringService', 'items.menuPeriod.cateringService', 'cateringService'])
+            ->where('end_date', '>=', \Carbon\Carbon::today())
+            ->with(['items' => function ($q) {
+                $q->orderBy('menu_date');
+            }, 'items.product.cateringService', 'cateringService'])
             ->get();
 
-        // Periode Berikutnya (start_date > today), ambil yang paling dekat per layanan
-        $upcomingPeriods = \App\Models\MenuPeriod::whereIn('catering_service_id', $serviceIds)
-            ->active()
-            ->upcoming()
-            ->orderBy('start_date')
-            ->with(['items.product.cateringService', 'items.menuPeriod.cateringService', 'cateringService'])
-            ->get()
-            ->unique('catering_service_id');
-
-        // Kumpulkan items dari periode aktif
-        $currentItems = collect();
-        foreach ($currentPeriods as $period) {
-            foreach ($period->items as $item) {
-                $currentItems->push($item);
+        // Kumpulkan semua menu items dari jadwal yang valid
+        // Filter agar tidak menampilkan hari yang sudah lewat (isPast() == false)
+        $items = collect();
+        foreach ($schedules as $schedule) {
+            foreach ($schedule->items as $item) {
+                if (!$item->isPast()) {
+                    $items->push($item);
+                }
             }
         }
 
-        // Kumpulkan items dari periode berikutnya
-        $upcomingItems = collect();
-        foreach ($upcomingPeriods as $period) {
-            foreach ($period->items as $item) {
-                $upcomingItems->push($item);
-            }
-        }
-
-        return view('customer.products', compact(
-            'services', 'currentPeriods', 'upcomingPeriods',
-            'currentItems', 'upcomingItems'
-        ));
+        return view('customer.products', compact('services', 'schedules', 'items'));
     }
 
     /**
