@@ -7,7 +7,7 @@
     <div class="mb-6">
         <a href="{{ route('customer.event.service', $service->id) }}" class="text-sm text-orange-500 hover:text-orange-600">← Kembali ke Layanan</a>
         <h2 class="text-2xl font-bold text-gray-900 mt-2">Custom Menu</h2>
-        <p class="text-gray-500">Pilih menu secara bebas dengan minimal pemesanan {{ $service->min_portion }} porsi per menu yang dipilih.</p>
+        <p class="text-gray-500">Pilih menu sesuka Anda sesuai kebutuhan acara.</p>
     </div>
 
     <form id="customForm" action="{{ route('customer.event.cart.store') }}" method="POST" onkeydown="return event.key != 'Enter';">
@@ -46,7 +46,7 @@
                                     <button type="button" onclick="changeCustomQty({{ $idx }}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
                                     <input type="number" id="custom_menu_input_{{ $idx }}" value="0" min="0"
                                         class="w-16 text-center border rounded-lg py-1 font-semibold" onchange="recalcCustom()">
-                                    <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
+                                    <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 custom-menu-plus-btn">+</button>
                                 </div>
                             </div>
                             @if($menu->items && count($menu->items) > 0)
@@ -63,12 +63,8 @@
                 </div>
 
                 {{-- Porsi Indicator --}}
-                <div class="mt-4 p-4 rounded-xl border border-yellow-200 bg-yellow-50" id="custom-portion-indicator">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-sm font-semibold text-gray-700">Minimal per menu: <span class="text-orange-600">{{ $service->min_portion }} porsi</span></span>
-                        <span class="text-sm font-semibold text-gray-700">Total Dipilih: <span id="custom-total-portions" class="text-blue-600">0</span></span>
-                    </div>
-                    <p id="custom-portion-msg" class="text-sm font-medium mt-1 text-yellow-700">⚠️ Silakan pilih menu.</p>
+                <div class="mt-4 p-4 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-between" id="custom-portion-indicator">
+                    <span class="text-base font-bold text-gray-900">Total Porsi: <span id="custom-total-portions">0</span> / {{ $service->max_portion }}</span>
                 </div>
             </div>
 
@@ -144,6 +140,7 @@
 @push('scripts')
 <script>
     const CUSTOM_MIN_PORTIONS = {{ $service->min_portion }};
+    const CUSTOM_MAX_PORTIONS = {{ $service->max_portion }};
 
     function formatRupiah(value) {
         return 'Rp ' + Number(value).toLocaleString('id-ID');
@@ -167,6 +164,18 @@
         const input = document.getElementById('custom_menu_input_' + idx);
         const cb = document.getElementById('custom_menu_' + idx);
         let val = parseInt(input.value) || 0;
+        
+        if (delta > 0) {
+            let currentTotal = 0;
+            document.querySelectorAll('.custom-menu-cb:checked').forEach(itemCb => {
+                const itemIdx = itemCb.id.split('_').pop();
+                currentTotal += parseInt(document.getElementById('custom_menu_input_' + itemIdx).value) || 0;
+            });
+            if (currentTotal + delta > CUSTOM_MAX_PORTIONS) {
+                return;
+            }
+        }
+
         val = Math.max(0, val + delta);
         if (val <= 0) {
             val = 0;
@@ -218,18 +227,20 @@
         let totalPortions = 0;
         let subtotalMenu = 0;
         let subtotalExtra = 0;
-        let isAnyMenuUnderMin = false;
 
         document.querySelectorAll('.custom-menu-cb:checked').forEach(cb => {
             const price = parseFloat(cb.dataset.price);
             const idx = cb.id.split('_').pop();
-            const qty = parseInt(document.getElementById('custom_menu_input_' + idx).value) || 0;
+            const inputEl = document.getElementById('custom_menu_input_' + idx);
+            let qty = parseInt(inputEl.value) || 0;
+            
+            if (totalPortions + qty > CUSTOM_MAX_PORTIONS) {
+                qty = Math.max(0, CUSTOM_MAX_PORTIONS - totalPortions);
+                inputEl.value = qty;
+            }
+            
             totalPortions += qty;
             subtotalMenu += price * qty;
-            
-            if (qty < CUSTOM_MIN_PORTIONS) {
-                isAnyMenuUnderMin = true;
-            }
         });
 
         document.querySelectorAll('.custom-extra-cb:checked').forEach(cb => {
@@ -244,32 +255,17 @@
         document.getElementById('custom-subtotal-extra').textContent = formatRupiah(subtotalExtra);
         document.getElementById('custom-total-price').textContent = formatRupiah(subtotalMenu + subtotalExtra);
 
-        const msg = document.getElementById('custom-portion-msg');
-        const indicator = document.getElementById('custom-portion-indicator');
+        const isMaxReached = totalPortions >= CUSTOM_MAX_PORTIONS;
+        document.querySelectorAll('.custom-menu-plus-btn').forEach(btn => {
+            btn.disabled = isMaxReached;
+            btn.classList.toggle('opacity-50', isMaxReached);
+            btn.classList.toggle('cursor-not-allowed', isMaxReached);
+        });
+
         const btn = document.getElementById('custom-submit-btn');
         const hasServing = document.querySelector('.custom-serving-radio:checked');
 
-        if (totalPortions === 0) {
-            indicator.className = 'mt-4 p-4 rounded-xl border border-yellow-200 bg-yellow-50';
-            msg.textContent = `⚠️ Silakan pilih menu (minimal ${CUSTOM_MIN_PORTIONS} porsi per menu).`;
-            msg.className = 'text-sm font-medium mt-1 text-yellow-700';
-            btn.disabled = true;
-        } else if (isAnyMenuUnderMin) {
-            indicator.className = 'mt-4 p-4 rounded-xl border border-red-200 bg-red-50';
-            msg.textContent = `❌ Setiap menu yang dipilih harus minimal ${CUSTOM_MIN_PORTIONS} porsi.`;
-            msg.className = 'text-sm font-medium mt-1 text-red-700';
-            btn.disabled = true;
-        } else if (!hasServing && document.querySelector('.custom-serving-radio')) {
-            indicator.className = 'mt-4 p-4 rounded-xl border border-blue-200 bg-blue-50';
-            msg.textContent = `ℹ️ Pilih cara penyajian terlebih dahulu.`;
-            msg.className = 'text-sm font-medium mt-1 text-blue-700';
-            btn.disabled = true;
-        } else {
-            indicator.className = 'mt-4 p-4 rounded-xl border border-green-200 bg-green-50';
-            msg.textContent = `✅ Siap dimasukkan ke keranjang!`;
-            msg.className = 'text-sm font-medium mt-1 text-green-700';
-            btn.disabled = false;
-        }
+        btn.disabled = (totalPortions === 0 || totalPortions > CUSTOM_MAX_PORTIONS || (!hasServing && document.querySelector('.custom-serving-radio')));
 
         buildCustomFormFields();
     }

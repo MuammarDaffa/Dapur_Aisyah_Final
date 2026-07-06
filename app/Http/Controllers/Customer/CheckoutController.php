@@ -297,9 +297,24 @@ class CheckoutController extends Controller
         // Validasi H-3
         OrderService::validateOrderDate($validated['order_date'], $cateringServiceId);
 
-        // Hitung total porsi
+        // Hitung total porsi & validasi batas maksimal custom menu
         $menuItems = $groupItems->whereIn('item_type', ['package_item', 'custom_menu']);
         $totalPortions = $menuItems->sum('quantity');
+
+        $customMenuItems = $groupItems->where('item_type', 'custom_menu');
+        if ($customMenuItems->isNotEmpty()) {
+            $service = $groupItems->first()->cateringService;
+            $customPortions = $customMenuItems->sum('quantity');
+            if ($service && $customPortions > $service->max_portion) {
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Total porsi melebihi batas maksimal ({$service->max_portion} porsi)."
+                    ], 422);
+                }
+                return back()->with('error', "Total porsi melebihi batas maksimal ({$service->max_portion} porsi).");
+            }
+        }
 
         // Hitung penyajian
         $servingType = $groupItems->first()->servingType;

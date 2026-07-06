@@ -139,23 +139,31 @@ class CartController extends Controller
         }
 
         $totalPackagePortions = 0;
+        $totalCustomPortions = 0;
 
         foreach ($validated['items'] as $item) {
             if ($item['quantity'] > 0) {
-                if (in_array($item['item_type'], ['custom_menu', 'package_item'])) {
+                if ($item['item_type'] === 'package_item') {
                     if ($item['quantity'] < $minPortion) {
                         return back()->with('error', "Porsi setiap menu minimal {$minPortion} porsi.");
                     }
-                }
-
-                if ($item['item_type'] === 'package_item') {
                     $totalPackagePortions += $item['quantity'];
+                } elseif ($item['item_type'] === 'custom_menu') {
+                    $totalCustomPortions += $item['quantity'];
                 }
             }
         }
 
         if ($package && $totalPackagePortions !== $package->total_portions) {
             return back()->with('error', "Total porsi menu harus sama dengan total porsi paket ({$package->total_portions} porsi).");
+        }
+
+        if (!$package && $totalCustomPortions < $minPortion) {
+            return back()->with('error', "Total porsi minimal {$minPortion} porsi.");
+        }
+
+        if (!$package && $totalCustomPortions > $service->max_portion) {
+            return back()->with('error', "Total porsi melebihi batas maksimal ({$service->max_portion} porsi).");
         }
 
         $user = auth()->user();
@@ -214,23 +222,31 @@ class CartController extends Controller
         }
 
         $totalPackagePortions = 0;
+        $totalCustomPortions = 0;
 
         foreach ($validated['items'] as $item) {
             if ($item['quantity'] > 0) {
-                if (in_array($item['item_type'], ['custom_menu', 'package_item'])) {
+                if ($item['item_type'] === 'package_item') {
                     if ($item['quantity'] < $minPortion) {
                         return back()->with('error', "Porsi setiap menu minimal {$minPortion} porsi.");
                     }
-                }
-
-                if ($item['item_type'] === 'package_item') {
                     $totalPackagePortions += $item['quantity'];
+                } elseif ($item['item_type'] === 'custom_menu') {
+                    $totalCustomPortions += $item['quantity'];
                 }
             }
         }
 
         if ($package && $totalPackagePortions !== $package->total_portions) {
             return back()->with('error', "Total porsi menu harus sama dengan total porsi paket ({$package->total_portions} porsi).");
+        }
+
+        if (!$package && $totalCustomPortions < $minPortion) {
+            return back()->with('error', "Total porsi minimal {$minPortion} porsi.");
+        }
+
+        if (!$package && $totalCustomPortions > $service->max_portion) {
+            return back()->with('error', "Total porsi melebihi batas maksimal ({$service->max_portion} porsi).");
         }
 
         $user = auth()->user();
