@@ -46,10 +46,6 @@
 
                     @if(!$product->isAvailable())
                         <span class="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center text-white font-bold text-lg tracking-wider">HABIS</span>
-                    @elseif(!$canOrder)
-                        <span class="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center p-4 text-center">
-                            <span class="bg-gray-900/90 text-white text-xs font-bold px-3.5 py-2 rounded-full shadow-md">Batas Pesan Berakhir</span>
-                        </span>
                     @endif
                 </div>
 

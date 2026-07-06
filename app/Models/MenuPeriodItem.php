@@ -47,34 +47,20 @@ class MenuPeriodItem extends Model
      */
     public function isPast(): bool
     {
-        return $this->menu_date->lt(Carbon::today());
+        $todayDateString = \Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d');
+        return $this->menu_date->format('Y-m-d') < $todayDateString;
     }
 
     /**
-     * Cek apakah item ini bisa dipesan berdasarkan cutoff layanan.
+     * Cek apakah item ini bisa dipesan.
+     * Aturan bisnis Katering Harian:
+     * - Menu dapat dipesan selama tanggal menu sama dengan tanggal hari ini atau setelah hari ini.
+     * - Menu dengan tanggal sebelum hari ini tidak dapat dipesan.
+     * - Tidak menggunakan batas jam pemesanan (cut-off time) maupun minimal_order_days.
      */
     public function canOrder(): bool
     {
-        if ($this->isPast()) {
-            return false;
-        }
-
-        // Cek cutoff dari layanan via periode
-        $service = $this->menuPeriod?->cateringService;
-        if (!$service || is_null($service->minimal_order_days)) {
-            // Tanpa cutoff, selama belum lewat, bisa dipesan
-            return !$this->isPast();
-        }
-
-        $today = Carbon::today();
-        $daysUntil = $today->diffInDays($this->menu_date, false);
-        $minDays = $service->minimal_order_days ?? 0;
-
-        if ($daysUntil < $minDays) {
-            return false;
-        }
-
-        return true;
+        return !$this->isPast();
     }
 
     // === Relationships ===

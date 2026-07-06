@@ -51,6 +51,19 @@ class OrderService
             return;
         }
 
+        // Jika layanan adalah Katering Harian (Daily), tidak ada aturan batas jam/hari pemesanan (cutoff).
+        // Aturan Katering Harian: pesanan dapat dilakukan selama tanggal menu >= hari ini.
+        if ($service->isDaily()) {
+            $orderDateCarbon = Carbon::parse($orderDate)->startOfDay();
+            $today = Carbon::now('Asia/Jakarta')->startOfDay();
+            if ($orderDateCarbon->lt($today)) {
+                throw ValidationException::withMessages([
+                    'order_date' => "Pesanan katering harian tidak dapat dilakukan untuk tanggal yang sudah lewat.",
+                ]);
+            }
+            return;
+        }
+
         // Jika minimal_order_days kosong, berarti tidak ada aturan cutoff sama sekali
         if (is_null($service->minimal_order_days)) {
             return;
@@ -85,11 +98,11 @@ class OrderService
             ]);
         }
 
-        // Validasi batas waktu pembatalan menggunakan cutoff dari layanan
+        // Validasi batas waktu pembatalan menggunakan cutoff dari layanan (hanya untuk Event, bukan Daily)
         if ($order->cateringService) {
             $service = $order->cateringService;
             
-            if (!is_null($service->minimal_order_days)) {
+            if (!$service->isDaily() && !is_null($service->minimal_order_days)) {
                 $orderDate = Carbon::parse($order->order_date);
                 $now = Carbon::now();
                 $minDays = $service->minimal_order_days ?? 0;
