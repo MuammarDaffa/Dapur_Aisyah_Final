@@ -51,8 +51,21 @@
                         <div class="flex items-start justify-between gap-4 p-3 bg-white rounded-xl border border-gray-100 shadow-2xs">
                             <div class="flex-1">
                                 <p class="font-bold text-gray-900 text-sm sm:text-base">{{ $menu->name }}</p>
-                                @if($menu->items)
-                                    <p class="text-xs sm:text-sm text-gray-500 mt-1">{{ $menu->items }}</p>
+                                @if(!empty($menu->items))
+                                    @if(is_array($menu->items) || $menu->items instanceof \Traversable)
+                                        <ul class="mt-1.5 space-y-1">
+                                            @foreach($menu->items as $item)
+                                                @if(!empty($item))
+                                                    <li class="text-xs sm:text-sm text-gray-500 flex items-center gap-1.5">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0"></span>
+                                                        <span>{{ is_string($item) ? $item : json_encode($item) }}</span>
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        <p class="text-xs sm:text-sm text-gray-500 mt-1">{{ $menu->items }}</p>
+                                    @endif
                                 @endif
                             </div>
                             <div class="text-right flex-shrink-0">
