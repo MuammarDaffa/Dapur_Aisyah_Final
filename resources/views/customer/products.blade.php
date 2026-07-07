@@ -5,7 +5,7 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
             <h2 class="text-2xl font-bold text-gray-900">Menu <span class="text-orange-500">Kami</span></h2>
-            <p class="text-sm text-gray-500 mt-1">Daftar menu katering harian yang tersedia sesuai jadwal saat ini.</p>
+            <!-- <p class="text-sm text-gray-500 mt-1">Daftar menu katering harian yang tersedia sesuai jadwal saat ini.</p> -->
         </div>
         @if($services->count() > 1)
         <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">

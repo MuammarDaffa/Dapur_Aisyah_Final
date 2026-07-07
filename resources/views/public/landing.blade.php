@@ -12,9 +12,9 @@
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div class="space-y-6">
-                    <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-orange-100 text-orange-700 text-sm font-medium">
+                    <!-- <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-orange-100 text-orange-700 text-sm font-medium">
                         🔥 Promo Menarik Setiap Hari
-                    </div>
+                    </div> -->
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
                         Katering <span class="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">Rumahan</span>
                         <br>Berkualitas Premium
