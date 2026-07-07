@@ -80,19 +80,6 @@ class DashboardController extends Controller
     }
 
     /**
-     * Halaman daftar paket event
-     */
-    public function eventPackages(CateringService $service)
-    {
-        if (!$service->isEvent() || !$service->hasFeature('packages')) {
-            return redirect()->route('customer.event.service', $service)->with('error', 'Layanan tidak menyediakan paket.');
-        }
-
-        $packages = $service->packages()->where('is_active', true)->get();
-        return view('customer.event_packages', compact('service', 'packages'));
-    }
-
-    /**
      * Halaman konfigurasi paket event
      */
     public function eventPackage(CateringService $service, \App\Models\CateringPackage $package)

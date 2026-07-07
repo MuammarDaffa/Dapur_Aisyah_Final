@@ -5,7 +5,7 @@
 
     {{-- Header --}}
     <div class="mb-6">
-        <a href="{{ route('customer.event.packages', $service->id) }}" class="text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">← Kembali ke Daftar Paket</a>
+        <a href="{{ route('customer.event.service', $service->id) }}" class="text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">← Kembali ke Pilih Layanan</a>
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
