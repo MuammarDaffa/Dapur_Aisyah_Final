@@ -33,10 +33,12 @@ class MenuPeriodController extends Controller
             'items' => 'required|array|min:1',
             'items.*.menu_date' => 'required|date',
             'items.*.product_id' => 'required|exists:products,id',
+            'items.*.status' => 'required|in:tersedia,habis',
         ], [
             'items.required' => 'Silakan klik tombol Buat Jadwal dan pilih produk untuk setiap tanggal terlebih dahulu.',
             'items.min' => 'Jadwal minimal harus memiliki 1 hari.',
             'items.*.product_id.required' => 'Silakan pilih produk menu untuk semua tanggal yang tersedia.',
+            'items.*.status.required' => 'Silakan pilih status produk untuk semua tanggal.',
         ]);
 
         // Validasi bahwa semua produk milik layanan katering ini
@@ -82,6 +84,7 @@ class MenuPeriodController extends Controller
                     'menu_period_id' => $period->id,
                     'product_id' => $item['product_id'],
                     'menu_date' => $item['menu_date'],
+                    'status' => $item['status'] ?? 'tersedia',
                     'created_at' => $now,
                     'updated_at' => $now,
                 ];

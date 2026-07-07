@@ -107,9 +107,10 @@
                 <table class="w-full text-sm">
                     <thead class="bg-gray-50/50 border-b border-gray-100">
                         <tr class="text-xs uppercase text-gray-500 tracking-wider">
-                            <th class="px-6 py-3 text-left font-semibold w-1/4">Tanggal</th>
-                            <th class="px-6 py-3 text-left font-semibold w-1/4">Hari</th>
-                            <th class="px-6 py-3 text-left font-semibold w-1/2">Produk Menu</th>
+                            <th class="px-6 py-3 text-left font-semibold w-1/5">Tanggal</th>
+                            <th class="px-6 py-3 text-left font-semibold w-1/5">Hari</th>
+                            <th class="px-6 py-3 text-left font-semibold w-2/5">Produk Menu</th>
+                            <th class="px-6 py-3 text-left font-semibold w-1/5">Status Produk</th>
                         </tr>
                     </thead>
                     <tbody id="schedule_tbody" class="divide-y divide-gray-100 bg-white">
@@ -349,7 +350,8 @@
     $scheduleItems = $currentSchedule && $currentSchedule->items ? $currentSchedule->items->map(function($i) {
         return [
             'menu_date' => $i->menu_date->format('Y-m-d'),
-            'product_id' => $i->product_id
+            'product_id' => $i->product_id,
+            'status' => $i->status ?? 'tersedia',
         ];
     })->all() : [];
 
@@ -420,7 +422,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         datesList.forEach((dateStr, index) => {
             const dateInfo = formatIndonesianDate(dateStr);
-            const selectedProductId = existingMapping[dateStr] || '';
+            const mappingItem = existingMapping[dateStr] || {};
+            const selectedProductId = typeof mappingItem === 'object' ? (mappingItem.product_id || '') : mappingItem;
+            const selectedStatus = typeof mappingItem === 'object' ? (mappingItem.status || 'tersedia') : 'tersedia';
 
             const tr = document.createElement('tr');
             tr.className = 'hover:bg-orange-50/30 transition-colors';
@@ -445,6 +449,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     <select name="items[${index}][product_id]" required
                         class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 bg-white transition-all">
                         ${optionsHtml}
+                    </select>
+                </td>
+                <td class="px-6 py-4">
+                    <select name="items[${index}][status]" required
+                        class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 bg-white transition-all font-medium ${selectedStatus === 'habis' ? 'text-red-600' : 'text-green-700'}">
+                        <option value="tersedia" ${selectedStatus === 'tersedia' ? 'selected' : ''}>Tersedia</option>
+                        <option value="habis" ${selectedStatus === 'habis' ? 'selected' : ''}>Habis</option>
                     </select>
                 </td>
             `;
@@ -502,17 +513,25 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const currentMapping = {};
-            const existingSelects = tbody.querySelectorAll('select[name^="items"]');
-            const existingInputs = tbody.querySelectorAll('input[type="hidden"][name^="items"]');
+            const existingSelects = tbody.querySelectorAll('select[name^="items"][name$="[product_id]"]');
+            const existingStatusSelects = tbody.querySelectorAll('select[name^="items"][name$="[status]"]');
+            const existingInputs = tbody.querySelectorAll('input[type="hidden"][name^="items"][name$="[menu_date]"]');
+            
             existingInputs.forEach((inp, idx) => {
                 if (existingSelects[idx]) {
-                    currentMapping[inp.value] = existingSelects[idx].value;
+                    currentMapping[inp.value] = {
+                        product_id: existingSelects[idx].value,
+                        status: existingStatusSelects[idx] ? existingStatusSelects[idx].value : 'tersedia'
+                    };
                 }
             });
 
             oldItems.forEach(item => {
                 if (!currentMapping[item.menu_date]) {
-                    currentMapping[item.menu_date] = item.product_id;
+                    currentMapping[item.menu_date] = {
+                        product_id: item.product_id,
+                        status: item.status || 'tersedia'
+                    };
                 }
             });
 
@@ -527,7 +546,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const datesList = [];
         oldItems.forEach(item => {
             datesList.push(item.menu_date);
-            initialMapping[item.menu_date] = item.product_id;
+            initialMapping[item.menu_date] = {
+                product_id: item.product_id,
+                status: item.status || 'tersedia'
+            };
         });
         renderTable(datesList, initialMapping);
     }

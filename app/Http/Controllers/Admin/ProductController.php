@@ -48,7 +48,6 @@ class ProductController extends Controller
             'image' => 'nullable|image|max:2048',
             'is_best_seller' => 'boolean',
             'is_active' => 'boolean',
-            'status' => 'required|in:tersedia,habis',
             'extras' => 'nullable|array',
             'extras.*' => 'exists:custom_options,id',
         ], [
@@ -58,7 +57,6 @@ class ProductController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_best_seller'] = $request->boolean('is_best_seller');
         $validated['is_active'] = $request->boolean('is_active');
-        $validated['status'] = $request->status;
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
@@ -92,7 +90,6 @@ class ProductController extends Controller
             'image' => 'nullable|image|max:2048',
             'is_best_seller' => 'boolean',
             'is_active' => 'boolean',
-            'status' => 'required|in:tersedia,habis',
             'extras' => 'nullable|array',
             'extras.*' => 'exists:custom_options,id',
         ], [
@@ -101,7 +98,6 @@ class ProductController extends Controller
 
         $validated['is_best_seller'] = $request->boolean('is_best_seller');
         $validated['is_active'] = $request->boolean('is_active');
-        $validated['status'] = $request->status;
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');

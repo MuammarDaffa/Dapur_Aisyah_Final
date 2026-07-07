@@ -19,16 +19,7 @@
         <input type="hidden" name="catering_service_id" value="{{ request('catering_service_id') }}">
         <div><label class="block text-sm font-medium mb-1">Nama Produk *</label><input type="text" name="name" required value="{{ old('name') }}" class="w-full px-4 py-2 rounded-lg border">@error('name')<p class="text-red-500 text-sm">{{ $message }}</p>@enderror</div>
         <div><label class="block text-sm font-medium mb-1">Deskripsi</label><textarea name="description" rows="3" class="w-full px-4 py-2 rounded-lg border">{{ old('description') }}</textarea></div>
-        <div class="grid grid-cols-2 gap-4">
-            <div><label class="block text-sm font-medium mb-1">Harga (Rp) *</label><input type="text" name="price" required value="{{ old('price') }}" class="w-full px-4 py-2 rounded-lg border rupiah-input"></div>
-            <div>
-                <label class="block text-sm font-medium mb-1">Status Produk *</label>
-                <select name="status" class="w-full px-4 py-2 rounded-lg border">
-                    <option value="tersedia" {{ old('status', 'tersedia') === 'tersedia' ? 'selected' : '' }}>Tersedia</option>
-                    <option value="habis" {{ old('status') === 'habis' ? 'selected' : '' }}>Habis</option>
-                </select>
-            </div>
-        </div>
+        <div><label class="block text-sm font-medium mb-1">Harga (Rp) *</label><input type="text" name="price" required value="{{ old('price') }}" class="w-full px-4 py-2 rounded-lg border rupiah-input"></div>
         <div><label class="block text-sm font-medium mb-1">Gambar</label><input type="file" name="image" accept="image/*" class="w-full px-4 py-2 rounded-lg border"></div>
         <div class="flex gap-6"><label class="flex items-center gap-2"><input type="checkbox" name="is_best_seller" value="1" class="rounded border-gray-300 text-orange-500"><span class="text-sm">Best Seller</span></label><label class="flex items-center gap-2"><input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500"><span class="text-sm">Aktif</span></label></div>
         @if(isset($extras) && $extras->count() > 0)

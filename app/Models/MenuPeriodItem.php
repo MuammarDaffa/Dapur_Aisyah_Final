@@ -12,7 +12,7 @@ class MenuPeriodItem extends Model
     use HasFactory;
 
     protected $fillable = [
-        'menu_period_id', 'product_id', 'menu_date',
+        'menu_period_id', 'product_id', 'menu_date', 'status',
     ];
 
     protected function casts(): array
@@ -49,6 +49,22 @@ class MenuPeriodItem extends Model
     {
         $todayDateString = \Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d');
         return $this->menu_date->format('Y-m-d') < $todayDateString;
+    }
+
+    /**
+     * Cek apakah produk pada tanggal ini tersedia.
+     */
+    public function isAvailable(): bool
+    {
+        return ($this->status ?? 'tersedia') === 'tersedia' && ($this->product?->is_active ?? true);
+    }
+
+    /**
+     * Cek apakah produk pada tanggal ini habis.
+     */
+    public function isOutOfStock(): bool
+    {
+        return ($this->status ?? 'tersedia') === 'habis';
     }
 
     /**

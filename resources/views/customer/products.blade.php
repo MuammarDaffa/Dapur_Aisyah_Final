@@ -28,7 +28,7 @@
         @foreach($items as $item)
             @php
                 $product = $item->product;
-                $canOrder = $item->canOrder() && $product->isAvailable();
+                $canOrder = $item->canOrder() && $item->isAvailable();
             @endphp
             <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 flex flex-col {{ !$canOrder ? 'opacity-75 grayscale-[0.3]' : '' }}">
                 <div class="relative h-44 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center overflow-hidden">
@@ -44,7 +44,7 @@
                         <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">Best Seller</span>
                     @endif
 
-                    @if(!$product->isAvailable())
+                    @if(!$item->isAvailable())
                         <span class="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center text-white font-bold text-lg tracking-wider">HABIS</span>
                     @endif
                 </div>
