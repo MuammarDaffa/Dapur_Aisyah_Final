@@ -115,8 +115,7 @@ class CartController extends Controller
     }
 
     /**
-     * Simpan seluruh konfigurasi event sekaligus sebagai satu group.
-     * Mendukung mode Paket dan Custom.
+     * Simpan pesanan event group (Paket atau Custom) dari halaman konfigurasi.
      */
     public function storeEventGroup(Request $request)
     {
@@ -124,66 +123,70 @@ class CartController extends Controller
             'catering_service_id' => 'required|exists:catering_services,id',
             'catering_package_id' => 'nullable|exists:catering_packages,id',
             'serving_type_id' => 'nullable|exists:custom_options,id',
-            'items' => 'required|array|min:1',
-            'items.*.custom_option_id' => 'required|exists:custom_options,id',
-            'items.*.quantity' => 'required|integer|min:0',
-            'items.*.item_type' => 'required|in:package_item,addition,custom_menu,package_extra',
+            'items' => 'required_without:catering_package_id|array',
+            'items.*.custom_option_id' => 'required_with:items|exists:custom_options,id',
+            'items.*.quantity' => 'required_with:items|integer|min:0',
+            'items.*.item_type' => 'required_with:items|in:package_item,addition,custom_menu,package_extra',
+            'notes' => 'nullable|string|max:1000',
         ]);
 
         $service = \App\Models\CateringService::findOrFail($validated['catering_service_id']);
-        $minPortion = $service->min_portion;
-
-        $package = null;
-        if (!empty($validated['catering_package_id'])) {
-            $package = \App\Models\CateringPackage::findOrFail($validated['catering_package_id']);
-        }
-
-        $totalPackagePortions = 0;
-        $totalCustomPortions = 0;
-
-        foreach ($validated['items'] as $item) {
-            if ($item['quantity'] > 0) {
-                if ($item['item_type'] === 'package_item') {
-                    if ($item['quantity'] < $minPortion) {
-                        return back()->with('error', "Porsi setiap menu minimal {$minPortion} porsi.");
-                    }
-                    $totalPackagePortions += $item['quantity'];
-                } elseif ($item['item_type'] === 'custom_menu') {
-                    $totalCustomPortions += $item['quantity'];
-                }
-            }
-        }
-
-        if ($package && $totalPackagePortions !== $package->total_portions) {
-            return back()->with('error', "Total porsi menu harus sama dengan total porsi paket ({$package->total_portions} porsi).");
-        }
-
-        if (!$package && $totalCustomPortions < $minPortion) {
-            return back()->with('error', "Total porsi minimal {$minPortion} porsi.");
-        }
-
-        if (!$package && $totalCustomPortions > $service->max_portion) {
-            return back()->with('error', "Total porsi melebihi batas maksimal ({$service->max_portion} porsi).");
-        }
-
         $user = auth()->user();
         $groupId = (string) Str::uuid();
 
-        // Jika pakai paket, simpan entry paket dulu
+        // 1. Jika pesanan berupa Paket Katering Tetap (Fixed Package)
         if (!empty($validated['catering_package_id'])) {
+            $package = \App\Models\CateringPackage::with('customOptions')->findOrFail($validated['catering_package_id']);
+            if ($package->catering_service_id !== $service->id || !$package->is_active) {
+                return back()->with('error', 'Paket tidak valid atau tidak aktif.');
+            }
+
+            // Simpan entry paket (header)
             $user->carts()->create([
-                'catering_service_id' => $validated['catering_service_id'],
+                'catering_service_id' => $service->id,
                 'cart_group_id' => $groupId,
-                'catering_package_id' => $validated['catering_package_id'],
+                'catering_package_id' => $package->id,
                 'quantity' => 1,
                 'item_type' => 'package',
-                'serving_type_id' => $validated['serving_type_id'] ?? null,
+                'serving_type_id' => $validated['serving_type_id'] ?? $package->getIncludedServingTypes()->first()?->id,
+                'notes' => $validated['notes'] ?? null,
             ]);
+
+            // Simpan semua menu dari Master Data Menu yang termasuk dalam paket
+            foreach ($package->getIncludedMenus() as $menu) {
+                $user->carts()->create([
+                    'catering_service_id' => $service->id,
+                    'cart_group_id' => $groupId,
+                    'custom_option_id' => $menu->id,
+                    'quantity' => $package->total_portions,
+                    'item_type' => 'package_item',
+                    'serving_type_id' => $validated['serving_type_id'] ?? $package->getIncludedServingTypes()->first()?->id,
+                ]);
+            }
+
+            return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Paket katering berhasil ditambahkan ke keranjang!');
         }
 
-        // Simpan semua item (menu, extra, dll)
+        // 2. Jika pesanan berupa Custom Menu
+        $minPortion = $service->min_portion;
+        $totalCustomPortions = 0;
+
+        foreach ($validated['items'] ?? [] as $item) {
+            if (($item['quantity'] ?? 0) > 0 && ($item['item_type'] ?? '') === 'custom_menu') {
+                $totalCustomPortions += $item['quantity'];
+            }
+        }
+
+        if ($totalCustomPortions < $minPortion) {
+            return back()->with('error', "Total porsi minimal {$minPortion} porsi.");
+        }
+
+        if ($totalCustomPortions > $service->max_portion) {
+            return back()->with('error', "Total porsi melebihi batas maksimal ({$service->max_portion} porsi).");
+        }
+
         foreach ($validated['items'] as $item) {
-            if ($item['quantity'] > 0) {
+            if (($item['quantity'] ?? 0) > 0) {
                 $user->carts()->create([
                     'catering_service_id' => $validated['catering_service_id'],
                     'cart_group_id' => $groupId,
@@ -191,6 +194,7 @@ class CartController extends Controller
                     'quantity' => $item['quantity'],
                     'item_type' => $item['item_type'],
                     'serving_type_id' => $validated['serving_type_id'] ?? null,
+                    'notes' => $validated['notes'] ?? null,
                 ]);
             }
         }
@@ -203,72 +207,47 @@ class CartController extends Controller
      */
     public function updateEventGroup(Request $request, string $groupId)
     {
+        $user = auth()->user();
+
+        // Pastikan group milik user ini
+        $existingGroup = $user->carts()->where('cart_group_id', $groupId)->get();
+        abort_if($existingGroup->isEmpty(), 404, 'Pesanan event tidak ditemukan.');
+
+        // Jangan izinkan ubah isi pesanan paket katering tetap (fixed package)
+        if ($existingGroup->contains('item_type', 'package') || $request->filled('catering_package_id')) {
+            return back()->with('error', 'Paket katering tetap (fixed package) tidak dapat diubah isinya. Silakan hapus pesanan ini dan pesan ulang jika ingin memilih paket lain.');
+        }
+
         $validated = $request->validate([
             'catering_service_id' => 'required|exists:catering_services,id',
-            'catering_package_id' => 'nullable|exists:catering_packages,id',
             'serving_type_id' => 'nullable|exists:custom_options,id',
             'items' => 'required|array|min:1',
             'items.*.custom_option_id' => 'required|exists:custom_options,id',
             'items.*.quantity' => 'required|integer|min:0',
-            'items.*.item_type' => 'required|in:package_item,addition,custom_menu,package_extra',
+            'items.*.item_type' => 'required|in:addition,custom_menu',
         ]);
 
         $service = \App\Models\CateringService::findOrFail($validated['catering_service_id']);
         $minPortion = $service->min_portion;
 
-        $package = null;
-        if (!empty($validated['catering_package_id'])) {
-            $package = \App\Models\CateringPackage::findOrFail($validated['catering_package_id']);
-        }
-
-        $totalPackagePortions = 0;
         $totalCustomPortions = 0;
 
         foreach ($validated['items'] as $item) {
-            if ($item['quantity'] > 0) {
-                if ($item['item_type'] === 'package_item') {
-                    if ($item['quantity'] < $minPortion) {
-                        return back()->with('error', "Porsi setiap menu minimal {$minPortion} porsi.");
-                    }
-                    $totalPackagePortions += $item['quantity'];
-                } elseif ($item['item_type'] === 'custom_menu') {
-                    $totalCustomPortions += $item['quantity'];
-                }
+            if (($item['quantity'] ?? 0) > 0 && ($item['item_type'] ?? '') === 'custom_menu') {
+                $totalCustomPortions += $item['quantity'];
             }
         }
 
-        if ($package && $totalPackagePortions !== $package->total_portions) {
-            return back()->with('error', "Total porsi menu harus sama dengan total porsi paket ({$package->total_portions} porsi).");
-        }
-
-        if (!$package && $totalCustomPortions < $minPortion) {
+        if ($totalCustomPortions < $minPortion) {
             return back()->with('error', "Total porsi minimal {$minPortion} porsi.");
         }
 
-        if (!$package && $totalCustomPortions > $service->max_portion) {
+        if ($totalCustomPortions > $service->max_portion) {
             return back()->with('error', "Total porsi melebihi batas maksimal ({$service->max_portion} porsi).");
         }
 
-        $user = auth()->user();
-
-        // Pastikan group milik user ini
-        $existingCount = $user->carts()->where('cart_group_id', $groupId)->count();
-        abort_if($existingCount === 0, 404, 'Pesanan event tidak ditemukan.');
-
         // Hapus semua item lama dalam group
         $user->carts()->where('cart_group_id', $groupId)->delete();
-
-        // Simpan ulang: paket header jika ada
-        if (!empty($validated['catering_package_id'])) {
-            $user->carts()->create([
-                'catering_service_id' => $validated['catering_service_id'],
-                'cart_group_id' => $groupId,
-                'catering_package_id' => $validated['catering_package_id'],
-                'quantity' => 1,
-                'item_type' => 'package',
-                'serving_type_id' => $validated['serving_type_id'] ?? null,
-            ]);
-        }
 
         // Simpan ulang items
         foreach ($validated['items'] as $item) {

@@ -5,175 +5,121 @@
 
     {{-- Header --}}
     <div class="mb-6">
-        <a href="{{ route('customer.event.service', $service->id) }}" class="text-sm text-orange-500 hover:text-orange-600">← Kembali ke Layanan</a>
-        <h2 class="text-2xl font-bold text-gray-900 mt-2">{{ $package->name }}</h2>
-        <p class="text-gray-500">{{ $package->total_portions }} Porsi</p>
+        <a href="{{ route('customer.event.packages', $service->id) }}" class="text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">← Kembali ke Daftar Paket</a>
     </div>
 
-    <form action="{{ route('customer.event.cart.store') }}" method="POST" onkeydown="return event.key != 'Enter';">
-        @csrf
-        <input type="hidden" name="catering_service_id" value="{{ $service->id }}">
-        <input type="hidden" name="catering_package_id" value="{{ $package->id }}">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+        {{-- Cover Image --}}
+        @if($package->image)
+            <div class="w-full h-64 sm:h-80 bg-gray-100 relative overflow-hidden">
+                <img src="{{ Storage::url($package->image) }}" alt="{{ $package->name }}" class="w-full h-full object-cover">
+            </div>
+        @endif
 
-        @php
-            $menus = $package->customOptions->where('type', 'menu')->values();
-            $extras = $package->customOptions->where('type', 'extra')->values();
-            $servings = $package->customOptions->where('type', 'serving_type')->values();
-        @endphp
-
-        <div class="space-y-6">
-            {{-- Menu Paket: bagi porsi --}}
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Bagi Porsi ke Menu</h3>
-                <p class="text-sm text-gray-500 mb-4">Total porsi menu harus tepat sama dengan porsi paket.</p>
-
-                {{-- Porsi Indicator --}}
-                <div class="mb-4 p-4 rounded-xl border border-yellow-200 bg-yellow-50" id="pkg-portion-indicator">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm font-semibold text-gray-700">Target Porsi: <span class="text-orange-600">{{ $package->total_portions }}</span></span>
-                        <span class="text-sm font-semibold text-gray-700">Total Dipilih: <span id="pkg-selected" class="text-blue-600">0</span></span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                        <div id="pkg-progress-bar" class="h-3 rounded-full transition-all duration-300 bg-yellow-500" style="width:0%"></div>
-                    </div>
-                    <p id="pkg-portion-msg" class="text-sm mt-2 font-medium text-yellow-700">⚠️ Kurang {{ $package->total_portions }} porsi lagi.</p>
+        <div class="p-6 sm:p-8">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6 mb-6">
+                <div>
+                    <span class="inline-block px-3 py-1 bg-orange-100 text-orange-700 font-bold text-xs rounded-full mb-2">Fixed Package (Paket Tetap)</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">{{ $package->name }}</h1>
+                    <p class="text-sm font-medium text-gray-500 mt-1">Layanan: {{ $service->name }}</p>
                 </div>
-
-                <div class="space-y-3">
-                    @foreach($menus as $idx => $menu)
-                        <div class="flex items-center justify-between p-4 border rounded-xl bg-white">
-                            <div>
-                                <p class="font-medium text-gray-900">{{ $menu->name }}</p>
-                                <p class="text-xs text-green-600 font-medium">Termasuk dalam paket</p>
-                                <input type="hidden" name="items[{{ $idx }}][custom_option_id]" value="{{ $menu->id }}">
-                                <input type="hidden" name="items[{{ $idx }}][item_type]" value="package_item">
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button type="button" onclick="changePkgQty({{ $idx }}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
-                                <input type="number" name="items[{{ $idx }}][quantity]" id="pkg_qty_{{ $idx }}" value="0" min="0" max="{{ $package->total_portions }}"
-                                    class="w-16 text-center border rounded-lg py-1 font-semibold pkg-qty-input" onchange="recalcPkgPortions()">
-                                <button type="button" onclick="changePkgQty({{ $idx }}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
-                            </div>
-                        </div>
-                    @endforeach
+                <div class="text-left sm:text-right">
+                    <p class="text-xs text-gray-400">Harga Paket</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-orange-600">{{ $package->formatted_price }}</p>
+                    <p class="text-xs font-semibold text-gray-600 mt-1">{{ $package->total_portions }} Porsi</p>
                 </div>
             </div>
 
-            {{-- Free Items --}}
-            @if($extras->isNotEmpty())
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Free (Termasuk Paket)</h3>
-                    <div class="space-y-2">
-                        @foreach($extras as $idx => $extra)
-                            <div class="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-100">
-                                <span class="text-green-600 font-bold">✓</span>
-                                <span class="text-gray-900 font-medium">{{ $extra->name }}</span>
-                                <span class="text-green-600 text-sm font-medium ml-auto">FREE</span>
-                                <input type="hidden" name="items[{{ $menus->count() + $idx }}][custom_option_id]" value="{{ $extra->id }}">
-                                <input type="hidden" name="items[{{ $menus->count() + $idx }}][item_type]" value="package_extra">
-                                <input type="hidden" name="items[{{ $menus->count() + $idx }}][quantity]" value="{{ $package->total_portions }}">
-                            </div>
-                        @endforeach
-                    </div>
+            @if($package->description)
+                <div class="mb-8">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-2">Deskripsi Paket</h3>
+                    <p class="text-gray-600 leading-relaxed text-sm sm:text-base">{{ $package->description }}</p>
                 </div>
             @endif
 
-            {{-- Penyajian Paket --}}
-            @if($servings->isNotEmpty())
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Penyajian</h3>
-                    <div class="space-y-2">
-                        @foreach($servings as $idx => $serving)
-                            <div class="flex items-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                                <span class="text-blue-600 font-bold">🍽️</span>
-                                <span class="text-gray-900 font-medium">{{ $serving->name }}</span>
-                                @if($idx === 0)
-                                    <input type="hidden" name="serving_type_id" value="{{ $serving->id }}">
+            @php
+                $menus = $package->getIncludedMenus();
+                $serving = $package->getIncludedServingTypes()->first();
+                $benefits = $package->benefits ?? [];
+            @endphp
+
+            {{-- Daftar Menu --}}
+            <div class="mb-8">
+                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-3">Daftar Menu Termasuk dalam Paket</h3>
+                <div class="bg-gray-50 rounded-xl p-4 sm:p-6 border border-gray-100 space-y-4">
+                    @forelse($menus as $menu)
+                        <div class="flex items-start justify-between gap-4 p-3 bg-white rounded-xl border border-gray-100 shadow-2xs">
+                            <div class="flex-1">
+                                <p class="font-bold text-gray-900 text-sm sm:text-base">{{ $menu->name }}</p>
+                                @if($menu->items)
+                                    <p class="text-xs sm:text-sm text-gray-500 mt-1">{{ $menu->items }}</p>
                                 @endif
                             </div>
-                        @endforeach
-                    </div>
+                            <div class="text-right flex-shrink-0">
+                                <span class="inline-block px-2.5 py-1 bg-green-50 text-green-700 font-semibold text-xs rounded-lg border border-green-200/50">
+                                    Termasuk ({{ $package->total_portions }} Porsi)
+                                </span>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-sm text-gray-400 text-center py-4">Belum ada menu yang dikonfigurasi untuk paket ini.</p>
+                    @endforelse
                 </div>
-            @endif
-
-            {{-- Ringkasan & Tombol --}}
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <div class="p-4 bg-orange-50 rounded-xl border border-orange-100 mb-4">
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-gray-900">Total Harga Paket</span>
-                        <span class="text-2xl font-bold text-orange-600">{{ $package->formatted_price }}</span>
-                    </div>
-                </div>
-                <button type="submit" id="pkg-submit-btn" disabled
-                    class="w-full px-6 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-lg rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                    Masukkan ke Keranjang 🛒
-                </button>
             </div>
+
+            {{-- Penyajian & Benefit --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                {{-- Penyajian --}}
+                @if($serving)
+                    <div class="bg-blue-50/50 rounded-xl p-5 border border-blue-100">
+                        <h4 class="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">Penyajian</h4>
+                        <p class="font-bold text-gray-900 text-base">{{ $serving->name }}</p>
+                        <p class="text-xs text-blue-600 mt-1">Selesai disajikan sesuai standar hidangan katering kami.</p>
+                    </div>
+                @endif
+
+                {{-- Benefit --}}
+                @if(!empty($benefits))
+                    <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
+                        <h4 class="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">Benefit Tambahan</h4>
+                        <ul class="space-y-1.5 text-sm text-gray-700">
+                            @foreach($benefits as $b)
+                                <li class="flex items-center gap-2">
+                                    <span class="text-green-600 font-bold">✓</span>
+                                    <span class="font-medium">{{ $b }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+            </div>
+
+            {{-- Form Tambah ke Keranjang --}}
+            <form action="{{ route('customer.event.cart.store') }}" method="POST" class="border-t border-gray-100 pt-6">
+                @csrf
+                <input type="hidden" name="catering_service_id" value="{{ $service->id }}">
+                <input type="hidden" name="catering_package_id" value="{{ $package->id }}">
+                @if($serving)
+                    <input type="hidden" name="serving_type_id" value="{{ $serving->id }}">
+                @endif
+
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-gray-800 mb-2">Catatan Tambahan (Opsional)</label>
+                    <textarea name="notes" rows="2" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-sm" placeholder="Contoh: Tolong jangan terlalu pedas, pengiriman tepat waktu...">{{ old('notes') }}</textarea>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-orange-50/50 p-6 rounded-2xl border border-orange-100">
+                    <div>
+                        <p class="text-sm text-gray-600 font-medium">Total Harga Paket ({{ $package->total_portions }} Porsi)</p>
+                        <p class="text-2xl font-bold text-orange-600 mt-0.5">{{ $package->formatted_price }}</p>
+                    </div>
+                    <button type="submit" class="w-full sm:w-auto px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-sm hover:shadow-md transition-all">
+                        Masukkan ke Keranjang
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
+
 </div>
-
-@push('scripts')
-<script>
-    const targetPortions = {{ $package->total_portions }};
-    const minPortion = {{ $service->min_portion }};
-
-    function changePkgQty(idx, delta) {
-        const input = document.getElementById('pkg_qty_' + idx);
-        let val = parseInt(input.value) || 0;
-        val = Math.max(0, val + delta);
-        input.value = val;
-        recalcPkgPortions();
-    }
-
-    function recalcPkgPortions() {
-        let total = 0;
-        let isAnyUnderMin = false;
-        
-        document.querySelectorAll('.pkg-qty-input').forEach(input => {
-            const val = parseInt(input.value) || 0;
-            total += val;
-            if (val > 0 && val < minPortion) {
-                isAnyUnderMin = true;
-            }
-        });
-
-        document.getElementById('pkg-selected').textContent = total;
-
-        const pct = Math.min(100, (total / targetPortions) * 100);
-        const bar = document.getElementById('pkg-progress-bar');
-        bar.style.width = pct + '%';
-
-        const indicator = document.getElementById('pkg-portion-indicator');
-        const msg = document.getElementById('pkg-portion-msg');
-        const btn = document.getElementById('pkg-submit-btn');
-
-        if (isAnyUnderMin) {
-            bar.className = 'h-3 rounded-full transition-all duration-300 bg-red-500';
-            indicator.className = 'mb-4 p-4 rounded-xl border border-red-200 bg-red-50';
-            msg.textContent = `❌ Porsi setiap menu minimal ${minPortion} porsi.`;
-            msg.className = 'text-sm mt-2 font-medium text-red-700';
-            btn.disabled = true;
-        } else if (total < targetPortions) {
-            bar.className = 'h-3 rounded-full transition-all duration-300 bg-yellow-500';
-            indicator.className = 'mb-4 p-4 rounded-xl border border-yellow-200 bg-yellow-50';
-            msg.textContent = `⚠️ Kurang ${targetPortions - total} porsi lagi.`;
-            msg.className = 'text-sm mt-2 font-medium text-yellow-700';
-            btn.disabled = true;
-        } else if (total > targetPortions) {
-            bar.className = 'h-3 rounded-full transition-all duration-300 bg-red-500';
-            indicator.className = 'mb-4 p-4 rounded-xl border border-red-200 bg-red-50';
-            msg.textContent = `❌ Kelebihan ${total - targetPortions} porsi. Kurangi porsi.`;
-            msg.className = 'text-sm mt-2 font-medium text-red-700';
-            btn.disabled = true;
-        } else {
-            bar.className = 'h-3 rounded-full transition-all duration-300 bg-green-500';
-            indicator.className = 'mb-4 p-4 rounded-xl border border-green-200 bg-green-50';
-            msg.textContent = `✅ Porsi sudah tepat! Siap dimasukkan ke keranjang.`;
-            msg.className = 'text-sm mt-2 font-medium text-green-700';
-            btn.disabled = false;
-        }
-    }
-</script>
-@endpush
 @endsection

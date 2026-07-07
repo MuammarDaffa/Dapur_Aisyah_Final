@@ -7,6 +7,7 @@ use App\Models\CateringPackage;
 use App\Models\CateringService;
 use App\Models\CustomOption;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PackageController extends Controller
 {
@@ -40,6 +41,9 @@ class PackageController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0|max:1000000000',
             'total_portions' => 'required|integer|min:1',
+            'image' => 'nullable|image|max:2048',
+            'benefits' => 'nullable|array',
+            'benefits.*' => 'nullable|string|max:255',
             'min_addition_qty' => 'nullable|integer|min:0',
             'is_custom' => 'boolean',
             'is_active' => 'boolean',
@@ -54,6 +58,11 @@ class PackageController extends Controller
 
         $validated['is_custom'] = $request->boolean('is_custom');
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['benefits'] = array_values(array_filter($request->input('benefits', []), fn($b) => !empty(trim($b))));
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('packages', 'public');
+        }
 
         $package = CateringPackage::create($validated);
 
@@ -90,6 +99,9 @@ class PackageController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0|max:1000000000',
             'total_portions' => 'required|integer|min:1',
+            'image' => 'nullable|image|max:2048',
+            'benefits' => 'nullable|array',
+            'benefits.*' => 'nullable|string|max:255',
             'min_addition_qty' => 'nullable|integer|min:0',
             'is_custom' => 'boolean',
             'is_active' => 'boolean',
@@ -104,6 +116,14 @@ class PackageController extends Controller
 
         $validated['is_custom'] = $request->boolean('is_custom');
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['benefits'] = array_values(array_filter($request->input('benefits', []), fn($b) => !empty(trim($b))));
+
+        if ($request->hasFile('image')) {
+            if ($package->image && Storage::disk('public')->exists($package->image)) {
+                Storage::disk('public')->delete($package->image);
+            }
+            $validated['image'] = $request->file('image')->store('packages', 'public');
+        }
 
         $package->update($validated);
 
@@ -131,6 +151,9 @@ class PackageController extends Controller
 
     public function destroy(CateringPackage $package)
     {
+        if ($package->image && Storage::disk('public')->exists($package->image)) {
+            Storage::disk('public')->delete($package->image);
+        }
         $serviceId = $package->catering_service_id;
         $package->delete();
         return redirect()->route('admin.catering.show', $serviceId)->with('success', 'Paket berhasil dihapus.');

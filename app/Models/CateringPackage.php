@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class CateringPackage extends Model
 {
     protected $fillable = [
-        'catering_service_id', 'name', 'description', 'price',
-        'total_portions',
+        'catering_service_id', 'name', 'image', 'description', 'price',
+        'total_portions', 'benefits',
         'is_custom', 'is_active',
     ];
 
@@ -19,6 +19,7 @@ class CateringPackage extends Model
         return [
             'price' => 'decimal:2',
             'total_portions' => 'integer',
+            'benefits' => 'array',
             'is_custom' => 'boolean',
             'is_active' => 'boolean',
         ];

@@ -114,7 +114,11 @@
     <div id="content-event" style="{{ $activeTab !== 'event' ? 'display:none' : '' }}">
         @if($eventGroups->isEmpty())
             <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
-                <p class="text-5xl mb-4">🎉</p>
+                <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
                 <p class="text-gray-500 font-medium mb-4">Belum ada pesanan event</p>
                 <a href="{{ route('landing') }}#services" class="px-6 py-3 bg-purple-500 text-white font-medium rounded-full hover:bg-purple-600 transition-colors">Pilih Layanan Event →</a>
             </div>
@@ -129,14 +133,16 @@
                     $servingType = $groupItems->first()->servingType;
                     $isPackage = $packageItem !== null;
                     $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
-                    $totalPortions = $menuItems->sum('quantity');
+                    $totalPortions = $isPackage && $packageItem->cateringPackage ? $packageItem->cateringPackage->total_portions : $menuItems->sum('quantity');
                 @endphp
                 <div class="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden" id="event-card-{{ $groupId }}">
                     {{-- Card Header --}}
                     <div class="bg-gradient-to-r from-purple-50 to-indigo-50 px-6 py-4 border-b border-purple-100">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <span class="text-2xl">🎉</span>
+                                <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm">
+                                    {{ $isPackage ? 'PKT' : 'CST' }}
+                                </div>
                                 <div>
                                     <h4 class="font-bold text-gray-900">{{ $service->name ?? 'Layanan Event' }}</h4>
                                     <p class="text-sm font-medium {{ $isPackage ? 'text-orange-600' : 'text-blue-600' }}">
@@ -200,7 +206,7 @@
                         {{-- Penyajian --}}
                         @if($servingType)
                         <div class="mt-3 pt-3 border-t border-gray-100 flex items-center gap-2 text-sm">
-                            <span class="text-gray-600">🍲 Penyajian:</span>
+                            <span class="text-gray-600 font-medium">Penyajian:</span>
                             <span class="font-medium text-gray-900">{{ $servingType->name }}</span>
                         </div>
                         @endif
@@ -212,10 +218,12 @@
                             class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all text-sm">
                             Checkout
                         </a>
+                        @if(!$isPackage)
                         <button type="button" onclick="openEditEventModal('{{ $groupId }}')"
                             class="flex-1 text-center px-4 py-2.5 bg-blue-100 text-blue-700 font-semibold rounded-xl hover:bg-blue-200 transition-colors text-sm">
                             Edit
                         </button>
+                        @endif
                         <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $groupItems->first()->id }})"
                             class="flex-1 text-center px-4 py-2.5 bg-red-100 text-red-600 font-semibold rounded-xl hover:bg-red-200 transition-colors text-sm">
                             Hapus

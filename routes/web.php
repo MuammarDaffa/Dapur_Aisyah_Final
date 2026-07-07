@@ -61,6 +61,7 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
 
     // Event Configurator (Split)
     Route::get('/event/{service}', [CustomerDashboard::class, 'eventService'])->name('event.service');
+    Route::get('/event/{service}/packages', [CustomerDashboard::class, 'eventPackages'])->name('event.packages');
     Route::get('/event/{service}/package/{package}', [CustomerDashboard::class, 'eventPackage'])->name('event.package');
     Route::get('/event/{service}/custom', [CustomerDashboard::class, 'eventCustom'])->name('event.custom');
 

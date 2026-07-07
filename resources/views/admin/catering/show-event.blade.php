@@ -223,8 +223,8 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
             <div>
-                <h3 class="font-bold text-gray-800">📋 Paket</h3>
-                <p class="text-xs text-gray-500 mt-0.5">Paket catering untuk layanan event ini</p>
+                <h3 class="font-bold text-gray-800">Daftar Paket</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Paket catering tetap (fixed package) untuk layanan event ini</p>
             </div>
             <a href="{{ route('admin.packages.create') }}?catering_service_id={{ $catering->id }}"
                class="px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
@@ -237,7 +237,7 @@
                     <th class="px-6 py-3 text-left font-semibold">Nama Paket</th>
                     <th class="px-6 py-3 text-center font-semibold">Porsi</th>
                     <th class="px-6 py-3 text-center font-semibold">Harga</th>
-                    <th class="px-6 py-3 text-center font-semibold">Isi Paket</th>
+                    <th class="px-6 py-3 text-center font-semibold">Isi Menu & Penyajian</th>
                     <th class="px-6 py-3 text-center font-semibold">Status</th>
                     <th class="px-6 py-3 text-center font-semibold">Aksi</th>
                 </tr>
@@ -246,10 +246,17 @@
                 @forelse($packages as $pkg)
                 <tr class="hover:bg-orange-50/30 transition-colors">
                     <td class="px-6 py-4">
-                        <p class="font-medium text-gray-900">{{ $pkg->name }}</p>
-                        @if($pkg->description)
-                        <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">{{ $pkg->description }}</p>
-                        @endif
+                        <div class="flex items-center gap-3">
+                            @if($pkg->image)
+                            <img src="{{ Storage::url($pkg->image) }}" alt="{{ $pkg->name }}" class="w-12 h-12 rounded-lg object-cover border flex-shrink-0">
+                            @endif
+                            <div>
+                                <p class="font-bold text-gray-900">{{ $pkg->name }}</p>
+                                @if($pkg->description)
+                                <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">{{ $pkg->description }}</p>
+                                @endif
+                            </div>
+                        </div>
                     </td>
                     <td class="px-6 py-4 text-center">
                         <span class="font-medium">{{ $pkg->total_portions }}</span>
@@ -259,13 +266,20 @@
                         Rp {{ number_format($pkg->price, 0, ',', '.') }}
                     </td>
                     <td class="px-6 py-4 text-center">
-                        @if($pkg->customOptions->count() > 0)
-                        <div class="flex flex-wrap gap-1 justify-center">
-                            @foreach($pkg->customOptions->take(3) as $opt)
+                        @php
+                            $menus = $pkg->getIncludedMenus();
+                            $serving = $pkg->getIncludedServingTypes()->first();
+                        @endphp
+                        @if($menus->count() > 0 || $serving)
+                        <div class="flex flex-wrap gap-1 justify-center items-center">
+                            @if($serving)
+                            <span class="px-2 py-0.5 text-[10px] rounded font-semibold bg-blue-100 text-blue-700">{{ $serving->name }}</span>
+                            @endif
+                            @foreach($menus->take(3) as $opt)
                             <span class="px-1.5 py-0.5 text-[10px] rounded bg-gray-100 text-gray-600">{{ $opt->name }}</span>
                             @endforeach
-                            @if($pkg->customOptions->count() > 3)
-                            <span class="px-1.5 py-0.5 text-[10px] rounded bg-gray-200 text-gray-500">+{{ $pkg->customOptions->count() - 3 }}</span>
+                            @if($menus->count() > 3)
+                            <span class="px-1.5 py-0.5 text-[10px] rounded bg-gray-200 text-gray-500">+{{ $menus->count() - 3 }} menu</span>
                             @endif
                         </div>
                         @else
@@ -290,7 +304,6 @@
                 @empty
                 <tr>
                     <td colspan="6" class="px-6 py-8 text-center text-gray-400">
-                        <p class="text-2xl mb-1">📋</p>
                         <p class="text-sm">Belum ada paket untuk katering ini.</p>
                     </td>
                 </tr>

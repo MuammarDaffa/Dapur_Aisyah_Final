@@ -8,7 +8,7 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-6">
         <a href="{{ route('customer.cart', ['tab' => 'event']) }}" class="text-sm text-orange-500 hover:text-orange-600">← Kembali ke Keranjang</a>
-        <h2 class="text-2xl font-bold text-gray-900 mt-2">📋 Checkout <span class="text-orange-500">Event</span></h2>
+        <h2 class="text-2xl font-bold text-gray-900 mt-2">Checkout <span class="text-orange-500">Event</span></h2>
     </div>
 
     <form id="event-checkout-form" action="{{ route('customer.event.checkout.store', $groupId) }}" method="POST">
@@ -18,7 +18,7 @@
             <div class="lg:col-span-2 space-y-6">
                 {{-- Informasi Acara --}}
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-900 mb-4">📅 Informasi Acara</h3>
+                    <h3 class="font-bold text-gray-900 mb-4">Informasi Acara</h3>
                     <div>
                         <div>
                             @php
@@ -35,19 +35,19 @@
 
                 {{-- Pengiriman --}}
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-900 mb-4">🚚 Pengiriman</h3>
+                    <h3 class="font-bold text-gray-900 mb-4">Pengiriman</h3>
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Metode Pengiriman *</label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <label class="relative flex flex-col p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-orange-300 transition-all [&:has(input:checked)]:border-orange-500 [&:has(input:checked)]:bg-orange-50">
                                     <input type="radio" name="pickup_method" value="delivery" checked class="absolute top-4 right-4 text-orange-500 focus:ring-orange-500" onchange="toggleEventAddress(true)">
-                                    <span class="font-bold text-gray-900 mb-1">🚚 Diantar (Delivery)</span>
+                                    <span class="font-bold text-gray-900 mb-1">Diantar (Delivery)</span>
                                     <span class="text-sm text-gray-500">Pesanan akan diantar ke lokasi acara Anda.</span>
                                 </label>
                                 <label class="relative flex flex-col p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-orange-300 transition-all [&:has(input:checked)]:border-orange-500 [&:has(input:checked)]:bg-orange-50">
                                     <input type="radio" name="pickup_method" value="pickup" class="absolute top-4 right-4 text-orange-500 focus:ring-orange-500" onchange="toggleEventAddress(false)">
-                                    <span class="font-bold text-gray-900 mb-1">🏪 Ambil Sendiri (Pickup)</span>
+                                    <span class="font-bold text-gray-900 mb-1">Ambil Sendiri (Pickup)</span>
                                     <span class="text-sm text-gray-500">Ambil pesanan langsung di dapur kami.</span>
                                 </label>
                             </div>
@@ -56,7 +56,7 @@
                         <div id="eventAddressSection" class="space-y-6 mt-6">
                             <!-- Peta Lokasi (Leaflet.js) -->
                             <div class="mt-4">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">📍 Tandai Lokasi Acara di Peta</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Tandai Lokasi Acara di Peta</label>
                                 <p class="text-sm text-gray-500 mb-3">Geser peta dan klik untuk menentukan titik lokasi pengiriman yang tepat.</p>
                                 <div id="eventMap" class="w-full h-[400px] rounded-xl border-2 border-gray-200 z-0 shadow-sm"></div>
                                 <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
@@ -65,9 +65,9 @@
                                     <p class="text-xs text-gray-400" id="coord-display">Koordinat belum dipilih</p>
                                 </div>
                                 <span id="geocode-status" class="hidden"></span>
-                                <p id="map_error" class="text-sm text-red-500 mt-2 font-medium hidden">⚠️ Anda wajib menandai lokasi pengiriman di peta.</p>
+                                <p id="map_error" class="text-sm text-red-500 mt-2 font-medium hidden">Anda wajib menandai lokasi pengiriman di peta.</p>
                                 @error('district_id')
-                                    <p class="text-sm text-red-500 mt-2 font-medium">⚠️ Anda harus menandai lokasi pengiriman di peta dengan benar.</p>
+                                    <p class="text-sm text-red-500 mt-2 font-medium">Anda harus menandai lokasi pengiriman di peta dengan benar.</p>
                                 @enderror
                             </div>
 
@@ -91,7 +91,7 @@
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">Detail Patokan/Blok/No. Rumah *</label>
                                     <textarea name="address_detail" id="address_detail_input" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateEventCheckout()">{{ old('address_detail') }}</textarea>
-                                    <p id="address_error" class="text-sm text-red-500 mt-1 hidden">⚠️ Detail patokan alamat wajib diisi untuk pengiriman.</p>
+                                    <p id="address_error" class="text-sm text-red-500 mt-1 hidden">Detail patokan alamat wajib diisi untuk pengiriman.</p>
                                     @error('address_detail') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
                             </div>
@@ -101,7 +101,7 @@
 
                 {{-- Catatan & Pembayaran --}}
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-900 mb-4">💳 Pembayaran & Catatan</h3>
+                    <h3 class="font-bold text-gray-900 mb-4">Pembayaran & Catatan</h3>
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Catatan Tambahan</label>
@@ -110,7 +110,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Metode Pembayaran *</label>
                             <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                <p class="text-sm text-blue-800 font-medium">💳 Transfer Bank (Midtrans)</p>
+                                <p class="text-sm text-blue-800 font-medium">Transfer Bank (Midtrans)</p>
                                 <p class="text-xs text-blue-600">Semua pembayaran dilakukan melalui Midtrans Payment Gateway.</p>
                             </div>
                             <input type="hidden" name="payment_method" value="transfer">
@@ -167,7 +167,7 @@
                     @if($servingType)
                     <div class="mb-4 pb-4 border-b border-gray-100">
                         <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">🍲 Penyajian</span>
+                            <span class="text-gray-500 font-medium">Penyajian</span>
                             <span class="font-medium text-gray-700">{{ $servingType->name }}</span>
                         </div>
                     </div>
