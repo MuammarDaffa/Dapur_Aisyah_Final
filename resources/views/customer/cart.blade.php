@@ -102,7 +102,7 @@
                 </div>
                 <a href="{{ route('customer.checkout') }}"
                     class="w-full sm:w-auto text-center px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl hover:shadow-lg transition-all text-lg flex items-center justify-center gap-2">
-                    Checkout Semua Menu Daily 🛒
+                    Checkout 
                 </a>
             </div>
         @endif
@@ -123,114 +123,67 @@
                 <a href="{{ route('landing') }}#services" class="px-6 py-3 bg-purple-500 text-white font-medium rounded-full hover:bg-purple-600 transition-colors">Pilih Layanan Event →</a>
             </div>
         @else
-            <div class="space-y-6">
+            <div class="space-y-4">
                 @foreach($eventGroups as $groupId => $groupItems)
                 @php
                     $packageItem = $groupItems->firstWhere('item_type', 'package');
                     $menuItems = $groupItems->whereIn('item_type', ['package_item', 'custom_menu']);
-                    $additionItems = $groupItems->where('item_type', 'addition');
                     $service = $groupItems->first()->cateringService;
-                    $servingType = $groupItems->first()->servingType;
                     $isPackage = $packageItem !== null;
                     $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
                     $totalPortions = $isPackage && $packageItem->cateringPackage ? $packageItem->cateringPackage->total_portions : $menuItems->sum('quantity');
+                    $notes = $groupItems->first()->notes ?? null;
                 @endphp
-                <div class="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden" id="event-card-{{ $groupId }}">
-                    {{-- Card Header --}}
-                    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 px-6 py-4 border-b border-purple-100">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm">
-                                    {{ $isPackage ? 'PKT' : 'CST' }}
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-gray-900">{{ $service->name ?? 'Layanan Event' }}</h4>
-                                    <p class="text-sm font-medium {{ $isPackage ? 'text-orange-600' : 'text-blue-600' }}">
-                                        Jenis: {{ $isPackage ? 'Paket' : 'Custom' }}
-                                        @if($isPackage && $packageItem->cateringPackage)
-                                            — {{ $packageItem->cateringPackage->name }}
-                                        @endif
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-xl font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
-                                <p class="text-xs text-gray-500">{{ $totalPortions }} Porsi</p>
-                            </div>
+                <div class="bg-white rounded-xl shadow-sm border border-purple-100 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4" id="event-card-{{ $groupId }}">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold {{ $isPackage ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700' }}">
+                                {{ $isPackage ? 'Paket' : 'Custom Menu' }}
+                            </span>
+                            <h4 class="font-bold text-gray-900 text-base sm:text-lg">{{ $service->name ?? 'Layanan Event' }}</h4>
+                        </div>
+                        <p class="text-sm font-semibold text-gray-700">
+                            @if($isPackage && $packageItem->cateringPackage)
+                                {{ $packageItem->cateringPackage->name }} ({{ $totalPortions }} Porsi)
+                            @else
+                                {{ $menuItems->count() }} Menu Dipilih ({{ $totalPortions }} Porsi)
+                            @endif
+                        </p>
+                        @if($notes)
+                            <p class="text-xs text-gray-500 italic mt-1">"{{ $notes }}"</p>
+                        @endif
+                        <div class="pt-2 flex items-center gap-3">
+                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="text-xs font-bold text-purple-600 hover:text-purple-800 underline">Lihat Detail</button>
                         </div>
                     </div>
 
-                    {{-- Card Body: Menu List --}}
-                    <div class="px-6 py-4">
-                        <h5 class="text-sm font-semibold text-gray-700 mb-2">Menu:</h5>
-                        <div class="divide-y divide-gray-100">
-                            @foreach($menuItems as $cart)
-                            <div class="py-2 flex items-center justify-between text-sm">
-                                <div class="flex items-center gap-2">
-                                    @if($cart->item_type === 'package_item')
-                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">Paket</span>
-                                    @else
-                                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">Menu</span>
-                                    @endif
-                                    <span class="font-medium text-gray-900">{{ $cart->customOption->name ?? 'Item' }}</span>
-                                    <span class="text-gray-500">({{ $cart->quantity }})</span>
-                                </div>
-                                <span class="font-medium {{ $cart->item_type === 'package_item' ? 'text-green-600' : 'text-orange-600' }}">
-                                    @if($cart->item_type === 'package_item')
-                                        Termasuk
-                                    @else
-                                        Rp {{ number_format($cart->subtotal, 0, ',', '.') }}
-                                    @endif
-                                </span>
-                            </div>
-                            @endforeach
+                    <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100 gap-3">
+                        <p class="text-lg sm:text-xl font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
+                        <div class="flex items-center gap-2">
+                            @if(!$isPackage)
+                            <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 font-semibold rounded-lg text-xs transition-colors">Edit</button>
+                            @endif
+                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $groupItems->first()->id }})" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-semibold rounded-lg text-xs transition-colors">Hapus</button>
                         </div>
-
-                        {{-- Extras --}}
-                        @if($additionItems->isNotEmpty())
-                        <h5 class="text-sm font-semibold text-gray-700 mt-3 mb-2">Extra:</h5>
-                        <div class="divide-y divide-gray-100">
-                            @foreach($additionItems as $cart)
-                            <div class="py-2 flex items-center justify-between text-sm">
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">Extra</span>
-                                    <span class="font-medium text-gray-900">{{ $cart->customOption->name ?? 'Item' }}</span>
-                                    <span class="text-gray-500">({{ $cart->quantity }})</span>
-                                </div>
-                                <span class="font-medium text-orange-600">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</span>
-                            </div>
-                            @endforeach
-                        </div>
-                        @endif
-
-                        {{-- Penyajian --}}
-                        @if($servingType)
-                        <div class="mt-3 pt-3 border-t border-gray-100 flex items-center gap-2 text-sm">
-                            <span class="text-gray-600 font-medium">Penyajian:</span>
-                            <span class="font-medium text-gray-900">{{ $servingType->name }}</span>
-                        </div>
-                        @endif
-                    </div>
-
-                    {{-- Card Footer: Actions --}}
-                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-wrap gap-3">
-                        <a href="{{ route('customer.event.checkout.show', $groupId) }}"
-                            class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all text-sm">
-                            Checkout
-                        </a>
-                        @if(!$isPackage)
-                        <button type="button" onclick="openEditEventModal('{{ $groupId }}')"
-                            class="flex-1 text-center px-4 py-2.5 bg-blue-100 text-blue-700 font-semibold rounded-xl hover:bg-blue-200 transition-colors text-sm">
-                            Edit
-                        </button>
-                        @endif
-                        <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $groupItems->first()->id }})"
-                            class="flex-1 text-center px-4 py-2.5 bg-red-100 text-red-600 font-semibold rounded-xl hover:bg-red-200 transition-colors text-sm">
-                            Hapus
-                        </button>
                     </div>
                 </div>
                 @endforeach
+            </div>
+
+            <!-- Ringkasan Belanja & Tombol Checkout Global untuk Semua Event -->
+            <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-purple-100 flex flex-col sm:flex-row justify-between items-center gap-4 sticky bottom-4 z-10">
+                <div>
+                    <h4 class="font-bold text-gray-900 text-lg">Ringkasan Belanja Event</h4>
+                    <div class="flex items-center gap-4 mt-1 text-sm text-gray-600">
+                        <span>Subtotal: <strong class="text-gray-900">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
+                        <span>•</span>
+                        <span>Total: <strong class="text-purple-600 font-bold text-lg">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
+                    </div>
+                </div>
+                <a href="{{ route('customer.event.checkout.show', 'all') }}"
+                    class="w-full sm:w-auto text-center px-8 py-4 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold rounded-xl hover:shadow-lg transition-all text-base">
+                    Checkout Semua Pesanan Event
+                </a>
             </div>
         @endif
     </div>
@@ -312,6 +265,11 @@
         $pkgItem = $gItems->firstWhere('item_type', 'package');
         $eventGroupsJson[$gId] = [
             'group_id' => $gId,
+            'service_name' => $gItems->first()->cateringService->name ?? 'Layanan Event',
+            'package_name' => $pkgItem?->cateringPackage?->name,
+            'serving_name' => $gItems->first()->servingType?->name,
+            'notes' => $gItems->first()->notes,
+            'subtotal' => $gItems->sum(fn($c) => $c->subtotal),
             'catering_service_id' => $gItems->first()->catering_service_id,
             'catering_package_id' => $pkgItem?->catering_package_id,
             'serving_type_id' => $gItems->first()->serving_type_id,
@@ -323,10 +281,46 @@
                 'item_type' => $c->item_type,
                 'name' => $c->customOption->name ?? 'Item',
                 'price' => (float) ($c->customOption->price ?? 0),
+                'subtotal' => (float) ($c->subtotal ?? 0),
             ])->values()->toArray(),
         ];
     }
 @endphp
+
+{{-- =============================== --}}
+{{-- MODAL: Event Detail --}}
+{{-- =============================== --}}
+<div id="detailEventModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] flex flex-col">
+        <div class="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
+            <div>
+                <span id="detailModalBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700"></span>
+                <h3 id="detailModalTitle" class="text-lg font-bold text-gray-900 mt-1"></h3>
+            </div>
+            <button type="button" onclick="closeDetailModal()" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div class="overflow-y-auto flex-1 p-6 space-y-4">
+            <div>
+                <h5 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Daftar Menu</h5>
+                <div id="detailModalList" class="divide-y divide-gray-100 border border-gray-100 rounded-xl px-4 py-2"></div>
+            </div>
+            <div id="detailModalServingSection" class="hidden">
+                <h5 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Penyajian</h5>
+                <p id="detailModalServing" class="text-sm font-medium text-gray-800 bg-gray-50 p-3 rounded-xl border border-gray-100"></p>
+            </div>
+            <div id="detailModalNotesSection" class="hidden">
+                <h5 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Catatan</h5>
+                <p id="detailModalNotes" class="text-sm text-gray-700 italic bg-gray-50 p-3 rounded-xl border border-gray-100"></p>
+            </div>
+        </div>
+        <div class="p-6 border-t border-gray-100 flex-shrink-0 flex justify-between items-center bg-gray-50 rounded-b-2xl">
+            <span class="text-sm text-gray-600">Total Harga Group</span>
+            <span id="detailModalTotal" class="text-lg font-bold text-purple-600"></span>
+        </div>
+    </div>
+</div>
 
 <div id="editEventModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] flex flex-col">
@@ -862,6 +856,57 @@
     }
 
     document.getElementById('editEventModal').addEventListener('click', function(e) { if (e.target === this) closeEditEventModal(); });
+
+    // =======================
+    // DETAIL EVENT MODAL
+    // =======================
+    function openDetailModal(groupId) {
+        const group = eventGroupsData[groupId];
+        if (!group) return;
+        
+        document.getElementById('detailModalBadge').textContent = group.is_package ? 'Paket' : 'Custom Menu';
+        document.getElementById('detailModalBadge').className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${group.is_package ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`;
+        document.getElementById('detailModalTitle').textContent = group.is_package && group.package_name ? `${group.service_name} — ${group.package_name}` : group.service_name;
+        
+        let html = '';
+        group.items.forEach(i => {
+            const badge = i.item_type === 'package_item' ? '<span class="text-xs text-green-600 font-medium">(Termasuk)</span>' : '';
+            const priceStr = i.item_type === 'package_item' ? '' : `Rp ${Number(i.subtotal).toLocaleString('id-ID')}`;
+            html += `
+            <div class="py-2.5 flex items-center justify-between text-sm">
+                <div>
+                    <span class="font-medium text-gray-900">${i.name}</span>
+                    <span class="text-gray-500 text-xs ml-1">× ${i.quantity}</span>
+                    ${badge}
+                </div>
+                <span class="font-medium text-gray-700">${priceStr}</span>
+            </div>`;
+        });
+        document.getElementById('detailModalList').innerHTML = html || '<p class="text-sm text-gray-500 py-2">Tidak ada menu</p>';
+        
+        if (group.serving_name) {
+            document.getElementById('detailModalServingSection').classList.remove('hidden');
+            document.getElementById('detailModalServing').textContent = group.serving_name;
+        } else {
+            document.getElementById('detailModalServingSection').classList.add('hidden');
+        }
+        
+        if (group.notes) {
+            document.getElementById('detailModalNotesSection').classList.remove('hidden');
+            document.getElementById('detailModalNotes').textContent = group.notes;
+        } else {
+            document.getElementById('detailModalNotesSection').classList.add('hidden');
+        }
+        
+        document.getElementById('detailModalTotal').textContent = `Rp ${Number(group.subtotal).toLocaleString('id-ID')}`;
+        document.getElementById('detailEventModal').style.display = 'flex';
+    }
+
+    function closeDetailModal() {
+        document.getElementById('detailEventModal').style.display = 'none';
+    }
+
+    document.getElementById('detailEventModal')?.addEventListener('click', function(e) { if (e.target === this) closeDetailModal(); });
 
     // =======================
     // DELETE CONFIRMATION

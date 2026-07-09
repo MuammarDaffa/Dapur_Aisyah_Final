@@ -22,7 +22,7 @@
                     <div>
                         <div>
                             @php
-                                $minDays = $service->minimal_order_days ?? 3;
+                                $minDays = $minDays ?? ($service->minimal_order_days ?? 3);
                                 $minDate = \Carbon\Carbon::now()->addDays($minDays)->format('Y-m-d');
                             @endphp
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Tanggal Acara * (Minimal H-{{ $minDays }})</label>
@@ -124,54 +124,62 @@
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 sticky top-24">
                     <h3 class="font-bold text-gray-900 mb-4">Ringkasan Pesanan</h3>
 
-                    {{-- Service & Package Info --}}
-                    <div class="mb-4 pb-4 border-b border-gray-100">
-                        <p class="text-sm text-gray-500">Layanan</p>
-                        <p class="font-semibold text-gray-900">{{ $service->name ?? '-' }}</p>
-                        @if($packageItem && $packageItem->cateringPackage)
-                            <p class="text-sm text-orange-600 font-medium mt-1">Paket: {{ $packageItem->cateringPackage->name }}</p>
-                        @else
-                            <p class="text-sm text-blue-600 font-medium mt-1">Custom Menu</p>
-                        @endif
-                    </div>
-
-                    {{-- Items --}}
-                    <div class="divide-y divide-gray-100 mb-4 max-h-48 overflow-y-auto">
-                        @foreach($menuItems as $cart)
-                        <div class="py-2 flex justify-between text-sm">
-                            <div>
-                                <p class="text-gray-700">{{ $cart->customOption->name ?? 'Item' }}</p>
-                                <p class="text-xs text-gray-500">× {{ $cart->quantity }}
-                                    @if($cart->item_type === 'package_item')
-                                        <span class="text-green-600">(termasuk)</span>
-                                    @endif
-                                </p>
+                    {{-- Groups List --}}
+                    <div class="space-y-4 mb-4 pb-4 border-b border-gray-100 max-h-72 overflow-y-auto">
+                        @foreach($eventGroups as $gId => $gItems)
+                        @php
+                            $gPkg = $gItems->firstWhere('item_type', 'package');
+                            $gMenus = $gItems->whereIn('item_type', ['package_item', 'custom_menu']);
+                            $gAdditions = $gItems->where('item_type', 'addition');
+                            $gService = $gItems->first()->cateringService;
+                            $gServing = $gItems->first()->servingType;
+                        @endphp
+                        <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <div class="pb-2 mb-2 border-b border-gray-200">
+                                <p class="font-bold text-gray-900 text-sm">{{ $gService->name ?? '-' }}</p>
+                                @if($gPkg && $gPkg->cateringPackage)
+                                    <p class="text-xs text-orange-600 font-semibold mt-0.5">Paket: {{ $gPkg->cateringPackage->name }}</p>
+                                @else
+                                    <p class="text-xs text-blue-600 font-semibold mt-0.5">Custom Menu</p>
+                                @endif
                             </div>
-                            <p class="font-medium {{ $cart->item_type === 'package_item' ? 'text-green-600' : 'text-gray-900' }}">
-                                {{ $cart->item_type === 'package_item' ? 'Rp 0' : 'Rp ' . number_format($cart->subtotal, 0, ',', '.') }}
-                            </p>
+
+                            <div class="divide-y divide-gray-200/60 space-y-1">
+                                @foreach($gMenus as $cart)
+                                <div class="pt-1 flex justify-between text-xs">
+                                    <div>
+                                        <span class="text-gray-700 font-medium">{{ $cart->customOption->name ?? 'Item' }}</span>
+                                        <span class="text-gray-500 ml-1">× {{ $cart->quantity }}</span>
+                                        @if($cart->item_type === 'package_item')
+                                            <span class="text-green-600 font-medium">(termasuk)</span>
+                                        @endif
+                                    </div>
+                                    <span class="font-semibold {{ $cart->item_type === 'package_item' ? 'text-green-600' : 'text-gray-900' }}">
+                                        {{ $cart->item_type === 'package_item' ? 'Rp 0' : 'Rp ' . number_format($cart->subtotal, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                                @endforeach
+
+                                @foreach($gAdditions as $cart)
+                                <div class="pt-1 flex justify-between text-xs">
+                                    <div>
+                                        <span class="text-gray-700 font-medium">{{ $cart->customOption->name ?? 'Extra' }}</span>
+                                        <span class="text-gray-500 ml-1">× {{ $cart->quantity }}</span>
+                                    </div>
+                                    <span class="font-semibold text-gray-900">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</span>
+                                </div>
+                                @endforeach
+                            </div>
+
+                            @if($gServing)
+                            <div class="mt-2 pt-2 border-t border-gray-200/60 flex justify-between text-xs text-gray-600">
+                                <span>Penyajian:</span>
+                                <span class="font-medium text-gray-800">{{ $gServing->name }}</span>
+                            </div>
+                            @endif
                         </div>
                         @endforeach
-
-                        @foreach($additionItems as $cart)
-                        <div class="py-2 flex justify-between text-sm">
-                            <div>
-                                <p class="text-gray-700">{{ $cart->customOption->name ?? 'Extra' }}</p>
-                                <p class="text-xs text-gray-500">× {{ $cart->quantity }}</p>
-                            </div>
-                            <p class="font-medium text-gray-900">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</p>
-                        </div>
-                        @endforeach
                     </div>
-
-                    @if($servingType)
-                    <div class="mb-4 pb-4 border-b border-gray-100">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500 font-medium">Penyajian</span>
-                            <span class="font-medium text-gray-700">{{ $servingType->name }}</span>
-                        </div>
-                    </div>
-                    @endif
 
                     {{-- Totals --}}
                     <div class="border-t border-gray-200 pt-4 space-y-2">

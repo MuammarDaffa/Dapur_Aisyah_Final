@@ -222,26 +222,35 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Tampilkan halaman checkout untuk 1 event group.
+     * Tampilkan halaman checkout untuk event group (atau semua event group jika $groupId === 'all').
      */
     public function showEventCheckout(string $groupId)
     {
         $user = auth()->user();
-        $groupItems = $user->carts()
-            ->where('cart_group_id', $groupId)
-            ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
-            ->get();
+        if ($groupId === 'all') {
+            $groupItems = $user->carts()
+                ->whereNotNull('cart_group_id')
+                ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
+                ->get();
+        } else {
+            $groupItems = $user->carts()
+                ->where('cart_group_id', $groupId)
+                ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
+                ->get();
+        }
 
         if ($groupItems->isEmpty()) {
             return redirect()->route('customer.cart', ['tab' => 'event'])
                 ->with('error', 'Pesanan event tidak ditemukan.');
         }
 
+        $eventGroups = $groupItems->groupBy('cart_group_id');
         $packageItem = $groupItems->firstWhere('item_type', 'package');
         $menuItems = $groupItems->whereIn('item_type', ['package_item', 'custom_menu']);
         $additionItems = $groupItems->where('item_type', 'addition');
         $service = $groupItems->first()->cateringService;
         $servingType = $groupItems->first()->servingType;
+        $minDays = $groupItems->max(fn ($item) => $item->cateringService?->minimal_order_days ?? 3) ?? 3;
 
         // Hitung subtotal
         $subtotal = $groupItems->sum(fn ($c) => $c->subtotal);
@@ -249,13 +258,13 @@ class CheckoutController extends Controller
         $districts = District::with('villages')->get();
 
         return view('customer.event_checkout', compact(
-            'groupId', 'groupItems', 'packageItem', 'menuItems',
-            'additionItems', 'service', 'servingType', 'subtotal', 'districts'
+            'groupId', 'groupItems', 'eventGroups', 'packageItem', 'menuItems',
+            'additionItems', 'service', 'servingType', 'subtotal', 'districts', 'minDays'
         ));
     }
 
     /**
-     * Checkout per event group.
+     * Checkout per event group atau seluruh event group sekaligus.
      */
     public function checkoutEventGroup(Request $request, string $groupId)
     {
@@ -280,10 +289,17 @@ class CheckoutController extends Controller
         }
 
         $user = auth()->user();
-        $groupItems = $user->carts()
-            ->where('cart_group_id', $groupId)
-            ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
-            ->get();
+        if ($groupId === 'all') {
+            $groupItems = $user->carts()
+                ->whereNotNull('cart_group_id')
+                ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
+                ->get();
+        } else {
+            $groupItems = $user->carts()
+                ->where('cart_group_id', $groupId)
+                ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
+                ->get();
+        }
 
         if ($groupItems->isEmpty()) {
             return back()->with('error', 'Pesanan event tidak ditemukan.');
@@ -299,13 +315,21 @@ class CheckoutController extends Controller
 
         // Hitung total porsi & validasi batas maksimal custom menu
         $menuItems = $groupItems->whereIn('item_type', ['package_item', 'custom_menu']);
-        $totalPortions = $menuItems->sum('quantity');
+        $totalPortions = 0;
+        foreach ($groupItems->groupBy('cart_group_id') as $gId => $gItems) {
+            $pkg = $gItems->firstWhere('item_type', 'package');
+            if ($pkg && $pkg->cateringPackage) {
+                $totalPortions += $pkg->cateringPackage->total_portions;
+            } else {
+                $totalPortions += $gItems->whereIn('item_type', ['package_item', 'custom_menu'])->sum('quantity');
+            }
+        }
 
         $customMenuItems = $groupItems->where('item_type', 'custom_menu');
         if ($customMenuItems->isNotEmpty()) {
             $service = $groupItems->first()->cateringService;
             $customPortions = $customMenuItems->sum('quantity');
-            if ($service && $customPortions > $service->max_portion) {
+            if ($service && $service->max_portion && $customPortions > $service->max_portion) {
                 if ($request->expectsJson() || $request->ajax()) {
                     return response()->json([
                         'success' => false,
@@ -421,8 +445,11 @@ class CheckoutController extends Controller
             }
 
             // Hapus cart group setelah order dibuat
-            // (items tetap di keranjang jika pembayaran gagal - handled by PaymentController callback)
-            $user->carts()->where('cart_group_id', $groupId)->delete();
+            if ($groupId === 'all') {
+                $user->carts()->whereNotNull('cart_group_id')->delete();
+            } else {
+                $user->carts()->where('cart_group_id', $groupId)->delete();
+            }
 
             // Kirim notifikasi
             NotificationService::notifyOrderCreated($order);
