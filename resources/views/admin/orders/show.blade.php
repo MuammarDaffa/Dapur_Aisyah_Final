@@ -7,7 +7,7 @@
         <div class="bg-white rounded-xl p-6 shadow-sm border">
             <div class="flex flex-col sm:flex-row justify-between items-start gap-2 mb-4">
                 <h3 class="text-xl font-bold">{{ $order->order_number }}</h3>
-                <span class="px-3 py-1 rounded-full text-sm font-medium {{ match($order->status) { 'pending_payment'=>'bg-yellow-100 text-yellow-700','processing'=>'bg-blue-100 text-blue-700','on_delivery'=>'bg-purple-100 text-purple-700','completed'=>'bg-green-100 text-green-700','cancelled'=>'bg-red-100 text-red-700',default=>'bg-gray-100 text-gray-700' } }}">{{ $order->status_label }}</span>
+                <span class="px-3 py-1 rounded-full text-sm font-medium {{ match($order->status) { 'processing'=>'bg-blue-100 text-blue-700','on_delivery'=>'bg-purple-100 text-purple-700','completed'=>'bg-green-100 text-green-700','cancelled'=>'bg-red-100 text-red-700',default=>'bg-gray-100 text-gray-700' } }}">{{ $order->status_label }}</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div><span class="text-gray-500">Pelanggan:</span><br><b>{{ $order->user->name }}</b><br>{{ $order->user->phone }}<br>{{ $order->user->email }}</div>
@@ -60,7 +60,7 @@
                 @csrf @method('PUT')
                 <label class="block text-sm font-medium text-gray-700 mb-1">Update Status</label>
                 <select name="status" id="statusSelect" class="w-full px-3 py-2 rounded-lg border text-sm mb-2">
-                    @foreach(['pending_payment'=>'Menunggu Bayar','processing'=>'Diproses','on_delivery'=>'Dikirim','completed'=>'Selesai'] as $k=>$v)
+                    @foreach(['processing'=>'Diproses','on_delivery'=>'Dikirim','completed'=>'Selesai'] as $k=>$v)
                     <option value="{{ $k }}" {{ $order->status==$k?'selected':'' }}>{{ $v }}</option>
                     @endforeach
                 </select>

@@ -33,7 +33,6 @@
                     <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
                     <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
                     <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Diproses</option>
-                    <option value="pending_payment" {{ request('status') == 'pending_payment' ? 'selected' : '' }}>Menunggu Pembayaran</option>
                 </select>
             </div>
             <button type="submit"

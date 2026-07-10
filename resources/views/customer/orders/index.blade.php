@@ -7,7 +7,7 @@
     <!-- Status Filter -->
     <div class="flex flex-wrap gap-2 mb-6">
         <a href="{{ route('customer.orders') }}" class="px-4 py-2 rounded-full text-sm font-medium {{ !request('status') ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition-colors">Semua</a>
-        @foreach(['pending_payment' => 'Menunggu Bayar', 'processing' => 'Diproses', 'on_delivery' => 'Dikirim', 'completed' => 'Selesai', 'cancelled' => 'Dibatalkan'] as $key => $label)
+        @foreach(['processing' => 'Diproses', 'on_delivery' => 'Dikirim', 'completed' => 'Selesai', 'cancelled' => 'Dibatalkan'] as $key => $label)
             <a href="{{ route('customer.orders', ['status' => $key]) }}" class="px-4 py-2 rounded-full text-sm font-medium {{ request('status') == $key ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition-colors">{{ $label }}</a>
         @endforeach
     </div>
@@ -25,7 +25,6 @@
                     </div>
                     <span class="text-xs px-3 py-1 rounded-full font-medium
                         {{ match($order->status) {
-                            'pending_payment' => 'bg-yellow-100 text-yellow-700',
                             'processing' => 'bg-blue-100 text-blue-700',
                             'on_delivery' => 'bg-purple-100 text-purple-700',
                             'completed' => 'bg-green-100 text-green-700',

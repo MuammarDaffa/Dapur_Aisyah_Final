@@ -31,7 +31,7 @@ class OrderCreatedNotification extends Notification implements ShouldQueue
             ->line('Pesanan Anda telah berhasil dibuat.')
             ->line('**Nomor Pesanan:** ' . $this->order->order_number)
             ->line('**Total:** Rp ' . number_format($this->order->total, 0, ',', '.'))
-            ->line('**Status:** Menunggu Pembayaran')
+            ->line('**Status:** ' . $this->order->status_label)
             ->action('Lihat Pesanan', url('/dashboard/orders/' . $this->order->id))
             ->line('Terima kasih telah memesan di Dapur Aisyah!');
     }
@@ -43,7 +43,7 @@ class OrderCreatedNotification extends Notification implements ShouldQueue
             'order_id' => $this->order->id,
             'order_number' => $this->order->order_number,
             'total' => $this->order->total,
-            'message' => 'Pesanan #' . $this->order->order_number . ' berhasil dibuat. Menunggu pembayaran.',
+            'message' => 'Pesanan #' . $this->order->order_number . ' berhasil dibuat dan sedang diproses.',
         ];
     }
 }

@@ -47,7 +47,7 @@
                 </div>
                 <div class="info-row">
                     <span class="info-label">Status</span>
-                    <span class="info-value">Menunggu Pembayaran</span>
+                    <span class="info-value">{{ $order->status_label }}</span>
                 </div>
             </div>
 

@@ -26,10 +26,10 @@
         <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-500">Pesanan Pending</p>
-                    <p class="text-2xl font-bold text-orange-600">{{ $stats['pending_orders'] }}</p>
+                    <p class="text-sm text-gray-500">Total Pesanan</p>
+                    <p class="text-2xl font-bold text-orange-600">{{ $stats['total_orders'] }}</p>
                 </div>
-                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-2xl">⏳</div>
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-2xl">📦</div>
             </div>
         </div>
         <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
@@ -59,7 +59,6 @@
                         </div>
                         <span class="text-xs px-2 py-1 rounded-full font-medium
                             {{ match($order->status) {
-                                'pending_payment' => 'bg-yellow-100 text-yellow-700',
                                 'processing' => 'bg-blue-100 text-blue-700',
                                 'on_delivery' => 'bg-purple-100 text-purple-700',
                                 'completed' => 'bg-green-100 text-green-700',

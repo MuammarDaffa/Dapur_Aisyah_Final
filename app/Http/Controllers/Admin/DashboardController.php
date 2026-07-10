@@ -19,7 +19,6 @@ class DashboardController extends Controller
             'weekly_sales' => Order::completed()->where('created_at', '>=', $today->copy()->subDays(7))->sum('total'),
             'monthly_sales' => Order::completed()->whereMonth('created_at', $today->month)->whereYear('created_at', $today->year)->sum('total'),
             'total_orders' => Order::count(),
-            'pending_orders' => Order::where('status', 'pending_payment')->count(),
             'processing_orders' => Order::where('status', 'processing')->count(),
         ];
 

@@ -2,13 +2,6 @@
 
 @php
     $config = match($status) {
-        'pending_payment' => [
-            'label' => 'Menunggu Pembayaran',
-            'bg' => 'bg-yellow-100',
-            'text' => 'text-yellow-800',
-            'ring' => 'ring-yellow-300',
-            'dot' => 'bg-yellow-500',
-        ],
         'processing' => [
             'label' => 'Diproses',
             'bg' => 'bg-blue-100',

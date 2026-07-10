@@ -64,7 +64,6 @@
                         <p class="font-bold text-gray-900">Rp {{ number_format($order->total, 0, ',', '.') }}</p>
                         <span class="inline-block text-xs px-2 py-0.5 rounded-full font-medium
                             {{ match($order->status) {
-                                'pending_payment' => 'bg-yellow-100 text-yellow-700',
                                 'processing' => 'bg-blue-100 text-blue-700',
                                 'on_delivery' => 'bg-purple-100 text-purple-700',
                                 'completed' => 'bg-green-100 text-green-700',

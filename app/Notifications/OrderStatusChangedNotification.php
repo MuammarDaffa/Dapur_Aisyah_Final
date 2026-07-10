@@ -26,7 +26,6 @@ class OrderStatusChangedNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $statusLabels = [
-            'pending_payment' => 'Menunggu Pembayaran',
             'processing' => 'Diproses',
             'on_delivery' => 'Sedang Dikirim',
             'completed' => 'Selesai',

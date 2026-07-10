@@ -57,7 +57,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending_payment,processing,on_delivery,completed,cancelled',
+            'status' => 'required|in:processing,on_delivery,completed,cancelled',
         ]);
 
         // Gunakan OrderService untuk update status + trigger notifikasi

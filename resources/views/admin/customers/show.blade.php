@@ -93,7 +93,7 @@
                 <td class="px-6 py-4 text-center">{{ $o->cateringService->name ?? '-' }}</td>
                 <td class="px-6 py-4 text-center">Rp {{ number_format($o->total,0,',','.') }}</td>
                 <td class="px-6 py-4 text-center">
-                    <span class="px-2 py-1 rounded-full text-xs font-medium {{ match($o->status) { 'completed'=>'bg-green-100 text-green-700','cancelled'=>'bg-red-100 text-red-700','pending_payment'=>'bg-yellow-100 text-yellow-700','processing'=>'bg-blue-100 text-blue-700','on_delivery'=>'bg-purple-100 text-purple-700',default=>'bg-gray-100 text-gray-700' } }}">{{ $o->status_label }}</span>
+                    <span class="px-2 py-1 rounded-full text-xs font-medium {{ match($o->status) { 'completed'=>'bg-green-100 text-green-700','cancelled'=>'bg-red-100 text-red-700','processing'=>'bg-blue-100 text-blue-700','on_delivery'=>'bg-purple-100 text-purple-700',default=>'bg-gray-100 text-gray-700' } }}">{{ $o->status_label }}</span>
                 </td>
                 <td class="px-6 py-4 text-center">{{ $o->created_at->format('d/m/Y') }}</td>
             </tr>

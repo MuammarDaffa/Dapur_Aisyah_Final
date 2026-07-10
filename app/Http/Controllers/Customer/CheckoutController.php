@@ -128,7 +128,7 @@ class CheckoutController extends Controller
                 'total' => $total,
                 'payment_method' => 'transfer',
                 'payment_status' => 'unpaid',
-                'status' => 'pending_payment',
+                'status' => 'processing',
                 'notes' => $validated['notes'] ?? null,
             ]);
 
@@ -391,7 +391,7 @@ class CheckoutController extends Controller
                 'total' => $total,
                 'payment_method' => 'transfer',
                 'payment_status' => 'unpaid',
-                'status' => 'pending_payment',
+                'status' => 'processing',
                 'notes' => $validated['notes'] ?? null,
             ]);
 

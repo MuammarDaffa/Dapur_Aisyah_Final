@@ -171,14 +171,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     const statusData = @json($orderStatuses);
     const labels = {
-        'pending_payment': 'Menunggu Pembayaran',
         'processing': 'Diproses',
         'on_delivery': 'Sedang Dikirim',
         'completed': 'Selesai',
         'cancelled': 'Dibatalkan'
     };
     const colors = {
-        'pending_payment': '#F59E0B',
         'processing': '#3B82F6',
         'on_delivery': '#8B5CF6',
         'completed': '#10B981',

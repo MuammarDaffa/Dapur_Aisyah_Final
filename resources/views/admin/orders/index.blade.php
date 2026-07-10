@@ -6,7 +6,7 @@
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari order/nama..." class="px-4 py-2 rounded-lg border border-gray-200 text-sm flex-1 min-w-[180px]">
         <select name="status" class="px-4 py-2 rounded-lg border border-gray-200 text-sm">
             <option value="">Semua Status</option>
-            @foreach(['pending_payment'=>'Menunggu Bayar','processing'=>'Diproses','on_delivery'=>'Dikirim','completed'=>'Selesai','cancelled'=>'Dibatalkan'] as $k=>$v)
+            @foreach(['processing'=>'Diproses','on_delivery'=>'Dikirim','completed'=>'Selesai','cancelled'=>'Dibatalkan'] as $k=>$v)
                 <option value="{{ $k }}" {{ request('status')==$k?'selected':'' }}>{{ $v }}</option>
             @endforeach
         </select>
@@ -41,7 +41,7 @@
                     <td class="px-6 py-4">{{ $order->cateringService->name ?? '-' }}</td>
                     <td class="px-6 py-4 font-medium">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
                     <td class="px-6 py-4">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium {{ match($order->status) { 'pending_payment'=>'bg-yellow-100 text-yellow-700','processing'=>'bg-blue-100 text-blue-700','on_delivery'=>'bg-purple-100 text-purple-700','completed'=>'bg-green-100 text-green-700','cancelled'=>'bg-red-100 text-red-700', default=>'bg-gray-100 text-gray-700' } }}">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium {{ match($order->status) { 'processing'=>'bg-blue-100 text-blue-700','on_delivery'=>'bg-purple-100 text-purple-700','completed'=>'bg-green-100 text-green-700','cancelled'=>'bg-red-100 text-red-700', default=>'bg-gray-100 text-gray-700' } }}">
                             {{ $order->status_label }}
                         </span>
                     </td>

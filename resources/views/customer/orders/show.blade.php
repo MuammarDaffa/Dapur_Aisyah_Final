@@ -16,7 +16,6 @@
                     </div>
                     <span class="px-3 py-1.5 rounded-full text-sm font-medium
                         {{ match($order->status) {
-                            'pending_payment' => 'bg-yellow-100 text-yellow-700',
                             'processing' => 'bg-blue-100 text-blue-700',
                             'on_delivery' => 'bg-purple-100 text-purple-700',
                             'completed' => 'bg-green-100 text-green-700',
@@ -123,13 +122,13 @@
                     </div>
                 </div>
 
-                @if($order->status === 'pending_payment' && $order->midtrans_snap_token)
+                @if($order->payment_status === 'unpaid' && $order->midtrans_snap_token && !in_array($order->status, ['completed', 'cancelled']))
                     <button onclick="payNow()" class="w-full mt-4 px-6 py-3 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors">
                         💳 Bayar Sekarang
                     </button>
                 @endif
 
-                @if(in_array($order->status, ['pending_payment', 'processing']))
+                @if($order->status === 'processing')
                     <form id="cancelOrderForm" action="{{ route('customer.orders.cancel', $order) }}" method="POST" class="hidden">
                         @csrf @method('PUT')
                         <input type="hidden" name="cancellation_reason" value="Dibatalkan oleh pelanggan">

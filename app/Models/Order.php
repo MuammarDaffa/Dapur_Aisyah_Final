@@ -34,7 +34,6 @@ class Order extends Model
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
-            'pending_payment' => 'Menunggu Pembayaran',
             'processing' => 'Diproses',
             'on_delivery' => 'Sedang Dikirim',
             'completed' => 'Selesai',
@@ -46,7 +45,6 @@ class Order extends Model
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
-            'pending_payment' => 'yellow',
             'processing' => 'blue',
             'on_delivery' => 'purple',
             'completed' => 'green',
