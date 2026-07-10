@@ -49,6 +49,12 @@
                     <td class="px-6 py-4 font-medium text-orange-600">{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') }}</td>
                     <td class="px-6 py-4">
                         <a href="{{ route('admin.orders.show', $order) }}" class="text-orange-500 hover:text-orange-600 font-medium">Detail</a>
+                        <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="inline"
+                              onsubmit="event.preventDefault(); if (typeof Swal !== 'undefined') { Swal.fire({ text: 'Apakah Anda yakin ingin menghapus pesanan ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Hapus', cancelButtonText: 'Batal' }).then((r) => { if(r.isConfirmed) this.submit(); }); } else { if (confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) { this.submit(); } }">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-700 font-medium ml-3">Hapus</button>
+                        </form>
                     </td>
                 </tr>
             @empty

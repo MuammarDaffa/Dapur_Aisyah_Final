@@ -8,6 +8,8 @@ use App\Services\NotificationService;
 use App\Services\OrderService;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -74,5 +76,36 @@ class OrderController extends Controller
         OrderService::updateStatus($order, 'cancelled', $validated['cancellation_reason']);
 
         return back()->with('success', 'Pesanan berhasil dibatalkan.');
+    }
+
+    public function destroy(Request $request, Order $order)
+    {
+        DB::transaction(function () use ($order) {
+            // Hapus file PDF invoice jika ada di storage agar tidak menyisakan orphan file
+            if ($order->invoice && $order->invoice->pdf_path && Storage::disk('public')->exists($order->invoice->pdf_path)) {
+                Storage::disk('public')->delete($order->invoice->pdf_path);
+            }
+
+            // Hapus data relasi langsung agar bersih
+            $order->items()->delete();
+            $order->invoice()->delete();
+            $order->review()->delete();
+
+            // Hapus notifikasi di tabel notifications yang merujuk ke order_id ini
+            DB::table('notifications')
+                ->where('data', 'like', '%"order_id":' . $order->id . '%')
+                ->orWhere('data', 'like', '%"order_id": ' . $order->id . '%')
+                ->delete();
+
+            // Hapus data utama pesanan
+            $order->delete();
+        });
+
+        // Jika request dari halaman detail pesanan yang baru saja dihapus, redirect ke index
+        if (str_contains(url()->previous(), '/orders/' . $order->id)) {
+            return redirect()->route('admin.orders')->with('success', 'Pesanan berhasil dihapus.');
+        }
+
+        return back()->with('success', 'Pesanan berhasil dihapus.');
     }
 }
