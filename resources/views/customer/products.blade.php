@@ -165,8 +165,8 @@
         <div class="p-6 border-t border-gray-100 flex-shrink-0">
             <button type="button" onclick="document.getElementById('orderForm').submit()"
                 class="w-full px-6 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all text-sm flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>Konfirmasi Pesanan</span>
+                <!-- <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> -->
+                <span>Masukan Keranjang</span>
             </button>
         </div>
     </div>

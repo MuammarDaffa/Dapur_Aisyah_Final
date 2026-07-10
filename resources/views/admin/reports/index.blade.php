@@ -55,9 +55,9 @@
                     <p class="text-blue-100 text-sm font-medium">Total Pesanan</p>
                     <p class="text-3xl font-bold mt-1">{{ number_format($summary['total_orders']) }}</p>
                 </div>
-                <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+                <!-- <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
                     <span class="text-2xl">📦</span>
-                </div>
+                </div> -->
             </div>
         </div>
 
@@ -67,9 +67,9 @@
                     <p class="text-green-100 text-sm font-medium">Total Pendapatan</p>
                     <p class="text-3xl font-bold mt-1">Rp {{ number_format($summary['total_revenue'], 0, ',', '.') }}</p>
                 </div>
-                <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+                <!-- <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
                     <span class="text-2xl">💰</span>
-                </div>
+                </div> -->
             </div>
         </div>
 
@@ -79,9 +79,9 @@
                     <p class="text-purple-100 text-sm font-medium">Rata-rata Nilai Pesanan</p>
                     <p class="text-3xl font-bold mt-1">Rp {{ number_format($summary['average_order'], 0, ',', '.') }}</p>
                 </div>
-                <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+                <!-- <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
                     <span class="text-2xl">📊</span>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

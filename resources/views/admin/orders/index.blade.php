@@ -48,13 +48,28 @@
                     <td class="px-6 py-4 text-gray-500">{{ $order->created_at->format('d/m/Y') }}</td>
                     <td class="px-6 py-4 font-medium text-orange-600">{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') }}</td>
                     <td class="px-6 py-4">
-                        <a href="{{ route('admin.orders.show', $order) }}" class="text-orange-500 hover:text-orange-600 font-medium">Detail</a>
-                        <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="inline"
-                              onsubmit="event.preventDefault(); if (typeof Swal !== 'undefined') { Swal.fire({ text: 'Apakah Anda yakin ingin menghapus pesanan ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Hapus', cancelButtonText: 'Batal' }).then((r) => { if(r.isConfirmed) this.submit(); }); } else { if (confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) { this.submit(); } }">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-700 font-medium ml-3">Hapus</button>
-                        </form>
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('admin.orders.show', $order) }}"
+                               title="Lihat Detail Pesanan"
+                               class="text-gray-500 hover:text-orange-500 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </a>
+                            <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="inline-flex items-center"
+                                  onsubmit="event.preventDefault(); if (typeof Swal !== 'undefined') { Swal.fire({ text: 'Apakah Anda yakin ingin menghapus pesanan ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Hapus', cancelButtonText: 'Batal' }).then((r) => { if(r.isConfirmed) this.submit(); }); } else { if (confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) { this.submit(); } }">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        title="Hapus Pesanan"
+                                        class="text-gray-500 hover:text-red-600 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             @empty

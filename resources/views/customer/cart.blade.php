@@ -98,7 +98,7 @@
                 <div>
                     <h4 class="font-bold text-gray-900 text-lg">Total Seluruh Pesanan Daily</h4>
                     <p class="text-2xl font-bold text-orange-600">Rp {{ number_format($dailyGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</p>
-                    <p class="text-sm text-gray-500 mt-1">Satu kali checkout untuk seluruh menu harian.</p>
+                    <!-- <p class="text-sm text-gray-500 mt-1">Satu kali checkout untuk seluruh menu harian.</p> -->
                 </div>
                 <a href="{{ route('customer.checkout') }}"
                     class="w-full sm:w-auto text-center px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl hover:shadow-lg transition-all text-lg flex items-center justify-center gap-2">
