@@ -221,12 +221,9 @@
         <div class="overflow-y-auto flex-1 p-6">
             <form id="dailyEditForm" action="" method="POST">
                 @csrf @method('PUT')
-                <div class="flex items-center space-x-4 mb-6 bg-orange-50/50 rounded-xl p-4">
-                    <div class="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">🍛</div>
-                    <div>
-                        <h4 id="dailyModalProductName" class="font-bold text-gray-900"></h4>
-                        <p id="dailyModalProductPrice" class="text-orange-600 font-semibold text-sm"></p>
-                    </div>
+                <div class="mb-6 bg-orange-50/50 rounded-xl p-4">
+                    <h4 id="dailyModalProductName" class="font-bold text-gray-900"></h4>
+                    <p id="dailyModalProductPrice" class="text-orange-600 font-semibold text-sm"></p>
                 </div>
                 <div class="mb-6">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Porsi *</label>
@@ -446,7 +443,7 @@
 
         document.getElementById('dailyEditForm').action = currentDailyCart.update_url;
         document.getElementById('dailyModalProductName').textContent = currentDailyCart.name;
-        document.getElementById('dailyModalProductPrice').textContent = formatRupiah(currentDailyCart.price) + ' / porsi';
+        document.getElementById('dailyModalProductPrice').textContent = formatRupiah(currentDailyCart.price);
         document.getElementById('dailyModalQty').value = currentDailyCart.quantity;
 
         document.getElementById('dailyModalExtrasList').innerHTML = '';

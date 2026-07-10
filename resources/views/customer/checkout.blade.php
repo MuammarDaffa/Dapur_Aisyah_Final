@@ -18,7 +18,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Pengiriman</label>
                             <input type="hidden" name="order_date" value="{{ $orderDate }}">
-                            <p class="text-sm font-medium text-gray-700 bg-orange-50 p-3 rounded-lg border border-orange-200">ℹ️ Tanggal pengiriman mengikuti tanggal menu yang Anda pilih di keranjang.</p>
+                            <p class="text-sm font-medium text-gray-700 bg-orange-50 p-3 rounded-lg border border-orange-200">Pengiriman mengikuti jadwal yang tertera pada menu yang dipilih.</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Metode Pengambilan *</label>
