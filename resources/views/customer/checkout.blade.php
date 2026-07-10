@@ -35,24 +35,13 @@
                                     @endforeach
                                 </select>
                             
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Berdasarkan Peta</label>
-                                <div id="osm-address-display" class="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 min-h-[42px]">
-                                    Lokasi belum ditandai di peta.
-                                </div>
-                                <input type="hidden" name="osm_address" id="osm_address">
-                            </div>
+                            
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Detail Patokan/Blok/No. Rumah (Opsional)</label>
-                                <textarea name="address_detail" id="address_detail_input" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateCheckout()">{{ old('address_detail') }}</textarea>
-                                <p id="address_error" class="text-sm text-red-500 mt-1 hidden"></p>
-                                @error('address_detail') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
-                            </div>
+                         
                             <!-- Peta Lokasi (Leaflet.js) -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">📍 Tandai Lokasi Pengiriman di Peta</label>
-                                <p class="text-xs text-gray-500 mb-2">Klik pada peta untuk menentukan titik lokasi pengiriman yang tepat.</p>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tandai Lokasi Pengiriman di Peta</label>
+                                <!-- <p class="text-xs text-gray-500 mb-2">Klik pada peta untuk menentukan titik lokasi pengiriman yang tepat.</p> -->
                                 <div id="map"></div>
                                 <p id="location-validation-msg" class="text-sm font-medium mt-2 hidden"></p>
                                 <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
@@ -66,6 +55,20 @@
                                     <p class="text-sm text-red-500 mt-2 font-medium">⚠️ Anda harus menandai lokasi pengiriman di peta dengan benar.</p>
                                 @enderror
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Berdasarkan Peta</label>
+                                <div id="osm-address-display" class="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 min-h-[42px]">
+                                    Lokasi belum ditandai di peta.
+                                </div>
+                                <input type="hidden" name="osm_address" id="osm_address">
+                            </div>
+                            <!-- detail field -->
+                            <!-- <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Detail Patokan/Blok/No. Rumah (Opsional)</label>
+                                <textarea name="address_detail" id="address_detail_input" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateCheckout()">{{ old('address_detail') }}</textarea>
+                                <p id="address_error" class="text-sm text-red-500 mt-1 hidden"></p>
+                                @error('address_detail') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+                            </div> -->
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Catatan (Opsional)</label>

@@ -69,7 +69,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" id="schedule_section">
         <div class="px-6 py-4 border-b bg-gray-50">
             <h3 class="font-bold text-gray-800">Jadwal Menu Mingguan</h3>
-            <p class="text-xs text-gray-500 mt-0.5">Atur rentang tanggal dan menu harian yang akan ditampilkan kepada pelanggan</p>
+            <!-- <p class="text-xs text-gray-500 mt-0.5">Atur rentang tanggal dan menu harian yang akan ditampilkan kepada pelanggan</p> -->
         </div>
 
         {{-- Form Pengaturan Jadwal --}}
