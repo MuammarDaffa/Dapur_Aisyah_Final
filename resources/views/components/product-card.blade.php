@@ -56,7 +56,7 @@
                 </p>
             </div>
 
-            <form action="{{ route('customer.cart.store') }}" method="POST">
+            <form action="{{ route('customer.cart.store') }}" method="POST" onsubmit="return window.submitQuickAddCart ? window.submitQuickAddCart(event, this) : true;">
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <input type="hidden" name="quantity" value="1">

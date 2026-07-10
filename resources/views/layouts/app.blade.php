@@ -67,12 +67,10 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
                             </svg>
-                            @php $cartCount = auth()->user()->carts()->count() @endphp
-                            @if($cartCount > 0)
-                                <span class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                                    {{ $cartCount }}
-                                </span>
-                            @endif
+                            @php $cartCount = auth()->user()->carts()->count(); @endphp
+                            <span id="desktop-cart-badge" class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full {{ $cartCount > 0 ? '' : 'hidden' }}">
+                                {{ $cartCount > 0 ? $cartCount : '' }}
+                            </span>
                         </a>
 
                         <!-- User Dropdown -->
@@ -123,7 +121,13 @@
                 </form>
                 @auth
                     <a href="{{ route('customer.dashboard') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Dashboard</a>
-                    <a href="{{ route('customer.cart') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Keranjang</a>
+                    <a href="{{ route('customer.cart') }}" class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">
+                        <span>Keranjang</span>
+                        @php $mobileCartCount = auth()->user()->carts()->count(); @endphp
+                        <span id="mobile-cart-badge" class="bg-orange-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full {{ $mobileCartCount > 0 ? '' : 'hidden' }}">
+                            {{ $mobileCartCount > 0 ? $mobileCartCount : '' }}
+                        </span>
+                    </a>
                     <a href="{{ route('customer.orders') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Pesanan</a>
                     <form id="logout-form-mobile" method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -242,6 +246,91 @@
             }
         });
     }
+
+    window.updateCartBadges = function(count) {
+        const desktopBadge = document.getElementById('desktop-cart-badge');
+        const mobileBadge = document.getElementById('mobile-cart-badge');
+        [desktopBadge, mobileBadge].forEach(badge => {
+            if (!badge) return;
+            const num = parseInt(count);
+            if (!isNaN(num) && num > 0) {
+                badge.textContent = num;
+                badge.classList.remove('hidden');
+            } else {
+                badge.textContent = '';
+                badge.classList.add('hidden');
+            }
+        });
+    };
+
+    window.refreshCartBadges = function() {
+        fetch('{{ route("customer.cart.count") }}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && typeof data.cart_count !== 'undefined') {
+                window.updateCartBadges(data.cart_count);
+            }
+        })
+        .catch(() => {});
+    };
+
+    window.submitQuickAddCart = function(e, form) {
+        if (e && e.preventDefault) e.preventDefault();
+        if (!form) return false;
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn) btn.disabled = true;
+
+        const formData = new FormData(form);
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (btn) btn.disabled = false;
+            if (data.success) {
+                if (typeof window.updateCartBadges === 'function' && typeof data.cart_count !== 'undefined') {
+                    window.updateCartBadges(data.cart_count);
+                }
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message || 'Produk berhasil ditambahkan ke keranjang!',
+                        showConfirmButton: true,
+                        confirmButtonText: 'Oke',
+                        confirmButtonColor: '#f97316'
+                    });
+                }
+            } else {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: data.message || 'Terjadi kesalahan saat menambahkan ke keranjang.',
+                        confirmButtonColor: '#f97316'
+                    });
+                } else {
+                    form.submit();
+                }
+            }
+        })
+        .catch(err => {
+            if (btn) btn.disabled = false;
+            form.submit();
+        });
+        return false;
+    };
     </script>
     @stack('scripts')
 </body>

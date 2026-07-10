@@ -75,6 +75,7 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
         Route::post('/event/checkout/{groupId}', [CheckoutController::class, 'checkoutEventGroup'])->name('event.checkout.store');
 
         // Cart (Daily + Event)
+        Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
         Route::get('/cart', [CartController::class, 'index'])->name('cart');
         Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
         Route::put('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');

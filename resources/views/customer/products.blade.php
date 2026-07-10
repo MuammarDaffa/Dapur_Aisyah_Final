@@ -163,7 +163,7 @@
 
         {{-- Footer --}}
         <div class="p-6 border-t border-gray-100 flex-shrink-0">
-            <button type="button" onclick="document.getElementById('orderForm').submit()"
+            <button type="button" onclick="submitOrderAjax(event)"
                 class="w-full px-6 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all text-sm flex items-center justify-center gap-2">
                 <!-- <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> -->
                 <span>Masukan Keranjang</span>
@@ -331,6 +331,69 @@
     document.getElementById('orderModal').addEventListener('click', function(e) {
         if (e.target === this) closeOrderModal();
     });
+
+    function submitOrderAjax(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        const form = document.getElementById('orderForm');
+        if (!form) return;
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const submitBtn = e.currentTarget || document.querySelector('button[onclick*="submitOrderAjax"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        const formData = new FormData(form);
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (submitBtn) submitBtn.disabled = false;
+            if (data.success) {
+                closeOrderModal();
+                if (typeof window.updateCartBadges === 'function' && typeof data.cart_count !== 'undefined') {
+                    window.updateCartBadges(data.cart_count);
+                }
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message || 'Produk dan opsi berhasil ditambahkan ke keranjang!',
+                        showConfirmButton: true,
+                        confirmButtonText: 'Oke',
+                        confirmButtonColor: '#f97316'
+                    });
+                }
+            } else {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: data.message || 'Terjadi kesalahan saat menambahkan ke keranjang.',
+                        confirmButtonColor: '#f97316'
+                    });
+                } else {
+                    alert(data.message || 'Terjadi kesalahan.');
+                }
+            }
+        })
+        .catch(err => {
+            if (submitBtn) submitBtn.disabled = false;
+            form.submit();
+        });
+    }
 </script>
 @endpush
 @endsection

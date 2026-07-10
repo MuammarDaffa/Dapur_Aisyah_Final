@@ -33,6 +33,15 @@ class CartController extends Controller
         return view('customer.cart', compact('dailyGroups', 'eventGroups', 'activeTab'));
     }
 
+    public function count(Request $request)
+    {
+        $user = auth()->user();
+        return response()->json([
+            'success' => true,
+            'cart_count' => $user ? $user->carts()->count() : 0,
+        ]);
+    }
+
     /**
      * Store daily cart item (tidak berubah dari logic lama).
      */
@@ -108,6 +117,14 @@ class CartController extends Controller
                 'quantity' => $validated['quantity'],
                 'menu_date' => $validated['menu_date'] ?? null,
                 'extras' => empty($extras) ? null : $extras,
+            ]);
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Produk dan opsi berhasil ditambahkan ke keranjang!',
+                'cart_count' => $user->carts()->count(),
             ]);
         }
 
@@ -199,6 +216,14 @@ class CartController extends Controller
             }
         }
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pesanan event berhasil ditambahkan ke keranjang!',
+                'cart_count' => $user->carts()->count(),
+            ]);
+        }
+
         return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil ditambahkan ke keranjang!');
     }
 
@@ -263,6 +288,14 @@ class CartController extends Controller
             }
         }
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pesanan event berhasil diperbarui!',
+                'cart_count' => $user->carts()->count(),
+            ]);
+        }
+
         return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil diperbarui!');
     }
 
@@ -275,6 +308,9 @@ class CartController extends Controller
         abort_if($cart->user_id !== auth()->id(), 403, 'Akses ditolak.');
 
         if ($cart->cart_group_id) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Item paket event tidak dapat diubah secara individual.'], 400);
+            }
             return back()->with('error', 'Item paket event tidak dapat diubah secara individual.');
         }
 
@@ -302,6 +338,14 @@ class CartController extends Controller
             'extras' => empty($extras) ? null : $extras,
         ]);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Keranjang berhasil diperbarui.',
+                'cart_count' => auth()->user()->carts()->count(),
+            ]);
+        }
+
         return back()->with('success', 'Keranjang berhasil diperbarui.');
     }
 
@@ -313,10 +357,25 @@ class CartController extends Controller
         // Jika event item, hapus seluruh group
         if ($cart->cart_group_id) {
             auth()->user()->carts()->where('cart_group_id', $cart->cart_group_id)->delete();
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Pesanan event berhasil dihapus dari keranjang.',
+                    'cart_count' => auth()->user()->carts()->count(),
+                ]);
+            }
             return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil dihapus dari keranjang.');
         }
 
         $cart->delete();
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Item berhasil dihapus dari keranjang.',
+                'cart_count' => auth()->user()->carts()->count(),
+            ]);
+        }
 
         return back()->with('success', 'Item berhasil dihapus dari keranjang.');
     }
