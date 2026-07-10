@@ -31,7 +31,7 @@
                         <div><span class="text-gray-500">Tanggal Acara:</span><br><span class="font-medium">{{ $order->order_date->format('d M Y') }}</span></div>
                     @endif
                     <div><span class="text-gray-500">Metode:</span><br><span class="font-medium">{{ $order->pickup_method === 'delivery' ? 'Delivery' : 'Pick Up' }}</span></div>
-                    <div><span class="text-gray-500">Pembayaran:</span><br><span class="font-medium">Transfer (Midtrans)</span></div>
+                    <div><span class="text-gray-500">Pembayaran:</span><br><span class="font-medium">Transfer</span></div>
                 </div>
                 @if($order->pickup_method === 'delivery')
                     <div class="mt-4 pt-4 border-t border-gray-100 text-sm">
@@ -59,12 +59,12 @@
                 <h3 class="font-bold text-gray-900 mb-4">Item Pesanan</h3>
                 <div class="divide-y divide-gray-100">
                     @foreach($order->items as $item)
-                        <div class="py-3 flex justify-between items-center">
-                            <div>
-                                <p class="font-medium text-gray-900">{{ $item->item_name }}</p>
-                                <p class="text-xs text-gray-500">Rp {{ number_format($item->unit_price, 0, ',', '.') }} × {{ $item->quantity }}</p>
-                            </div>
-                            <p class="font-medium text-gray-900">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
+                        <div class="py-3.5">
+                            <p class="font-medium text-gray-900">{{ $item->formatted_menu_name }}</p>
+                            @if($item->formatted_extras)
+                                <p class="text-sm text-gray-600 mt-0.5"><span class="font-medium">Extra:</span> {{ $item->formatted_extras }}</p>
+                            @endif
+                            <p class="text-sm font-medium text-gray-900 mt-1">Total: Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
                         </div>
                     @endforeach
                 </div>

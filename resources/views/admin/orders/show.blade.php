@@ -19,7 +19,7 @@
             <div class="mt-4 pt-4 border-t text-sm">
                 <b>Alamat:</b> {{ $order->district->name ?? '' }}, {{ $order->village->name ?? '' }}<br>{{ $order->address_detail }}
                 @if($order->latitude && $order->longitude)
-                    <p class="text-xs text-gray-400 mt-1">📍 Koordinat: {{ $order->latitude }}, {{ $order->longitude }}</p>
+                    <p class="text-xs text-gray-400 mt-1">Koordinat: {{ $order->latitude }}, {{ $order->longitude }}</p>
                 @endif
             </div>
             @endif
@@ -32,9 +32,15 @@
         </div>
         <div class="bg-white rounded-xl p-6 shadow-sm border">
             <h3 class="font-bold mb-4">Item Pesanan</h3>
-            <div class="divide-y">
+            <div class="divide-y divide-gray-100">
                 @foreach($order->items as $item)
-                <div class="py-3 flex justify-between"><span>{{ $item->item_name }} (×{{ $item->quantity }})</span><span class="font-medium">Rp {{ number_format($item->subtotal,0,',','.') }}</span></div>
+                <div class="py-3">
+                    <p class="font-medium text-gray-900">{{ $item->formatted_menu_name }}</p>
+                    @if($item->formatted_extras)
+                        <p class="text-sm text-gray-600 mt-0.5"><span class="font-medium">Extra:</span> {{ $item->formatted_extras }}</p>
+                    @endif
+                    <p class="text-sm font-medium text-gray-900 mt-1">Total: Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
+                </div>
                 @endforeach
             </div>
         </div>
