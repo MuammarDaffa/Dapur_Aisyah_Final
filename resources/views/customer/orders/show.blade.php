@@ -147,9 +147,9 @@
                         $waUrl = "https://wa.me/{$waNumber}?text={$waText}";
                     @endphp
                     <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl">
-                        <p class="text-sm text-green-800 font-medium mb-2">💰 Pesanan Anda telah dibatalkan dan memenuhi syarat refund.</p>
+                        <p class="text-sm text-green-800 font-medium mb-2">Pesanan Anda telah dibatalkan</p>
                         <a href="{{ $waUrl }}" target="_blank" class="block w-full px-6 py-3 bg-green-600 text-white font-semibold text-center rounded-xl hover:bg-green-700 transition-colors">
-                            📱 Ajukan Refund via WhatsApp
+                            Ajukan Refund via WhatsApp
                         </a>
                     </div>
                 @endif

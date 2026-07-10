@@ -20,7 +20,7 @@ class CheckoutRequest extends FormRequest
             'pickup_method' => 'required|in:pickup,delivery',
             'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
             'village_id' => 'nullable|exists:villages,id',
-            'address_detail' => 'required_if:pickup_method,delivery|nullable|string|max:255',
+            'address_detail' => 'nullable|string|max:255',
             'osm_address' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
@@ -29,6 +29,25 @@ class CheckoutRequest extends FormRequest
             'payment_method' => 'required|in:transfer',
             'notes' => 'nullable|string|max:500',
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($this->input('pickup_method') === 'delivery') {
+                $validation = \App\Services\LocationService::validateLocation(
+                    $this->input('latitude'),
+                    $this->input('longitude'),
+                    $this->input('district_id'),
+                    null,
+                    $this->input('osm_address')
+                );
+
+                if (!$validation['is_in_pontianak']) {
+                    $validator->errors()->add('district_id', $validation['message'] ?? 'Lokasi berada di luar wilayah Pontianak.');
+                }
+            }
+        });
     }
 
     public function messages(): array
@@ -41,7 +60,6 @@ class CheckoutRequest extends FormRequest
             'district_id.required_if' => 'Kecamatan wajib dipilih untuk pengiriman.',
             'district_id.exists' => 'Kecamatan tidak valid.',
             'village_id.exists' => 'Kelurahan tidak valid.',
-            'address_detail.required_if' => 'Alamat detail wajib diisi untuk pengiriman.',
             'address_detail.max' => 'Alamat detail maksimal 255 karakter.',
             'portion.integer' => 'Jumlah porsi harus berupa angka.',
             'portion.min' => 'Jumlah porsi minimal 1.',
@@ -51,3 +69,4 @@ class CheckoutRequest extends FormRequest
         ];
     }
 }
+

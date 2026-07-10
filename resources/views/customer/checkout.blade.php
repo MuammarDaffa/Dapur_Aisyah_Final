@@ -44,9 +44,9 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Detail Patokan/Blok/No. Rumah *</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Detail Patokan/Blok/No. Rumah (Opsional)</label>
                                 <textarea name="address_detail" id="address_detail_input" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateCheckout()">{{ old('address_detail') }}</textarea>
-                                <p id="address_error" class="text-sm text-red-500 mt-1 hidden">⚠️ Detail patokan alamat wajib diisi untuk pengiriman.</p>
+                                <p id="address_error" class="text-sm text-red-500 mt-1 hidden"></p>
                                 @error('address_detail') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
                             </div>
                             <!-- Peta Lokasi (Leaflet.js) -->
@@ -54,6 +54,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">📍 Tandai Lokasi Pengiriman di Peta</label>
                                 <p class="text-xs text-gray-500 mb-2">Klik pada peta untuk menentukan titik lokasi pengiriman yang tepat.</p>
                                 <div id="map"></div>
+                                <p id="location-validation-msg" class="text-sm font-medium mt-2 hidden"></p>
                                 <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
                                 <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
                                 <div class="flex justify-between items-center mt-2 hidden">
@@ -156,8 +157,9 @@
 @push('scripts')
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
-// === Peta Leaflet ===
+// === Peta Leaflet & Validasi Area ===
 let map, marker;
+let isLocationValid = false;
 const defaultLat = -0.0263; // Pontianak
 const defaultLng = 109.3425;
 
@@ -167,11 +169,14 @@ function initMap() {
         [0.08, 109.45]   // North East
     ];
 
+    const initialLat = parseFloat(document.getElementById('latitude').value) || defaultLat;
+    const initialLng = parseFloat(document.getElementById('longitude').value) || defaultLng;
+
     map = L.map('map', {
         maxBounds: pontianakBounds,
         maxBoundsViscosity: 1.0,
         minZoom: 11
-    }).setView([defaultLat, defaultLng], 13);
+    }).setView([initialLat, initialLng], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
@@ -179,22 +184,27 @@ function initMap() {
         bounds: pontianakBounds
     }).addTo(map);
 
-    marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+    marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(map);
 
     marker.on('dragend', function (e) {
         const pos = marker.getLatLng();
         setCoordinates(pos.lat, pos.lng);
+        checkLocationRealtime(pos.lat, pos.lng);
         reverseGeocode(pos.lat, pos.lng);
     });
 
     map.on('click', function (e) {
         marker.setLatLng(e.latlng);
         setCoordinates(e.latlng.lat, e.latlng.lng);
+        checkLocationRealtime(e.latlng.lat, e.latlng.lng);
         reverseGeocode(e.latlng.lat, e.latlng.lng);
     });
 
-    // Invalidate size after a brief delay to handle hidden container
     setTimeout(() => map.invalidateSize(), 300);
+
+    setCoordinates(initialLat, initialLng);
+    checkLocationRealtime(initialLat, initialLng);
+    reverseGeocode(initialLat, initialLng);
 }
 
 function setCoordinates(lat, lng) {
@@ -203,14 +213,52 @@ function setCoordinates(lat, lng) {
     document.getElementById('coord-display').textContent = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
 }
 
+function checkLocationRealtime(lat, lng, districtId = '', districtName = '', address = '') {
+    const msgEl = document.getElementById('location-validation-msg');
+    if (!msgEl) return;
+
+    fetch(`/api/validate-location?latitude=${lat}&longitude=${lng}&district_id=${districtId}&district_name=${encodeURIComponent(districtName)}&address=${encodeURIComponent(address)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.is_in_pontianak) {
+                isLocationValid = true;
+                msgEl.textContent = 'Lokasi berada di wilayah Pontianak.';
+                msgEl.className = 'text-sm font-medium mt-2 text-green-600 block';
+                if (data.district_id) {
+                    const select = document.getElementById('district_id');
+                    for (let i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value == data.district_id) {
+                            select.selectedIndex = i;
+                            loadShippingCost(data.district_id);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                isLocationValid = false;
+                msgEl.textContent = 'Lokasi berada di luar wilayah Pontianak.';
+                msgEl.className = 'text-sm font-medium mt-2 text-red-600 block';
+                document.getElementById('district_id').value = '';
+                loadShippingCost('');
+            }
+            validateCheckout();
+        })
+        .catch(err => {
+            console.error('Validation error:', err);
+            isLocationValid = false;
+            msgEl.textContent = 'Lokasi berada di luar wilayah Pontianak.';
+            msgEl.className = 'text-sm font-medium mt-2 text-red-600 block';
+            validateCheckout();
+        });
+}
+
 function reverseGeocode(lat, lng) {
     const statusEl = document.getElementById('geocode-status');
     const addressDisplay = document.getElementById('osm-address-display');
     const osmAddressInput = document.getElementById('osm_address');
 
-    statusEl.innerHTML = '⏳ Mendeteksi kecamatan...';
-    statusEl.className = 'text-xs text-orange-500 font-medium mt-2 block';
-    addressDisplay.innerHTML = '<span class="text-gray-400 italic">⏳ Mengambil alamat dari peta...</span>';
+    if (statusEl) statusEl.classList.add('hidden');
+    addressDisplay.innerHTML = '<span class="text-gray-400 italic">Mengambil alamat dari peta...</span>';
 
     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
         .then(res => res.json())
@@ -226,15 +274,7 @@ function reverseGeocode(lat, lng) {
                     osmAddressInput.value = '';
                 }
 
-                if (!districtName) {
-                    statusEl.innerHTML = '❌ Gagal mendeteksi wilayah. Silakan geser pin ke area permukiman.';
-                    statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
-                    document.getElementById('district_id').value = "";
-                    loadShippingCost("");
-                    return;
-                }
-
-                if (!districtName.toLowerCase().startsWith('kecamatan')) {
+                if (!districtName.toLowerCase().startsWith('kecamatan') && districtName) {
                     districtName = 'Kecamatan ' + districtName;
                 }
 
@@ -249,23 +289,13 @@ function reverseGeocode(lat, lng) {
                     }
                 }
 
-                if (matchFound) {
-                    statusEl.innerHTML = `✅ Lokasi: <b>${districtName}</b>`;
-                    statusEl.className = 'text-xs text-green-600 font-medium mt-2 block';
-                } else {
-                    statusEl.innerHTML = `⚠️ Lokasi terdeteksi sebagai <b>${districtName}</b> (Di luar jangkauan wilayah kami)`;
-                    statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
-                    document.getElementById('district_id').value = "";
-                    loadShippingCost("");
-                }
+                checkLocationRealtime(lat, lng, matchFound ? select.value : '', districtName, data.display_name);
             }
         })
         .catch(err => {
-            statusEl.innerHTML = '❌ Gagal menghubungi server peta.';
-            statusEl.className = 'text-xs text-red-500 font-medium mt-2 block';
-            addressDisplay.innerHTML = '<span class="text-red-500">❌ Gagal mengambil alamat dari peta.</span>';
+            addressDisplay.innerHTML = '<span class="text-red-500">Gagal mengambil alamat dari peta.</span>';
             osmAddressInput.value = '';
-            validateCheckout();
+            checkLocationRealtime(lat, lng);
         });
 }
 
@@ -275,31 +305,19 @@ function validateCheckout() {
     const btn = document.getElementById('submit-btn');
     
     if (method === 'delivery') {
-        const address = document.getElementById('address_detail_input').value.trim();
-        const districtId = document.getElementById('district_id').value;
         const addressError = document.getElementById('address_error');
         const mapError = document.getElementById('map_error');
+        if (addressError) addressError.classList.add('hidden');
+        if (mapError) mapError.classList.add('hidden');
         
-        let isValid = true;
-        
-        if (address === '') {
-            addressError.classList.remove('hidden');
-            isValid = false;
-        } else {
-            addressError.classList.add('hidden');
-        }
-        
-        if (districtId === '') {
-            mapError.classList.remove('hidden');
-            isValid = false;
-        } else {
-            mapError.classList.add('hidden');
-        }
-        
-        btn.disabled = !isValid;
+        btn.disabled = !isLocationValid;
     } else {
-        document.getElementById('address_error').classList.add('hidden');
-        document.getElementById('map_error').classList.add('hidden');
+        const addressError = document.getElementById('address_error');
+        const mapError = document.getElementById('map_error');
+        if (addressError) addressError.classList.add('hidden');
+        if (mapError) mapError.classList.add('hidden');
+        const msgEl = document.getElementById('location-validation-msg');
+        if (msgEl) msgEl.classList.add('hidden');
         btn.disabled = false;
     }
 }
@@ -312,11 +330,14 @@ function toggleDelivery() {
         document.getElementById('shipping-display').textContent = 'Gratis';
         document.getElementById('total-display').textContent = 'Rp {{ number_format($subtotal, 0, ",", ".") }}';
     } else {
-        // Init map ketika delivery dipilih pertama kali
         if (!map) {
             setTimeout(initMap, 100);
         } else {
-            setTimeout(() => map.invalidateSize(), 100);
+            setTimeout(() => {
+                map.invalidateSize();
+                const pos = marker ? marker.getLatLng() : { lat: defaultLat, lng: defaultLng };
+                checkLocationRealtime(pos.lat, pos.lng);
+            }, 100);
         }
     }
     validateCheckout();

@@ -175,6 +175,17 @@ Route::middleware('auth')->group(function () {
         return response()->json(['cost' => \App\Models\ShippingCost::getCostByDistrict($district->id)]);
     })->name('api.shipping-cost');
 
+    Route::get('/api/validate-location', function (\Illuminate\Http\Request $request) {
+        $result = \App\Services\LocationService::validateLocation(
+            $request->input('latitude'),
+            $request->input('longitude'),
+            $request->input('district_id'),
+            $request->input('district_name'),
+            $request->input('address')
+        );
+        return response()->json($result);
+    })->name('api.validate-location');
+
     // API: Custom options per layanan (grouped by type)
     Route::get('/api/service/{service}/custom-options', function (\App\Models\CateringService $service) {
         return $service->customOptions()->where('is_active', true)->get(['id', 'type', 'name', 'price', 'min_qty']);

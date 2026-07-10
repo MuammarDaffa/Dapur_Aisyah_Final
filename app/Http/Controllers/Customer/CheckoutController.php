@@ -273,13 +273,33 @@ class CheckoutController extends Controller
             'pickup_method' => 'required|in:delivery,pickup',
             'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
             'village_id' => 'nullable|exists:villages,id',
-            'address_detail' => 'required_if:pickup_method,delivery|nullable|string',
+            'address_detail' => 'nullable|string',
             'osm_address' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'payment_method' => 'required|in:transfer',
             'notes' => 'nullable|string',
         ]);
+
+        if ($validated['pickup_method'] === 'delivery') {
+            $locValidation = \App\Services\LocationService::validateLocation(
+                $validated['latitude'] ?? null,
+                $validated['longitude'] ?? null,
+                $validated['district_id'] ?? null,
+                null,
+                $validated['osm_address'] ?? null
+            );
+
+            if (!$locValidation['is_in_pontianak']) {
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $locValidation['message'] ?? 'Lokasi berada di luar wilayah Pontianak.'
+                    ], 422);
+                }
+                return back()->with('error', $locValidation['message'] ?? 'Lokasi berada di luar wilayah Pontianak.');
+            }
+        }
 
         $finalAddressDetail = $validated['address_detail'] ?? null;
         if (!empty($validated['osm_address']) && $finalAddressDetail) {
