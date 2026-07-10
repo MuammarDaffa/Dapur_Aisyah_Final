@@ -57,7 +57,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return match ($this->role) {
             'admin' => 'admin.dashboard',
             'owner' => 'owner.dashboard',
-            default => 'customer.dashboard',
+            default => 'landing',
         };
     }
 

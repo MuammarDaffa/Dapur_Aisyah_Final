@@ -84,7 +84,6 @@
                             </button>
                             <div x-show="open" @click.away="open = false" x-transition
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
-                                <a href="{{ route('customer.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600">Dashboard</a>
                                 <a href="{{ route('customer.profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600">Profil Saya</a>
                                 <a href="{{ route('customer.orders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600">Pesanan Saya</a>
                                 <hr class="my-1 border-gray-100">
@@ -126,7 +125,7 @@
                     <input type="text" name="search" placeholder="Cari menu..." class="w-full px-4 py-2 rounded-lg border border-orange-200 text-sm">
                 </form>
                 @auth
-                    <a href="{{ route('customer.dashboard') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Dashboard</a>
+                    <a href="{{ route('customer.profile.edit') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Profil Saya</a>
                     <a href="{{ route('customer.cart') }}" class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">
                         <span>Keranjang</span>
                         @php $mobileCartCount = auth()->user()->carts()->count(); @endphp

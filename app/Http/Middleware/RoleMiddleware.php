@@ -19,7 +19,7 @@ class RoleMiddleware
             return match ($request->user()->role) {
                 'admin' => redirect()->route('admin.dashboard'),
                 'owner' => redirect()->route('owner.dashboard'),
-                default => redirect()->route('customer.dashboard'),
+                default => redirect()->route('landing'),
             };
         }
 
