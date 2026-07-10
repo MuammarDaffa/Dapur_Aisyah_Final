@@ -122,15 +122,9 @@
                 <input type="hidden" name="menu_date" id="modalMenuDate">
 
                 {{-- Product Info --}}
-                <div class="flex items-center space-x-4 mb-6 bg-orange-50/50 border border-orange-100/60 rounded-xl p-4">
-                    <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center text-orange-500 shadow-sm border border-orange-100 flex-shrink-0">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    </div>
-                    <div>
-                        <h4 id="modalProductName" class="font-bold text-gray-900 text-base"></h4>
-                        <p id="modalProductPrice" class="text-orange-600 font-bold text-sm"></p>
-                        <p id="modalMenuDateLabel" class="text-xs text-gray-500 mt-1 font-medium"></p>
-                    </div>
+                <div class="flex items-center justify-between gap-4 mb-6 bg-orange-50/50 border border-orange-100/60 rounded-xl p-4">
+                    <h4 id="modalProductName" class="font-bold text-gray-900 text-base"></h4>
+                    <span id="modalProductPrice" class="text-orange-600 font-bold text-base flex-shrink-0"></span>
                 </div>
 
                 {{-- Quantity --}}
@@ -201,8 +195,7 @@
         document.getElementById('modalProductId').value = currentProduct.id;
         document.getElementById('modalMenuDate').value = menuDate;
         document.getElementById('modalProductName').textContent = currentProduct.name;
-        document.getElementById('modalProductPrice').textContent = formatRupiah(currentProduct.price) + ' / porsi';
-        document.getElementById('modalMenuDateLabel').textContent = 'Tanggal Kirim: ' + menuDate;
+        document.getElementById('modalProductPrice').textContent = formatRupiah(currentProduct.price);
         document.getElementById('modalQty').value = 1;
         
         document.getElementById('modalExtrasList').innerHTML = '';
