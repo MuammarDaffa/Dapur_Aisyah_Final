@@ -149,6 +149,24 @@ class CartController extends Controller
 
         $service = \App\Models\CateringService::findOrFail($validated['catering_service_id']);
         $user = auth()->user();
+
+        // Validasi: Cek apakah ada item event di keranjang yang belum di-checkout dari layanan (catering_service_id) yang berbeda
+        $existingEventCart = $user->carts()
+            ->whereNotNull('cart_group_id')
+            ->first();
+
+        if ($existingEventCart && (int) $existingEventCart->catering_service_id !== (int) $service->id) {
+            $errorMessage = 'Masih ada pesanan Event dari layanan lain yang belum di-checkout. Silakan selesaikan checkout layanan tersebut terlebih dahulu sebelum memesan layanan Event yang berbeda.';
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorMessage,
+                    'is_conflict' => true,
+                ], 422);
+            }
+            return back()->with('event_conflict_error', $errorMessage);
+        }
+
         $groupId = (string) Str::uuid();
 
         // 1. Jika pesanan berupa Paket Katering Tetap (Fixed Package)
@@ -253,6 +271,25 @@ class CartController extends Controller
         ]);
 
         $service = \App\Models\CateringService::findOrFail($validated['catering_service_id']);
+
+        // Validasi: Cek apakah ada item event dari layanan berbeda yang belum di-checkout (selain group ini)
+        $existingOtherEventCart = $user->carts()
+            ->whereNotNull('cart_group_id')
+            ->where('cart_group_id', '!=', $groupId)
+            ->first();
+
+        if ($existingOtherEventCart && (int) $existingOtherEventCart->catering_service_id !== (int) $service->id) {
+            $errorMessage = 'Masih ada pesanan Event dari layanan lain yang belum di-checkout. Silakan selesaikan checkout layanan tersebut terlebih dahulu sebelum memesan layanan Event yang berbeda.';
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorMessage,
+                    'is_conflict' => true,
+                ], 422);
+            }
+            return back()->with('event_conflict_error', $errorMessage);
+        }
+
         $minPortion = $service->min_portion;
 
         $totalCustomPortions = 0;

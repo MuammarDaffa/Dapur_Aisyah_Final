@@ -35,6 +35,20 @@
             showClass: { popup: 'animate__animated animate__slideInRight' },
             hideClass: { popup: 'animate__animated animate__slideOutRight' }
         });
+</script>
+@endif
+
+@if(session('event_conflict_error'))
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Perhatian',
+            text: '{!! session("event_conflict_error") !!}',
+            showConfirmButton: true,
+            confirmButtonText: 'Mengerti',
+            confirmButtonColor: '#f97316'
+        });
     });
 </script>
 @endif

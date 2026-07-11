@@ -82,15 +82,11 @@
                         <svg class="w-16 h-16 text-blue-400 group-hover:scale-110 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
                         </svg>
-                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
-                            <span class="text-xs font-bold text-gray-800">Min. {{ $service->min_portion }} Porsi</span>
-                        </div>
                     </div>
 
                     {{-- Body --}}
                     <div class="p-6 flex-1 flex flex-col justify-between">
                         <div>
-                            <span class="inline-block px-2.5 py-0.5 bg-blue-50 text-blue-700 font-semibold text-[11px] rounded-md mb-2">Pilihan Bebas</span>
                             <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">Custom Menu</h3>
                             <p class="text-sm text-gray-500 mb-4 line-clamp-3 leading-relaxed">
                                 Susun menu secara bebas dan fleksibel sesuai selera dan kebutuhan acara Anda dengan minimal pemesanan mulai dari {{ $service->min_portion }} porsi.

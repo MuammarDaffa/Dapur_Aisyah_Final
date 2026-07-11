@@ -89,12 +89,12 @@
                                     <input type="hidden" name="osm_address" id="osm_address">
                                 </div>
 
-                                <div>
+                                <!-- <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">Detail Patokan/Blok/No. Rumah (Opsional)</label>
                                     <textarea name="address_detail" id="address_detail_input" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateEventCheckout()">{{ old('address_detail') }}</textarea>
                                     <p id="address_error" class="text-sm text-red-500 mt-1 hidden"></p>
                                     @error('address_detail') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
