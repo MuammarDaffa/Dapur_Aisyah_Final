@@ -19,17 +19,28 @@ class OrderService
     {
         $date = Carbon::now()->format('Ymd');
         $lastOrder = Order::where('order_number', 'like', "ORD-{$date}-%")
-            ->orderByDesc('order_number')
+            ->orderByDesc('id')
             ->first();
 
-        if ($lastOrder) {
-            $lastNumber = (int) substr($lastOrder->order_number, -4);
+        if ($lastOrder && preg_match('/ORD-\d{8}-(\d{4})/', $lastOrder->order_number, $matches)) {
+            $lastNumber = (int) $matches[1];
             $newNumber = str_pad((string) ($lastNumber + 1), 4, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '0001';
         }
 
         return "ORD-{$date}-{$newNumber}";
+    }
+
+    /**
+     * Generate nomor pesanan unik khusus saat terjadi collision di Midtrans (misalnya sehabis reset DB).
+     */
+    public static function generateUniqueOrderNumber(?string $oldOrderNumber = null): string
+    {
+        if ($oldOrderNumber && !str_contains($oldOrderNumber, '-R')) {
+            return $oldOrderNumber . '-R' . rand(100, 999);
+        }
+        return self::generateOrderNumber() . '-R' . rand(100, 999);
     }
 
     /**

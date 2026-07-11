@@ -128,7 +128,7 @@
                     </button>
                 @endif
 
-                @if($order->status === 'processing')
+                @if(in_array($order->status, ['pending_payment', 'processing']))
                     <form id="cancelOrderForm" action="{{ route('customer.orders.cancel', $order) }}" method="POST" class="hidden">
                         @csrf @method('PUT')
                         <input type="hidden" name="cancellation_reason" value="Dibatalkan oleh pelanggan">

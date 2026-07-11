@@ -34,6 +34,7 @@ class Order extends Model
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
+            'pending_payment' => 'Menunggu Pembayaran',
             'processing' => 'Diproses',
             'on_delivery' => 'Sedang Dikirim',
             'completed' => 'Selesai',
@@ -45,6 +46,7 @@ class Order extends Model
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
+            'pending_payment' => 'yellow',
             'processing' => 'blue',
             'on_delivery' => 'purple',
             'completed' => 'green',
@@ -69,20 +71,9 @@ class Order extends Model
 
     public static function generateOrderNumber(): string
     {
-        $date = now()->format('Ymd');
-        $lastOrder = static::where('order_number', 'like', "ORD-{$date}-%")
-                          ->orderBy('order_number', 'desc')
-                          ->first();
-
-        if ($lastOrder) {
-            $lastNumber = (int) substr($lastOrder->order_number, -4);
-            $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-        } else {
-            $nextNumber = '0001';
-        }
-
-        return "ORD-{$date}-{$nextNumber}";
+        return \App\Services\OrderService::generateOrderNumber();
     }
+
 
     // === Relationships ===
 

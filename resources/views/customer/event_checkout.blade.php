@@ -426,6 +426,9 @@
         validateEventCheckout();
     });
 
+    let currentSnapToken = @json($existingOrder?->midtrans_snap_token ?? null);
+    let currentRedirectUrl = @json($existingOrder ? route('customer.orders.show', $existingOrder) : null);
+
     document.getElementById('event-checkout-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -436,6 +439,41 @@
         }
 
         const originalText = btn.innerHTML;
+
+        if (currentSnapToken) {
+            let attempts = 0;
+            while (typeof window.snap === 'undefined' && attempts < 20) {
+                await new Promise(resolve => setTimeout(resolve, 200));
+                attempts++;
+            }
+
+            if (typeof window.snap !== 'undefined') {
+                window.snap.pay(currentSnapToken, {
+                    onSuccess: function(result) {
+                        window.location.href = currentRedirectUrl;
+                    },
+                    onPending: function(result) {
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    },
+                    onError: function(result) {
+                        alert('Pembayaran gagal atau dibatalkan.');
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    },
+                    onClose: function() {
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    }
+                });
+            } else {
+                alert('Sistem pembayaran Midtrans sedang dimuat atau terblokir.');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+            return;
+        }
+
         btn.disabled = true;
         btn.innerHTML = '⏳ Memproses...';
 
@@ -462,24 +500,44 @@
                 return;
             }
 
-            if (data.success && data.snap_token && window.snap) {
-                window.snap.pay(data.snap_token, {
-                    onSuccess: function(result) {
-                        window.location.href = data.redirect_url;
-                    },
-                    onPending: function(result) {
-                        window.location.href = data.redirect_url;
-                    },
-                    onError: function(result) {
-                        alert('Pembayaran gagal atau dibatalkan.');
-                        window.location.href = data.redirect_url;
-                    },
-                    onClose: function() {
-                        window.location.href = data.redirect_url;
-                    }
-                });
+            if (data.success && data.snap_token) {
+                currentSnapToken = data.snap_token;
+                currentRedirectUrl = data.redirect_url;
+
+                let attempts = 0;
+                while (typeof window.snap === 'undefined' && attempts < 20) {
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    attempts++;
+                }
+
+                if (typeof window.snap !== 'undefined') {
+                    window.snap.pay(data.snap_token, {
+                        onSuccess: function(result) {
+                            window.location.href = data.redirect_url;
+                        },
+                        onPending: function(result) {
+                            btn.disabled = false;
+                            btn.innerHTML = originalText;
+                        },
+                        onError: function(result) {
+                            alert('Pembayaran gagal atau dibatalkan.');
+                            btn.disabled = false;
+                            btn.innerHTML = originalText;
+                        },
+                        onClose: function() {
+                            btn.disabled = false;
+                            btn.innerHTML = originalText;
+                        }
+                    });
+                } else {
+                    alert('Sistem pembayaran Midtrans sedang dimuat atau terblokir. Silakan coba klik tombol Bayar Sekarang lagi.');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
             } else {
-                window.location.href = data.redirect_url || '{{ route("customer.orders") }}';
+                alert(data.message || 'Gagal membuat pesanan atau token pembayaran.');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         } catch (error) {
             console.error('Error:', error);
