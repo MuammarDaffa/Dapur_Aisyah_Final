@@ -12,8 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('order_id')->unique()->constrained('orders')->cascadeOnDelete();
-            $table->tinyInteger('rating'); // 1-5
-            $table->text('comment')->nullable();
+            $table->text('comment');
             $table->timestamps();
         });
     }

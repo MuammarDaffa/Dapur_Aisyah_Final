@@ -149,11 +149,6 @@
                                 <p class="font-medium text-gray-800 text-sm">{{ $review->user->name ?? '-' }}</p>
                                 <p class="text-xs text-gray-400">{{ $review->created_at->diffForHumans() }}</p>
                             </div>
-                            <div class="flex items-center gap-0.5">
-                                @for($i = 1; $i <= 5; $i++)
-                                    <span class="text-sm {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}">★</span>
-                                @endfor
-                            </div>
                         </div>
                         @if($review->comment)
                             <p class="text-sm text-gray-600 line-clamp-2 mt-1">{{ $review->comment }}</p>

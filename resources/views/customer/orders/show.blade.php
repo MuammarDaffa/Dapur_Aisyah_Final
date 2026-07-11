@@ -73,22 +73,13 @@
             <!-- Review Form (only for completed orders without review) -->
             @if($order->status === 'completed' && !$order->review)
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-900 mb-4">⭐ Beri Ulasan</h3>
+                    <h3 class="font-bold text-gray-900 mb-4">💬 Beri Ulasan</h3>
                     <form action="{{ route('customer.reviews.store') }}" method="POST" class="space-y-4">
                         @csrf
                         <input type="hidden" name="order_id" value="{{ $order->id }}">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
-                            <div class="flex space-x-1" id="star-rating">
-                                @for($i = 1; $i <= 5; $i++)
-                                    <button type="button" onclick="setRating({{ $i }})" class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors star-btn" data-rating="{{ $i }}">★</button>
-                                @endfor
-                            </div>
-                            <input type="hidden" name="rating" id="rating-input" value="5" required>
-                        </div>
-                        <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Komentar</label>
-                            <textarea name="comment" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400" placeholder="Tulis ulasan Anda..."></textarea>
+                            <textarea name="comment" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400" placeholder="Tulis komentar ulasan Anda..." required></textarea>
                         </div>
                         <button type="submit" class="px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Kirim Ulasan</button>
                     </form>
@@ -97,12 +88,7 @@
 
             @if($order->review)
                 <div class="bg-orange-50 rounded-xl p-6 border border-orange-100">
-                    <h3 class="font-bold text-gray-900 mb-2">⭐ Ulasan Anda</h3>
-                    <div class="flex text-yellow-400 mb-2">
-                        @for($i = 1; $i <= 5; $i++)
-                            <span>{{ $i <= $order->review->rating ? '★' : '☆' }}</span>
-                        @endfor
-                    </div>
+                    <h3 class="font-bold text-gray-900 mb-2">💬 Ulasan Anda</h3>
                     <p class="text-sm text-gray-600">{{ $order->review->comment ?? 'Tidak ada komentar.' }}</p>
                 </div>
             @endif
@@ -163,14 +149,7 @@
 
 @push('scripts')
 <script>
-function setRating(rating) {
-    document.getElementById('rating-input').value = rating;
-    document.querySelectorAll('.star-btn').forEach((btn, i) => {
-        btn.classList.toggle('text-yellow-400', i < rating);
-        btn.classList.toggle('text-gray-300', i >= rating);
-    });
-}
-setRating(5);
+
 
 @if($order->midtrans_snap_token)
 function payNow() {

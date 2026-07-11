@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Review extends Model
 {
-    protected $fillable = ['user_id', 'order_id', 'rating', 'comment'];
+    protected $fillable = ['user_id', 'order_id', 'comment'];
 
     public function user(): BelongsTo
     {

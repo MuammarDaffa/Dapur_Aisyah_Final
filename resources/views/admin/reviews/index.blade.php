@@ -10,8 +10,8 @@
             <h2 class="text-2xl font-bold text-gray-800">Manajemen Ulasan</h2>
             <p class="text-sm text-gray-500 mt-1">Kelola ulasan dari pelanggan</p>
         </div>
-        <div class="bg-gradient-to-r from-yellow-400 to-amber-500 text-white px-4 py-2 rounded-xl font-semibold shadow">
-            ⭐ {{ $reviews->total() }} Ulasan
+        <div class="bg-gradient-to-r from-orange-400 to-amber-500 text-white px-4 py-2 rounded-xl font-semibold shadow">
+            💬 {{ $reviews->total() }} Ulasan
         </div>
     </div>
 
@@ -23,7 +23,6 @@
                     <tr>
                         <th class="text-left px-6 py-4 font-semibold text-gray-600">Pelanggan</th>
                         <th class="text-left px-6 py-4 font-semibold text-gray-600">Layanan</th>
-                        <th class="text-left px-6 py-4 font-semibold text-gray-600">Rating</th>
                         <th class="text-left px-6 py-4 font-semibold text-gray-600">Komentar</th>
                         <th class="text-left px-6 py-4 font-semibold text-gray-600">Tanggal</th>
                         <th class="text-center px-6 py-4 font-semibold text-gray-600">Aksi</th>
@@ -47,14 +46,7 @@
                                 <span class="text-gray-700">{{ $review->order->cateringService->name ?? '-' }}</span>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="flex items-center gap-0.5">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <span class="text-lg {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}">★</span>
-                                    @endfor
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-gray-600 max-w-xs truncate">{{ $review->comment ?? '-' }}</p>
+                                <p class="text-gray-600 max-w-md">{{ $review->comment ?? '-' }}</p>
                             </td>
                             <td class="px-6 py-4">
                                 <span class="text-gray-500">{{ $review->created_at->format('d M Y') }}</span>

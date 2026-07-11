@@ -31,14 +31,6 @@
                     </div>
                 </div>
 
-                {{-- Rating --}}
-                <div class="flex items-center gap-1 mb-2">
-                    @for($i = 1; $i <= 5; $i++)
-                        <span class="text-xl {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-200' }}">★</span>
-                    @endfor
-                    <span class="ml-2 text-sm font-medium text-gray-500">{{ $review->rating }}/5</span>
-                </div>
-
                 {{-- Comment --}}
                 @if($review->comment)
                     <p class="text-gray-600 text-sm leading-relaxed bg-gray-50 rounded-lg p-3 mt-2">

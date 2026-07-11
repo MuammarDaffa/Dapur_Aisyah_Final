@@ -38,8 +38,7 @@ class ReviewRequest extends FormRequest
                     }
                 },
             ],
-            'rating' => 'required|integer|between:1,5',
-            'comment' => 'nullable|string|max:500',
+            'comment' => 'required|string|max:1000',
         ];
     }
 
@@ -48,10 +47,8 @@ class ReviewRequest extends FormRequest
         return [
             'order_id.required' => 'ID pesanan wajib diisi.',
             'order_id.exists' => 'Pesanan tidak ditemukan.',
-            'rating.required' => 'Rating wajib diisi.',
-            'rating.integer' => 'Rating harus berupa angka.',
-            'rating.between' => 'Rating harus antara 1 sampai 5.',
-            'comment.max' => 'Komentar maksimal 500 karakter.',
+            'comment.required' => 'Komentar ulasan wajib diisi.',
+            'comment.max' => 'Komentar maksimal 1000 karakter.',
         ];
     }
 }

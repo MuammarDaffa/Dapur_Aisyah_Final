@@ -43,8 +43,8 @@
                         </div>
                         <div class="w-px h-10 bg-gray-200"></div>
                         <div class="text-center">
-                            <p class="text-2xl font-bold text-orange-600">4.8⭐</p>
-                            <p class="text-xs text-gray-500">Rating</p>
+                            <p class="text-2xl font-bold text-orange-600">100+</p>
+                            <p class="text-xs text-gray-500">Ulasan</p>
                         </div>
                         <div class="w-px h-10 bg-gray-200"></div>
                         <div class="text-center">
@@ -194,11 +194,7 @@
                             </div>
                             <div>
                                 <p class="font-semibold text-gray-900 text-sm">{{ $review->user->name ?? 'Pelanggan' }}</p>
-                                <div class="flex text-yellow-400 text-xs">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <span>{{ $i <= $review->rating ? '★' : '☆' }}</span>
-                                    @endfor
-                                </div>
+                                <p class="text-xs text-orange-500 font-medium">{{ $review->order->cateringService->name ?? 'Pelanggan Setia' }}</p>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600 line-clamp-3">{{ $review->comment ?? 'Pelayanan sangat memuaskan!' }}</p>

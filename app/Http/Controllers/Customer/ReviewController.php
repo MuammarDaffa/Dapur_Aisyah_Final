@@ -15,8 +15,7 @@ class ReviewController extends Controller
         Review::create([
             'user_id' => auth()->id(),
             'order_id' => $validated['order_id'],
-            'rating' => $validated['rating'],
-            'comment' => $validated['comment'] ?? null,
+            'comment' => $validated['comment'],
         ]);
 
         return back()->with('success', 'Terima kasih atas ulasan Anda!');
