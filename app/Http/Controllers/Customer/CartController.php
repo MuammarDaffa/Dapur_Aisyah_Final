@@ -38,8 +38,18 @@ class CartController extends Controller
         $user = auth()->user();
         return response()->json([
             'success' => true,
-            'cart_count' => $user ? $user->carts()->count() : 0,
+            'cart_count' => $user ? $this->getCartCount($user) : 0,
         ]);
+    }
+
+    private function getCartCount($user): int
+    {
+        if (!$user) return 0;
+        $dailyCount = $user->carts()->whereNull('cart_group_id')->count();
+        $eventCount = $user->carts()->whereNotNull('cart_group_id')
+            ->whereIn('item_type', ['package', 'custom_header'])
+            ->count();
+        return $dailyCount + $eventCount;
     }
 
     /**
@@ -124,7 +134,7 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Produk dan opsi berhasil ditambahkan ke keranjang!',
-                'cart_count' => $user->carts()->count(),
+                'cart_count' => $this->getCartCount($user),
             ]);
         }
 
@@ -207,7 +217,7 @@ class CartController extends Controller
                     return response()->json([
                         'success' => true,
                         'message' => 'Paket katering berhasil ditambahkan ke keranjang!',
-                        'cart_count' => $user->carts()->count(),
+                        'cart_count' => $this->getCartCount($user),
                     ]);
                 }
                 return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Paket katering berhasil ditambahkan ke keranjang!');
@@ -242,7 +252,7 @@ class CartController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Paket katering berhasil ditambahkan ke keranjang!',
-                    'cart_count' => $user->carts()->count(),
+                    'cart_count' => $this->getCartCount($user),
                 ]);
             }
             return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Paket katering berhasil ditambahkan ke keranjang!');
@@ -341,7 +351,7 @@ class CartController extends Controller
                     return response()->json([
                         'success' => true,
                         'message' => 'Pesanan event berhasil ditambahkan ke keranjang!',
-                        'cart_count' => $user->carts()->count(),
+                        'cart_count' => $this->getCartCount($user),
                     ]);
                 }
                 return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil ditambahkan ke keranjang!');
@@ -377,7 +387,7 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Pesanan event berhasil ditambahkan ke keranjang!',
-                'cart_count' => $user->carts()->count(),
+                'cart_count' => $this->getCartCount($user),
             ]);
         }
 
@@ -421,7 +431,7 @@ class CartController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Paket berhasil diperbarui.',
-                    'cart_count' => $user->carts()->count(),
+                    'cart_count' => $this->getCartCount($user),
                 ]);
             }
             return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Paket berhasil diperbarui.');
@@ -551,7 +561,7 @@ class CartController extends Controller
                     return response()->json([
                         'success' => true,
                         'message' => 'Custom menu berhasil diperbarui.',
-                        'cart_count' => $user->carts()->count(),
+                        'cart_count' => $this->getCartCount($user),
                     ]);
                 }
                 return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Custom menu berhasil diperbarui.');
@@ -589,7 +599,7 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Custom menu berhasil diperbarui.',
-                'cart_count' => $user->carts()->count(),
+                'cart_count' => $this->getCartCount($user),
             ]);
         }
 
@@ -639,7 +649,7 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Keranjang berhasil diperbarui.',
-                'cart_count' => auth()->user()->carts()->count(),
+                'cart_count' => $this->getCartCount(auth()->user()),
             ]);
         }
 
@@ -658,7 +668,7 @@ class CartController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Pesanan event berhasil dihapus dari keranjang.',
-                    'cart_count' => auth()->user()->carts()->count(),
+                    'cart_count' => $this->getCartCount(auth()->user()),
                 ]);
             }
             return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil dihapus dari keranjang.');
@@ -670,7 +680,7 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Item berhasil dihapus dari keranjang.',
-                'cart_count' => auth()->user()->carts()->count(),
+                'cart_count' => $this->getCartCount(auth()->user()),
             ]);
         }
 

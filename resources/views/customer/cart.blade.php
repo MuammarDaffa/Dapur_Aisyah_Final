@@ -4,6 +4,12 @@
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <h2 class="text-2xl font-bold text-gray-900 mb-6">🛒 Keranjang <span class="text-orange-500">Belanja</span></h2>
 
+    @php
+        $packageGroupsCount = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') !== null)->count();
+        $customGroupsCount = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') === null)->count();
+        $totalEventBadge = $packageGroupsCount + $customGroupsCount;
+    @endphp
+
     {{-- Tab Navigation --}}
     <div class="flex border-b border-gray-200 mb-6">
         <button type="button" onclick="switchTab('daily')" id="tab-daily"
@@ -16,8 +22,8 @@
         <button type="button" onclick="switchTab('event')" id="tab-event"
             class="px-6 py-3 text-sm font-semibold border-b-2 transition-colors {{ $activeTab === 'event' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700' }}">
             🎉 Event
-            @if($eventGroups->isNotEmpty())
-                <span class="ml-1 px-2 py-0.5 bg-purple-100 text-purple-600 rounded-full text-xs font-bold">{{ $eventGroups->count() }}</span>
+            @if($totalEventBadge > 0)
+                <span class="ml-1 px-2 py-0.5 bg-purple-100 text-purple-600 rounded-full text-xs font-bold">{{ $totalEventBadge }}</span>
             @endif
         </button>
     </div>
@@ -128,110 +134,76 @@
                 $customGroups = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') === null);
             @endphp
 
-            <div class="space-y-6">
+            <div class="space-y-4">
                 {{-- Kelompok 1: Paket Event --}}
-                @if($packageGroups->isNotEmpty())
-                <div class="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
-                    <div class="p-6 bg-gradient-to-r from-purple-50 to-indigo-50/30 border-b border-purple-100 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center font-bold shadow-sm">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                            </span>
-                            <div>
-                                <h4 class="font-bold text-gray-900 text-lg">Paket Event</h4>
-                                <p class="text-xs text-gray-500">Daftar paket yang Anda pesan untuk acara</p>
-                            </div>
+                @foreach($packageGroups as $groupId => $groupItems)
+                @php
+                    $packageItem = $groupItems->firstWhere('item_type', 'package');
+                    $service = $groupItems->first()->cateringService;
+                    $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
+                @endphp
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-purple-200" id="event-card-{{ $groupId }}">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                            <h5 class="font-bold text-gray-900 text-base sm:text-lg truncate">{{ $packageItem->cateringPackage->name ?? 'Paket' }} <span class="text-gray-700 font-semibold">({{ $packageItem->quantity }})</span></h5>
+                            <span class="text-sm font-medium text-gray-500">•</span>
+                            <span class="text-sm font-medium text-gray-600">{{ $service->name ?? 'Layanan Event' }}</span>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700">{{ $packageGroups->count() }} Paket</span>
                     </div>
-                    <div class="divide-y divide-gray-100 p-6 space-y-4">
-                        @foreach($packageGroups as $groupId => $groupItems)
-                        @php
-                            $packageItem = $groupItems->firstWhere('item_type', 'package');
-                            $service = $groupItems->first()->cateringService;
-                            $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
-                        @endphp
-                        <div class="pt-4 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4" id="event-card-{{ $groupId }}">
-                            <div class="space-y-1.5 flex-1">
-                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-                                    <h5 class="font-bold text-gray-900 text-base sm:text-lg">{{ $packageItem->cateringPackage->name ?? 'Paket' }} <span class="text-gray-700 font-semibold">({{ $packageItem->quantity }})</span></h5>
-                                    <span class="text-sm font-medium text-gray-600">{{ $service->name ?? 'Layanan Event' }}</span>
-                                </div>
-                                <div class="pt-1">
-                                    <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="text-xs font-bold text-purple-600 hover:text-purple-800 underline">Lihat Detail Menu</button>
-                                </div>
-                            </div>
 
-                            <div class="flex items-center justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100 gap-4">
-                                <p class="text-base sm:text-lg font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
-                                <div class="flex items-center gap-2">
-                                    <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold rounded-lg text-xs transition-colors">
-                                        Edit
-                                    </button>
-                                    <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $packageItem->id ?? $groupItems->first()->id }}, true)" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-semibold rounded-lg text-xs transition-colors">
-                                        Hapus
-                                    </button>
-                                </div>
-                            </div>
+                    <div class="flex flex-wrap items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100">
+                        <p class="text-base sm:text-lg font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="px-3 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 font-semibold rounded-lg text-xs transition-colors">
+                                Lihat Detail
+                            </button>
+                            <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold rounded-lg text-xs transition-colors">
+                                Edit
+                            </button>
+                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $packageItem->id ?? $groupItems->first()->id }}, true)" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-semibold rounded-lg text-xs transition-colors">
+                                Hapus
+                            </button>
                         </div>
-                        @endforeach
                     </div>
                 </div>
-                @endif
+                @endforeach
 
                 {{-- Kelompok 2: Custom Menu --}}
-                @if($customGroups->isNotEmpty())
-                <div class="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
-                    <div class="p-6 bg-gradient-to-r from-blue-50 to-indigo-50/30 border-b border-purple-100 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center font-bold shadow-sm">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                            </span>
-                            <div>
-                                <h4 class="font-bold text-gray-900 text-lg">Custom Menu</h4>
-                                <p class="text-xs text-gray-500">Daftar custom menu yang Anda susun sendiri</p>
-                            </div>
+                @foreach($customGroups as $groupId => $groupItems)
+                @php
+                    $customHeader = $groupItems->firstWhere('item_type', 'custom_header');
+                    $menuItems = $groupItems->where('item_type', 'custom_menu');
+                    $service = $groupItems->first()->cateringService;
+                    $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
+                @endphp
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-purple-200" id="event-card-{{ $groupId }}">
+                    <div class="flex-1 min-w-0 space-y-1">
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                            <h5 class="font-bold text-gray-900 text-base sm:text-lg">Custom Menu</h5>
+                            <span class="text-sm font-medium text-gray-500">•</span>
+                            <span class="text-sm font-medium text-gray-600">{{ $service->name ?? 'Layanan Event' }}</span>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">{{ $customGroups->count() }} Pilihan Custom</span>
+                        <p class="text-sm font-medium text-gray-600">
+                            {{ $menuItems->count() }} Menu Dipilih
+                        </p>
                     </div>
-                    <div class="divide-y divide-gray-100 p-6 space-y-4">
-                        @foreach($customGroups as $groupId => $groupItems)
-                        @php
-                            $customHeader = $groupItems->firstWhere('item_type', 'custom_header');
-                            $menuItems = $groupItems->where('item_type', 'custom_menu');
-                            $service = $groupItems->first()->cateringService;
-                            $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
-                        @endphp
-                        <div class="pt-4 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4" id="event-card-{{ $groupId }}">
-                            <div class="space-y-1.5 flex-1">
-                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-                                    <h5 class="font-bold text-gray-900 text-base sm:text-lg">Custom Menu</h5>
-                                    <span class="text-sm font-medium text-gray-600">{{ $service->name ?? 'Layanan Event' }}</span>
-                                </div>
-                                <p class="text-sm font-medium text-gray-600">
-                                    {{ $menuItems->count() }} Menu Dipilih
-                                </p>
-                                <div class="pt-1">
-                                    <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="text-xs font-bold text-purple-600 hover:text-purple-800 underline">Lihat Detail</button>
-                                </div>
-                            </div>
 
-                            <div class="flex items-center justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100 gap-4">
-                                <p class="text-base sm:text-lg font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
-                                <div class="flex items-center gap-2">
-                                    <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold rounded-lg text-xs transition-colors">
-                                        Edit
-                                    </button>
-                                    <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $customHeader?->id ?? $groupItems->first()->id }}, false)" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-semibold rounded-lg text-xs transition-colors">
-                                        Hapus
-                                    </button>
-                                </div>
-                            </div>
+                    <div class="flex flex-wrap items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100">
+                        <p class="text-base sm:text-lg font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="px-3 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 font-semibold rounded-lg text-xs transition-colors">
+                                Lihat Detail
+                            </button>
+                            <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold rounded-lg text-xs transition-colors">
+                                Edit
+                            </button>
+                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $customHeader?->id ?? $groupItems->first()->id }}, false)" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-semibold rounded-lg text-xs transition-colors">
+                                Hapus
+                            </button>
                         </div>
-                        @endforeach
                     </div>
                 </div>
-                @endif
+                @endforeach
             </div>
 
             <!-- Ringkasan Belanja & Tombol Checkout Global untuk Semua Event -->
@@ -1115,6 +1087,9 @@
                 .then(async (data) => {
                     if (data.success) {
                         await refreshCartDOM();
+                        if (typeof window.updateCartBadges === 'function' && typeof data.cart_count !== 'undefined') {
+                            window.updateCartBadges(data.cart_count);
+                        }
                         Swal.fire({
                             title: 'Berhasil',
                             text: isPackage ? 'Paket berhasil dihapus.' : 'Custom menu berhasil dihapus.',
@@ -1154,11 +1129,23 @@
 
             const newDaily = doc.getElementById('content-daily');
             const newEvent = doc.getElementById('content-event');
+            const newTabDaily = doc.getElementById('tab-daily');
+            const newTabEvent = doc.getElementById('tab-event');
+
             if (newDaily && document.getElementById('content-daily')) {
                 document.getElementById('content-daily').innerHTML = newDaily.innerHTML;
             }
             if (newEvent && document.getElementById('content-event')) {
                 document.getElementById('content-event').innerHTML = newEvent.innerHTML;
+            }
+            if (newTabDaily && document.getElementById('tab-daily')) {
+                document.getElementById('tab-daily').innerHTML = newTabDaily.innerHTML;
+            }
+            if (newTabEvent && document.getElementById('tab-event')) {
+                document.getElementById('tab-event').innerHTML = newTabEvent.innerHTML;
+            }
+            if (typeof window.refreshCartBadges === 'function') {
+                window.refreshCartBadges();
             }
 
             doc.querySelectorAll('script').forEach(s => {
