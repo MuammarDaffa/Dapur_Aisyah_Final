@@ -461,7 +461,7 @@ class CheckoutController extends Controller
         foreach ($groupItems->groupBy('cart_group_id') as $gId => $gItems) {
             $pkg = $gItems->firstWhere('item_type', 'package');
             if ($pkg && $pkg->cateringPackage) {
-                $totalPortions += $pkg->cateringPackage->total_portions;
+                $totalPortions += $pkg->cateringPackage->total_portions * $pkg->quantity;
             } else {
                 $totalPortions += $gItems->whereIn('item_type', ['package_item', 'custom_menu'])->sum('quantity');
             }
@@ -519,16 +519,18 @@ class CheckoutController extends Controller
 
             // Buat OrderItems
             foreach ($groupItems as $cart) {
-                // Skip package marker
-                if ($cart->item_type === 'package') {
-                    // Simpan sebagai OrderItem paket header
-                    OrderItem::create([
-                        'order_id' => $order->id,
-                        'item_name' => 'Paket: ' . ($cart->cateringPackage?->name ?? 'Paket'),
-                        'quantity' => 1,
-                        'unit_price' => (float) ($cart->cateringPackage?->price ?? 0),
-                        'subtotal' => (float) ($cart->cateringPackage?->price ?? 0),
-                    ]);
+                // Skip package marker / custom_header marker
+                if ($cart->item_type === 'package' || $cart->item_type === 'custom_header') {
+                    if ($cart->item_type === 'package') {
+                        // Simpan sebagai OrderItem paket header
+                        OrderItem::create([
+                            'order_id' => $order->id,
+                            'item_name' => 'Paket: ' . ($cart->cateringPackage?->name ?? 'Paket'),
+                            'quantity' => $cart->quantity,
+                            'unit_price' => (float) ($cart->cateringPackage?->price ?? 0),
+                            'subtotal' => (float) ($cart->cateringPackage?->price ?? 0) * $cart->quantity,
+                        ]);
+                    }
                     continue;
                 }
 

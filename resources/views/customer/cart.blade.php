@@ -123,51 +123,134 @@
                 <a href="{{ route('landing') }}#services" class="px-6 py-3 bg-purple-500 text-white font-medium rounded-full hover:bg-purple-600 transition-colors">Pilih Layanan Event →</a>
             </div>
         @else
-            <div class="space-y-4">
-                @foreach($eventGroups as $groupId => $groupItems)
-                @php
-                    $packageItem = $groupItems->firstWhere('item_type', 'package');
-                    $menuItems = $groupItems->whereIn('item_type', ['package_item', 'custom_menu']);
-                    $service = $groupItems->first()->cateringService;
-                    $isPackage = $packageItem !== null;
-                    $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
-                    $totalPortions = $isPackage && $packageItem->cateringPackage ? $packageItem->cateringPackage->total_portions : $menuItems->sum('quantity');
-                    $notes = $groupItems->first()->notes ?? null;
-                @endphp
-                <div class="bg-white rounded-xl shadow-sm border border-purple-100 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4" id="event-card-{{ $groupId }}">
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2">
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold {{ $isPackage ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700' }}">
-                                {{ $isPackage ? 'Paket' : 'Custom Menu' }}
-                            </span>
-                            <h4 class="font-bold text-gray-900 text-base sm:text-lg">{{ $service->name ?? 'Layanan Event' }}</h4>
-                        </div>
-                        <p class="text-sm font-semibold text-gray-700">
-                            @if($isPackage && $packageItem->cateringPackage)
-                                {{ $packageItem->cateringPackage->name }} ({{ $totalPortions }} Porsi)
-                            @else
-                                {{ $menuItems->count() }} Menu Dipilih ({{ $totalPortions }} Porsi)
-                            @endif
-                        </p>
-                        @if($notes)
-                            <p class="text-xs text-gray-500 italic mt-1">"{{ $notes }}"</p>
-                        @endif
-                        <div class="pt-2 flex items-center gap-3">
-                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="text-xs font-bold text-purple-600 hover:text-purple-800 underline">Lihat Detail</button>
-                        </div>
-                    </div>
+            @php
+                $packageGroups = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') !== null);
+                $customGroups = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') === null);
+            @endphp
 
-                    <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100 gap-3">
-                        <p class="text-lg sm:text-xl font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
-                        <div class="flex items-center gap-2">
-                            @if(!$isPackage)
-                            <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 font-semibold rounded-lg text-xs transition-colors">Edit</button>
-                            @endif
-                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $groupItems->first()->id }})" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-semibold rounded-lg text-xs transition-colors">Hapus</button>
+            <div class="space-y-6">
+                {{-- Kelompok 1: Paket Event --}}
+                @if($packageGroups->isNotEmpty())
+                <div class="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
+                    <div class="p-6 bg-gradient-to-r from-purple-50 to-indigo-50/30 border-b border-purple-100 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center font-bold shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                            </span>
+                            <div>
+                                <h4 class="font-bold text-gray-900 text-lg">Paket Event</h4>
+                                <p class="text-xs text-gray-500">Daftar paket yang Anda pesan untuk acara</p>
+                            </div>
                         </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700">{{ $packageGroups->count() }} Paket</span>
+                    </div>
+                    <div class="divide-y divide-gray-100 p-6 space-y-4">
+                        @foreach($packageGroups as $groupId => $groupItems)
+                        @php
+                            $packageItem = $groupItems->firstWhere('item_type', 'package');
+                            $service = $groupItems->first()->cateringService;
+                            $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
+                            $totalPortions = $packageItem && $packageItem->cateringPackage ? $packageItem->cateringPackage->total_portions * $packageItem->quantity : 0;
+                            $notes = $packageItem->notes ?? ($groupItems->first()->notes ?? null);
+                        @endphp
+                        <div class="pt-4 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4" id="event-card-{{ $groupId }}">
+                            <div class="space-y-1.5 flex-1">
+                                <div class="flex items-center gap-2">
+                                    <h5 class="font-bold text-gray-900 text-base sm:text-lg">{{ $packageItem->cateringPackage->name ?? 'Paket' }} <span class="text-orange-600 font-extrabold ml-1">×{{ $packageItem->quantity }}</span></h5>
+                                    <span class="text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-600">{{ $service->name ?? 'Layanan Event' }}</span>
+                                </div>
+                                <p class="text-sm font-medium text-gray-600">
+                                    Total {{ $totalPortions }} Porsi (@ {{ $packageItem->cateringPackage->total_portions ?? 0 }} Porsi/Paket)
+                                </p>
+                                @if($notes)
+                                    <p class="text-xs text-gray-500 italic">"{{ $notes }}"</p>
+                                @endif
+                                <div class="pt-1 flex items-center gap-3">
+                                    <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="text-xs font-bold text-purple-600 hover:text-purple-800 underline">Lihat Detail Menu</button>
+                                </div>
+                            </div>
+
+                            <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100 gap-3">
+                                <p class="text-lg sm:text-xl font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-3 py-1.5 bg-orange-50 text-orange-600 hover:bg-orange-100 font-semibold rounded-lg text-xs transition-colors flex items-center gap-1">
+                                        Edit
+                                    </button>
+                                    <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $packageItem->id ?? $groupItems->first()->id }}, true)" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-semibold rounded-lg text-xs transition-colors flex items-center gap-1">
+                                        Hapus
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
                     </div>
                 </div>
-                @endforeach
+                @endif
+
+                {{-- Kelompok 2: Custom Menu --}}
+                @if($customGroups->isNotEmpty())
+                <div class="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
+                    <div class="p-6 bg-gradient-to-r from-blue-50 to-indigo-50/30 border-b border-purple-100 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center font-bold shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                            </span>
+                            <div>
+                                <h4 class="font-bold text-gray-900 text-lg">Custom Menu</h4>
+                                <p class="text-xs text-gray-500">Daftar custom menu yang Anda susun sendiri</p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">{{ $customGroups->count() }} Pilihan Custom</span>
+                    </div>
+                    <div class="divide-y divide-gray-100 p-6 space-y-4">
+                        @foreach($customGroups as $groupId => $groupItems)
+                        @php
+                            $customHeader = $groupItems->firstWhere('item_type', 'custom_header');
+                            $setsQty = $customHeader ? (int) $customHeader->quantity : 1;
+                            if ($setsQty <= 0) $setsQty = 1;
+                            $menuItems = $groupItems->where('item_type', 'custom_menu');
+                            $service = $groupItems->first()->cateringService;
+                            $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
+                            $totalPortions = $menuItems->sum('quantity');
+                            $notes = $customHeader?->notes ?? ($groupItems->first()->notes ?? null);
+
+                            $menuNames = $menuItems->map(fn($c) => $c->customOption->name ?? 'Item')->take(3)->implode(' + ');
+                            if ($menuItems->count() > 3) $menuNames .= ' + ...';
+                            if (empty($menuNames)) $menuNames = 'Custom Menu';
+                        @endphp
+                        <div class="pt-4 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4" id="event-card-{{ $groupId }}">
+                            <div class="space-y-1.5 flex-1">
+                                <div class="flex items-center gap-2">
+                                    <h5 class="font-bold text-gray-900 text-base sm:text-lg">{{ $menuNames }} <span class="text-blue-600 font-extrabold ml-1">×{{ $setsQty }}</span></h5>
+                                    <span class="text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-600">{{ $service->name ?? 'Layanan Event' }}</span>
+                                </div>
+                                <p class="text-sm font-medium text-gray-600">
+                                    {{ $menuItems->count() }} Menu Dipilih (Total {{ $totalPortions }} Porsi @ {{ $totalPortions / $setsQty }} Porsi/Set)
+                                </p>
+                                @if($notes)
+                                    <p class="text-xs text-gray-500 italic">"{{ $notes }}"</p>
+                                @endif
+                                <div class="pt-1 flex items-center gap-3">
+                                    <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="text-xs font-bold text-purple-600 hover:text-purple-800 underline">Lihat Detail</button>
+                                </div>
+                            </div>
+
+                            <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100 gap-3">
+                                <p class="text-lg sm:text-xl font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 font-semibold rounded-lg text-xs transition-colors flex items-center gap-1">
+                                        Edit
+                                    </button>
+                                    <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $customHeader?->id ?? $groupItems->first()->id }}, false)" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-semibold rounded-lg text-xs transition-colors flex items-center gap-1">
+                                        Hapus
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
             </div>
 
             <!-- Ringkasan Belanja & Tombol Checkout Global untuk Semua Event -->
@@ -260,23 +343,31 @@
     $eventGroupsJson = [];
     foreach($eventGroups as $gId => $gItems) {
         $pkgItem = $gItems->firstWhere('item_type', 'package');
+        $customHeader = $gItems->firstWhere('item_type', 'custom_header');
+        $setsQty = $customHeader ? (int) $customHeader->quantity : ($pkgItem ? (int) $pkgItem->quantity : 1);
+        if ($setsQty <= 0) $setsQty = 1;
+
         $eventGroupsJson[$gId] = [
             'group_id' => $gId,
             'service_name' => $gItems->first()->cateringService->name ?? 'Layanan Event',
             'package_name' => $pkgItem?->cateringPackage?->name,
+            'package_quantity' => $pkgItem ? (int) $pkgItem->quantity : 1,
+            'package_portions_per_unit' => $pkgItem?->cateringPackage?->total_portions ?? 0,
+            'package_price' => (float) ($pkgItem?->cateringPackage?->price ?? 0),
+            'sets_quantity' => $setsQty,
             'serving_name' => $gItems->first()->servingType?->name,
-            'notes' => $gItems->first()->notes,
+            'notes' => $customHeader?->notes ?? ($pkgItem?->notes ?? ($gItems->first()->notes ?? '')),
             'subtotal' => $gItems->sum(fn($c) => $c->subtotal),
             'catering_service_id' => $gItems->first()->catering_service_id,
             'catering_package_id' => $pkgItem?->catering_package_id,
-            'serving_type_id' => $gItems->first()->serving_type_id,
+            'serving_type_id' => $customHeader?->serving_type_id ?? ($pkgItem?->serving_type_id ?? ($gItems->first()->serving_type_id ?? null)),
             'is_package' => $pkgItem !== null,
             'min_portion' => $gItems->first()->cateringService->min_portion ?? 1,
             'max_portion' => $gItems->first()->cateringService->max_portion ?? 1000,
             'update_url' => route('customer.event.cart.update', $gId),
             'items' => $gItems->filter(fn($c) => in_array($c->item_type, ['package_item', 'custom_menu', 'addition']))->map(fn($c) => [
                 'custom_option_id' => $c->custom_option_id,
-                'quantity' => $c->quantity,
+                'quantity' => $pkgItem !== null ? $c->quantity : ($c->quantity / $setsQty),
                 'item_type' => $c->item_type,
                 'name' => $c->customOption->name ?? 'Item',
                 'price' => (float) ($c->customOption->price ?? 0),
@@ -589,7 +680,6 @@
         document.getElementById('editEventServiceId').value = group.catering_service_id;
         document.getElementById('editEventPackageId').value = group.catering_package_id || '';
 
-        // Load service options via API
         fetch(`/api/service/${group.catering_service_id}/custom-options`)
             .then(res => res.json())
             .then(options => {
@@ -605,40 +695,49 @@
         const extras = options.filter(o => o.type === 'extra');
         const servings = options.filter(o => o.type === 'serving_type');
 
-        // Header
-        document.getElementById('editEventTitle').textContent = group.is_package ? 'Pesanan Paket Event' : 'Pesanan Custom Event';
-        document.getElementById('editEventType').textContent = group.is_package ? 'Mode Paket' : 'Mode Custom';
+        document.getElementById('editEventTitle').textContent = group.is_package ? 'Edit Jumlah Paket' : 'Edit Pesanan Custom Menu';
+        document.getElementById('editEventType').textContent = group.is_package ? `${group.service_name} • ${group.package_name}` : `${group.service_name} • Mode Custom Menu`;
 
-        // Menu list
-        let menuHtml = '';
-        menus.forEach((menu, idx) => {
-            const existingItem = group.items.find(i => i.custom_option_id == menu.id && (i.item_type === 'package_item' || i.item_type === 'custom_menu'));
-            const qty = existingItem ? existingItem.quantity : 0;
-            const itemType = group.is_package ? 'package_item' : 'custom_menu';
-            const checked = qty > 0 ? 'checked' : '';
-
-            if (group.is_package) {
-                // Paket: semua menu ditampilkan dengan qty input
-                menuHtml += `
-                <div class="flex items-center justify-between p-3 border rounded-xl">
+        if (group.is_package) {
+            const currentQty = group.package_quantity || 1;
+            document.getElementById('editEventMenuList').innerHTML = `
+                <div class="p-4 bg-orange-50/60 rounded-xl border border-orange-100 flex items-center justify-between">
                     <div>
-                        <p class="font-medium text-gray-900">${menu.name}</p>
-                        <p class="text-xs ${group.is_package ? 'text-green-600' : 'text-orange-600'} font-medium">${group.is_package ? 'Termasuk paket' : 'Rp ' + Number(menu.price).toLocaleString('id-ID') + ' / porsi'}</p>
-                        <input type="hidden" name="items[${idx}][custom_option_id]" value="${menu.id}" class="edit-event-item-field">
-                        <input type="hidden" name="items[${idx}][item_type]" value="${itemType}" class="edit-event-item-field">
+                        <label class="block font-bold text-gray-900 text-base">Jumlah Paket</label>
+                        <p class="text-xs text-gray-500">Tentukan berapa banyak paket yang ingin dipesan</p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
-                        <input type="number" name="items[${idx}][quantity]" id="edit_event_qty_${idx}" value="${qty}" min="0"
-                            class="w-16 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${menu.price}" data-type="${itemType}" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
-                        <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="changePackageEditQty(-1)" class="w-10 h-10 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 font-bold text-lg shadow-sm transition-colors">−</button>
+                        <input type="number" name="quantity" id="editPackageQtyInput" value="${currentQty}" min="1" class="w-20 text-center py-2 px-3 rounded-xl border border-gray-200 font-bold text-gray-900 focus:border-orange-400 focus:ring-2 focus:ring-orange-100" onchange="recalcEditEvent()">
+                        <button type="button" onclick="changePackageEditQty(1)" class="w-10 h-10 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 font-bold text-lg shadow-sm transition-colors">+</button>
                     </div>
-                </div>`;
-            } else {
-                // Custom: checkbox + qty
+                </div>
+            `;
+            document.getElementById('editEventExtrasSection').style.display = 'none';
+            document.getElementById('editEventServingSection').style.display = 'none';
+        } else {
+            const currentSets = group.sets_quantity || 1;
+            let menuHtml = `
+                <div class="mb-4 p-4 bg-blue-50/60 rounded-xl border border-blue-100 flex items-center justify-between">
+                    <div>
+                        <label class="block font-bold text-gray-900 text-base">Jumlah Pesanan Set (×)</label>
+                        <p class="text-xs text-gray-500">Jumlah set custom menu yang dipesan</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="changeCustomSetsQty(-1)" class="w-10 h-10 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 font-bold text-lg shadow-sm transition-colors">−</button>
+                        <input type="number" name="sets_quantity" id="editCustomSetsQtyInput" value="${currentSets}" min="1" class="w-20 text-center py-2 px-3 rounded-xl border border-gray-200 font-bold text-gray-900 focus:border-blue-400 focus:ring-2 focus:ring-blue-100" onchange="recalcEditEvent()">
+                        <button type="button" onclick="changeCustomSetsQty(1)" class="w-10 h-10 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 font-bold text-lg shadow-sm transition-colors">+</button>
+                    </div>
+                </div>
+            `;
+            menus.forEach((menu, idx) => {
+                const existingItem = group.items.find(i => i.custom_option_id == menu.id && i.item_type === 'custom_menu');
+                const qty = existingItem ? existingItem.quantity : 0;
+                const checked = qty > 0 ? 'checked' : '';
                 const opacityClass = qty > 0 ? '' : 'opacity-0 pointer-events-none';
+
                 menuHtml += `
-                <div class="flex items-center justify-between p-3 border rounded-xl">
+                <div class="flex items-center justify-between p-3 border rounded-xl mb-2">
                     <label class="flex items-center gap-3 cursor-pointer flex-1">
                         <input type="checkbox" id="edit_menu_cb_${idx}" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}"
                             class="w-5 h-5 rounded border-gray-300 text-orange-500 edit-menu-checkbox" ${checked} onchange="toggleEditMenu(${idx}, ${menu.id})">
@@ -656,64 +755,62 @@
                     <input type="hidden" name="items[${idx}][custom_option_id]" value="${menu.id}" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
                     <input type="hidden" name="items[${idx}][item_type]" value="custom_menu" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
                 </div>`;
-            }
-        });
-        document.getElementById('editEventMenuList').innerHTML = menuHtml;
+            });
+            document.getElementById('editEventMenuList').innerHTML = menuHtml;
 
-        // Extras
-        let extraStartIdx = menus.length;
-        if (extras.length > 0) {
-            document.getElementById('editEventExtrasSection').style.display = 'block';
-            let extraHtml = '';
-            extras.forEach((extra, i) => {
-                const eIdx = extraStartIdx + i;
-                const existingExtra = group.items.find(item => item.custom_option_id == extra.id && item.item_type === 'addition');
-                const eQty = existingExtra ? existingExtra.quantity : 0;
-                const eChecked = eQty > 0 ? 'checked' : '';
-                const opacityClass = eQty > 0 ? '' : 'opacity-0 pointer-events-none';
+            let extraStartIdx = menus.length;
+            if (extras.length > 0) {
+                document.getElementById('editEventExtrasSection').style.display = 'block';
+                let extraHtml = '';
+                extras.forEach((extra, i) => {
+                    const eIdx = extraStartIdx + i;
+                    const existingExtra = group.items.find(item => item.custom_option_id == extra.id && item.item_type === 'addition');
+                    const eQty = existingExtra ? existingExtra.quantity : 0;
+                    const eChecked = eQty > 0 ? 'checked' : '';
+                    const opacityClass = eQty > 0 ? '' : 'opacity-0 pointer-events-none';
 
-                extraHtml += `
-                <div class="flex items-center justify-between p-3 border rounded-xl">
-                    <label class="flex items-center gap-3 cursor-pointer flex-1">
-                        <input type="checkbox" id="edit_extra_cb_${eIdx}" data-idx="${eIdx}" data-id="${extra.id}" data-price="${extra.price}"
-                            class="w-5 h-5 rounded border-gray-300 text-orange-500 edit-extra-checkbox" ${eChecked} onchange="toggleEditExtra(${eIdx}, ${extra.id})">
-                        <div>
-                            <span class="font-medium text-gray-900">${extra.name}</span>
-                            <p class="text-xs text-orange-600">+Rp ${Number(extra.price).toLocaleString('id-ID')}</p>
+                    extraHtml += `
+                    <div class="flex items-center justify-between p-3 border rounded-xl mb-2">
+                        <label class="flex items-center gap-3 cursor-pointer flex-1">
+                            <input type="checkbox" id="edit_extra_cb_${eIdx}" data-idx="${eIdx}" data-id="${extra.id}" data-price="${extra.price}"
+                                class="w-5 h-5 rounded border-gray-300 text-orange-500 edit-extra-checkbox" ${eChecked} onchange="toggleEditExtra(${eIdx}, ${extra.id})">
+                            <div>
+                                <span class="font-medium text-gray-900">${extra.name}</span>
+                                <p class="text-xs text-orange-600">+Rp ${Number(extra.price).toLocaleString('id-ID')}</p>
+                            </div>
+                        </label>
+                        <div class="flex items-center gap-2 transition-opacity ${opacityClass}" id="edit_extra_qty_container_${eIdx}">
+                            <button type="button" onclick="changeEditEventQty(${eIdx}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
+                            <input type="number" name="items[${eIdx}][quantity]" id="edit_event_qty_${eIdx}" value="${eQty}" min="0"
+                                class="w-16 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${extra.price}" data-type="addition" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
+                            <button type="button" onclick="changeEditEventQty(${eIdx}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
                         </div>
-                    </label>
-                    <div class="flex items-center gap-2 transition-opacity ${opacityClass}" id="edit_extra_qty_container_${eIdx}">
-                        <button type="button" onclick="changeEditEventQty(${eIdx}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
-                        <input type="number" name="items[${eIdx}][quantity]" id="edit_event_qty_${eIdx}" value="${eQty}" min="0"
-                            class="w-16 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${extra.price}" data-type="addition" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
-                        <button type="button" onclick="changeEditEventQty(${eIdx}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
-                    </div>
-                    <input type="hidden" name="items[${eIdx}][custom_option_id]" value="${extra.id}" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
-                    <input type="hidden" name="items[${eIdx}][item_type]" value="addition" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
-                </div>`;
-            });
-            document.getElementById('editEventExtrasList').innerHTML = extraHtml;
-        } else {
-            document.getElementById('editEventExtrasSection').style.display = 'none';
-        }
+                        <input type="hidden" name="items[${eIdx}][custom_option_id]" value="${extra.id}" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
+                        <input type="hidden" name="items[${eIdx}][item_type]" value="addition" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
+                    </div>`;
+                });
+                document.getElementById('editEventExtrasList').innerHTML = extraHtml;
+            } else {
+                document.getElementById('editEventExtrasSection').style.display = 'none';
+            }
 
-        // Penyajian
-        if (servings.length > 0) {
-            document.getElementById('editEventServingSection').style.display = 'block';
-            let servingHtml = '';
-            servings.forEach(s => {
-                const checked = group.serving_type_id == s.id ? 'checked' : '';
-                servingHtml += `
-                <label class="relative cursor-pointer">
-                    <input type="radio" name="serving_type_id" value="${s.id}" class="peer sr-only" ${checked} onchange="recalcEditEvent()">
-                    <div class="p-3 text-center border-2 rounded-xl peer-checked:border-orange-500 peer-checked:bg-orange-50 transition-colors">
-                        <span class="font-medium text-gray-900">${s.name}</span>
-                    </div>
-                </label>`;
-            });
-            document.getElementById('editEventServingList').innerHTML = servingHtml;
-        } else {
-            document.getElementById('editEventServingSection').style.display = 'none';
+            if (servings.length > 0) {
+                document.getElementById('editEventServingSection').style.display = 'block';
+                let servingHtml = '';
+                servings.forEach(s => {
+                    const checked = group.serving_type_id == s.id ? 'checked' : '';
+                    servingHtml += `
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="serving_type_id" value="${s.id}" class="peer sr-only" ${checked} onchange="recalcEditEvent()">
+                        <div class="p-3 text-center border-2 rounded-xl peer-checked:border-orange-500 peer-checked:bg-orange-50 transition-colors">
+                            <span class="font-medium text-gray-900">${s.name}</span>
+                        </div>
+                    </label>`;
+                });
+                document.getElementById('editEventServingList').innerHTML = servingHtml;
+            } else {
+                document.getElementById('editEventServingSection').style.display = 'none';
+            }
         }
 
         if (group.is_package && group.catering_package_id) {
@@ -734,6 +831,24 @@
             initialEditEventSnapshot = getEditEventSnapshot();
             recalcEditEvent();
         }
+    }
+
+    function changePackageEditQty(delta) {
+        const input = document.getElementById('editPackageQtyInput');
+        if (!input) return;
+        let val = parseInt(input.value) || 1;
+        val = Math.max(1, val + delta);
+        input.value = val;
+        recalcEditEvent();
+    }
+
+    function changeCustomSetsQty(delta) {
+        const input = document.getElementById('editCustomSetsQtyInput');
+        if (!input) return;
+        let val = parseInt(input.value) || 1;
+        val = Math.max(1, val + delta);
+        input.value = val;
+        recalcEditEvent();
     }
 
     function toggleEditMenu(idx, menuId) {
@@ -783,6 +898,15 @@
 
     function getEditEventSnapshot() {
         if (!editingGroupId) return '';
+        const group = eventGroupsData[editingGroupId];
+        if (!group) return '';
+
+        if (group.is_package) {
+            const qty = parseInt(document.getElementById('editPackageQtyInput')?.value) || group.package_quantity || 1;
+            return 'package:' + qty;
+        }
+
+        const setsQty = parseInt(document.getElementById('editCustomSetsQtyInput')?.value) || group.sets_quantity || 1;
         const items = [];
         document.querySelectorAll('#editEventForm input.edit-event-qty').forEach(input => {
             const name = input.name || '';
@@ -811,96 +935,79 @@
         const servingRadio = document.querySelector('#editEventForm input[name="serving_type_id"]:checked');
         const servingVal = servingRadio ? servingRadio.value : '';
 
-        return items.join('|') + '||' + servingVal;
+        return 'custom:' + setsQty + '|' + items.join('|') + '||' + servingVal;
     }
 
     function recalcEditEvent() {
-        let totalPrice = 0;
-        let totalPortions = 0;
-
         const group = eventGroupsData[editingGroupId];
         if (!group) return;
-
-        document.querySelectorAll('.edit-event-qty').forEach(input => {
-            const name = input.name || '';
-            const match = name.match(/items\[(\d+)\]/);
-            if (!match) return;
-            const idx = match[1];
-
-            let active = true;
-            const menuCb = document.getElementById('edit_menu_cb_' + idx);
-            const extraCb = document.getElementById('edit_extra_cb_' + idx);
-            if (menuCb && !menuCb.checked) active = false;
-            if (extraCb && !extraCb.checked) active = false;
-
-            if (active) {
-                const qty = parseInt(input.value) || 0;
-                const price = parseFloat(input.dataset.price) || 0;
-                const type = input.dataset.type;
-
-                if (type === 'package_item') {
-                    totalPortions += qty;
-                } else if (type === 'custom_menu') {
-                    totalPortions += qty;
-                    totalPrice += price * qty;
-                } else if (type === 'addition') {
-                    totalPrice += price * qty;
-                }
-            }
-        });
 
         const btn = document.getElementById('editEventSubmitBtn');
         let isValid = true;
 
-        if (group.is_package && group.catering_package_id) {
-            document.getElementById('editCustomPortionIndicator').style.display = 'none';
-            document.getElementById('editCustomSummaryMsg').style.display = 'none';
+        if (group.is_package) {
+            const qty = parseInt(document.getElementById('editPackageQtyInput')?.value) || 1;
+            const pkgPrice = group._pkg_price || group.package_price || 0;
+            const totalPortions = (group._pkg_target || group.package_portions_per_unit || 0) * qty;
 
-            if (group._pkg_target !== undefined) {
-                const target = group._pkg_target;
-                const pkgPrice = group._pkg_price || 0;
-                document.getElementById('editEventTotal').textContent = formatRupiah(pkgPrice + totalPrice);
-                document.getElementById('editEventPortions').textContent = totalPortions;
-                document.getElementById('editEventMinPortionsDisplay').textContent = ' / ' + target;
+            document.getElementById('editEventTotal').textContent = formatRupiah(pkgPrice * qty);
+            document.getElementById('editEventPortions').textContent = totalPortions;
+            document.getElementById('editEventMinPortionsDisplay').textContent = '';
 
-                document.getElementById('editPkgTarget').textContent = target;
-                document.getElementById('editPkgSelected').textContent = totalPortions;
-                const msg = document.getElementById('editPkgMsg');
-                const indicator = document.getElementById('editPkgPortionIndicator');
-                indicator.style.display = 'block';
+            const minPortion = group.min_portion || 1;
+            const maxPortion = group.max_portion || 1000;
+            const indicator = document.getElementById('editPkgPortionIndicator');
+            const msg = document.getElementById('editPkgMsg');
+            document.getElementById('editPkgTarget').textContent = `${minPortion} - ${maxPortion}`;
+            document.getElementById('editPkgSelected').textContent = totalPortions;
 
-                if (totalPortions < target) {
-                    isValid = false;
-                    indicator.className = 'mb-3 p-3 rounded-xl border border-yellow-200 bg-yellow-50';
-                    msg.textContent = `⚠️ Kurang ${target - totalPortions} porsi`;
-                    msg.className = 'text-sm font-medium text-yellow-700';
-                } else if (totalPortions > target) {
-                    isValid = false;
-                    indicator.className = 'mb-3 p-3 rounded-xl border border-red-200 bg-red-50';
-                    msg.textContent = `❌ Kelebihan ${totalPortions - target} porsi`;
-                    msg.className = 'text-sm font-medium text-red-700';
-                } else {
-                    indicator.className = 'mb-3 p-3 rounded-xl border border-green-200 bg-green-50';
-                    msg.textContent = `✅ Porsi tepat!`;
-                    msg.className = 'text-sm font-medium text-green-700';
-                }
-            } else {
+            if (totalPortions < minPortion) {
                 isValid = false;
-                fetch(`/api/package/${group.catering_package_id}/details`)
-                    .then(res => res.json())
-                    .then(pkg => {
-                        group._pkg_price = parseFloat(pkg.price) || 0;
-                        group._pkg_target = pkg.total_portions;
-                        if (initialEditEventSnapshot === null) {
-                            initialEditEventSnapshot = getEditEventSnapshot();
-                        }
-                        recalcEditEvent();
-                    });
+                if (indicator) indicator.className = 'mb-3 p-3 rounded-xl border border-yellow-200 bg-yellow-50';
+                if (msg) { msg.textContent = `⚠️ Kurang ${minPortion - totalPortions} porsi dari minimal (${minPortion} porsi)`; msg.className = 'text-sm font-medium text-yellow-700'; }
+            } else if (totalPortions > maxPortion) {
+                isValid = false;
+                if (indicator) indicator.className = 'mb-3 p-3 rounded-xl border border-red-200 bg-red-50';
+                if (msg) { msg.textContent = `❌ Kelebihan ${totalPortions - maxPortion} porsi dari maksimal (${maxPortion} porsi)`; msg.className = 'text-sm font-medium text-red-700'; }
+            } else {
+                if (indicator) indicator.className = 'mb-3 p-3 rounded-xl border border-green-200 bg-green-50';
+                if (msg) { msg.textContent = `✅ Total porsi sesuai batas layanan (${totalPortions} Porsi)`; msg.className = 'text-sm font-medium text-green-700'; }
             }
         } else {
-            document.getElementById('editPkgPortionIndicator').style.display = 'none';
-            document.getElementById('editEventTotal').textContent = formatRupiah(totalPrice);
+            let totalPricePerSet = 0;
+            let totalPortionsPerSet = 0;
+            const setsQty = parseInt(document.getElementById('editCustomSetsQtyInput')?.value) || 1;
 
+            document.querySelectorAll('.edit-event-qty').forEach(input => {
+                const name = input.name || '';
+                const match = name.match(/items\[(\d+)\]/);
+                if (!match) return;
+                const idx = match[1];
+
+                let active = true;
+                const menuCb = document.getElementById('edit_menu_cb_' + idx);
+                const extraCb = document.getElementById('edit_extra_cb_' + idx);
+                if (menuCb && !menuCb.checked) active = false;
+                if (extraCb && !extraCb.checked) active = false;
+
+                if (active) {
+                    const qty = parseInt(input.value) || 0;
+                    const price = parseFloat(input.dataset.price) || 0;
+                    const type = input.dataset.type;
+
+                    if (type === 'custom_menu') {
+                        totalPortionsPerSet += qty;
+                        totalPricePerSet += price * qty;
+                    } else if (type === 'addition') {
+                        totalPricePerSet += price * qty;
+                    }
+                }
+            });
+
+            const totalPortions = totalPortionsPerSet * setsQty;
+            const totalPrice = totalPricePerSet * setsQty;
+
+            document.getElementById('editEventTotal').textContent = formatRupiah(totalPrice);
             const minPortion = group.min_portion || 1;
             const maxPortion = group.max_portion || 1000;
 
@@ -912,36 +1019,25 @@
             const summaryMsg = document.getElementById('editCustomSummaryMsg');
             document.getElementById('editCustomMinTarget').textContent = minPortion;
             document.getElementById('editCustomPortionsDisplay').textContent = totalPortions;
-            customIndicator.style.display = 'flex';
 
             if (totalPortions < minPortion) {
                 isValid = false;
-                customIndicator.className = 'mb-3 p-3 rounded-xl border border-yellow-200 bg-yellow-50 flex items-center justify-between';
-                customMsg.textContent = `⚠️ Kurang ${minPortion - totalPortions} porsi`;
-                customMsg.className = 'text-sm font-medium text-yellow-700';
-                summaryMsg.style.display = 'block';
-                summaryMsg.textContent = `⚠️ Porsi belum memenuhi minimum (${minPortion} porsi)`;
-                summaryMsg.className = 'mt-2 text-xs font-semibold text-yellow-700';
+                if (customIndicator) customIndicator.className = 'mb-3 p-3 rounded-xl border border-yellow-200 bg-yellow-50 flex items-center justify-between';
+                if (customMsg) { customMsg.textContent = `⚠️ Kurang ${minPortion - totalPortions} porsi`; customMsg.className = 'text-sm font-medium text-yellow-700'; }
+                if (summaryMsg) { summaryMsg.style.display = 'block'; summaryMsg.textContent = `⚠️ Porsi belum memenuhi minimum (${minPortion} porsi)`; summaryMsg.className = 'mt-2 text-xs font-semibold text-yellow-700'; }
             } else if (totalPortions > maxPortion) {
                 isValid = false;
-                customIndicator.className = 'mb-3 p-3 rounded-xl border border-red-200 bg-red-50 flex items-center justify-between';
-                customMsg.textContent = `❌ Kelebihan ${totalPortions - maxPortion} porsi`;
-                customMsg.className = 'text-sm font-medium text-red-700';
-                summaryMsg.style.display = 'block';
-                summaryMsg.textContent = `❌ Melebihi batas maksimum (${maxPortion} porsi)`;
-                summaryMsg.className = 'mt-2 text-xs font-semibold text-red-700';
+                if (customIndicator) customIndicator.className = 'mb-3 p-3 rounded-xl border border-red-200 bg-red-50 flex items-center justify-between';
+                if (customMsg) { customMsg.textContent = `❌ Kelebihan ${totalPortions - maxPortion} porsi`; customMsg.className = 'text-sm font-medium text-red-700'; }
+                if (summaryMsg) { summaryMsg.style.display = 'block'; summaryMsg.textContent = `❌ Melebihi batas maksimum (${maxPortion} porsi)`; summaryMsg.className = 'mt-2 text-xs font-semibold text-red-700'; }
             } else {
-                customIndicator.className = 'mb-3 p-3 rounded-xl border border-green-200 bg-green-50 flex items-center justify-between';
-                customMsg.textContent = `✅ Porsi memenuhi syarat minimum (${minPortion} porsi)`;
-                customMsg.className = 'text-sm font-medium text-green-700';
-                summaryMsg.style.display = 'none';
+                if (customIndicator) customIndicator.className = 'mb-3 p-3 rounded-xl border border-green-200 bg-green-50 flex items-center justify-between';
+                if (customMsg) { customMsg.textContent = `✅ Porsi memenuhi syarat minimum (${minPortion} porsi)`; customMsg.className = 'text-sm font-medium text-green-700'; }
+                if (summaryMsg) summaryMsg.style.display = 'none';
             }
         }
 
-        const currentSnapshot = getEditEventSnapshot();
-        const hasChanges = (initialEditEventSnapshot !== null && currentSnapshot !== initialEditEventSnapshot);
-
-        if (!isValid || !hasChanges) {
+        if (!isValid) {
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
         } else {
@@ -950,13 +1046,70 @@
         }
     }
 
-    function submitEditEventForm() {
+    async function submitEditEventForm() {
         const btn = document.getElementById('editEventSubmitBtn');
         if (btn.disabled) return;
+
+        const group = eventGroupsData[editingGroupId];
+        if (!group) return;
+
+        const currentSnapshot = getEditEventSnapshot();
+        if (initialEditEventSnapshot !== null && currentSnapshot === initialEditEventSnapshot) {
+            closeEditEventModal();
+            return;
+        }
+
         btn.disabled = true;
         btn.classList.add('opacity-50', 'cursor-not-allowed');
+        const origText = btn.textContent;
         btn.textContent = 'Menyimpan...';
-        document.getElementById('editEventForm').submit();
+
+        const form = document.getElementById('editEventForm');
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                closeEditEventModal();
+                await refreshCartDOM();
+                Swal.fire({
+                    title: 'Berhasil',
+                    text: group.is_package ? 'Paket berhasil diperbarui.' : 'Custom menu berhasil diperbarui.',
+                    icon: 'success',
+                    confirmButtonColor: '#f97316'
+                });
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.textContent = origText;
+                Swal.fire({
+                    title: 'Gagal',
+                    text: data.message || 'Gagal memperbarui pesanan.',
+                    icon: 'error',
+                    confirmButtonColor: '#f97316'
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.textContent = origText;
+            Swal.fire({
+                title: 'Gagal',
+                text: 'Terjadi kesalahan saat menyimpan perubahan.',
+                icon: 'error',
+                confirmButtonColor: '#f97316'
+            });
+        }
     }
 
     function closeEditEventModal() {
@@ -1017,18 +1170,106 @@
     document.getElementById('detailEventModal')?.addEventListener('click', function(e) { if (e.target === this) closeDetailModal(); });
 
     // =======================
-    // DELETE CONFIRMATION
+    // DELETE CONFIRMATION (SweetAlert)
     // =======================
-    function confirmDeleteEvent(groupId, cartId) {
-        document.getElementById('deleteEventForm').action = '{{ url("dashboard/cart") }}/' + cartId;
-        document.getElementById('deleteConfirmModal').style.display = 'flex';
+    function confirmDeleteEvent(groupId, cartId, isPackage = false) {
+        Swal.fire({
+            title: 'Hapus item?',
+            text: 'Item yang dihapus tidak dapat dikembalikan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Hapus',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/dashboard/cart/${cartId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(async (data) => {
+                    if (data.success) {
+                        await refreshCartDOM();
+                        Swal.fire({
+                            title: 'Berhasil',
+                            text: isPackage ? 'Paket berhasil dihapus.' : 'Custom menu berhasil dihapus.',
+                            icon: 'success',
+                            confirmButtonColor: '#f97316'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Gagal',
+                            text: data.message || 'Gagal menghapus item.',
+                            icon: 'error',
+                            confirmButtonColor: '#f97316'
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    Swal.fire({
+                        title: 'Gagal',
+                        text: 'Terjadi kesalahan saat menghapus item.',
+                        icon: 'error',
+                        confirmButtonColor: '#f97316'
+                    });
+                });
+            }
+        });
     }
 
-    function closeDeleteModal() {
-        document.getElementById('deleteConfirmModal').style.display = 'none';
-    }
+    async function refreshCartDOM() {
+        try {
+            const response = await fetch(window.location.href, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
 
-    document.getElementById('deleteConfirmModal').addEventListener('click', function(e) { if (e.target === this) closeDeleteModal(); });
+            const newDaily = doc.getElementById('content-daily');
+            const newEvent = doc.getElementById('content-event');
+            if (newDaily && document.getElementById('content-daily')) {
+                document.getElementById('content-daily').innerHTML = newDaily.innerHTML;
+            }
+            if (newEvent && document.getElementById('content-event')) {
+                document.getElementById('content-event').innerHTML = newEvent.innerHTML;
+            }
+
+            doc.querySelectorAll('script').forEach(s => {
+                const text = s.textContent || '';
+                if (text.includes('const eventGroupsData =')) {
+                    const matchEvent = text.match(/const eventGroupsData = (\{[\s\S]*?\});\s*(?:let|const|function|var|\n|$)/);
+                    if (matchEvent && matchEvent[1]) {
+                        try {
+                            const parsed = JSON.parse(matchEvent[1]);
+                            for (let k in eventGroupsData) delete eventGroupsData[k];
+                            Object.assign(eventGroupsData, parsed);
+                        } catch(e) {}
+                    }
+                }
+                if (text.includes('const dailyCartsData =')) {
+                    const matchDaily = text.match(/const dailyCartsData = (\{[\s\S]*?\});\s*(?:let|const|function|var|\n|$)/);
+                    if (matchDaily && matchDaily[1]) {
+                        try {
+                            const parsed = JSON.parse(matchDaily[1]);
+                            for (let k in dailyCartsData) delete dailyCartsData[k];
+                            Object.assign(dailyCartsData, parsed);
+                        } catch(e) {}
+                    }
+                }
+            });
+        } catch(e) {
+            console.error('refreshCartDOM error:', e);
+            window.location.reload();
+        }
+    }
 </script>
 @endpush
 @endsection
