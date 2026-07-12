@@ -147,6 +147,24 @@
     </div>
 </div>
 
+@push('styles')
+<style>
+@media (max-width: 768px) {
+    #snap-midtrans {
+        width: 100vw !important;
+        height: 100vh !important;
+        left: 0 !important;
+        top: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+    }
+}
+</style>
+@endpush
+
 @push('scripts')
 <script>
 

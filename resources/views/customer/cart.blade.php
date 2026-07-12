@@ -271,6 +271,8 @@
             'catering_package_id' => $pkgItem?->catering_package_id,
             'serving_type_id' => $gItems->first()->serving_type_id,
             'is_package' => $pkgItem !== null,
+            'min_portion' => $gItems->first()->cateringService->min_portion ?? 1,
+            'max_portion' => $gItems->first()->cateringService->max_portion ?? 1000,
             'update_url' => route('customer.event.cart.update', $gId),
             'items' => $gItems->filter(fn($c) => in_array($c->item_type, ['package_item', 'custom_menu', 'addition']))->map(fn($c) => [
                 'custom_option_id' => $c->custom_option_id,
@@ -352,6 +354,12 @@
                         <p id="editPkgMsg" class="text-sm font-medium"></p>
                     </div>
 
+                    {{-- Porsi Indicator (untuk custom menu) --}}
+                    <div id="editCustomPortionIndicator" class="mb-3 p-3 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-between" style="display:none;">
+                        <span class="text-sm font-bold text-gray-900">Total Porsi: <span id="editCustomPortionsDisplay">0</span> / <span id="editCustomMinTarget">0</span></span>
+                        <span id="editCustomMsg" class="text-sm font-medium"></span>
+                    </div>
+
                     <div id="editEventMenuList" class="space-y-2"></div>
                 </div>
 
@@ -375,14 +383,17 @@
                     </div>
                     <div class="flex justify-between items-center mt-1">
                         <span class="text-sm text-gray-500">Total Porsi</span>
-                        <span id="editEventPortions" class="font-semibold text-gray-700">0</span>
+                        <span class="font-semibold text-gray-700">
+                            <span id="editEventPortions">0</span><span id="editEventMinPortionsDisplay"></span>
+                        </span>
                     </div>
+                    <div id="editCustomSummaryMsg" class="mt-2 text-xs font-semibold" style="display:none;"></div>
                 </div>
             </form>
         </div>
         <div class="p-6 border-t border-gray-100 flex-shrink-0 flex gap-3">
             <button type="button" onclick="closeEditEventModal()" class="flex-1 px-6 py-3.5 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors text-sm">Batal</button>
-            <button type="button" id="editEventSubmitBtn" onclick="document.getElementById('editEventForm').submit()" class="flex-1 px-6 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all text-sm">Update</button>
+            <button type="button" id="editEventSubmitBtn" onclick="submitEditEventForm()" class="flex-1 px-6 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all text-sm">Update</button>
         </div>
     </div>
 </div>
@@ -566,9 +577,11 @@
     const eventGroupsData = @json($eventGroupsJson);
     let editingGroupId = null;
     let editServiceOptions = [];
+    let initialEditEventSnapshot = null;
 
     function openEditEventModal(groupId) {
         editingGroupId = groupId;
+        initialEditEventSnapshot = null;
         const group = eventGroupsData[groupId];
         if (!group) return;
 
@@ -596,20 +609,6 @@
         document.getElementById('editEventTitle').textContent = group.is_package ? 'Pesanan Paket Event' : 'Pesanan Custom Event';
         document.getElementById('editEventType').textContent = group.is_package ? 'Mode Paket' : 'Mode Custom';
 
-        // Package portion indicator
-        if (group.is_package && group.catering_package_id) {
-            document.getElementById('editPkgPortionIndicator').style.display = 'block';
-            // Fetch package details for total_portions
-            fetch(`/api/package/${group.catering_package_id}/details`)
-                .then(res => res.json())
-                .then(pkg => {
-                    document.getElementById('editPkgTarget').textContent = pkg.total_portions;
-                    recalcEditEvent();
-                });
-        } else {
-            document.getElementById('editPkgPortionIndicator').style.display = 'none';
-        }
-
         // Menu list
         let menuHtml = '';
         menus.forEach((menu, idx) => {
@@ -631,7 +630,7 @@
                     <div class="flex items-center gap-2">
                         <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
                         <input type="number" name="items[${idx}][quantity]" id="edit_event_qty_${idx}" value="${qty}" min="0"
-                            class="w-16 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${menu.price}" data-type="${itemType}" onchange="recalcEditEvent()">
+                            class="w-16 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${menu.price}" data-type="${itemType}" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
                         <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
                     </div>
                 </div>`;
@@ -651,7 +650,7 @@
                     <div class="flex items-center gap-2 transition-opacity ${opacityClass}" id="edit_menu_qty_container_${idx}">
                         <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
                         <input type="number" name="items[${idx}][quantity]" id="edit_event_qty_${idx}" value="${qty}" min="0"
-                            class="w-16 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${menu.price}" data-type="custom_menu" onchange="recalcEditEvent()">
+                            class="w-16 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${menu.price}" data-type="custom_menu" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
                         <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
                     </div>
                     <input type="hidden" name="items[${idx}][custom_option_id]" value="${menu.id}" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
@@ -686,7 +685,7 @@
                     <div class="flex items-center gap-2 transition-opacity ${opacityClass}" id="edit_extra_qty_container_${eIdx}">
                         <button type="button" onclick="changeEditEventQty(${eIdx}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
                         <input type="number" name="items[${eIdx}][quantity]" id="edit_event_qty_${eIdx}" value="${eQty}" min="0"
-                            class="w-16 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${extra.price}" data-type="addition" onchange="recalcEditEvent()">
+                            class="w-16 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${extra.price}" data-type="addition" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
                         <button type="button" onclick="changeEditEventQty(${eIdx}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
                     </div>
                     <input type="hidden" name="items[${eIdx}][custom_option_id]" value="${extra.id}" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
@@ -706,7 +705,7 @@
                 const checked = group.serving_type_id == s.id ? 'checked' : '';
                 servingHtml += `
                 <label class="relative cursor-pointer">
-                    <input type="radio" name="serving_type_id" value="${s.id}" class="peer sr-only" ${checked}>
+                    <input type="radio" name="serving_type_id" value="${s.id}" class="peer sr-only" ${checked} onchange="recalcEditEvent()">
                     <div class="p-3 text-center border-2 rounded-xl peer-checked:border-orange-500 peer-checked:bg-orange-50 transition-colors">
                         <span class="font-medium text-gray-900">${s.name}</span>
                     </div>
@@ -717,14 +716,30 @@
             document.getElementById('editEventServingSection').style.display = 'none';
         }
 
-        recalcEditEvent();
+        if (group.is_package && group.catering_package_id) {
+            document.getElementById('editPkgPortionIndicator').style.display = 'block';
+            document.getElementById('editCustomPortionIndicator').style.display = 'none';
+            fetch(`/api/package/${group.catering_package_id}/details`)
+                .then(res => res.json())
+                .then(pkg => {
+                    document.getElementById('editPkgTarget').textContent = pkg.total_portions;
+                    group._pkg_price = parseFloat(pkg.price) || 0;
+                    group._pkg_target = pkg.total_portions;
+                    initialEditEventSnapshot = getEditEventSnapshot();
+                    recalcEditEvent();
+                });
+        } else {
+            document.getElementById('editPkgPortionIndicator').style.display = 'none';
+            document.getElementById('editCustomPortionIndicator').style.display = 'flex';
+            initialEditEventSnapshot = getEditEventSnapshot();
+            recalcEditEvent();
+        }
     }
 
     function toggleEditMenu(idx, menuId) {
         const cb = document.getElementById('edit_menu_cb_' + idx);
         const container = document.getElementById('edit_menu_qty_container_' + idx);
         const input = document.getElementById('edit_event_qty_' + idx);
-        // Get the hidden fields
         const hiddens = document.querySelectorAll(`input[name="items[${idx}][custom_option_id]"], input[name="items[${idx}][item_type]"]`);
 
         if (cb.checked) {
@@ -766,6 +781,39 @@
         recalcEditEvent();
     }
 
+    function getEditEventSnapshot() {
+        if (!editingGroupId) return '';
+        const items = [];
+        document.querySelectorAll('#editEventForm input.edit-event-qty').forEach(input => {
+            const name = input.name || '';
+            const match = name.match(/items\[(\d+)\]/);
+            if (!match) return;
+            const idx = match[1];
+
+            let active = true;
+            const menuCb = document.getElementById('edit_menu_cb_' + idx);
+            const extraCb = document.getElementById('edit_extra_cb_' + idx);
+            if (menuCb && !menuCb.checked) active = false;
+            if (extraCb && !extraCb.checked) active = false;
+
+            if (active) {
+                const qty = parseInt(input.value) || 0;
+                if (qty > 0) {
+                    const optIdInput = document.querySelector(`#editEventForm input[name="items[${idx}][custom_option_id]"]`);
+                    if (optIdInput) {
+                        items.push(optIdInput.value + ':' + qty);
+                    }
+                }
+            }
+        });
+        items.sort();
+
+        const servingRadio = document.querySelector('#editEventForm input[name="serving_type_id"]:checked');
+        const servingVal = servingRadio ? servingRadio.value : '';
+
+        return items.join('|') + '||' + servingVal;
+    }
+
     function recalcEditEvent() {
         let totalPrice = 0;
         let totalPortions = 0;
@@ -773,79 +821,142 @@
         const group = eventGroupsData[editingGroupId];
         if (!group) return;
 
-        // If package mode, price = package price (fixed)
-        if (group.is_package && group.catering_package_id) {
-            // Package price is from the package item
-            const pkgItem = group.items.find(i => false); // We need to get it from API
-            // For now, we calc from qty inputs
-        }
-
         document.querySelectorAll('.edit-event-qty').forEach(input => {
-            const qty = parseInt(input.value) || 0;
-            const price = parseFloat(input.dataset.price) || 0;
-            const type = input.dataset.type;
+            const name = input.name || '';
+            const match = name.match(/items\[(\d+)\]/);
+            if (!match) return;
+            const idx = match[1];
 
-            if (type === 'package_item') {
-                totalPortions += qty;
-                // Harga sudah termasuk paket, tidak ditambah
-            } else if (type === 'custom_menu') {
-                totalPortions += qty;
-                totalPrice += price * qty;
-            } else if (type === 'addition') {
-                totalPrice += price * qty;
+            let active = true;
+            const menuCb = document.getElementById('edit_menu_cb_' + idx);
+            const extraCb = document.getElementById('edit_extra_cb_' + idx);
+            if (menuCb && !menuCb.checked) active = false;
+            if (extraCb && !extraCb.checked) active = false;
+
+            if (active) {
+                const qty = parseInt(input.value) || 0;
+                const price = parseFloat(input.dataset.price) || 0;
+                const type = input.dataset.type;
+
+                if (type === 'package_item') {
+                    totalPortions += qty;
+                } else if (type === 'custom_menu') {
+                    totalPortions += qty;
+                    totalPrice += price * qty;
+                } else if (type === 'addition') {
+                    totalPrice += price * qty;
+                }
             }
         });
 
-        // If package, add package price
+        const btn = document.getElementById('editEventSubmitBtn');
+        let isValid = true;
+
         if (group.is_package && group.catering_package_id) {
-            fetch(`/api/package/${group.catering_package_id}/details`)
-                .then(res => res.json())
-                .then(pkg => {
-                    const pkgPrice = parseFloat(pkg.price) || 0;
-                    document.getElementById('editEventTotal').textContent = formatRupiah(pkgPrice + totalPrice);
+            document.getElementById('editCustomPortionIndicator').style.display = 'none';
+            document.getElementById('editCustomSummaryMsg').style.display = 'none';
 
-                    // Validate portions for package
-                    const target = pkg.total_portions;
-                    document.getElementById('editPkgTarget').textContent = target;
-                    document.getElementById('editPkgSelected').textContent = totalPortions;
-                    const msg = document.getElementById('editPkgMsg');
-                    const btn = document.getElementById('editEventSubmitBtn');
-                    const indicator = document.getElementById('editPkgPortionIndicator');
+            if (group._pkg_target !== undefined) {
+                const target = group._pkg_target;
+                const pkgPrice = group._pkg_price || 0;
+                document.getElementById('editEventTotal').textContent = formatRupiah(pkgPrice + totalPrice);
+                document.getElementById('editEventPortions').textContent = totalPortions;
+                document.getElementById('editEventMinPortionsDisplay').textContent = ' / ' + target;
 
-                    if (totalPortions < target) {
-                        indicator.className = 'mb-3 p-3 rounded-xl border border-yellow-200 bg-yellow-50';
-                        msg.textContent = `⚠️ Kurang ${target - totalPortions} porsi`;
-                        msg.className = 'text-sm font-medium text-yellow-700';
-                        btn.disabled = true;
-                        btn.classList.add('opacity-50');
-                    } else if (totalPortions > target) {
-                        indicator.className = 'mb-3 p-3 rounded-xl border border-red-200 bg-red-50';
-                        msg.textContent = `❌ Kelebihan ${totalPortions - target} porsi`;
-                        msg.className = 'text-sm font-medium text-red-700';
-                        btn.disabled = true;
-                        btn.classList.add('opacity-50');
-                    } else {
-                        indicator.className = 'mb-3 p-3 rounded-xl border border-green-200 bg-green-50';
-                        msg.textContent = `✅ Porsi tepat!`;
-                        msg.className = 'text-sm font-medium text-green-700';
-                        btn.disabled = false;
-                        btn.classList.remove('opacity-50');
-                    }
-                });
-        } else {
-            document.getElementById('editEventTotal').textContent = formatRupiah(totalPrice);
-            // Custom validation: min 30 portions
-            const btn = document.getElementById('editEventSubmitBtn');
-            if (totalPortions < 30) {
-                btn.disabled = true;
-                btn.classList.add('opacity-50');
+                document.getElementById('editPkgTarget').textContent = target;
+                document.getElementById('editPkgSelected').textContent = totalPortions;
+                const msg = document.getElementById('editPkgMsg');
+                const indicator = document.getElementById('editPkgPortionIndicator');
+                indicator.style.display = 'block';
+
+                if (totalPortions < target) {
+                    isValid = false;
+                    indicator.className = 'mb-3 p-3 rounded-xl border border-yellow-200 bg-yellow-50';
+                    msg.textContent = `⚠️ Kurang ${target - totalPortions} porsi`;
+                    msg.className = 'text-sm font-medium text-yellow-700';
+                } else if (totalPortions > target) {
+                    isValid = false;
+                    indicator.className = 'mb-3 p-3 rounded-xl border border-red-200 bg-red-50';
+                    msg.textContent = `❌ Kelebihan ${totalPortions - target} porsi`;
+                    msg.className = 'text-sm font-medium text-red-700';
+                } else {
+                    indicator.className = 'mb-3 p-3 rounded-xl border border-green-200 bg-green-50';
+                    msg.textContent = `✅ Porsi tepat!`;
+                    msg.className = 'text-sm font-medium text-green-700';
+                }
             } else {
-                btn.disabled = false;
-                btn.classList.remove('opacity-50');
+                isValid = false;
+                fetch(`/api/package/${group.catering_package_id}/details`)
+                    .then(res => res.json())
+                    .then(pkg => {
+                        group._pkg_price = parseFloat(pkg.price) || 0;
+                        group._pkg_target = pkg.total_portions;
+                        if (initialEditEventSnapshot === null) {
+                            initialEditEventSnapshot = getEditEventSnapshot();
+                        }
+                        recalcEditEvent();
+                    });
+            }
+        } else {
+            document.getElementById('editPkgPortionIndicator').style.display = 'none';
+            document.getElementById('editEventTotal').textContent = formatRupiah(totalPrice);
+
+            const minPortion = group.min_portion || 1;
+            const maxPortion = group.max_portion || 1000;
+
+            document.getElementById('editEventPortions').textContent = totalPortions;
+            document.getElementById('editEventMinPortionsDisplay').textContent = ' / ' + minPortion;
+
+            const customIndicator = document.getElementById('editCustomPortionIndicator');
+            const customMsg = document.getElementById('editCustomMsg');
+            const summaryMsg = document.getElementById('editCustomSummaryMsg');
+            document.getElementById('editCustomMinTarget').textContent = minPortion;
+            document.getElementById('editCustomPortionsDisplay').textContent = totalPortions;
+            customIndicator.style.display = 'flex';
+
+            if (totalPortions < minPortion) {
+                isValid = false;
+                customIndicator.className = 'mb-3 p-3 rounded-xl border border-yellow-200 bg-yellow-50 flex items-center justify-between';
+                customMsg.textContent = `⚠️ Kurang ${minPortion - totalPortions} porsi`;
+                customMsg.className = 'text-sm font-medium text-yellow-700';
+                summaryMsg.style.display = 'block';
+                summaryMsg.textContent = `⚠️ Porsi belum memenuhi minimum (${minPortion} porsi)`;
+                summaryMsg.className = 'mt-2 text-xs font-semibold text-yellow-700';
+            } else if (totalPortions > maxPortion) {
+                isValid = false;
+                customIndicator.className = 'mb-3 p-3 rounded-xl border border-red-200 bg-red-50 flex items-center justify-between';
+                customMsg.textContent = `❌ Kelebihan ${totalPortions - maxPortion} porsi`;
+                customMsg.className = 'text-sm font-medium text-red-700';
+                summaryMsg.style.display = 'block';
+                summaryMsg.textContent = `❌ Melebihi batas maksimum (${maxPortion} porsi)`;
+                summaryMsg.className = 'mt-2 text-xs font-semibold text-red-700';
+            } else {
+                customIndicator.className = 'mb-3 p-3 rounded-xl border border-green-200 bg-green-50 flex items-center justify-between';
+                customMsg.textContent = `✅ Porsi memenuhi syarat minimum (${minPortion} porsi)`;
+                customMsg.className = 'text-sm font-medium text-green-700';
+                summaryMsg.style.display = 'none';
             }
         }
 
-        document.getElementById('editEventPortions').textContent = totalPortions;
+        const currentSnapshot = getEditEventSnapshot();
+        const hasChanges = (initialEditEventSnapshot !== null && currentSnapshot !== initialEditEventSnapshot);
+
+        if (!isValid || !hasChanges) {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    }
+
+    function submitEditEventForm() {
+        const btn = document.getElementById('editEventSubmitBtn');
+        if (btn.disabled) return;
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+        btn.textContent = 'Menyimpan...';
+        document.getElementById('editEventForm').submit();
     }
 
     function closeEditEventModal() {

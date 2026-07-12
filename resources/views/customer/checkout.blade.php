@@ -377,13 +377,7 @@ let currentRedirectUrl = @json($existingOrder ? route('customer.orders.show', $e
 
 document.getElementById('checkout-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
-    validateCheckout();
     const btn = document.getElementById('submit-btn');
-    if (btn.disabled) {
-        return;
-    }
-
     const originalText = btn.innerHTML;
 
     if (currentSnapToken) {
@@ -417,6 +411,11 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
             btn.disabled = false;
             btn.innerHTML = originalText;
         }
+        return;
+    }
+
+    validateCheckout();
+    if (btn.disabled) {
         return;
     }
 
@@ -493,6 +492,23 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
     }
 });
 </script>
+@push('styles')
+<style>
+@media (max-width: 768px) {
+    #snap-midtrans {
+        width: 100vw !important;
+        height: 100vh !important;
+        left: 0 !important;
+        top: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+    }
+}
+</style>
+@endpush
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 @endpush
 @endsection
