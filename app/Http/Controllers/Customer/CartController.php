@@ -411,19 +411,6 @@ class CartController extends Controller
             $service = $packageHeader->cateringService;
             $totalPortions = $package->total_portions * $newQty;
 
-            if ($totalPortions < $service->min_portion) {
-                if ($request->ajax() || $request->wantsJson()) {
-                    return response()->json(['success' => false, 'message' => "Total porsi minimal {$service->min_portion} porsi."], 422);
-                }
-                return back()->with('error', "Total porsi minimal {$service->min_portion} porsi.");
-            }
-            if ($totalPortions > $service->max_portion) {
-                if ($request->ajax() || $request->wantsJson()) {
-                    return response()->json(['success' => false, 'message' => "Total porsi melebihi batas maksimal ({$service->max_portion} porsi)."], 422);
-                }
-                return back()->with('error', "Total porsi melebihi batas maksimal ({$service->max_portion} porsi).");
-            }
-
             $packageHeader->update(['quantity' => $newQty]);
             $user->carts()
                 ->where('cart_group_id', $groupId)
@@ -479,11 +466,11 @@ class CartController extends Controller
             }
         }
 
-        if ($totalCustomPortions < $minPortion) {
+        if ($totalCustomPortions <= 0) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => "Total porsi minimal {$minPortion} porsi."], 422);
+                return response()->json(['success' => false, 'message' => "Silakan pilih minimal 1 porsi menu."], 422);
             }
-            return back()->with('error', "Total porsi minimal {$minPortion} porsi.");
+            return back()->with('error', "Silakan pilih minimal 1 porsi menu.");
         }
 
         if ($totalCustomPortions > $service->max_portion) {
