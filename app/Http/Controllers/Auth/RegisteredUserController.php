@@ -51,11 +51,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // Pulihkan pesanan tertunda jika ada di session (dari proses Masukkan ke Keranjang saat guest)
-        if ($redirect = \App\Http\Controllers\Customer\CartController::restorePendingCart($request)) {
-            return $redirect;
-        }
-
-        return redirect(route('landing'));
+        return redirect(route('verification.notice'));
     }
 }

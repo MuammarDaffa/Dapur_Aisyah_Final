@@ -28,6 +28,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if ($request->user()->isCustomer() && !$request->user()->hasVerifiedEmail()) {
+            return redirect(route('verification.notice'));
+        }
+
         // Pulihkan pesanan tertunda jika ada di session (dari proses Masukkan ke Keranjang saat guest)
         if ($redirect = \App\Http\Controllers\Customer\CartController::restorePendingCart($request)) {
             return $redirect;

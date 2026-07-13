@@ -75,7 +75,7 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4">
-                    @auth
+                    @if(auth()->check() && (!auth()->user()->isCustomer() || auth()->user()->hasVerifiedEmail()))
                         <!-- Notifications Bell -->
                         <a href="{{ route('customer.notifications') }}" class="relative p-2 text-gray-600 hover:text-orange-500 transition-colors">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,12 +120,18 @@
                                 </form>
                             </div>
                         </div>
+                    @elseif(auth()->check() && auth()->user()->isCustomer() && !auth()->user()->hasVerifiedEmail())
+                        <a href="{{ route('verification.notice') }}" class="text-sm font-semibold text-orange-600 hover:text-orange-700 transition-colors">Verifikasi Email</a>
+                        <form id="logout-form-desktop-unverified" method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="button" onclick="confirmLogout('logout-form-desktop-unverified')" class="text-sm font-medium text-gray-700 hover:text-red-600 transition-colors">Keluar</button>
+                        </form>
                     @else
                         <a href="{{ route('login') }}" class="text-sm font-medium text-gray-700 hover:text-orange-500 transition-colors">Masuk</a>
                         <a href="{{ route('register') }}" class="px-5 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-sm font-semibold rounded-full hover:shadow-lg hover:shadow-orange-200 transition-all transform hover:scale-105">
                             Daftar
                         </a>
-                    @endauth
+                    @endif
                 </div>
 
                 <!-- Mobile menu button -->
@@ -134,12 +140,12 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
-                        @auth
+                        @if(auth()->check() && (!auth()->user()->isCustomer() || auth()->user()->hasVerifiedEmail()))
                             @php $hamburgerCartCount = auth()->user()->carts()->count(); @endphp
                             <span id="hamburger-cart-badge" class="absolute top-1 right-1 bg-orange-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full pointer-events-none {{ $hamburgerCartCount > 0 ? '' : 'hidden' }}">
                                 {{ $hamburgerCartCount > 0 ? $hamburgerCartCount : '' }}
                             </span>
-                        @endauth
+                        @endif
                     </button>
                 </div>
             </div>
@@ -148,7 +154,7 @@
         <!-- Mobile Menu -->
         <div x-data="{ open: false }" @toggle-mobile-menu.window="open = !open" x-show="open" x-transition class="md:hidden border-t border-orange-100 bg-white">
             <div class="px-4 py-3 space-y-2">
-                @auth
+                @if(auth()->check() && (!auth()->user()->isCustomer() || auth()->user()->hasVerifiedEmail()))
                     @if(request()->routeIs('landing'))
                         <a href="#hero" @click="open = false" class="main-nav-link block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg" data-target="hero">Beranda</a>
                     @else
@@ -167,6 +173,12 @@
                         @csrf
                         <button type="button" onclick="confirmLogout('logout-form-mobile')" class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg">Keluar</button>
                     </form>
+                @elseif(auth()->check() && auth()->user()->isCustomer() && !auth()->user()->hasVerifiedEmail())
+                    <a href="{{ route('verification.notice') }}" class="block px-3 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50 rounded-lg">Verifikasi Email</a>
+                    <form id="logout-form-mobile-unverified" method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="button" onclick="confirmLogout('logout-form-mobile-unverified')" class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg">Keluar</button>
+                    </form>
                 @else
                     @if(request()->routeIs('landing'))
                         <a href="#hero" @click="open = false" class="main-nav-link block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg" data-target="hero">Beranda</a>
@@ -175,7 +187,7 @@
                     @endif
                     <a href="{{ route('login') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Masuk</a>
                     <a href="{{ route('register') }}" class="block px-3 py-2 text-sm font-medium text-orange-600 hover:bg-orange-50 rounded-lg">Daftar</a>
-                @endauth
+                @endif
             </div>
         </div>
     </nav>

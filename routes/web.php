@@ -27,7 +27,7 @@ use App\Http\Controllers\PaymentController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::get('/', [LandingController::class, 'index'])->name('landing')->middleware('unverified_customer_redirect');
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +48,7 @@ Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('
 | Customer Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('dashboard')->name('customer.')->group(function () {
+Route::middleware('unverified_customer_redirect')->prefix('dashboard')->name('customer.')->group(function () {
     // Products (Menu Mingguan/Harian)
     Route::get('/products', [CustomerDashboard::class, 'products'])->name('products');
 
