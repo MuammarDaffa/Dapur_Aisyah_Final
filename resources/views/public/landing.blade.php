@@ -170,10 +170,13 @@
                     }
                 });
 
-                // If scrolled near bottom of page, activate 'about'
+                // If scrolled near bottom of page, activate the last visible section ('testimonials' if present, otherwise 'about')
                 if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 50) {
+                    const testimonialsSection = document.getElementById('testimonials');
                     const aboutSection = document.getElementById('about');
-                    if (aboutSection) {
+                    if (testimonialsSection) {
+                        currentSectionId = 'testimonials';
+                    } else if (aboutSection) {
                         currentSectionId = 'about';
                     }
                 }

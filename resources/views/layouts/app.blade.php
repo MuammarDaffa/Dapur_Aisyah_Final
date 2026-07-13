@@ -45,6 +45,11 @@
                         <a href="#about" class="main-nav-link text-sm font-semibold text-gray-600 hover:text-orange-500 transition-all duration-300 py-1.5 border-b-2 border-transparent" data-target="about">
                             Tentang
                         </a>
+                        @if(isset($reviews) && $reviews->count() > 0)
+                        <a href="#testimonials" class="main-nav-link text-sm font-semibold text-gray-600 hover:text-orange-500 transition-all duration-300 py-1.5 border-b-2 border-transparent" data-target="testimonials">
+                            Testimoni
+                        </a>
+                        @endif
                     @else
                         <a href="{{ route('landing') }}#hero" class="text-sm font-semibold text-gray-600 hover:text-orange-500 transition-all duration-300 py-1.5 border-b-2 border-transparent">
                             Beranda
@@ -54,6 +59,9 @@
                         </a>
                         <a href="{{ route('landing') }}#about" class="text-sm font-semibold text-gray-600 hover:text-orange-500 transition-all duration-300 py-1.5 border-b-2 border-transparent">
                             Tentang
+                        </a>
+                        <a href="{{ route('landing') }}#testimonials" class="text-sm font-semibold text-gray-600 hover:text-orange-500 transition-all duration-300 py-1.5 border-b-2 border-transparent">
+                            Testimoni
                         </a>
                     @endif
                 </div>
