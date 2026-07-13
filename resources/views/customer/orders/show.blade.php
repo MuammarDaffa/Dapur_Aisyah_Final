@@ -57,16 +57,152 @@
             <!-- Order Items -->
             <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                 <h3 class="font-bold text-gray-900 mb-4">Item Pesanan</h3>
-                <div class="divide-y divide-gray-100">
-                    @foreach($order->items as $item)
-                        <div class="py-3.5">
-                            <p class="font-medium text-gray-900">{{ $item->formatted_menu_name }}</p>
-                            @if($item->formatted_extras)
-                                <p class="text-sm text-gray-600 mt-0.5"><span class="font-medium">Extra:</span> {{ $item->formatted_extras }}</p>
-                            @endif
-                            <p class="text-sm font-medium text-gray-900 mt-1">Total: Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
+                <div class="divide-y divide-gray-200">
+                    @if($order->cateringService?->isDaily())
+                        {{-- 1. Pesanan Daily Catering --}}
+                        @foreach($order->items as $idx => $item)
+                        <div class="py-4 first:pt-0 last:pb-0">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 text-base">{{ $item->formatted_menu_name }} <span class="text-gray-600">({{ $item->quantity }})</span></h4>
+                                    <button type="button" onclick="toggleOrderItemDetail(this, 'detail-daily-{{ $idx }}')" class="mt-1 text-xs font-semibold text-orange-500 hover:text-orange-600 focus:outline-none">Lihat Detail</button>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-gray-900 text-base">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
+                                </div>
+                            </div>
+                            <div id="detail-daily-{{ $idx }}" class="hidden mt-3 pt-3 border-t border-gray-100 text-sm text-gray-700 space-y-1.5">
+                                <div class="flex items-start">
+                                    <span class="w-28 shrink-0 text-gray-500">Porsi</span>
+                                    <span class="mr-2 text-gray-400">:</span>
+                                    <span class="font-medium text-gray-900">{{ $item->quantity }} Porsi</span>
+                                </div>
+                                <div class="flex items-start">
+                                    <span class="w-28 shrink-0 text-gray-500">Harga Satuan</span>
+                                    <span class="mr-2 text-gray-400">:</span>
+                                    <span class="font-medium text-gray-900">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</span>
+                                </div>
+                                @if($item->formatted_extras)
+                                <div class="flex items-start">
+                                    <span class="w-28 shrink-0 text-gray-500">Pelengkap</span>
+                                    <span class="mr-2 text-gray-400">:</span>
+                                    <span class="font-medium text-gray-900">{{ $item->formatted_extras }}</span>
+                                </div>
+                                @endif
+                            </div>
                         </div>
-                    @endforeach
+                        @endforeach
+                    @else
+                        {{-- 2. Pesanan Event Catering (Paket & Custom Menu) --}}
+                        @php
+                            $packageItems = $order->items->filter(fn($i) => str_starts_with($i->item_name, 'Paket: '));
+                            $menuItems = $order->items->filter(fn($i) => str_starts_with($i->item_name, 'Menu: '));
+                            $extraItems = $order->items->filter(fn($i) => str_starts_with($i->item_name, 'Extra: '));
+                            $servingItem = $order->items->firstWhere(fn($i) => str_starts_with($i->item_name, 'Penyajian: '));
+                            $servingName = $order->serving_type ?? ($servingItem ? preg_replace('/^Penyajian:\s*/i', '', $servingItem->item_name) : null);
+                        @endphp
+
+                        @if($packageItems->isNotEmpty())
+                            {{-- Jika pesanan berupa Paket Event --}}
+                            @foreach($packageItems as $pIdx => $pkg)
+                            @php
+                                $pkgMenus = $menuItems;
+                                $pkgExtras = $extraItems;
+                                $pkgPortion = $order->portion ?: ($pkgMenus->first()->quantity ?? ($pkg->quantity * ($order->package->total_portions ?? 1)));
+                            @endphp
+                            <div class="py-4 first:pt-0 last:pb-0">
+                                <div class="flex items-center justify-between gap-4">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 text-base">{{ $pkg->formatted_menu_name }} <span class="text-gray-600">({{ $pkg->quantity }})</span></h4>
+                                        <button type="button" onclick="toggleOrderItemDetail(this, 'detail-pkg-{{ $pIdx }}')" class="mt-1 text-xs font-semibold text-orange-500 hover:text-orange-600 focus:outline-none">Lihat Detail</button>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold text-gray-900 text-base">Rp {{ number_format($pkg->subtotal, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                                <div id="detail-pkg-{{ $pIdx }}" class="hidden mt-3 pt-3 border-t border-gray-100 text-sm text-gray-700 space-y-1.5">
+                                    <div class="flex items-start">
+                                        <span class="w-28 shrink-0 text-gray-500">Total Porsi</span>
+                                        <span class="mr-2 text-gray-400">:</span>
+                                        <span class="font-medium text-gray-900">{{ $pkgPortion }} Porsi</span>
+                                    </div>
+                                    @if($servingName)
+                                    <div class="flex items-start">
+                                        <span class="w-28 shrink-0 text-gray-500">Penyajian</span>
+                                        <span class="mr-2 text-gray-400">:</span>
+                                        <span class="font-medium text-gray-900">{{ $servingName }}</span>
+                                    </div>
+                                    @endif
+                                    @if($pkgMenus->isNotEmpty())
+                                    <div class="flex items-start">
+                                        <span class="w-28 shrink-0 text-gray-500">Menu</span>
+                                        <span class="mr-2 text-gray-400">:</span>
+                                        <span class="font-medium text-gray-900">{{ $pkgMenus->map(fn($m) => $m->formatted_menu_name)->join(', ') }}</span>
+                                    </div>
+                                    @endif
+                                    @if($pkgExtras->isNotEmpty())
+                                    <div class="flex items-start">
+                                        <span class="w-28 shrink-0 text-gray-500">Pelengkap</span>
+                                        <span class="mr-2 text-gray-400">:</span>
+                                        <span class="font-medium text-gray-900">{{ $pkgExtras->map(fn($e) => $e->formatted_menu_name . ($e->quantity != $pkgPortion ? ' (' . $e->quantity . ')' : ''))->join(', ') }}</span>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        @endif
+
+                        @if($packageItems->isEmpty() || $menuItems->where('unit_price', '>', 0)->isNotEmpty())
+                            @if($packageItems->isEmpty())
+                            {{-- Jika pesanan berupa Custom Menu --}}
+                            @php
+                                $customMenus = $menuItems;
+                                $customExtras = $extraItems;
+                                $customPortion = $order->portion ?: $customMenus->sum('quantity');
+                                $customTotal = $order->subtotal;
+                            @endphp
+                            <div class="py-4 first:pt-0 last:pb-0">
+                                <div class="flex items-center justify-between gap-4">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 text-base">Custom Menu</h4>
+                                        <button type="button" onclick="toggleOrderItemDetail(this, 'detail-custom-0')" class="mt-1 text-xs font-semibold text-orange-500 hover:text-orange-600 focus:outline-none">Lihat Detail</button>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold text-gray-900 text-base">Rp {{ number_format($customTotal, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                                <div id="detail-custom-0" class="hidden mt-3 pt-3 border-t border-gray-100 text-sm text-gray-700 space-y-1.5">
+                                    <div class="flex items-start">
+                                        <span class="w-28 shrink-0 text-gray-500">Total Porsi</span>
+                                        <span class="mr-2 text-gray-400">:</span>
+                                        <span class="font-medium text-gray-900">{{ $customPortion }} Porsi</span>
+                                    </div>
+                                    @if($servingName)
+                                    <div class="flex items-start">
+                                        <span class="w-28 shrink-0 text-gray-500">Penyajian</span>
+                                        <span class="mr-2 text-gray-400">:</span>
+                                        <span class="font-medium text-gray-900">{{ $servingName }}</span>
+                                    </div>
+                                    @endif
+                                    @if($customMenus->isNotEmpty())
+                                    <div class="flex items-start">
+                                        <span class="w-28 shrink-0 text-gray-500">Menu</span>
+                                        <span class="mr-2 text-gray-400">:</span>
+                                        <span class="font-medium text-gray-900">{{ $customMenus->map(fn($cm) => $cm->formatted_menu_name . ' (' . $cm->quantity . ')')->join(', ') }}</span>
+                                    </div>
+                                    @endif
+                                    @if($customExtras->isNotEmpty())
+                                    <div class="flex items-start">
+                                        <span class="w-28 shrink-0 text-gray-500">Pelengkap</span>
+                                        <span class="mr-2 text-gray-400">:</span>
+                                        <span class="font-medium text-gray-900">{{ $customExtras->map(fn($e) => $e->formatted_menu_name . ($e->quantity != $customPortion ? ' (' . $e->quantity . ')' : ''))->join(', ') }}</span>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
+                        @endif
+                    @endif
                 </div>
             </div>
 
@@ -195,6 +331,24 @@ function confirmCancelOrder() {
             document.getElementById('cancelOrderForm').submit();
         }
     });
+}
+
+function toggleOrderItemDetail(btn, targetId) {
+    const detailEl = document.getElementById(targetId);
+    if (!detailEl) return;
+
+    if (detailEl.classList.contains('hidden')) {
+        detailEl.classList.remove('hidden');
+        detailEl.style.opacity = '0';
+        detailEl.style.transition = 'opacity 0.25s ease-in-out';
+        requestAnimationFrame(() => {
+            detailEl.style.opacity = '1';
+        });
+        btn.textContent = 'Sembunyikan Detail';
+    } else {
+        detailEl.classList.add('hidden');
+        btn.textContent = 'Lihat Detail';
+    }
 }
 </script>
 @if($order->midtrans_snap_token)
