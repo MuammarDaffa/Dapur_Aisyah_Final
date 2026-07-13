@@ -140,13 +140,14 @@
                                         <span class="font-medium text-gray-900">{{ $pkgMenus->map(fn($m) => $m->formatted_menu_name)->join(', ') }}</span>
                                     </div>
                                     @endif
-                                    @if($pkgExtras->isNotEmpty())
+                                    @php
+                                        $pkgBenefits = $order->package?->benefits ? array_values(array_filter($order->package->benefits, fn($b) => !empty(trim($b)))) : [];
+                                    @endphp
                                     <div class="flex items-start">
                                         <span class="w-28 shrink-0 text-gray-500">Pelengkap</span>
                                         <span class="mr-2 text-gray-400">:</span>
-                                        <span class="font-medium text-gray-900">{{ $pkgExtras->map(fn($e) => $e->formatted_menu_name . ($e->quantity != $pkgPortion ? ' (' . $e->quantity . ')' : ''))->join(', ') }}</span>
+                                        <span class="font-medium text-gray-900">{{ !empty($pkgBenefits) ? implode(', ', $pkgBenefits) : '-' }}</span>
                                     </div>
-                                    @endif
                                 </div>
                             </div>
                             @endforeach
@@ -191,13 +192,11 @@
                                         <span class="font-medium text-gray-900">{{ $customMenus->map(fn($cm) => $cm->formatted_menu_name . ' (' . $cm->quantity . ')')->join(', ') }}</span>
                                     </div>
                                     @endif
-                                    @if($customExtras->isNotEmpty())
                                     <div class="flex items-start">
                                         <span class="w-28 shrink-0 text-gray-500">Pelengkap</span>
                                         <span class="mr-2 text-gray-400">:</span>
-                                        <span class="font-medium text-gray-900">{{ $customExtras->map(fn($e) => $e->formatted_menu_name . ($e->quantity != $customPortion ? ' (' . $e->quantity . ')' : ''))->join(', ') }}</span>
+                                        <span class="font-medium text-gray-900">{{ $customExtras->isNotEmpty() ? $customExtras->map(fn($e) => $e->customOption?->name ?? $e->formatted_menu_name)->join(', ') : '-' }}</span>
                                     </div>
-                                    @endif
                                 </div>
                             </div>
                             @endif

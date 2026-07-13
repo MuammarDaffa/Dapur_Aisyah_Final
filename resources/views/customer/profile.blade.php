@@ -2,7 +2,7 @@
 @section('title', 'Profil Saya')
 @section('content')
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">👤 <span class="text-orange-500">Profil</span> Saya</h2>
+    <h2 class="text-2xl font-bold text-gray-900 mb-6"><span class="text-orange-500">Profil</span> Saya</h2>
 
     {{-- Suspend Warnings --}}
     @if($user->isSuspended())
