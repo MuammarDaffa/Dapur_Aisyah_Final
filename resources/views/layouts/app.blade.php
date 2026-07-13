@@ -142,6 +142,11 @@
         <div x-data="{ open: false }" @toggle-mobile-menu.window="open = !open" x-show="open" x-transition class="md:hidden border-t border-orange-100 bg-white">
             <div class="px-4 py-3 space-y-2">
                 @auth
+                    @if(request()->routeIs('landing'))
+                        <a href="#hero" @click="open = false" class="main-nav-link block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg" data-target="hero">Beranda</a>
+                    @else
+                        <a href="{{ route('landing') }}#hero" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Beranda</a>
+                    @endif
                     <a href="{{ route('customer.profile.edit') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Profil Saya</a>
                     <a href="{{ route('customer.cart') }}" class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">
                         <span>Keranjang</span>
@@ -156,6 +161,11 @@
                         <button type="button" onclick="confirmLogout('logout-form-mobile')" class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg">Keluar</button>
                     </form>
                 @else
+                    @if(request()->routeIs('landing'))
+                        <a href="#hero" @click="open = false" class="main-nav-link block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg" data-target="hero">Beranda</a>
+                    @else
+                        <a href="{{ route('landing') }}#hero" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Beranda</a>
+                    @endif
                     <a href="{{ route('login') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Masuk</a>
                     <a href="{{ route('register') }}" class="block px-3 py-2 text-sm font-medium text-orange-600 hover:bg-orange-50 rounded-lg">Daftar</a>
                 @endauth
