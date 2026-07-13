@@ -97,4 +97,16 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Cart::class);
     }
+
+    /**
+     * Menghitung total jumlah item di keranjang.
+     * Setiap produk Katering Harian dihitung sebagai 1 item (cart_group_id null).
+     * Setiap Paket Event / Custom Menu dihitung sebagai 1 item (distinct cart_group_id).
+     */
+    public function cartItemsCount(): int
+    {
+        $dailyCount = $this->carts()->whereNull('cart_group_id')->count();
+        $eventCount = $this->carts()->whereNotNull('cart_group_id')->distinct()->count('cart_group_id');
+        return $dailyCount + $eventCount;
+    }
 }

@@ -94,7 +94,7 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
                             </svg>
-                            @php $cartCount = auth()->user()->carts()->count(); @endphp
+                            @php $cartCount = auth()->user()->cartItemsCount(); @endphp
                             <span id="desktop-cart-badge" class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full {{ $cartCount > 0 ? '' : 'hidden' }}">
                                 {{ $cartCount > 0 ? $cartCount : '' }}
                             </span>
@@ -141,7 +141,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
                         @if(auth()->check() && (!auth()->user()->isCustomer() || auth()->user()->hasVerifiedEmail()))
-                            @php $hamburgerCartCount = auth()->user()->carts()->count(); @endphp
+                            @php $hamburgerCartCount = auth()->user()->cartItemsCount(); @endphp
                             <span id="hamburger-cart-badge" class="absolute top-1 right-1 bg-orange-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full pointer-events-none {{ $hamburgerCartCount > 0 ? '' : 'hidden' }}">
                                 {{ $hamburgerCartCount > 0 ? $hamburgerCartCount : '' }}
                             </span>
@@ -163,7 +163,7 @@
                     <a href="{{ route('customer.profile.edit') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Profil Saya</a>
                     <a href="{{ route('customer.cart') }}" class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">
                         <span>Keranjang</span>
-                        @php $mobileCartCount = auth()->user()->carts()->count(); @endphp
+                        @php $mobileCartCount = auth()->user()->cartItemsCount(); @endphp
                         <span id="mobile-cart-badge" class="bg-orange-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full {{ $mobileCartCount > 0 ? '' : 'hidden' }}">
                             {{ $mobileCartCount > 0 ? $mobileCartCount : '' }}
                         </span>

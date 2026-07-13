@@ -45,11 +45,7 @@ class CartController extends Controller
     private function getCartCount($user): int
     {
         if (!$user) return 0;
-        $dailyCount = $user->carts()->whereNull('cart_group_id')->count();
-        $eventCount = $user->carts()->whereNotNull('cart_group_id')
-            ->whereIn('item_type', ['package', 'custom_header'])
-            ->count();
-        return $dailyCount + $eventCount;
+        return $user->cartItemsCount();
     }
 
     /**
