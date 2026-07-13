@@ -2,7 +2,10 @@
 @section('title', 'Keranjang Belanja')
 @section('content')
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">🛒 Keranjang <span class="text-orange-500">Belanja</span></h2>
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+        <svg class="w-7 h-7 text-orange-500 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
+        <span>Keranjang <span class="text-orange-500">Belanja</span></span>
+    </h2>
 
     @php
         $packageGroupsCount = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') !== null)->count();
@@ -13,15 +16,17 @@
     {{-- Tab Navigation --}}
     <div class="flex border-b border-gray-200 mb-6">
         <button type="button" onclick="switchTab('daily')" id="tab-daily"
-            class="px-6 py-3 text-sm font-semibold border-b-2 transition-colors {{ $activeTab === 'daily' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700' }}">
-            🍱 Daily
+            class="px-6 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center {{ $activeTab === 'daily' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700' }}">
+            <svg class="w-4 h-4 mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            <span>Daily</span>
             @if($dailyGroups->isNotEmpty())
                 <span class="ml-1 px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full text-xs font-bold">{{ $dailyGroups->flatten()->count() }}</span>
             @endif
         </button>
         <button type="button" onclick="switchTab('event')" id="tab-event"
-            class="px-6 py-3 text-sm font-semibold border-b-2 transition-colors {{ $activeTab === 'event' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700' }}">
-            🎉 Event
+            class="px-6 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center {{ $activeTab === 'event' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700' }}">
+            <svg class="w-4 h-4 mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+            <span>Event</span>
             @if($totalEventBadge > 0)
                 <span class="ml-1 px-2 py-0.5 bg-purple-100 text-purple-600 rounded-full text-xs font-bold">{{ $totalEventBadge }}</span>
             @endif
@@ -34,9 +39,14 @@
     <div id="content-daily" style="{{ $activeTab !== 'daily' ? 'display:none' : '' }}">
         @if($dailyGroups->isEmpty())
             <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
-                <p class="text-5xl mb-4">🍱</p>
+                <div class="w-16 h-16 mx-auto mb-4 text-gray-300 flex items-center justify-center">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                </div>
                 <p class="text-gray-500 font-medium mb-4">Keranjang harian Anda kosong</p>
-                <a href="{{ route('customer.products') }}" class="px-6 py-3 bg-orange-500 text-white font-medium rounded-full hover:bg-orange-600 transition-colors">Lihat Menu →</a>
+                <a href="{{ route('customer.products') }}" class="inline-flex items-center px-6 py-3 bg-orange-500 text-white font-medium rounded-full hover:bg-orange-600 transition-colors">
+                    <span>Lihat Menu</span>
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </a>
             </div>
         @else
             <div class="bg-white rounded-xl shadow-sm border border-orange-100 p-6 space-y-6">
@@ -66,7 +76,7 @@
                         @if($cart->product && $cart->product->image)
                             <img src="{{ Storage::url($cart->product->image) }}" alt="{{ $cart->product->name }}" class="w-full h-full object-cover rounded-xl">
                         @else
-                            🍛
+                            <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         @endif
                     </div>
                     <div class="flex-1 w-full">
@@ -126,7 +136,10 @@
                     </svg>
                 </div>
                 <p class="text-gray-500 font-medium mb-4">Belum ada pesanan event</p>
-                <a href="{{ route('landing') }}#services" class="px-6 py-3 bg-purple-500 text-white font-medium rounded-full hover:bg-purple-600 transition-colors">Pilih Layanan Event →</a>
+                <a href="{{ route('landing') }}#services" class="inline-flex items-center px-6 py-3 bg-purple-500 text-white font-medium rounded-full hover:bg-purple-600 transition-colors">
+                    <span>Pilih Layanan Event</span>
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </a>
             </div>
         @else
             @php
@@ -249,7 +262,10 @@
 <div id="dailyEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] flex flex-col transform transition-all">
         <div class="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
-            <h3 class="text-lg font-bold text-gray-900">📝 Ubah Pesanan</h3>
+            <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                <svg class="w-5 h-5 text-orange-500 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                <span>Ubah Pesanan</span>
+            </h3>
             <button type="button" onclick="closeDailyEditModal()" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
@@ -368,7 +384,10 @@
 <div id="editEventModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] flex flex-col">
         <div class="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
-            <h3 class="text-lg font-bold text-gray-900">📝 Edit Pesanan Event</h3>
+            <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                <svg class="w-5 h-5 text-orange-500 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                <span>Edit Pesanan Event</span>
+            </h3>
             <button type="button" onclick="closeEditEventModal()" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
@@ -435,7 +454,9 @@
 {{-- =============================== --}}
 <div id="deleteConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 text-center">
-        <div class="text-5xl mb-4">⚠️</div>
+        <div class="w-16 h-16 mx-auto mb-4 text-red-500 flex items-center justify-center">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        </div>
         <h3 class="text-lg font-bold text-gray-900 mb-2">Hapus Pesanan?</h3>
         <p class="text-gray-500 mb-6">Apakah Anda ingin menghapus pesanan ini?</p>
         <div class="flex gap-3">

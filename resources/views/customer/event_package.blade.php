@@ -5,7 +5,10 @@
 
     {{-- Header --}}
     <div class="mb-6">
-        <a href="{{ route('customer.event.service', $service->id) }}" class="text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">← Kembali ke Pilih Layanan</a>
+        <a href="{{ route('customer.event.service', $service->id) }}" class="inline-flex items-center text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">
+            <svg class="w-4 h-4 mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <span>Kembali ke Pilih Layanan</span>
+        </a>
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
@@ -96,7 +99,7 @@
                     <ul class="space-y-2 text-gray-700 text-sm sm:text-base">
                         @foreach($benefits as $b)
                             <li class="flex items-start gap-2.5">
-                                <span class="text-green-600 font-bold mt-0.5">✓</span>
+                                <svg class="w-5 h-5 text-green-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 <span>{{ is_string($b) ? $b : json_encode($b) }}</span>
                             </li>
                         @endforeach

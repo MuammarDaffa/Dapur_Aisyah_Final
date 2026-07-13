@@ -2,7 +2,10 @@
 @section('title', 'Detail Pesanan')
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <a href="{{ route('customer.orders') }}" class="inline-flex items-center text-sm text-orange-500 hover:text-orange-600 mb-6">← Kembali ke Pesanan</a>
+    <a href="{{ route('customer.orders') }}" class="inline-flex items-center text-sm text-orange-500 hover:text-orange-600 mb-6">
+        <svg class="w-4 h-4 mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        <span>Kembali ke Pesanan</span>
+    </a>
 
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -208,7 +211,10 @@
             <!-- Review Form (only for completed orders without review) -->
             @if($order->status === 'completed' && !$order->review)
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-900 mb-4">💬 Beri Ulasan</h3>
+                    <h3 class="font-bold text-gray-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 text-orange-500 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                        <span>Beri Ulasan</span>
+                    </h3>
                     <form action="{{ route('customer.reviews.store') }}" method="POST" class="space-y-4">
                         @csrf
                         <input type="hidden" name="order_id" value="{{ $order->id }}">
@@ -223,7 +229,10 @@
 
             @if($order->review)
                 <div class="bg-orange-50 rounded-xl p-6 border border-orange-100">
-                    <h3 class="font-bold text-gray-900 mb-2">💬 Ulasan Anda</h3>
+                    <h3 class="font-bold text-gray-900 mb-2 flex items-center">
+                        <svg class="w-5 h-5 text-orange-500 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                        <span>Ulasan Anda</span>
+                    </h3>
                     <p class="text-sm text-gray-600">{{ $order->review->comment ?? 'Tidak ada komentar.' }}</p>
                 </div>
             @endif
@@ -244,8 +253,9 @@
                 </div>
 
                 @if($order->payment_status === 'unpaid' && $order->midtrans_snap_token && !in_array($order->status, ['completed', 'cancelled']))
-                    <button onclick="payNow()" class="w-full mt-4 px-6 py-3 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors">
-                        💳 Bayar Sekarang
+                    <button onclick="payNow()" class="w-full mt-4 px-6 py-3 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors inline-flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        <span>Bayar Sekarang</span>
                     </button>
                 @endif
 

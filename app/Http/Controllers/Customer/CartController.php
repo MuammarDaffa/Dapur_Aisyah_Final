@@ -206,7 +206,7 @@ class CartController extends Controller
             ->first();
 
         if ($existingEventCart && (int) $existingEventCart->catering_service_id !== (int) $service->id) {
-            $errorMessage = 'Masih ada pesanan Event dari layanan lain yang belum di-checkout. Silakan selesaikan checkout layanan tersebut terlebih dahulu sebelum memesan layanan Event yang berbeda.';
+            $errorMessage = 'Anda masih memiliki pesanan Event yang belum di-checkout. Selesaikan checkout pesanan tersebut terlebih dahulu sebelum memesan layanan Event lainnya.';
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -496,7 +496,7 @@ class CartController extends Controller
             ->first();
 
         if ($existingOtherEventCart && (int) $existingOtherEventCart->catering_service_id !== (int) $service->id) {
-            $errorMessage = 'Masih ada pesanan Event dari layanan lain yang belum di-checkout. Silakan selesaikan checkout layanan tersebut terlebih dahulu sebelum memesan layanan Event yang berbeda.';
+            $errorMessage = 'Anda masih memiliki pesanan Event yang belum di-checkout. Selesaikan checkout pesanan tersebut terlebih dahulu sebelum memesan layanan Event lainnya.';
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,

@@ -5,7 +5,10 @@
 
     {{-- Header --}}
     <div class="mb-6">
-        <a href="{{ route('customer.event.service', $service->id) }}" class="text-sm text-orange-500 hover:text-orange-600">← Kembali ke Layanan</a>
+        <a href="{{ route('customer.event.service', $service->id) }}" class="inline-flex items-center text-sm text-orange-500 hover:text-orange-600">
+            <svg class="w-4 h-4 mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <span>Kembali ke Layanan</span>
+        </a>
         <h2 class="text-2xl font-bold text-gray-900 mt-2">Custom Menu</h2>
         <p class="text-gray-500">Pilih menu sesuka Anda sesuai kebutuhan acara.</p>
     </div>
@@ -130,7 +133,7 @@
                 </div>
                 <button type="submit" id="custom-submit-btn" disabled
                     class="w-full px-6 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-lg rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                    Masukkan ke Keranjang 🛒
+                    <span class="inline-flex items-center justify-center gap-2"><span>Masukkan ke Keranjang</span><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg></span>
                 </button>
             </div>
         </div>

@@ -5,7 +5,10 @@
 
     {{-- Header --}}
     <div class="mb-8">
-        <a href="{{ route('landing') }}#services" class="text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">← Kembali ke Layanan</a>
+        <a href="{{ route('landing') }}#services" class="inline-flex items-center text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">
+            <svg class="w-4 h-4 mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <span>Kembali ke Layanan</span>
+        </a>
         <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">Layanan {{ $service->name }}</h2>
         <!-- <p class="text-gray-500 mt-1">{{ $service->description }}</p> -->
     </div>

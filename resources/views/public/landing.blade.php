@@ -214,7 +214,6 @@
                         $serviceUrl = $service->isEvent()
                             ? route('customer.event.service', $service)
                             : route('customer.products', ['service' => $service->id]);
-                        $icon = $service->isDaily() ? '🍱' : ($service->isEvent() ? '🎉' : '🍽️');
                     @endphp
                     <a href="{{ $serviceUrl }}" class="group relative bg-white rounded-2xl border border-gray-100 hover:shadow-xl hover:shadow-orange-100 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full overflow-hidden">
                         @if($service->image)
@@ -239,8 +238,14 @@
                         @else
                             <div class="p-6 bg-gradient-to-br from-orange-50 to-amber-50 flex-1 flex flex-col justify-between h-full">
                                 <div>
-                                    <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-500 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform shadow-sm">
-                                        {{ $icon }}
+                                    <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-500 rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform shadow-sm">
+                                        @if($service->isDaily())
+                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                        @elseif($service->isEvent())
+                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                                        @else
+                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
+                                        @endif
                                     </div>
                                     <h3 class="text-xl font-bold text-gray-900 mb-3">{{ $service->name }}</h3>
                                     <p class="text-sm text-gray-600 mb-6 line-clamp-3 leading-relaxed">{{ $service->description }}</p>
