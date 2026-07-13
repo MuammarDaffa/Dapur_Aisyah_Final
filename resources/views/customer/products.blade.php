@@ -40,10 +40,6 @@
                         </div>
                     @endif
 
-                    @if($product->is_best_seller)
-                        <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">Best Seller</span>
-                    @endif
-
                     @if(!$item->isAvailable())
                         <span class="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center text-white font-bold text-lg tracking-wider">HABIS</span>
                     @endif

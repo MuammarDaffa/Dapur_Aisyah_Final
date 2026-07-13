@@ -34,8 +34,7 @@
                     <input type="file" name="image" id="image-input" accept="image/*" class="w-full px-4 py-2 rounded-lg border">
                 </div>
             </div>
-        </div>
-        <div class="flex gap-6"><label class="flex items-center gap-2"><input type="checkbox" name="is_best_seller" value="1" class="rounded border-gray-300 text-orange-500"><span class="text-sm">Best Seller</span></label><label class="flex items-center gap-2"><input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500"><span class="text-sm">Aktif</span></label></div>
+        <div class="flex gap-6"><label class="flex items-center gap-2"><input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500"><span class="text-sm">Aktif</span></label></div>
         @if(isset($extras) && $extras->count() > 0)
         @php $selectedExtras = old('extras', []); @endphp
         <div class="space-y-3" id="extra-selector-container">

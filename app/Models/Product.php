@@ -14,14 +14,13 @@ class Product extends Model
 
     protected $fillable = [
         'catering_service_id', 'name', 'slug', 'description', 'price',
-        'image', 'is_best_seller', 'is_active',
+        'image', 'is_active',
     ];
 
     protected function casts(): array
     {
         return [
             'price' => 'decimal:2',
-            'is_best_seller' => 'boolean',
             'is_active' => 'boolean',
         ];
     }
@@ -45,11 +44,6 @@ class Product extends Model
     public function scopeAvailable($query)
     {
         return $query->where('is_active', true);
-    }
-
-    public function scopeBestSeller($query)
-    {
-        return $query->where('is_best_seller', true);
     }
 
     // === Accessors ===

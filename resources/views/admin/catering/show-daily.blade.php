@@ -164,7 +164,6 @@
                 <tr class="text-xs uppercase text-gray-500 tracking-wider">
                     <th class="px-6 py-3 text-left font-semibold">Produk</th>
                     <th class="px-6 py-3 text-center font-semibold">Harga</th>
-                    <th class="px-6 py-3 text-center font-semibold">Best Seller</th>
                     <th class="px-6 py-3 text-center font-semibold">Status</th>
                     <th class="px-6 py-3 text-center font-semibold">Aksi</th>
                 </tr>
@@ -187,9 +186,6 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 text-center font-semibold text-orange-600">{{ $p->formatted_price }}</td>
-                    <td class="px-6 py-4 text-center">
-                        @if($p->is_best_seller)<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-700">Best Seller</span>@else<span class="text-gray-300">—</span>@endif
-                    </td>
                     <td class="px-6 py-4 text-center">
                         <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $p->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
                             {{ $p->is_active ? 'Aktif' : 'Nonaktif' }}

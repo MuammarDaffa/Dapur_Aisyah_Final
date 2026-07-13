@@ -38,8 +38,7 @@
                     @endif
                 </div>
             </div>
-        </div>
-        <div class="flex gap-6"><label class="flex items-center gap-2"><input type="checkbox" name="is_best_seller" value="1" {{ $product->is_best_seller?'checked':'' }} class="rounded border-gray-300 text-orange-500"><span class="text-sm">Best Seller</span></label><label class="flex items-center gap-2"><input type="checkbox" name="is_active" value="1" {{ $product->is_active?'checked':'' }} class="rounded border-gray-300 text-orange-500"><span class="text-sm">Aktif</span></label></div>
+        <div class="flex gap-6"><label class="flex items-center gap-2"><input type="checkbox" name="is_active" value="1" {{ $product->is_active?'checked':'' }} class="rounded border-gray-300 text-orange-500"><span class="text-sm">Aktif</span></label></div>
         @if(isset($extras) && $extras->count() > 0)
         @php $selectedExtras = $product->extras->pluck('id')->toArray() ?? []; @endphp
         <div class="space-y-3" id="extra-selector-container">

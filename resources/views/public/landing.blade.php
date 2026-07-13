@@ -189,49 +189,23 @@
         </div>
     </section>
 
-    <!-- Best Sellers Section -->
+    <!-- Tentang Dapur Aisyah Section -->
     <section class="py-16 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">Menu <span class="text-orange-500">Terpopuler</span></h2>
-                <p class="mt-3 text-gray-500">Menu favorit pelanggan kami</p>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @forelse($bestSellers as $product)
-                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
-                        <div class="relative h-48 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center">
-                            @if($product->image)
-                                <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
-                            @else
-                                <span class="text-6xl">🍛</span>
-                            @endif
-                            @if($product->is_best_seller)
-                                <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">🔥 Best Seller</span>
-                            @endif
-                        </div>
-                        <div class="p-5">
-                            <p class="text-xs text-orange-500 font-medium mb-1">{{ $product->cateringService->name ?? '' }}</p>
-                            <h3 class="font-bold text-gray-900 mb-2">{{ $product->name }}</h3>
-                            <div class="flex items-center justify-between">
-                                <span class="text-lg font-bold text-orange-600">{{ $product->formatted_price }}</span>
-                                @auth
-                                    <form action="{{ route('customer.cart.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="p-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors shadow-sm hover:shadow-md">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                        </button>
-                                    </form>
-                                @endauth
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-full text-center text-gray-500 py-8">
-                        Belum ada produk populer.
-                    </div>
-                @endforelse
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <!-- Kolom Kiri: Gambar -->
+                <div class="w-full h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-lg border border-gray-100">
+                    <img src="{{ asset('images/katering_team.jpg') }}" alt="Tentang Dapur Aisyah" class="w-full h-full object-cover">
+                </div>
+                <!-- Kolom Kanan: Judul & Deskripsi -->
+                <div class="flex flex-col justify-center">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">
+                        Tentang <span class="text-orange-500">Dapur Aisyah</span>
+                    </h2>
+                    <p class="text-gray-600 text-base sm:text-lg leading-relaxed text-justify">
+                        Dapur Aisyah adalah penyedia layanan katering rumahan yang menyajikan hidangan berkualitas untuk kebutuhan harian maupun berbagai acara. Dengan bahan segar, cita rasa rumahan, dan pelayanan yang terpercaya, kami berkomitmen memberikan pengalaman terbaik di setiap sajian.
+                    </p>
+                </div>
             </div>
         </div>
     </section>

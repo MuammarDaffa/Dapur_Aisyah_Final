@@ -13,13 +13,6 @@
             </div>
         @endif
 
-        {{-- Best Seller Badge --}}
-        @if($product->is_best_seller)
-            <div class="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
-                <span>⭐</span> Best Seller
-            </div>
-        @endif
-
         {{-- Service Badge --}}
         @if($product->cateringService)
             <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full shadow">

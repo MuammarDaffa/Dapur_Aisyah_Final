@@ -46,7 +46,6 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0|max:1000000000',
             'image' => 'nullable|image|max:2048',
-            'is_best_seller' => 'boolean',
             'is_active' => 'boolean',
             'extras' => 'nullable|array',
             'extras.*' => 'exists:custom_options,id',
@@ -55,7 +54,6 @@ class ProductController extends Controller
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
-        $validated['is_best_seller'] = $request->boolean('is_best_seller');
         $validated['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
@@ -88,7 +86,6 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0|max:1000000000',
             'image' => 'nullable|image|max:2048',
-            'is_best_seller' => 'boolean',
             'is_active' => 'boolean',
             'extras' => 'nullable|array',
             'extras.*' => 'exists:custom_options,id',
@@ -96,7 +93,6 @@ class ProductController extends Controller
             'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
-        $validated['is_best_seller'] = $request->boolean('is_best_seller');
         $validated['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
