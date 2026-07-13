@@ -111,57 +111,6 @@
         </table>
     </div>
 
-    {{-- ============================================ --}}
-    {{-- Task 14: Section Penyajian --}}
-    {{-- ============================================ --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
-            <div>
-                <h3 class="font-bold text-gray-800">🍲 Penyajian</h3>
-                <p class="text-xs text-gray-500 mt-0.5">Tipe penyajian yang tersedia (Lunch Box, Prasmanan, dll)</p>
-            </div>
-            <button type="button" onclick="openOptionModal('serving_type')" class="px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
-                + Tambah Penyajian
-            </button>
-        </div>
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50/50">
-                <tr class="text-xs uppercase text-gray-500 tracking-wider">
-                    <th class="px-6 py-3 text-left font-semibold">Nama</th>
-                    <th class="px-6 py-3 text-center font-semibold">Status</th>
-                    <th class="px-6 py-3 text-center font-semibold">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @forelse($servings as $serving)
-                <tr class="hover:bg-orange-50/30 transition-colors">
-                    <td class="px-6 py-4 font-medium text-gray-900">{{ $serving->name }}</td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $serving->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
-                            {{ $serving->is_active ? 'Aktif' : 'Nonaktif' }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <div class="flex items-center justify-center gap-2">
-                            <button type="button" data-items="{{ json_encode($serving->items ?? []) }}" onclick="openEditModal({{ $serving->id }}, '{{ addslashes($serving->name) }}', {{ $serving->price }}, {{ $serving->is_active ? 'true' : 'false' }}, 'serving_type', this)" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
-                            <form id="form-delete-serving-{{ $serving->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $serving]) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button type="button" onclick="confirmDelete('form-delete-serving-{{ $serving->id }}', 'Hapus penyajian ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="3" class="px-6 py-8 text-center text-gray-400">
-                        <p class="text-2xl mb-1">🍲</p>
-                        <p class="text-sm">Belum ada penyajian. Contoh: Lunch Box, Prasmanan, Plated Service.</p>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
 
     {{-- ============================================ --}}
     {{-- Task 15: Section Extra --}}
@@ -410,7 +359,7 @@
 @push('scripts')
 <script>
 const cateringId = {{ $catering->id }};
-const typeLabels = { menu: 'Menu', serving_type: 'Penyajian', extra: 'Extra' };
+const typeLabels = { menu: 'Menu', extra: 'Extra' };
 
 function openOptionModal(type) {
     document.getElementById('addOptionType').value = type;
@@ -431,14 +380,8 @@ function openOptionModal(type) {
         document.getElementById('addItemsContainer').innerHTML = '';
     }
     
-    // Penyajian: harga tidak diperlukan (0)
-    if (type === 'serving_type') {
-        document.getElementById('addPriceField').style.display = 'none';
-        document.getElementById('addPrice').value = '0';
-    } else {
-        document.getElementById('addPriceField').style.display = 'block';
-        document.getElementById('addPrice').value = '0';
-    }
+    document.getElementById('addPriceField').style.display = 'block';
+    document.getElementById('addPrice').value = '0';
     
     document.getElementById('addOptionModal').style.display = 'flex';
 }
@@ -477,14 +420,8 @@ function openEditModal(optionId, name, price, isActive, type, btnElement) {
         document.getElementById('editItemsContainer').innerHTML = '';
     }
     
-    // Penyajian: harga tidak diperlukan (0)
-    if (type === 'serving_type') {
-        document.getElementById('editPriceField').style.display = 'none';
-        document.getElementById('editPrice').value = '0';
-    } else {
-        document.getElementById('editPriceField').style.display = 'block';
-        document.getElementById('editPrice').value = formatRupiah(price);
-    }
+    document.getElementById('editPriceField').style.display = 'block';
+    document.getElementById('editPrice').value = formatRupiah(price);
     
     document.getElementById('editActive').checked = isActive;
     document.getElementById('editOptionForm').action = `/admin/catering/${cateringId}/options/${optionId}`;

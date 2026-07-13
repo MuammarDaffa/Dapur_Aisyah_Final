@@ -103,9 +103,8 @@ class CateringServiceSeeder extends Seeder
             ['type' => 'decoration', 'name' => 'Dekorasi Meja Premium', 'price' => 100000],
             ['type' => 'decoration', 'name' => 'Dekorasi Bunga Meja', 'price' => 75000],
             // Serving Type
-            ['type' => 'serving_type', 'name' => 'Rice Box', 'price' => 0],
-            ['type' => 'serving_type', 'name' => 'Prasmanan', 'price' => 15000],
-            ['type' => 'serving_type', 'name' => 'Plated Service', 'price' => 25000],
+            ['type' => 'serving_type', 'name' => 'Nasi Kotak', 'price' => 0],
+            ['type' => 'serving_type', 'name' => 'Prasmanan', 'price' => 0],
             // Extra
             ['type' => 'extra', 'name' => 'Paket Minuman (Teh/Kopi)', 'price' => 8000],
             ['type' => 'extra', 'name' => 'Cemilan Assorted', 'price' => 12000],

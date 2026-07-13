@@ -195,7 +195,12 @@ Route::middleware('auth')->group(function () {
 
     // API: Custom options per layanan (grouped by type)
     Route::get('/api/service/{service}/custom-options', function (\App\Models\CateringService $service) {
-        return $service->customOptions()->where('is_active', true)->get(['id', 'type', 'name', 'price', 'min_qty']);
+        $options = $service->customOptions()->where('type', '!=', 'serving_type')->where('is_active', true)->get(['id', 'type', 'name', 'price', 'min_qty']);
+        if ($service->isEvent()) {
+            $servings = \App\Models\CustomOption::where('type', 'serving_type')->where('is_active', true)->get(['id', 'type', 'name', 'price', 'min_qty']);
+            $options = $options->concat($servings);
+        }
+        return $options;
     })->name('api.service.options');
 
     // API: Extras per produk

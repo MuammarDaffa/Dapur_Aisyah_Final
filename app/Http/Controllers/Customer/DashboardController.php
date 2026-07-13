@@ -104,7 +104,9 @@ class DashboardController extends Controller
             return redirect()->route('customer.event.service', $service)->with('error', 'Layanan tidak mendukung custom menu.');
         }
 
-        $customOptions = $service->customOptions()->where('is_active', true)->get();
+        $options = $service->customOptions()->where('type', '!=', 'serving_type')->where('is_active', true)->get();
+        $servings = \App\Models\CustomOption::where('type', 'serving_type')->where('is_active', true)->get();
+        $customOptions = $options->concat($servings);
         return view('customer.event_custom', compact('service', 'customOptions'));
     }
 

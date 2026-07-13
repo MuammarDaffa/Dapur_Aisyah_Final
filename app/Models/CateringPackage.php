@@ -70,7 +70,11 @@ class CateringPackage extends Model
      */
     public function getIncludedServingTypes()
     {
-        return $this->customOptions()->where('type', 'serving_type')->get();
+        $included = $this->customOptions()->where('type', 'serving_type')->get();
+        if ($included->isEmpty()) {
+            return \App\Models\CustomOption::where('type', 'serving_type')->where('is_active', true)->get();
+        }
+        return $included;
     }
 
     /**

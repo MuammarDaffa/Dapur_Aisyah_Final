@@ -105,7 +105,7 @@ class CateringController extends Controller
         if ($catering->isEvent()) {
             $packages = $catering->packages()->with('customOptions')->latest()->paginate(10);
             $menus = $catering->customOptions()->where('type', 'menu')->get();
-            $servings = $catering->customOptions()->where('type', 'serving_type')->get();
+            $servings = \App\Models\CustomOption::where('type', 'serving_type')->get();
             $extras = $catering->customOptions()->where('type', 'extra')->get();
 
             return view('admin.catering.show-event', compact('catering', 'packages', 'menus', 'servings', 'extras'));
@@ -188,7 +188,7 @@ class CateringController extends Controller
     public function storeOption(Request $request, CateringService $catering)
     {
         $validated = $request->validate([
-            'type' => 'required|in:menu,serving_type,extra',
+            'type' => 'required|in:menu,extra',
             'name' => 'required|string|max:150',
             'price' => 'required|numeric|min:0|max:1000000000',
             'is_active' => 'boolean',
@@ -228,6 +228,7 @@ class CateringController extends Controller
     {
         // Pastikan option milik katering ini
         abort_if($option->catering_service_id !== $catering->id, 403, 'Option bukan milik katering ini.');
+        abort_if($option->type === 'serving_type', 403, 'Data Penyajian adalah master data tetap dan tidak dapat diubah.');
 
         $validated = $request->validate([
             'name' => 'required|string|max:150',
@@ -281,6 +282,7 @@ class CateringController extends Controller
     {
         // Pastikan option milik katering ini
         abort_if($option->catering_service_id !== $catering->id, 403, 'Option bukan milik katering ini.');
+        abort_if($option->type === 'serving_type', 403, 'Data Penyajian adalah master data tetap dan tidak dapat dihapus.');
 
         $option->delete();
 
