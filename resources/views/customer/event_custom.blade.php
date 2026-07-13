@@ -77,21 +77,15 @@
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Tambahan (Extra) — Opsional</h3>
                     <div class="space-y-3">
                         @foreach($extras as $idx => $extra)
-                            <div class="flex items-center justify-between p-4 border rounded-xl hover:bg-orange-50 transition-colors">
+                            <div class="flex items-center justify-between p-4 border rounded-xl hover:bg-orange-50">
                                 <label class="flex items-center gap-3 cursor-pointer flex-1">
                                     <input type="checkbox" id="custom_extra_{{ $idx }}" data-id="{{ $extra->id }}" data-price="{{ $extra->price }}"
-                                        class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-extra-cb" onchange="toggleCustomExtra({{ $idx }})">
+                                        class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-extra-cb" onchange="recalcCustom()">
                                     <div>
                                         <span class="font-medium text-gray-900">{{ $extra->name }}</span>
                                         <p class="text-sm text-orange-600 font-semibold">+Rp {{ number_format($extra->price, 0, ',', '.') }}</p>
                                     </div>
                                 </label>
-                                <div class="flex items-center gap-2 opacity-0 pointer-events-none transition-opacity" id="custom_extra_qty_container_{{ $idx }}">
-                                    <button type="button" onclick="changeCustomExtraQty({{ $idx }}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
-                                    <input type="number" id="custom_extra_input_{{ $idx }}" value="0" min="0"
-                                        class="w-16 text-center border rounded-lg py-1 font-semibold" onchange="recalcCustom()">
-                                    <button type="button" onclick="changeCustomExtraQty({{ $idx }}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
-                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -189,34 +183,6 @@
         recalcCustom();
     }
 
-    function toggleCustomExtra(idx) {
-        const cb = document.getElementById('custom_extra_' + idx);
-        const qtyContainer = document.getElementById('custom_extra_qty_container_' + idx);
-        const input = document.getElementById('custom_extra_input_' + idx);
-        if (cb.checked) {
-            qtyContainer.classList.remove('opacity-0', 'pointer-events-none');
-            input.value = 1;
-        } else {
-            qtyContainer.classList.add('opacity-0', 'pointer-events-none');
-            input.value = 0;
-        }
-        recalcCustom();
-    }
-
-    function changeCustomExtraQty(idx, delta) {
-        const input = document.getElementById('custom_extra_input_' + idx);
-        const cb = document.getElementById('custom_extra_' + idx);
-        let val = parseInt(input.value) || 0;
-        val = Math.max(0, val + delta);
-        if (val <= 0) {
-            val = 0;
-            cb.checked = false;
-            document.getElementById('custom_extra_qty_container_' + idx).classList.add('opacity-0', 'pointer-events-none');
-        }
-        input.value = val;
-        recalcCustom();
-    }
-
     function toggleMenuDetail(idx, event) {
         event.preventDefault();
         event.stopPropagation();
@@ -247,10 +213,8 @@
         });
 
         document.querySelectorAll('.custom-extra-cb:checked').forEach(cb => {
-            const price = parseFloat(cb.dataset.price);
-            const idx = cb.id.split('_').pop();
-            const qty = parseInt(document.getElementById('custom_extra_input_' + idx).value) || 0;
-            subtotalExtra += price * qty;
+            const price = parseFloat(cb.dataset.price) || 0;
+            subtotalExtra += price * totalPortions;
         });
 
         document.getElementById('custom-total-portions').textContent = totalPortions;
@@ -270,14 +234,21 @@
 
         btn.disabled = (totalPortions === 0 || totalPortions > CUSTOM_MAX_PORTIONS || (!hasServing && document.querySelector('.custom-serving-radio')));
 
-        buildCustomFormFields();
+        buildCustomFormFields(totalPortions);
     }
 
-    function buildCustomFormFields() {
+    function buildCustomFormFields(totalPortions = 0) {
         document.querySelectorAll('.custom-hidden-item').forEach(el => el.remove());
 
         const form = document.getElementById('customForm');
         let formIdx = 0;
+        let menuPortions = totalPortions;
+        if (!menuPortions) {
+            document.querySelectorAll('.custom-menu-cb:checked').forEach(cb => {
+                const idx = cb.id.split('_').pop();
+                menuPortions += parseInt(document.getElementById('custom_menu_input_' + idx).value) || 0;
+            });
+        }
 
         document.querySelectorAll('.custom-menu-cb:checked').forEach(cb => {
             const id = cb.dataset.id;
@@ -293,11 +264,9 @@
 
         document.querySelectorAll('.custom-extra-cb:checked').forEach(cb => {
             const id = cb.dataset.id;
-            const idx = cb.id.split('_').pop();
-            const qty = parseInt(document.getElementById('custom_extra_input_' + idx).value) || 0;
-            if (qty > 0) {
+            if (menuPortions > 0) {
                 appendHidden(form, `items[${formIdx}][custom_option_id]`, id);
-                appendHidden(form, `items[${formIdx}][quantity]`, qty);
+                appendHidden(form, `items[${formIdx}][quantity]`, menuPortions);
                 appendHidden(form, `items[${formIdx}][item_type]`, 'addition');
                 formIdx++;
             }
@@ -312,6 +281,10 @@
         input.className = 'custom-hidden-item';
         form.appendChild(input);
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        recalcCustom();
+    });
 </script>
 @endpush
 @endsection
