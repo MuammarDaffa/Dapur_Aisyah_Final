@@ -3,68 +3,113 @@
 @section('title', 'Katering Online Terpercaya Pontianak')
 
 @section('content')
+    <style>
+        .hero-section {
+            height: 65vh; /* Mobile default */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-bg {
+            transition: opacity 800ms ease-in-out;
+        }
+        .hero-btn {
+            background-color: #f97316; /* primary orange color */
+            color: #ffffff;
+            transition: all 250ms ease-in-out;
+        }
+        .hero-btn:hover {
+            background-color: #ea580c; /* slightly darker orange */
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        .hero-btn:active {
+            transform: translateY(1px);
+        }
+        @media (min-width: 640px) and (max-width: 1023px) {
+            .hero-section {
+                height: auto; /* Tablet adjusts to content */
+                padding: 6rem 1rem;
+            }
+        }
+        @media (min-width: 1024px) {
+            .hero-section {
+                height: 75vh; /* Desktop */
+            }
+        }
+    </style>
+
     <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-        <div class="absolute inset-0 overflow-hidden">
-            <div class="absolute -top-40 -right-40 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl"></div>
-            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl"></div>
+    <section class="relative overflow-hidden flex items-center justify-center text-center hero-section w-full">
+        <!-- Background Container -->
+        <div class="absolute inset-0 z-0">
+            <div id="hero-bg-1" class="absolute inset-0 hero-bg bg-cover bg-center"></div>
+            <div id="hero-bg-2" class="absolute inset-0 hero-bg bg-cover bg-center opacity-0"></div>
+            <!-- Dark Overlay -->
+            <div class="absolute inset-0 bg-black/45 z-10"></div>
         </div>
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div class="space-y-6">
-                    <!-- <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-orange-100 text-orange-700 text-sm font-medium">
-                        🔥 Promo Menarik Setiap Hari
-                    </div> -->
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
-                        Katering <span class="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">Rumahan</span>
-                        <br>Berkualitas Premium
-                    </h1>
-                    <p class="text-lg text-gray-600 max-w-md">
-                        Nikmati masakan rumahan berkualitas untuk kebutuhan harian dan acara kantor Anda. Pesan mudah, bayar aman, antar cepat.
-                    </p>
-                    <div class="flex flex-wrap gap-4">
-                        @auth
-                            <a href="{{ route('customer.products') }}" class="px-8 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-full shadow-lg shadow-orange-200 hover:shadow-xl hover:shadow-orange-300 transform hover:scale-105 transition-all">
-                                Pesan Sekarang →
-                            </a>
-                        @else
-                            <a href="{{ route('register') }}" class="px-8 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-full shadow-lg shadow-orange-200 hover:shadow-xl hover:shadow-orange-300 transform hover:scale-105 transition-all">
-                                Pesan Sekarang →
-                            </a>
-                        @endauth
-                        <a href="#services" class="px-8 py-3.5 bg-white text-orange-600 font-semibold rounded-full border-2 border-orange-200 hover:border-orange-400 transition-all">
-                            Lihat Menu
-                        </a>
-                    </div>
-                    <div class="flex items-center space-x-6 pt-4">
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-orange-600">500+</p>
-                            <p class="text-xs text-gray-500">Pesanan</p>
-                        </div>
-                        <div class="w-px h-10 bg-gray-200"></div>
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-orange-600">100+</p>
-                            <p class="text-xs text-gray-500">Ulasan</p>
-                        </div>
-                        <div class="w-px h-10 bg-gray-200"></div>
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-orange-600">100%</p>
-                            <p class="text-xs text-gray-500">Halal</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="relative hidden md:block">
-                    <div class="relative w-full aspect-square max-w-lg mx-auto">
-                        <div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-amber-400 rounded-3xl rotate-6 opacity-20"></div>
-                        <div class="absolute inset-0 bg-gradient-to-br from-orange-300 to-amber-300 rounded-3xl -rotate-3 opacity-20"></div>
-                        <div class="relative bg-gradient-to-br from-orange-100 to-amber-100 rounded-3xl p-8 flex items-center justify-center">
-                            <span class="text-9xl">🍲</span>
-                        </div>
-                    </div>
-                </div>
+
+        <!-- Content Container -->
+        <div class="relative z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center h-full">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-4 max-w-3xl">
+                Katering Rumahan Berkualitas Premium
+            </h1>
+            <p class="text-sm sm:text-base lg:text-lg text-gray-200 max-w-xl mb-8 leading-relaxed">
+                Nikmati masakan rumahan berkualitas untuk kebutuhan harian atau acara.
+            </p>
+            <div>
+                @auth
+                    <a href="{{ route('customer.products') }}" class="inline-block px-8 py-3.5 font-bold rounded-full cursor-pointer hero-btn text-base shadow-sm">
+                        Pesan Sekarang
+                    </a>
+                @else
+                    <a href="{{ route('register') }}" class="inline-block px-8 py-3.5 font-bold rounded-full cursor-pointer hero-btn text-base shadow-sm">
+                        Pesan Sekarang
+                    </a>
+                @endauth
             </div>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = [
+                "{{ asset('images/hero-1.jpg') }}",
+                "{{ asset('images/hero-2.jpg') }}",
+                "{{ asset('images/hero-3.jpg') }}",
+                "{{ asset('images/hero-4.jpg') }}",
+                "{{ asset('images/hero-5.jpg') }}"
+            ];
+            
+            let currentIndex = 0;
+            const bg1 = document.getElementById('hero-bg-1');
+            const bg2 = document.getElementById('hero-bg-2');
+            
+            if (bg1 && bg2 && images.length > 0) {
+                // Initialize first background
+                bg1.style.backgroundImage = `url('${images[0]}')`;
+                
+                let activeBg = bg1;
+                let inactiveBg = bg2;
+                
+                setInterval(function() {
+                    currentIndex = (currentIndex + 1) % images.length;
+                    
+                    // Set background of inactive element
+                    inactiveBg.style.backgroundImage = `url('${images[currentIndex]}')`;
+                    
+                    // Fade in inactive element and fade out active element
+                    inactiveBg.style.opacity = '1';
+                    activeBg.style.opacity = '0';
+                    
+                    // Swap active/inactive references
+                    const temp = activeBg;
+                    activeBg = inactiveBg;
+                    inactiveBg = temp;
+                }, 5000);
+            }
+        });
+    </script>
 
     <!-- Services Section -->
     <section id="services" class="py-16 bg-white">
