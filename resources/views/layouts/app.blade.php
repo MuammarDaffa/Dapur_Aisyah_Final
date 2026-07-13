@@ -27,10 +27,17 @@
             <div class="flex justify-between h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="{{ route('landing') }}" class="flex items-center space-x-2">
-                        <span class="text-2xl">🍲</span>
-                        <span class="text-xl font-bold bg-gradient-to-r from-orange-500 to-amber-600 bg-clip-text text-transparent">Dapur Aisyah</span>
-                    </a>
+                    @if(request()->routeIs('landing'))
+                        <a href="#hero" class="logo-nav-link flex items-center space-x-2" data-target="hero">
+                            <span class="text-2xl">🍲</span>
+                            <span class="text-xl font-bold bg-gradient-to-r from-orange-500 to-amber-600 bg-clip-text text-transparent">Dapur Aisyah</span>
+                        </a>
+                    @else
+                        <a href="{{ route('landing') }}#hero" class="flex items-center space-x-2">
+                            <span class="text-2xl">🍲</span>
+                            <span class="text-xl font-bold bg-gradient-to-r from-orange-500 to-amber-600 bg-clip-text text-transparent">Dapur Aisyah</span>
+                        </a>
+                    @endif
                 </div>
 
                 <!-- Navbar Links (Replace Search Bar on Desktop) -->
@@ -246,17 +253,24 @@
                 <div>
                     <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Menu</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="{{ route('landing') }}" class="hover:text-orange-400 transition-colors">Beranda</a></li>
-                        <li><a href="{{ route('customer.products') }}" class="hover:text-orange-400 transition-colors">Menu Kami</a></li>
-                        <li><a href="{{ route('login') }}" class="hover:text-orange-400 transition-colors">Masuk</a></li>
+                        @if(request()->routeIs('landing'))
+                            <li><a href="#hero" class="footer-nav-link hover:text-orange-400 transition-colors" data-target="hero">Beranda</a></li>
+                            <li><a href="#services" class="footer-nav-link hover:text-orange-400 transition-colors" data-target="services">Layanan</a></li>
+                            <li><a href="#about" class="footer-nav-link hover:text-orange-400 transition-colors" data-target="about">Tentang</a></li>
+                            @if(isset($reviews) && $reviews->count() > 0)
+                            <li><a href="#testimonials" class="footer-nav-link hover:text-orange-400 transition-colors" data-target="testimonials">Testimoni</a></li>
+                            @endif
+                        @else
+                            <li><a href="{{ route('landing') }}#hero" class="hover:text-orange-400 transition-colors">Beranda</a></li>
+                            <li><a href="{{ route('landing') }}#services" class="hover:text-orange-400 transition-colors">Layanan</a></li>
+                            <li><a href="{{ route('landing') }}#about" class="hover:text-orange-400 transition-colors">Tentang</a></li>
+                            <li><a href="{{ route('landing') }}#testimonials" class="hover:text-orange-400 transition-colors">Testimoni</a></li>
+                        @endif
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Kontak</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li class="flex items-center space-x-2">
-                            <span>📍</span><span>Pontianak, Kalimantan Barat</span>
-                        </li>
+                    <ul class="space-y-2 text-sm mb-4">
                         <li class="flex items-center space-x-2">
                             <span>📞</span><span>0812-3456-7890</span>
                         </li>
@@ -264,6 +278,18 @@
                             <span>✉️</span><span>info@dapuraisyah.com</span>
                         </li>
                     </ul>
+                    <div class="w-full rounded-xl overflow-hidden border border-gray-700 shadow-sm h-36 sm:h-40 md:h-36">
+                        <iframe 
+                            src="https://maps.google.com/maps?q=-0.060394,109.301565&z=15&output=embed" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="Lokasi Dapur Aisyah">
+                        </iframe>
+                    </div>
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">

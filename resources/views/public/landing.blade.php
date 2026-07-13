@@ -20,12 +20,13 @@
         .hero-btn {
             background-color: #f97316; /* primary orange color */
             color: #ffffff;
+            border: 2px solid #f97316;
             transition: all 250ms ease-in-out;
         }
         .hero-btn:hover {
-            background-color: #ea580c; /* slightly darker orange */
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            background-color: transparent;
+            color: #f97316;
+            border-color: #f97316;
         }
         .hero-btn:active {
             transform: translateY(1px);
@@ -136,10 +137,11 @@
 
             // Main Navbar Smooth Scroll & Active Status (Scroll Spy)
             const mainNavLinks = document.querySelectorAll('.main-nav-link');
+            const scrollLinks = document.querySelectorAll('.main-nav-link, .logo-nav-link, .footer-nav-link');
             const sections = document.querySelectorAll('section.section-item[id]');
 
             // Smooth Scroll on Link Click
-            mainNavLinks.forEach(link => {
+            scrollLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const targetId = this.getAttribute('data-target');
