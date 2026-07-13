@@ -369,6 +369,10 @@
         .then(response => response.json())
         .then(data => {
             if (btn) btn.disabled = false;
+            if (data.redirect_url) {
+                window.location.href = data.redirect_url;
+                return;
+            }
             if (data.success) {
                 if (typeof window.updateCartBadges === 'function' && typeof data.cart_count !== 'undefined') {
                     window.updateCartBadges(data.cart_count);

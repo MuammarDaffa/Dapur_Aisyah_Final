@@ -357,6 +357,10 @@
         })
         .then(data => {
             if (submitBtn) submitBtn.disabled = false;
+            if (data.redirect_url) {
+                window.location.href = data.redirect_url;
+                return;
+            }
             if (data.success) {
                 closeOrderModal();
                 if (typeof window.updateCartBadges === 'function' && typeof data.cart_count !== 'undefined') {

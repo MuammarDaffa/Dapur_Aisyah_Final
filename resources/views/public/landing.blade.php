@@ -212,8 +212,8 @@
                 @forelse($services as $service)
                     @php
                         $serviceUrl = $service->isEvent()
-                            ? (auth()->check() ? route('customer.event.service', $service) : route('register'))
-                            : (auth()->check() ? route('customer.products', ['service' => $service->id]) : route('register'));
+                            ? route('customer.event.service', $service)
+                            : route('customer.products', ['service' => $service->id]);
                         $icon = $service->isDaily() ? '🍱' : ($service->isEvent() ? '🎉' : '🍽️');
                     @endphp
                     <a href="{{ $serviceUrl }}" class="group relative bg-white rounded-2xl border border-gray-100 hover:shadow-xl hover:shadow-orange-100 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full overflow-hidden">

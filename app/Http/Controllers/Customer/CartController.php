@@ -67,6 +67,26 @@ class CartController extends Controller
             'extras.*.qty' => 'integer|min:1',
         ]);
 
+        if (!auth()->check()) {
+            session([
+                'pending_cart_item' => [
+                    'type' => 'daily',
+                    'data' => $request->all(),
+                ]
+            ]);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'require_auth' => true,
+                    'redirect_url' => route('register'),
+                    'message' => 'Silakan registrasi atau login terlebih dahulu untuk memasukkan pesanan ke keranjang.'
+                ]);
+            }
+
+            return redirect()->route('register')->with('info', 'Silakan registrasi atau login terlebih dahulu untuk memasukkan pesanan ke keranjang.');
+        }
+
         $user = auth()->user();
 
         // Clean and Sort extras array so identical selections match in JSON string comparison
@@ -156,6 +176,26 @@ class CartController extends Controller
             'items.*.item_type' => 'required_with:items|in:package_item,addition,custom_menu,package_extra',
             'notes' => 'nullable|string|max:1000',
         ]);
+
+        if (!auth()->check()) {
+            session([
+                'pending_cart_item' => [
+                    'type' => 'event_group',
+                    'data' => $request->all(),
+                ]
+            ]);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'require_auth' => true,
+                    'redirect_url' => route('register'),
+                    'message' => 'Silakan registrasi atau login terlebih dahulu untuk memasukkan pesanan ke keranjang.'
+                ]);
+            }
+
+            return redirect()->route('register')->with('info', 'Silakan registrasi atau login terlebih dahulu untuk memasukkan pesanan ke keranjang.');
+        }
 
         $service = \App\Models\CateringService::findOrFail($validated['catering_service_id']);
         $user = auth()->user();
@@ -685,5 +725,34 @@ class CartController extends Controller
         }
 
         return back()->with('success', 'Item berhasil dihapus dari keranjang.');
+    }
+
+    /**
+     * Memulihkan pesanan yang disimpan di session sebelum login / registrasi.
+     */
+    public static function restorePendingCart(Request $request)
+    {
+        if (!$request->session()->has('pending_cart_item') || !auth()->check()) {
+            return null;
+        }
+
+        $pending = $request->session()->pull('pending_cart_item');
+        if (!is_array($pending) || empty($pending['type']) || empty($pending['data'])) {
+            return null;
+        }
+
+        $controller = app(self::class);
+        $req = Request::create('/', 'POST', $pending['data']);
+        $req->headers->set('X-Requested-With', ''); // Non-ajax
+
+        if ($pending['type'] === 'daily') {
+            $controller->store($req);
+            return redirect()->route('customer.cart', ['tab' => 'daily'])->with('success', 'Produk dan opsi berhasil ditambahkan ke keranjang!');
+        } elseif ($pending['type'] === 'event_group') {
+            $controller->storeEventGroup($req);
+            return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil ditambahkan ke keranjang!');
+        }
+
+        return null;
     }
 }

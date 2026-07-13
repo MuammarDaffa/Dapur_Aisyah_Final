@@ -48,13 +48,8 @@ Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('
 | Customer Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('customer.')->group(function () {
-    Route::get('/', [CustomerDashboard::class, 'index'])->name('dashboard');
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-    // Products
+Route::prefix('dashboard')->name('customer.')->group(function () {
+    // Products (Menu Mingguan/Harian)
     Route::get('/products', [CustomerDashboard::class, 'products'])->name('products');
 
     // Event Configurator (Split)
@@ -62,20 +57,33 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     Route::get('/event/{service}/package/{package}', [CustomerDashboard::class, 'eventPackage'])->name('event.package');
     Route::get('/event/{service}/custom', [CustomerDashboard::class, 'eventCustom'])->name('event.custom');
 
+    // Cart Count (untuk badge di navbar, mengembalikan 0 jika guest)
+    Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
+
+    // Cart Store (masukkan ke keranjang - di-intercept dalam controller jika belum login)
+    Route::middleware('not_suspended')->group(function () {
+        Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+        Route::post('/event/cart', [CartController::class, 'storeEventGroup'])->name('event.cart.store');
+    });
+});
+
+Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('customer.')->group(function () {
+    Route::get('/', [CustomerDashboard::class, 'index'])->name('dashboard');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
     // === Rute dilindungi not_suspended ===
     Route::middleware('not_suspended')->group(function () {
-        // Event Cart (masukkan ke keranjang event)
-        Route::post('/event/cart', [CartController::class, 'storeEventGroup'])->name('event.cart.store');
+        // Event Cart Update & Destroy
         Route::put('/event/cart/{groupId}', [CartController::class, 'updateEventGroup'])->name('event.cart.update');
 
         // Event Checkout (per group)
         Route::get('/event/checkout/{groupId}', [CheckoutController::class, 'showEventCheckout'])->name('event.checkout.show');
         Route::post('/event/checkout/{groupId}', [CheckoutController::class, 'checkoutEventGroup'])->name('event.checkout.store');
 
-        // Cart (Daily + Event)
-        Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
+        // Cart Index & Item Operations (Daily)
         Route::get('/cart', [CartController::class, 'index'])->name('cart');
-        Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
         Route::put('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
         Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
 
