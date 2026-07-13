@@ -115,7 +115,7 @@
                             {{-- Jika pesanan berupa Paket Event --}}
                             @foreach($packageItems as $pIdx => $pkg)
                             @php
-                                $customPortion = $customMenus->first()->quantity ?? ($customExtras->first()->quantity ?? 0);
+                                $customPortion = $customMenus->isNotEmpty() ? $customMenus->sum('quantity') : ($customExtras->first()->quantity ?? 0);
                                 if ($pkgMenus->isNotEmpty()) {
                                     $pkgPortion = $pkgMenus->first()->quantity;
                                 } elseif ($customMenus->isNotEmpty() && $order->portion > $customPortion) {
@@ -170,7 +170,7 @@
                             @php
                                 $displayCustomMenus = $packageItems->isNotEmpty() ? $customMenus : $menuItems;
                                 $displayCustomExtras = $packageItems->isNotEmpty() ? $customExtras : $extraItems;
-                                $customPortion = $displayCustomMenus->first()->quantity ?? ($displayCustomExtras->first()->quantity ?? ($packageItems->isEmpty() ? $order->portion : 0));
+                                $customPortion = $displayCustomMenus->isNotEmpty() ? $displayCustomMenus->sum('quantity') : ($displayCustomExtras->first()->quantity ?? ($packageItems->isEmpty() ? $order->portion : 0));
                                 $customTotal = $packageItems->isNotEmpty() ? ($displayCustomMenus->sum('subtotal') + $displayCustomExtras->sum('subtotal')) : $order->subtotal;
                             @endphp
                             @if($displayCustomMenus->isNotEmpty() || $displayCustomExtras->isNotEmpty() || $packageItems->isEmpty())
