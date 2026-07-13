@@ -4,8 +4,12 @@
 
 @section('content')
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         .hero-section {
-            height: 65vh; /* Mobile default */
+            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -28,13 +32,15 @@
         }
         @media (min-width: 640px) and (max-width: 1023px) {
             .hero-section {
-                height: auto; /* Tablet adjusts to content */
+                height: 100vh;
+                min-height: 100vh;
                 padding: 6rem 1rem;
             }
         }
         @media (min-width: 1024px) {
             .hero-section {
-                height: 75vh; /* Desktop */
+                height: 100vh;
+                min-height: 100vh;
             }
         }
     </style>
@@ -58,15 +64,9 @@
                 Nikmati masakan rumahan berkualitas untuk kebutuhan harian atau acara.
             </p>
             <div>
-                @auth
-                    <a href="{{ route('customer.products') }}" class="inline-block px-8 py-3.5 font-bold rounded-full cursor-pointer hero-btn text-base shadow-sm">
-                        Pesan Sekarang
-                    </a>
-                @else
-                    <a href="{{ route('register') }}" class="inline-block px-8 py-3.5 font-bold rounded-full cursor-pointer hero-btn text-base shadow-sm">
-                        Pesan Sekarang
-                    </a>
-                @endauth
+                <a href="#services" class="inline-block px-8 py-3.5 font-bold rounded-full cursor-pointer hero-btn text-base shadow-sm scroll-to-services">
+                    Pesan Sekarang
+                </a>
             </div>
         </div>
     </section>
@@ -107,6 +107,20 @@
                     activeBg = inactiveBg;
                     inactiveBg = temp;
                 }, 5000);
+            }
+
+            const scrollBtn = document.querySelector('.scroll-to-services');
+            if (scrollBtn) {
+                scrollBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.getElementById('services');
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
             }
         });
     </script>
@@ -251,7 +265,7 @@
     @endif
 
     <!-- CTA Section -->
-    <section class="py-16 bg-gradient-to-r from-orange-500 to-amber-500">
+    <!-- <section class="py-16 bg-gradient-to-r from-orange-500 to-amber-500">
         <div class="max-w-4xl mx-auto px-4 text-center">
             <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Siap Memesan Katering?</h2>
             <p class="text-orange-100 text-lg mb-8">Pesan sekarang dan nikmati kemudahan layanan katering online kami.</p>
@@ -265,5 +279,5 @@
                 </a>
             @endauth
         </div>
-    </section>
+    </section> -->
 @endsection

@@ -213,7 +213,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                    <h3 class="text-lg font-bold text-white mb-4">🍲 Dapur Aisyah</h3>
+                    <h3 class="text-lg font-bold text-white mb-4">Dapur Aisyah</h3>
                     <p class="text-sm text-gray-400">Platform pemesanan katering online terpercaya di Pontianak. Menyajikan menu berkualitas untuk kebutuhan harian dan acara kantor.</p>
                 </div>
                 <div>
