@@ -134,7 +134,7 @@
                 $customGroups = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') === null);
             @endphp
 
-            <div class="space-y-4">
+            <div class="divide-y divide-gray-200 border-t border-b border-gray-200 my-2">
                 {{-- Kelompok 1: Paket Event --}}
                 @foreach($packageGroups as $groupId => $groupItems)
                 @php
@@ -142,25 +142,25 @@
                     $service = $groupItems->first()->cateringService;
                     $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
                 @endphp
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-purple-200" id="event-card-{{ $groupId }}">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-                            <h5 class="font-bold text-gray-900 text-base sm:text-lg truncate">{{ $packageItem->cateringPackage->name ?? 'Paket' }} <span class="text-gray-700 font-semibold">({{ $packageItem->quantity }})</span></h5>
-                            <span class="text-sm font-medium text-gray-500">•</span>
-                            <span class="text-sm font-medium text-gray-600">{{ $service->name ?? 'Layanan Event' }}</span>
+                <div class="py-6 first:pt-4 last:pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4" id="event-card-{{ $groupId }}">
+                    <div class="flex-1 min-w-0 space-y-1">
+                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <span class="font-bold text-gray-900 text-base sm:text-lg">{{ $packageItem->cateringPackage->name ?? 'Paket' }} ({{ $packageItem->quantity }})</span>
+                            <span class="text-gray-400 font-medium">·</span>
+                            <span class="text-sm text-gray-500 font-medium">{{ $service->name ?? 'Layanan Event' }}</span>
+                        </div>
+                        <div class="pt-0.5">
+                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="text-xs font-semibold text-purple-600 hover:text-purple-800 underline">Lihat Detail Menu</button>
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100">
-                        <p class="text-base sm:text-lg font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
-                        <div class="flex items-center gap-2">
-                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="px-3 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 font-semibold rounded-lg text-xs transition-colors">
-                                Lihat Detail
-                            </button>
-                            <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold rounded-lg text-xs transition-colors">
+                    <div class="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2.5 pt-2 sm:pt-0 border-t border-gray-100 sm:border-t-0">
+                        <p class="text-lg font-bold text-gray-900 sm:text-right">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
+                        <div class="flex items-center gap-2 sm:justify-end">
+                            <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
                                 Edit
                             </button>
-                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $packageItem->id ?? $groupItems->first()->id }}, true)" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-semibold rounded-lg text-xs transition-colors">
+                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $packageItem->id ?? $groupItems->first()->id }}, true)" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
                                 Hapus
                             </button>
                         </div>
@@ -176,28 +176,28 @@
                     $service = $groupItems->first()->cateringService;
                     $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
                 @endphp
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-purple-200" id="event-card-{{ $groupId }}">
+                <div class="py-6 first:pt-4 last:pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4" id="event-card-{{ $groupId }}">
                     <div class="flex-1 min-w-0 space-y-1">
-                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-                            <h5 class="font-bold text-gray-900 text-base sm:text-lg">Custom Menu</h5>
-                            <span class="text-sm font-medium text-gray-500">•</span>
-                            <span class="text-sm font-medium text-gray-600">{{ $service->name ?? 'Layanan Event' }}</span>
+                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <span class="font-bold text-gray-900 text-base sm:text-lg">Custom Menu</span>
+                            <span class="text-gray-400 font-medium">·</span>
+                            <span class="text-sm text-gray-500 font-medium">{{ $service->name ?? 'Layanan Event' }}</span>
                         </div>
                         <p class="text-sm font-medium text-gray-600">
                             {{ $menuItems->count() }} Menu Dipilih
                         </p>
+                        <div class="pt-0.5">
+                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="text-xs font-semibold text-purple-600 hover:text-purple-800 underline">Lihat Detail</button>
+                        </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100">
-                        <p class="text-base sm:text-lg font-bold text-gray-900">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
-                        <div class="flex items-center gap-2">
-                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="px-3 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 font-semibold rounded-lg text-xs transition-colors">
-                                Lihat Detail
-                            </button>
-                            <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold rounded-lg text-xs transition-colors">
+                    <div class="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2.5 pt-2 sm:pt-0 border-t border-gray-100 sm:border-t-0">
+                        <p class="text-lg font-bold text-gray-900 sm:text-right">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
+                        <div class="flex items-center gap-2 sm:justify-end">
+                            <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
                                 Edit
                             </button>
-                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $customHeader?->id ?? $groupItems->first()->id }}, false)" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-semibold rounded-lg text-xs transition-colors">
+                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $customHeader?->id ?? $groupItems->first()->id }}, false)" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
                                 Hapus
                             </button>
                         </div>
@@ -209,16 +209,16 @@
             <!-- Ringkasan Belanja & Tombol Checkout Global untuk Semua Event -->
             <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-purple-100 flex flex-col sm:flex-row justify-between items-center gap-4 sticky bottom-4 z-10">
                 <div>
-                    <h4 class="font-bold text-gray-900 text-lg">Ringkasan Belanja Event</h4>
+                    <!-- <h4 class="font-bold text-gray-900 text-lg">Ringkasan Belanja Event</h4> -->
                     <div class="flex items-center gap-4 mt-1 text-sm text-gray-600">
-                        <span>Subtotal: <strong class="text-gray-900">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
-                        <span>•</span>
-                        <span>Total: <strong class="text-purple-600 font-bold text-lg">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
+                        <!-- <span>Subtotal: <strong class="text-gray-900">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
+                        <span>•</span> -->
+                        <span>Total: <strong class="text-gray-600 font-bold text-lg">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
                     </div>
                 </div>
                 <a href="{{ route('customer.event.checkout.show', 'all') }}"
                     class="w-full sm:w-auto text-center px-8 py-4 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold rounded-xl hover:shadow-lg transition-all text-base">
-                    Checkout Semua Pesanan Event
+                    Checkout 
                 </a>
             </div>
         @endif
@@ -644,7 +644,7 @@
                 <div class="p-4 bg-orange-50/60 rounded-xl border border-orange-100 flex items-center justify-between">
                     <div>
                         <label class="block font-bold text-gray-900 text-base">Jumlah Paket</label>
-                        <p class="text-xs text-gray-500">Tentukan berapa banyak paket yang ingin dipesan</p>
+                        
                     </div>
                     <div class="flex items-center gap-3">
                         <button type="button" onclick="changePackageEditQty(-1)" class="w-10 h-10 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 font-bold text-lg shadow-sm transition-colors">−</button>
@@ -953,7 +953,7 @@
         btn.disabled = true;
         btn.classList.add('opacity-50', 'cursor-not-allowed');
         const origText = btn.textContent;
-        btn.textContent = 'Menyimpan...';
+        btn.textContent = 'Update';
 
         const form = document.getElementById('editEventForm');
         const formData = new FormData(form);
