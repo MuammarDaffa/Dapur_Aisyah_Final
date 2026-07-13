@@ -51,10 +51,8 @@ Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('
 Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('customer.')->group(function () {
     Route::get('/', [CustomerDashboard::class, 'index'])->name('dashboard');
 
-    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Products
     Route::get('/products', [CustomerDashboard::class, 'products'])->name('products');

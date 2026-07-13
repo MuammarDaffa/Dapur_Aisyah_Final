@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
 {
@@ -57,19 +55,5 @@ class ProfileController extends Controller
             : 'Profil berhasil diperbarui.';
 
         return back()->with('success', $message);
-    }
-
-    public function updatePassword(Request $request)
-    {
-        $validated = $request->validate([
-            'current_password' => 'required|current_password',
-            'new_password' => ['required', 'confirmed', Password::min(8)],
-        ]);
-
-        auth()->user()->update([
-            'password' => Hash::make($validated['new_password']),
-        ]);
-
-        return back()->with('success', 'Password berhasil diubah.');
     }
 }

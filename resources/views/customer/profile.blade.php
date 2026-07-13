@@ -46,26 +46,6 @@
                 <button type="submit" class="px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Simpan Perubahan</button>
             </form>
         </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <h3 class="font-bold text-gray-900 mb-4">Ubah Password</h3>
-            <form action="{{ route('customer.profile.password') }}" method="POST" class="space-y-4">
-                @csrf @method('PUT')
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Password Lama</label>
-                    <input type="password" name="current_password" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400">
-                    @error('current_password') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
-                    <input type="password" name="new_password" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password</label>
-                    <input type="password" name="new_password_confirmation" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400">
-                </div>
-                <button type="submit" class="px-6 py-2.5 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-900 transition-colors">Ubah Password</button>
-            </form>
-        </div>
     </div>
 </div>
 @endsection
