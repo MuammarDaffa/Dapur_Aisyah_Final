@@ -50,14 +50,27 @@
                         $extraItems = $order->items->filter(fn($i) => str_starts_with($i->item_name, 'Extra: '));
                         $servingItem = $order->items->firstWhere(fn($i) => str_starts_with($i->item_name, 'Penyajian: '));
                         $servingName = $order->serving_type ?? ($servingItem ? preg_replace('/^Penyajian:\s*/i', '', $servingItem->item_name) : null);
+
+                        // Pisahkan item Paket (unit_price == 0) dan item Custom Menu (unit_price > 0)
+                        $pkgMenus = $menuItems->where('unit_price', 0);
+                        $pkgExtras = $extraItems->where('unit_price', 0);
+                        $customMenus = $menuItems->where('unit_price', '>', 0);
+                        $customExtras = $extraItems->where('unit_price', '>', 0);
                     @endphp
 
                     @if($packageItems->isNotEmpty())
                         @foreach($packageItems as $pIdx => $pkg)
                         @php
-                            $pkgMenus = $menuItems;
-                            $pkgPortion = $order->portion ?: ($pkgMenus->first()->quantity ?? ($pkg->quantity * ($order->package->total_portions ?? 1)));
+                            $customPortion = $customMenus->first()->quantity ?? ($customExtras->first()->quantity ?? 0);
+                            if ($pkgMenus->isNotEmpty()) {
+                                $pkgPortion = $pkgMenus->first()->quantity;
+                            } elseif ($customMenus->isNotEmpty() && $order->portion > $customPortion) {
+                                $pkgPortion = $order->portion - $customPortion;
+                            } else {
+                                $pkgPortion = $order->portion ?: ($pkg->quantity * ($order->package->total_portions ?? 1));
+                            }
                             $pkgBenefits = $order->package?->benefits ? array_values(array_filter($order->package->benefits, fn($b) => !empty(trim($b)))) : [];
+                            $allPkgPelengkap = array_merge($pkgBenefits, $pkgExtras->map(fn($e) => $e->formatted_menu_name)->toArray());
                         @endphp
                         <div class="py-4 first:pt-0 last:pb-0">
                             <div class="flex items-center justify-between gap-4">
@@ -92,21 +105,21 @@
                                 <div class="flex items-start">
                                     <span class="w-28 shrink-0 text-gray-500">Pelengkap</span>
                                     <span class="mr-2 text-gray-400">:</span>
-                                    <span class="font-medium text-gray-900">{{ !empty($pkgBenefits) ? implode(', ', $pkgBenefits) : '-' }}</span>
+                                    <span class="font-medium text-gray-900">{{ !empty($allPkgPelengkap) ? implode(', ', $allPkgPelengkap) : '-' }}</span>
                                 </div>
                             </div>
                         </div>
                         @endforeach
                     @endif
 
-                    @if($packageItems->isEmpty() || $menuItems->where('unit_price', '>', 0)->isNotEmpty())
-                        @if($packageItems->isEmpty())
+                    @if($customMenus->isNotEmpty() || $customExtras->isNotEmpty() || $packageItems->isEmpty())
                         @php
-                            $customMenus = $menuItems;
-                            $customExtras = $extraItems;
-                            $customPortion = $order->portion ?: $customMenus->sum('quantity');
-                            $customTotal = $order->subtotal;
+                            $displayCustomMenus = $packageItems->isNotEmpty() ? $customMenus : $menuItems;
+                            $displayCustomExtras = $packageItems->isNotEmpty() ? $customExtras : $extraItems;
+                            $customPortion = $displayCustomMenus->first()->quantity ?? ($displayCustomExtras->first()->quantity ?? ($packageItems->isEmpty() ? $order->portion : 0));
+                            $customTotal = $packageItems->isNotEmpty() ? ($displayCustomMenus->sum('subtotal') + $displayCustomExtras->sum('subtotal')) : $order->subtotal;
                         @endphp
+                        @if($displayCustomMenus->isNotEmpty() || $displayCustomExtras->isNotEmpty() || $packageItems->isEmpty())
                         <div class="py-4 first:pt-0 last:pb-0">
                             <div class="flex items-center justify-between gap-4">
                                 <div>
@@ -130,17 +143,17 @@
                                     <span class="font-medium text-gray-900">{{ $servingName }}</span>
                                 </div>
                                 @endif
-                                @if($customMenus->isNotEmpty())
+                                @if($displayCustomMenus->isNotEmpty())
                                 <div class="flex items-start">
                                     <span class="w-28 shrink-0 text-gray-500">Menu</span>
                                     <span class="mr-2 text-gray-400">:</span>
-                                    <span class="font-medium text-gray-900">{{ $customMenus->map(fn($cm) => $cm->formatted_menu_name . ' (' . $cm->quantity . ')')->join(', ') }}</span>
+                                    <span class="font-medium text-gray-900">{{ $displayCustomMenus->map(fn($cm) => $cm->formatted_menu_name . ' (' . $cm->quantity . ')')->join(', ') }}</span>
                                 </div>
                                 @endif
                                 <div class="flex items-start">
                                     <span class="w-28 shrink-0 text-gray-500">Pelengkap</span>
                                     <span class="mr-2 text-gray-400">:</span>
-                                    <span class="font-medium text-gray-900">{{ $customExtras->isNotEmpty() ? $customExtras->map(fn($e) => $e->customOption?->name ?? $e->formatted_menu_name)->join(', ') : '-' }}</span>
+                                    <span class="font-medium text-gray-900">{{ $displayCustomExtras->isNotEmpty() ? $displayCustomExtras->map(fn($e) => ($e->customOption?->name ?? $e->formatted_menu_name) . ' (' . $e->quantity . ')')->join(', ') : '-' }}</span>
                                 </div>
                             </div>
                         </div>
