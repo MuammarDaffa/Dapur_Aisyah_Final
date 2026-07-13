@@ -28,13 +28,13 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     @if(request()->routeIs('landing'))
-                        <a href="#hero" class="logo-nav-link flex items-center space-x-2" data-target="hero">
-                            <span class="text-2xl">🍲</span>
+                        <a href="#hero" class="logo-nav-link flex items-center space-x-2.5 sm:space-x-3" data-target="hero">
+                            <img src="{{ asset('images/logo.png') }}" alt="Logo Dapur Aisyah" class="h-8 sm:h-9 md:h-10 w-auto object-contain">
                             <span class="text-xl font-bold bg-gradient-to-r from-orange-500 to-amber-600 bg-clip-text text-transparent">Dapur Aisyah</span>
                         </a>
                     @else
-                        <a href="{{ route('landing') }}#hero" class="flex items-center space-x-2">
-                            <span class="text-2xl">🍲</span>
+                        <a href="{{ route('landing') }}#hero" class="flex items-center space-x-2.5 sm:space-x-3">
+                            <img src="{{ asset('images/logo.png') }}" alt="Logo Dapur Aisyah" class="h-8 sm:h-9 md:h-10 w-auto object-contain">
                             <span class="text-xl font-bold bg-gradient-to-r from-orange-500 to-amber-600 bg-clip-text text-transparent">Dapur Aisyah</span>
                         </a>
                     @endif
