@@ -295,107 +295,72 @@ class CartController extends Controller
         }
 
         // 2. Jika pesanan berupa Custom Menu
-        $minPortion = $service->min_portion;
-        $totalCustomPortions = 0;
+        // Cek apakah sudah ada item Custom Menu pada layanan ini di keranjang (selain paket)
+        $existingCustomCarts = $user->carts()
+            ->whereNotNull('cart_group_id')
+            ->where('catering_service_id', $service->id)
+            ->whereNotIn('item_type', ['package', 'package_item', 'package_extra'])
+            ->get();
 
+        $menuMap = [];
+        $extraMap = [];
+        $groupId = null;
+        $existingNotes = null;
+
+        if ($existingCustomCarts->isNotEmpty()) {
+            $groupId = $existingCustomCarts->first()->cart_group_id;
+            $existingNotes = $existingCustomCarts->firstWhere('notes', '!=', null)?->notes;
+
+            foreach ($existingCustomCarts as $c) {
+                if ($c->item_type === 'custom_menu') {
+                    $optId = (int) $c->custom_option_id;
+                    $menuMap[$optId] = ($menuMap[$optId] ?? 0) + (int) $c->quantity;
+                } elseif ($c->item_type === 'addition') {
+                    $optId = (int) $c->custom_option_id;
+                    $extraMap[$optId] = true;
+                }
+            }
+        } else {
+            $groupId = (string) Str::uuid();
+        }
+
+        // Gabungkan dengan item yang baru masuk
         foreach ($validated['items'] ?? [] as $item) {
-            if (($item['quantity'] ?? 0) > 0 && ($item['item_type'] ?? '') === 'custom_menu') {
-                $totalCustomPortions += $item['quantity'];
+            $qty = (int) ($item['quantity'] ?? 0);
+            if ($qty > 0) {
+                $type = $item['item_type'] ?? 'custom_menu';
+                $optId = (int) $item['custom_option_id'];
+                if ($type === 'custom_menu') {
+                    // Menu yang sama -> jumlah porsinya dijumlahkan. Menu yang berbeda -> tambahkan ke daftar menu.
+                    $menuMap[$optId] = ($menuMap[$optId] ?? 0) + $qty;
+                } elseif ($type === 'addition') {
+                    // Extra yang berbeda -> tambahkan ke daftar Extra. Extra yang sama -> tetap satu item.
+                    $extraMap[$optId] = true;
+                }
             }
         }
 
-        if ($totalCustomPortions < $minPortion) {
-            return back()->with('error', "Total porsi minimal {$minPortion} porsi.");
+        // Hitung total porsi setelah penggabungan
+        $totalCustomPortions = array_sum($menuMap);
+
+        if ($totalCustomPortions < $service->min_portion) {
+            return back()->with('error', "Total porsi minimal {$service->min_portion} porsi.");
         }
 
         if ($totalCustomPortions > $service->max_portion) {
             return back()->with('error', "Total porsi melebihi batas maksimal ({$service->max_portion} porsi).");
         }
 
-        $servingTypeId = $validated['serving_type_id'] ?? null;
-        $notes = trim((string)($validated['notes'] ?? ''));
+        // Penyajian -> gunakan pilihan Penyajian yang terakhir dipilih pelanggan sehingga hanya ada satu Penyajian pada Custom Menu.
+        $servingTypeId = !empty($validated['serving_type_id']) ? $validated['serving_type_id'] : ($existingCustomCarts->firstWhere('serving_type_id', '!=', null)?->serving_type_id ?? null);
+        $notes = trim((string)($validated['notes'] ?? ($existingNotes ?? '')));
 
-        // Build incoming map per set
-        $incomingMap = [];
-        foreach ($validated['items'] as $item) {
-            $qty = (int) ($item['quantity'] ?? 0);
-            if ($qty > 0) {
-                $optId = (int) $item['custom_option_id'];
-                $type = $item['item_type'] ?? 'custom_menu';
-                $incomingMap[$optId . '_' . $type] = $qty;
-            }
-        }
-        ksort($incomingMap);
-
-        // Check if an identical Custom Menu group already exists
-        $existingGroups = $user->carts()
-            ->whereNotNull('cart_group_id')
-            ->where('catering_service_id', $service->id)
-            ->get()
-            ->groupBy('cart_group_id');
-
-        foreach ($existingGroups as $gId => $gItems) {
-            if ($gItems->contains('item_type', 'package')) {
-                continue;
-            }
-
-            $firstItem = $gItems->first();
-            if ((int)($firstItem->serving_type_id ?? 0) !== (int)($servingTypeId ?? 0)) {
-                continue;
-            }
-            if (trim((string)($firstItem->notes ?? '')) !== $notes) {
-                continue;
-            }
-
-            $headerItem = $gItems->firstWhere('item_type', 'custom_header');
-            $existingSetsQty = $headerItem ? (int) $headerItem->quantity : 1;
-            if ($existingSetsQty <= 0) $existingSetsQty = 1;
-
-            $existingMap = [];
-            foreach ($gItems as $item) {
-                if ($item->item_type === 'custom_header') continue;
-                $optId = (int) $item->custom_option_id;
-                $type = $item->item_type;
-                $existingMap[$optId . '_' . $type] = (int) ($item->quantity / $existingSetsQty);
-            }
-            ksort($existingMap);
-
-            if ($existingMap === $incomingMap) {
-                $newSetsQty = $existingSetsQty + 1;
-                if ($headerItem) {
-                    $headerItem->update(['quantity' => $newSetsQty]);
-                } else {
-                    $user->carts()->create([
-                        'catering_service_id' => $service->id,
-                        'cart_group_id' => $gId,
-                        'quantity' => $newSetsQty,
-                        'item_type' => 'custom_header',
-                        'serving_type_id' => $servingTypeId,
-                        'notes' => $notes ?: null,
-                    ]);
-                }
-
-                foreach ($gItems as $item) {
-                    if ($item->item_type === 'custom_header') continue;
-                    $optId = (int) $item->custom_option_id;
-                    $type = $item->item_type;
-                    $baseQty = $incomingMap[$optId . '_' . $type] ?? 0;
-                    $item->update(['quantity' => $baseQty * $newSetsQty]);
-                }
-
-                if ($request->ajax() || $request->wantsJson()) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Pesanan event berhasil ditambahkan ke keranjang!',
-                        'cart_count' => $this->getCartCount($user),
-                    ]);
-                }
-                return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil ditambahkan ke keranjang!');
-            }
+        // Hapus item Custom Menu lama pada layanan ini agar tidak terjadi duplikasi atau multi-grup
+        if ($existingCustomCarts->isNotEmpty()) {
+            $user->carts()->whereIn('id', $existingCustomCarts->pluck('id'))->delete();
         }
 
-        $groupId = (string) Str::uuid();
-
+        // Buat atau perbarui satu grup Custom Menu dengan data yang sudah digabung
         $user->carts()->create([
             'catering_service_id' => $service->id,
             'cart_group_id' => $groupId,
@@ -405,18 +370,31 @@ class CartController extends Controller
             'notes' => $notes ?: null,
         ]);
 
-        foreach ($validated['items'] as $item) {
-            if (($item['quantity'] ?? 0) > 0) {
+        foreach ($menuMap as $optId => $qty) {
+            if ($qty > 0) {
                 $user->carts()->create([
-                    'catering_service_id' => $validated['catering_service_id'],
+                    'catering_service_id' => $service->id,
                     'cart_group_id' => $groupId,
-                    'custom_option_id' => $item['custom_option_id'],
-                    'quantity' => $item['quantity'],
-                    'item_type' => $item['item_type'],
+                    'custom_option_id' => $optId,
+                    'quantity' => $qty,
+                    'item_type' => 'custom_menu',
                     'serving_type_id' => $servingTypeId,
                     'notes' => $notes ?: null,
                 ]);
             }
+        }
+
+        // Extra yang sama -> tetap satu item dan jumlahnya mengikuti Total Porsi setelah penggabungan.
+        foreach (array_keys($extraMap) as $optId) {
+            $user->carts()->create([
+                'catering_service_id' => $service->id,
+                'cart_group_id' => $groupId,
+                'custom_option_id' => $optId,
+                'quantity' => $totalCustomPortions,
+                'item_type' => 'addition',
+                'serving_type_id' => $servingTypeId,
+                'notes' => $notes ?: null,
+            ]);
         }
 
         if ($request->ajax() || $request->wantsJson()) {
@@ -530,101 +508,33 @@ class CartController extends Controller
         $servingTypeId = $validated['serving_type_id'] ?? null;
         $notes = $existingGroup->firstWhere('item_type', 'custom_header')?->notes ?? ($existingGroup->first()->notes ?? null);
 
-        // Cek apakah hasil update identik dengan group Custom Menu lain yang sudah ada di cart
-        $incomingMap = [];
-        foreach ($validated['items'] as $item) {
-            $qty = (int) ($item['quantity'] ?? 0);
-            if ($qty > 0) {
-                $optId = (int) $item['custom_option_id'];
-                $type = $item['item_type'] ?? 'custom_menu';
-                $incomingMap[$optId . '_' . $type] = $qty;
-            }
-        }
-        ksort($incomingMap);
-
-        $otherGroups = $user->carts()
+        // Hapus semua item Custom Menu untuk layanan ini agar dipastikan hanya ada 1 grup Custom Menu di keranjang
+        $user->carts()
             ->whereNotNull('cart_group_id')
-            ->where('cart_group_id', '!=', $groupId)
             ->where('catering_service_id', $service->id)
-            ->get()
-            ->groupBy('cart_group_id');
+            ->whereNotIn('item_type', ['package', 'package_item', 'package_extra'])
+            ->delete();
 
-        foreach ($otherGroups as $oId => $oItems) {
-            if ($oItems->contains('item_type', 'package')) continue;
-            $firstItem = $oItems->first();
-            if ((int)($firstItem->serving_type_id ?? 0) !== (int)($servingTypeId ?? 0)) continue;
-            if (trim((string)($firstItem->notes ?? '')) !== trim((string)$notes)) continue;
-
-            $headerItem = $oItems->firstWhere('item_type', 'custom_header');
-            $existingSetsQty = $headerItem ? (int) $headerItem->quantity : 1;
-            if ($existingSetsQty <= 0) $existingSetsQty = 1;
-
-            $existingMap = [];
-            foreach ($oItems as $item) {
-                if ($item->item_type === 'custom_header') continue;
-                $optId = (int) $item->custom_option_id;
-                $type = $item->item_type;
-                $existingMap[$optId . '_' . $type] = (int) ($item->quantity / $existingSetsQty);
-            }
-            ksort($existingMap);
-
-            if ($existingMap === $incomingMap) {
-                $newSetsQty = $existingSetsQty + $setsQty;
-                if ($headerItem) {
-                    $headerItem->update(['quantity' => $newSetsQty]);
-                } else {
-                    $user->carts()->create([
-                        'catering_service_id' => $service->id,
-                        'cart_group_id' => $oId,
-                        'quantity' => $newSetsQty,
-                        'item_type' => 'custom_header',
-                        'serving_type_id' => $servingTypeId,
-                        'notes' => $notes ?: null,
-                    ]);
-                }
-
-                foreach ($oItems as $item) {
-                    if ($item->item_type === 'custom_header') continue;
-                    $optId = (int) $item->custom_option_id;
-                    $type = $item->item_type;
-                    $baseQty = $incomingMap[$optId . '_' . $type] ?? 0;
-                    $item->update(['quantity' => $baseQty * $newSetsQty]);
-                }
-
-                $user->carts()->where('cart_group_id', $groupId)->delete();
-
-                if ($request->ajax() || $request->wantsJson()) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Custom menu berhasil diperbarui.',
-                        'cart_count' => $this->getCartCount($user),
-                    ]);
-                }
-                return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Custom menu berhasil diperbarui.');
-            }
-        }
-
-        // Hapus semua item lama dalam group
-        $user->carts()->where('cart_group_id', $groupId)->delete();
-
-        // Simpan custom_header dan ulang items
+        // Simpan custom_header
         $user->carts()->create([
             'catering_service_id' => $validated['catering_service_id'],
             'cart_group_id' => $groupId,
-            'quantity' => $setsQty,
+            'quantity' => 1,
             'item_type' => 'custom_header',
             'serving_type_id' => $servingTypeId,
             'notes' => $notes ?: null,
         ]);
 
         foreach ($validated['items'] as $item) {
-            if ($item['quantity'] > 0) {
+            if (($item['quantity'] ?? 0) > 0) {
+                $type = $item['item_type'] ?? 'custom_menu';
+                $qty = $type === 'addition' ? $totalCustomPortions : (int) $item['quantity'];
                 $user->carts()->create([
                     'catering_service_id' => $validated['catering_service_id'],
                     'cart_group_id' => $groupId,
                     'custom_option_id' => $item['custom_option_id'],
-                    'quantity' => $item['quantity'] * $setsQty,
-                    'item_type' => $item['item_type'],
+                    'quantity' => $qty,
+                    'item_type' => $type,
                     'serving_type_id' => $servingTypeId,
                     'notes' => $notes ?: null,
                 ]);
