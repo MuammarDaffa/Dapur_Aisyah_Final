@@ -119,15 +119,4 @@ class ProductController extends Controller
         return redirect()->route('admin.catering.show', $cateringId)
             ->with('success', 'Produk berhasil dihapus.');
     }
-
-    public function search(Request $request)
-    {
-        $products = Product::active()
-            ->where('name', 'like', '%' . $request->q . '%')
-            ->with('cateringService:id,name')
-            ->take(10)
-            ->get(['id', 'name', 'price', 'catering_service_id']);
-
-        return response()->json($products);
-    }
 }

@@ -127,7 +127,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/catering/{catering}/menu-periods', [MenuPeriodController::class, 'store'])->name('menu-periods.store');
 
     // Products (diakses dari detail katering, bukan standalone)
-    Route::get('/products/search', [AdminProductController::class, 'search'])->name('products.search');
     Route::resource('products', AdminProductController::class)->except(['index', 'show']);
 
     // Packages (diakses dari detail katering, bukan standalone)

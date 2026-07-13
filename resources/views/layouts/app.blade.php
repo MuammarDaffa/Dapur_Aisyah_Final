@@ -33,17 +33,29 @@
                     </a>
                 </div>
 
-                <!-- Search Bar (Desktop) -->
-                <div class="hidden md:flex items-center flex-1 max-w-md mx-8">
-                    <form action="{{ route('customer.products') }}" method="GET" class="w-full">
-                        <div class="relative">
-                            <input type="text" name="search" placeholder="Cari menu favorit..." value="{{ request('search') }}"
-                                class="w-full pl-10 pr-4 py-2 rounded-full border border-orange-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-all text-sm bg-orange-50/50">
-                            <svg class="w-5 h-5 text-orange-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </div>
-                    </form>
+                <!-- Navbar Links (Replace Search Bar on Desktop) -->
+                <div class="hidden md:flex items-center justify-center flex-1 space-x-10 mx-8">
+                    @if(request()->routeIs('landing'))
+                        <a href="#hero" class="main-nav-link text-sm font-semibold text-gray-600 hover:text-orange-500 transition-all duration-300 py-1.5 border-b-2 border-transparent" data-target="hero">
+                            Beranda
+                        </a>
+                        <a href="#services" class="main-nav-link text-sm font-semibold text-gray-600 hover:text-orange-500 transition-all duration-300 py-1.5 border-b-2 border-transparent" data-target="services">
+                            Layanan
+                        </a>
+                        <a href="#about" class="main-nav-link text-sm font-semibold text-gray-600 hover:text-orange-500 transition-all duration-300 py-1.5 border-b-2 border-transparent" data-target="about">
+                            Tentang
+                        </a>
+                    @else
+                        <a href="{{ route('landing') }}#hero" class="text-sm font-semibold text-gray-600 hover:text-orange-500 transition-all duration-300 py-1.5 border-b-2 border-transparent">
+                            Beranda
+                        </a>
+                        <a href="{{ route('landing') }}#services" class="text-sm font-semibold text-gray-600 hover:text-orange-500 transition-all duration-300 py-1.5 border-b-2 border-transparent">
+                            Layanan
+                        </a>
+                        <a href="{{ route('landing') }}#about" class="text-sm font-semibold text-gray-600 hover:text-orange-500 transition-all duration-300 py-1.5 border-b-2 border-transparent">
+                            Tentang
+                        </a>
+                    @endif
                 </div>
 
                 <!-- Navigation Links -->
@@ -121,9 +133,6 @@
         <!-- Mobile Menu -->
         <div x-data="{ open: false }" @toggle-mobile-menu.window="open = !open" x-show="open" x-transition class="md:hidden border-t border-orange-100 bg-white">
             <div class="px-4 py-3 space-y-2">
-                <form action="{{ route('customer.products') }}" method="GET">
-                    <input type="text" name="search" placeholder="Cari menu..." class="w-full px-4 py-2 rounded-lg border border-orange-200 text-sm">
-                </form>
                 @auth
                     <a href="{{ route('customer.profile.edit') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">Profil Saya</a>
                     <a href="{{ route('customer.cart') }}" class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg">
