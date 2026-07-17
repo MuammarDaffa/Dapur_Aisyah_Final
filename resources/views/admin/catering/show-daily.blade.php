@@ -473,30 +473,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const endVal = inputEnd.value;
 
             if (!startVal || !endVal) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Tanggal Belum Lengkap',
-                        text: 'Silakan isi Tanggal Mulai dan Tanggal Selesai terlebih dahulu.',
-                        confirmButtonColor: '#f97316'
-                    });
-                } else {
-                    alert('Silakan isi Tanggal Mulai dan Tanggal Selesai terlebih dahulu.');
-                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Tanggal Belum Lengkap',
+                    text: 'Silakan isi Tanggal Mulai dan Tanggal Selesai terlebih dahulu.',
+                    confirmButtonColor: '#f97316'
+                });
                 return;
             }
 
             if (new Date(startVal) > new Date(endVal)) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Rentang Tanggal Tidak Valid',
-                        text: 'Tanggal Selesai tidak boleh lebih awal dari Tanggal Mulai.',
-                        confirmButtonColor: '#f97316'
-                    });
-                } else {
-                    alert('Tanggal Selesai tidak boleh lebih awal dari Tanggal Mulai.');
-                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Rentang Tanggal Tidak Valid',
+                    text: 'Tanggal Selesai tidak boleh lebih awal dari Tanggal Mulai.',
+                    confirmButtonColor: '#f97316'
+                });
                 return;
             }
 

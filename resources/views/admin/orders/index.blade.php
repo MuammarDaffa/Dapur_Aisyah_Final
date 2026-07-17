@@ -58,7 +58,7 @@
                                 </svg>
                             </a>
                             <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="inline-flex items-center"
-                                  onsubmit="event.preventDefault(); if (typeof Swal !== 'undefined') { Swal.fire({ text: 'Apakah Anda yakin ingin menghapus pesanan ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Hapus', cancelButtonText: 'Batal' }).then((r) => { if(r.isConfirmed) this.submit(); }); } else { if (confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) { this.submit(); } }">
+                                  onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus pesanan ini?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"

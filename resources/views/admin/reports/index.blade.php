@@ -94,7 +94,7 @@
             <table class="w-full text-sm">
                 <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                     <tr>
-                        <th class="text-left px-6 py-4 font-semibold text-gray-600">ID Pesanan</th>
+                        <th class="text-left px-6 py-4 font-semibold text-gray-600">Nomor Order</th>
                         <th class="text-left px-6 py-4 font-semibold text-gray-600">Pelanggan</th>
                         <th class="text-left px-6 py-4 font-semibold text-gray-600">Layanan</th>
                         <th class="text-left px-6 py-4 font-semibold text-gray-600">Total</th>
@@ -105,27 +105,13 @@
                 <tbody class="divide-y divide-gray-100">
                     @forelse($orders as $order)
                         <tr class="hover:bg-orange-50/30 transition-colors">
-                            <td class="px-6 py-4 font-bold text-blue-600">#{{ $order->id }}</td>
+                            <td class="px-6 py-4 font-medium text-gray-800">{{ $order->order_number }}</td>
                             <td class="px-6 py-4 font-medium text-gray-800">{{ $order->user->name ?? '-' }}</td>
                             <td class="px-6 py-4 text-gray-600">{{ $order->cateringService->name ?? '-' }}</td>
-                            <td class="px-6 py-4 font-bold text-green-600">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 font-bold text-green-600">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
                             <td class="px-6 py-4 text-center">
-                                @php
-                                    $statusClasses = [
-                                        'pending' => 'bg-yellow-100 text-yellow-700',
-                                        'processing' => 'bg-blue-100 text-blue-700',
-                                        'completed' => 'bg-green-100 text-green-700',
-                                        'cancelled' => 'bg-red-100 text-red-700',
-                                    ];
-                                    $statusLabels = [
-                                        'pending' => 'Menunggu',
-                                        'processing' => 'Diproses',
-                                        'completed' => 'Selesai',
-                                        'cancelled' => 'Dibatalkan',
-                                    ];
-                                @endphp
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $statusClasses[$order->status] ?? 'bg-gray-100 text-gray-700' }}">
-                                    {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
+                                <span class="px-2 py-1 rounded-full text-xs font-medium {{ match($order->status) { 'processing'=>'bg-blue-100 text-blue-700','on_delivery'=>'bg-purple-100 text-purple-700','completed'=>'bg-green-100 text-green-700','cancelled'=>'bg-red-100 text-red-700', default=>'bg-gray-100 text-gray-700' } }}">
+                                    {{ $order->status_label }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-gray-500">{{ $order->created_at->format('d M Y') }}</td>

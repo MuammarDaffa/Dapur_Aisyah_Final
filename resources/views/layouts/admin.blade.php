@@ -111,6 +111,27 @@
                         });
                     </script>
                 @endif
+                @if(session('warning'))
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            Swal.fire({ icon: 'warning', title: 'Peringatan!', text: '{{ session("warning") }}', toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true });
+                        });
+                    </script>
+                @endif
+                @if(session('info'))
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            Swal.fire({ icon: 'info', title: 'Informasi', text: '{{ session("info") }}', toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true });
+                        });
+                    </script>
+                @endif
+                @if($errors->any())
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            Swal.fire({ icon: 'error', title: 'Periksa Data Input', html: `{!! implode('<br>', $errors->all()) !!}`, confirmButtonColor: '#f97316', confirmButtonText: 'Tutup' });
+                        });
+                    </script>
+                @endif
                 @yield('content')
             </main>
         </div>
@@ -224,6 +245,24 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById(formId).submit();
+            }
+        });
+    };
+
+    window.confirmDeleteForm = function(form, message) {
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: message || 'Data ini akan dihapus secara permanen.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
             }
         });
     };

@@ -84,7 +84,7 @@
                         <div class="flex items-center justify-center gap-2">
                             <a href="{{ route('admin.catering.show', $c) }}" class="px-3 py-1.5 text-xs font-medium text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">Detail</a>
                             <a href="{{ route('admin.catering.edit', $c) }}" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</a>
-                            <form action="{{ route('admin.catering.destroy', $c) }}" method="POST" class="inline" onsubmit="return confirm('Hapus katering ini beserta semua data terkait?')">
+                            <form action="{{ route('admin.catering.destroy', $c) }}" method="POST" class="inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Hapus katering ini beserta semua data terkait?');">
                                 @csrf @method('DELETE')
                                 <button class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
                             </form>
