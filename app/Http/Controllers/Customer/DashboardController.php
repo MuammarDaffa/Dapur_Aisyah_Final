@@ -109,16 +109,4 @@ class DashboardController extends Controller
         $customOptions = $options->concat($servings);
         return view('customer.event_custom', compact('service', 'customOptions'));
     }
-
-    public function notifications()
-    {
-        $notifications = auth()->user()->notifications()->paginate(20);
-        return view('customer.notifications', compact('notifications'));
-    }
-
-    public function markNotificationRead(string $id)
-    {
-        auth()->user()->notifications()->where('id', $id)->first()?->markAsRead();
-        return back()->with('success', 'Notifikasi ditandai sudah dibaca.');
-    }
 }

@@ -87,7 +87,7 @@
                                 </div>
                                 @if($item->formatted_extras)
                                 <div class="flex items-start">
-                                    <span class="w-28 shrink-0 text-gray-500">Pelengkap</span>
+                                    <span class="w-28 shrink-0 text-gray-500">Tambahan</span>
                                     <span class="mr-2 text-gray-400">:</span>
                                     <span class="font-medium text-gray-900">{{ $item->formatted_extras }}</span>
                                 </div>

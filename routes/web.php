@@ -112,10 +112,6 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
 
     // Reviews
     Route::post('/reviews', [CustomerReviewController::class, 'store'])->name('reviews.store');
-
-    // Notifications
-    Route::get('/notifications', [CustomerDashboard::class, 'notifications'])->name('notifications');
-    Route::post('/notifications/{id}/read', [CustomerDashboard::class, 'markNotificationRead'])->name('notifications.read');
 });
 
 /*
