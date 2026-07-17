@@ -712,8 +712,8 @@
                     </div>
                     <div class="flex items-center gap-1.5 transition-opacity shrink-0 ${opacityClass}" id="edit_menu_qty_container_${idx}">
                         <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 transition-colors">−</button>
-                        <input type="number" name="items[${idx}][quantity]" id="edit_event_qty_${idx}" value="${qty}" min="1"
-                            class="w-14 text-center py-1 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-900 bg-white shrink-0 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400 desktop-no-spinner edit-event-qty" data-price="${menu.price}" data-type="custom_menu" oninput="validateEditEventInput(${idx})" onchange="validateEditEventInputBlur(${idx})">
+                        <input type="number" id="edit_event_qty_${idx}" value="${qty}" min="1"
+                            class="w-14 text-center py-1 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-900 bg-white shrink-0 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400 desktop-no-spinner edit-event-qty" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}" data-type="custom_menu" oninput="validateEditEventInput(${idx})" onchange="validateEditEventInputBlur(${idx})">
                         <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 edit-menu-plus-btn transition-colors">+</button>
                     </div>
                 </div>
@@ -722,8 +722,6 @@
                 </div>
                 ${detailBtn ? `<div class="pl-7 mt-1.5">${detailBtn}</div>` : ''}
                 ${detailDiv}
-                <input type="hidden" name="items[${idx}][custom_option_id]" value="${menu.id}" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
-                <input type="hidden" name="items[${idx}][item_type]" value="custom_menu" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
             </div>`;
         });
         document.getElementById('editEventMenuList').innerHTML = menuHtml;
@@ -746,10 +744,8 @@
                         <span class="text-sm font-medium text-gray-800 truncate">${extra.name}</span>
                     </label>
                     <span class="text-sm font-semibold text-orange-600 shrink-0">+Rp ${Number(extra.price).toLocaleString('id-ID')}</span>
-                    <input type="hidden" name="items[${eIdx}][quantity]" id="edit_event_qty_${eIdx}" value="${eQty}"
-                        class="edit-event-qty" data-price="${extra.price}" data-type="addition" ${eQty > 0 ? '' : 'disabled'}>
-                    <input type="hidden" name="items[${eIdx}][custom_option_id]" value="${extra.id}" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
-                    <input type="hidden" name="items[${eIdx}][item_type]" value="addition" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
+                    <input type="hidden" id="edit_event_qty_${eIdx}" value="${eQty}"
+                        class="edit-event-qty" data-idx="${eIdx}" data-id="${extra.id}" data-price="${extra.price}" data-type="addition">
                 </div>`;
             });
             document.getElementById('editEventExtrasList').innerHTML = extraHtml;
@@ -795,16 +791,13 @@
         const cb = document.getElementById('edit_menu_cb_' + idx);
         const container = document.getElementById('edit_menu_qty_container_' + idx);
         const input = document.getElementById('edit_event_qty_' + idx);
-        const hiddens = document.querySelectorAll(`input[name="items[${idx}][custom_option_id]"], input[name="items[${idx}][item_type]"]`);
 
         if (cb.checked) {
-            container.classList.remove('opacity-0', 'pointer-events-none');
-            input.value = 1;
-            hiddens.forEach(h => h.disabled = false);
+            if (container) container.classList.remove('opacity-0', 'pointer-events-none');
+            if (input && (parseInt(input.value) || 0) <= 0) input.value = 1;
         } else {
-            container.classList.add('opacity-0', 'pointer-events-none');
-            input.value = 0;
-            hiddens.forEach(h => h.disabled = true);
+            if (container) container.classList.add('opacity-0', 'pointer-events-none');
+            if (input) input.value = 0;
         }
         recalcEditEvent();
     }
@@ -812,13 +805,9 @@
     function toggleEditExtra(idx, extraId) {
         const cb = document.getElementById('edit_extra_cb_' + idx);
         const input = document.getElementById('edit_event_qty_' + idx);
-        const hiddens = document.querySelectorAll(`input[name="items[${idx}][custom_option_id]"], input[name="items[${idx}][item_type]"], input[name="items[${idx}][quantity]"]`);
 
-        if (cb.checked) {
-            hiddens.forEach(h => h.disabled = false);
-        } else {
-            if (input) input.value = 0;
-            hiddens.forEach(h => h.disabled = true);
+        if (!cb.checked && input) {
+            input.value = 0;
         }
         recalcEditEvent();
     }
@@ -833,14 +822,10 @@
             cb.checked = false;
             const container = document.getElementById('edit_menu_qty_container_' + idx);
             if (container) container.classList.add('opacity-0', 'pointer-events-none');
-            const hiddens = document.querySelectorAll(`input[name="items[${idx}][custom_option_id]"], input[name="items[${idx}][item_type]"]`);
-            hiddens.forEach(h => h.disabled = true);
         } else if (cb && !cb.checked && val > 0) {
             cb.checked = true;
             const container = document.getElementById('edit_menu_qty_container_' + idx);
             if (container) container.classList.remove('opacity-0', 'pointer-events-none');
-            const hiddens = document.querySelectorAll(`input[name="items[${idx}][custom_option_id]"], input[name="items[${idx}][item_type]"]`);
-            hiddens.forEach(h => h.disabled = false);
         }
         input.value = val;
         recalcEditEvent();
@@ -853,10 +838,7 @@
 
         const items = [];
         document.querySelectorAll('#editEventForm input.edit-event-qty').forEach(input => {
-            const name = input.name || '';
-            const match = name.match(/items\[(\d+)\]/);
-            if (!match) return;
-            const idx = match[1];
+            const idx = input.dataset.idx || input.id.split('_').pop();
 
             let active = true;
             const menuCb = document.getElementById('edit_menu_cb_' + idx);
@@ -867,9 +849,9 @@
             if (active) {
                 const qty = parseInt(input.value) || 0;
                 if (qty > 0) {
-                    const optIdInput = document.querySelector(`#editEventForm input[name="items[${idx}][custom_option_id]"]`);
-                    if (optIdInput) {
-                        items.push(optIdInput.value + ':' + qty);
+                    const optId = input.dataset.id || (menuCb ? menuCb.dataset.id : (extraCb ? extraCb.dataset.id : ''));
+                    if (optId) {
+                        items.push(optId + ':' + qty);
                     }
                 }
             }
@@ -924,11 +906,7 @@
                 const type = input.dataset.type;
                 if (type !== 'custom_menu') return;
 
-                const name = input.name || '';
-                const match = name.match(/items\[(\d+)\]/);
-                if (!match) return;
-                const idx = match[1];
-
+                const idx = input.dataset.idx || input.id.split('_').pop();
                 const menuCb = document.getElementById('edit_menu_cb_' + idx);
                 if (menuCb && !menuCb.checked) return;
 
@@ -952,11 +930,7 @@
                 const type = input.dataset.type;
                 if (type !== 'addition') return;
 
-                const name = input.name || '';
-                const match = name.match(/items\[(\d+)\]/);
-                if (!match) return;
-                const idx = match[1];
-
+                const idx = input.dataset.idx || input.id.split('_').pop();
                 const extraCb = document.getElementById('edit_extra_cb_' + idx);
                 if (extraCb && !extraCb.checked) return;
 
@@ -997,6 +971,47 @@
                     btn.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
             }
+            buildEditEventPayload(totalPortions);
+    }
+
+    function buildEditEventPayload(totalPortions = 0) {
+        document.querySelectorAll('.edit-event-payload-item').forEach(el => el.remove());
+
+        const form = document.getElementById('editEventForm');
+        if (!form) return;
+        let formIdx = 0;
+
+        document.querySelectorAll('.edit-menu-checkbox:checked').forEach(cb => {
+            const id = cb.dataset.id;
+            const idx = cb.dataset.idx || cb.id.split('_').pop();
+            const inputEl = document.getElementById('edit_event_qty_' + idx);
+            const qty = parseInt(inputEl ? inputEl.value : 0) || 0;
+            if (qty > 0 && id) {
+                appendEditEventHidden(form, `items[${formIdx}][custom_option_id]`, id);
+                appendEditEventHidden(form, `items[${formIdx}][quantity]`, qty);
+                appendEditEventHidden(form, `items[${formIdx}][item_type]`, 'custom_menu');
+                formIdx++;
+            }
+        });
+
+        document.querySelectorAll('.edit-extra-checkbox:checked').forEach(cb => {
+            const id = cb.dataset.id;
+            if (totalPortions > 0 && id) {
+                appendEditEventHidden(form, `items[${formIdx}][custom_option_id]`, id);
+                appendEditEventHidden(form, `items[${formIdx}][quantity]`, totalPortions);
+                appendEditEventHidden(form, `items[${formIdx}][item_type]`, 'addition');
+                formIdx++;
+            }
+        });
+    }
+
+    function appendEditEventHidden(form, name, value) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        input.className = 'edit-event-payload-item';
+        form.appendChild(input);
     }
 
     async function submitEditEventForm() {
@@ -1017,6 +1032,7 @@
         const origText = btn.textContent;
         btn.textContent = 'Update';
 
+        buildEditEventPayload(parseInt(document.getElementById('editEventPortions')?.textContent) || 0);
         const form = document.getElementById('editEventForm');
         const formData = new FormData(form);
 

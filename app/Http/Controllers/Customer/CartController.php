@@ -169,6 +169,13 @@ class CartController extends Controller
      */
     public function storeEventGroup(Request $request)
     {
+        if ($request->has('items') && is_array($request->input('items'))) {
+            $cleanItems = array_values(array_filter($request->input('items'), function ($item) {
+                return is_array($item) && isset($item['custom_option_id']) && isset($item['quantity']) && (int) $item['quantity'] > 0;
+            }));
+            $request->merge(['items' => $cleanItems]);
+        }
+
         $validated = $request->validate([
             'catering_service_id' => 'required|exists:catering_services,id',
             'catering_package_id' => 'nullable|exists:catering_packages,id',
@@ -459,6 +466,13 @@ class CartController extends Controller
         }
 
         // 2. Jika edit untuk Custom Menu
+        if ($request->has('items') && is_array($request->input('items'))) {
+            $cleanItems = array_values(array_filter($request->input('items'), function ($item) {
+                return is_array($item) && isset($item['custom_option_id']) && isset($item['quantity']) && (int) $item['quantity'] > 0;
+            }));
+            $request->merge(['items' => $cleanItems]);
+        }
+
         $validated = $request->validate([
             'catering_service_id' => 'required|exists:catering_services,id',
             'serving_type_id' => 'nullable|exists:custom_options,id',
@@ -497,11 +511,11 @@ class CartController extends Controller
             }
         }
 
-        if ($totalCustomPortions <= 0) {
+        if ($totalCustomPortions < $minPortion) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => "Silakan pilih minimal 1 porsi menu."], 422);
+                return response()->json(['success' => false, 'message' => "Total porsi minimal {$minPortion} porsi."], 422);
             }
-            return back()->with('error', "Silakan pilih minimal 1 porsi menu.");
+            return back()->with('error', "Total porsi minimal {$minPortion} porsi.");
         }
 
         if ($totalCustomPortions > $service->max_portion) {
