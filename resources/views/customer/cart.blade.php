@@ -722,10 +722,9 @@
                     const existingExtra = group.items.find(item => item.custom_option_id == extra.id && item.item_type === 'addition');
                     const eQty = existingExtra ? existingExtra.quantity : 0;
                     const eChecked = eQty > 0 ? 'checked' : '';
-                    const opacityClass = eQty > 0 ? '' : 'opacity-0 pointer-events-none';
 
                     extraHtml += `
-                    <div class="flex items-center justify-between p-3 border rounded-xl mb-2">
+                    <div class="flex items-center justify-between p-3 border rounded-xl mb-2 hover:bg-orange-50">
                         <label class="flex items-center gap-3 cursor-pointer flex-1">
                             <input type="checkbox" id="edit_extra_cb_${eIdx}" data-idx="${eIdx}" data-id="${extra.id}" data-price="${extra.price}"
                                 class="w-5 h-5 rounded border-gray-300 text-orange-500 edit-extra-checkbox" ${eChecked} onchange="toggleEditExtra(${eIdx}, ${extra.id})">
@@ -734,12 +733,8 @@
                                 <p class="text-xs text-orange-600">+Rp ${Number(extra.price).toLocaleString('id-ID')}</p>
                             </div>
                         </label>
-                        <div class="flex items-center gap-2 transition-opacity ${opacityClass}" id="edit_extra_qty_container_${eIdx}">
-                            <button type="button" onclick="changeEditEventQty(${eIdx}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
-                            <input type="number" name="items[${eIdx}][quantity]" id="edit_event_qty_${eIdx}" value="${eQty}" min="0"
-                                class="w-16 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${extra.price}" data-type="addition" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
-                            <button type="button" onclick="changeEditEventQty(${eIdx}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">+</button>
-                        </div>
+                        <input type="hidden" name="items[${eIdx}][quantity]" id="edit_event_qty_${eIdx}" value="${eQty}"
+                            class="edit-event-qty" data-price="${extra.price}" data-type="addition" ${eQty > 0 ? '' : 'disabled'}>
                         <input type="hidden" name="items[${eIdx}][custom_option_id]" value="${extra.id}" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
                         <input type="hidden" name="items[${eIdx}][item_type]" value="addition" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
                     </div>`;
@@ -804,17 +799,13 @@
 
     function toggleEditExtra(idx, extraId) {
         const cb = document.getElementById('edit_extra_cb_' + idx);
-        const container = document.getElementById('edit_extra_qty_container_' + idx);
         const input = document.getElementById('edit_event_qty_' + idx);
-        const hiddens = document.querySelectorAll(`input[name="items[${idx}][custom_option_id]"], input[name="items[${idx}][item_type]"]`);
+        const hiddens = document.querySelectorAll(`input[name="items[${idx}][custom_option_id]"], input[name="items[${idx}][item_type]"], input[name="items[${idx}][quantity]"]`);
 
         if (cb.checked) {
-            container.classList.remove('opacity-0', 'pointer-events-none');
-            input.value = 1;
             hiddens.forEach(h => h.disabled = false);
         } else {
-            container.classList.add('opacity-0', 'pointer-events-none');
-            input.value = 0;
+            if (input) input.value = 0;
             hiddens.forEach(h => h.disabled = true);
         }
         recalcEditEvent();
@@ -893,34 +884,46 @@
             let totalPortions = 0;
             const maxPortion = group.max_portion || 1000;
 
+            // 1. Hitung totalPorsi dan harga menu terlebih dahulu dari custom_menu yang terpilih
             document.querySelectorAll('.edit-event-qty').forEach(input => {
+                const type = input.dataset.type;
+                if (type !== 'custom_menu') return;
+
                 const name = input.name || '';
                 const match = name.match(/items\[(\d+)\]/);
                 if (!match) return;
                 const idx = match[1];
 
-                let active = true;
                 const menuCb = document.getElementById('edit_menu_cb_' + idx);
-                const extraCb = document.getElementById('edit_extra_cb_' + idx);
-                if (menuCb && !menuCb.checked) active = false;
-                if (extraCb && !extraCb.checked) active = false;
+                if (menuCb && !menuCb.checked) return;
 
-                if (active) {
-                    let qty = parseInt(input.value) || 0;
-                    const price = parseFloat(input.dataset.price) || 0;
-                    const type = input.dataset.type;
+                let qty = parseInt(input.value) || 0;
+                const price = parseFloat(input.dataset.price) || 0;
 
-                    if (type === 'custom_menu') {
-                        if (totalPortions + qty > maxPortion) {
-                            qty = Math.max(0, maxPortion - totalPortions);
-                            input.value = qty;
-                        }
-                        totalPortions += qty;
-                        totalPrice += price * qty;
-                    } else if (type === 'addition') {
-                        totalPrice += price * qty;
-                    }
+                if (totalPortions + qty > maxPortion) {
+                    qty = Math.max(0, maxPortion - totalPortions);
+                    input.value = qty;
                 }
+                totalPortions += qty;
+                totalPrice += price * qty;
+            });
+
+            // 2. Hitung harga extra mengikuti Total Porsi menu hasil penjumlahan
+            document.querySelectorAll('.edit-event-qty').forEach(input => {
+                const type = input.dataset.type;
+                if (type !== 'addition') return;
+
+                const name = input.name || '';
+                const match = name.match(/items\[(\d+)\]/);
+                if (!match) return;
+                const idx = match[1];
+
+                const extraCb = document.getElementById('edit_extra_cb_' + idx);
+                if (extraCb && !extraCb.checked) return;
+
+                const price = parseFloat(input.dataset.price) || 0;
+                input.value = totalPortions;
+                totalPrice += price * totalPortions;
             });
 
             document.getElementById('editEventTotal').textContent = formatRupiah(totalPrice);
