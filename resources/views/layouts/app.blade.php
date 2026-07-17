@@ -233,6 +233,34 @@
             });
         </script>
     @endif
+    @if(session('info'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({ 
+                    icon: 'info', 
+                    title: 'Informasi', 
+                    text: {!! json_encode(session("info")) !!}, 
+                    showConfirmButton: true, 
+                    confirmButtonText: 'Mengerti',
+                    confirmButtonColor: '#f97316'
+                });
+            });
+        </script>
+    @endif
+    @if(session('warning'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({ 
+                    icon: 'warning', 
+                    title: 'Perhatian!', 
+                    text: {!! json_encode(session("warning")) !!}, 
+                    showConfirmButton: true, 
+                    confirmButtonText: 'Mengerti',
+                    confirmButtonColor: '#f97316'
+                });
+            });
+        </script>
+    @endif
 
     @if($errors->any())
         <script>

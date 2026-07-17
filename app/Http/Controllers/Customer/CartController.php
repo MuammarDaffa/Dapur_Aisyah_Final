@@ -13,6 +13,10 @@ class CartController extends Controller
 {
     public function index(Request $request)
     {
+        if (auth()->check()) {
+            Cart::removeExpiredHarianItems(auth()->id());
+        }
+
         $carts = auth()->user()->carts()
             ->with(['product.cateringService', 'customOption', 'cateringPackage', 'cateringService', 'servingType'])
             ->get();
@@ -653,6 +657,7 @@ class CartController extends Controller
 
         if ($pending['type'] === 'daily') {
             $controller->store($req);
+            Cart::removeExpiredHarianItems(auth()->id());
             return redirect()->route('customer.cart', ['tab' => 'daily'])->with('success', 'Produk dan opsi berhasil ditambahkan ke keranjang!');
         } elseif ($pending['type'] === 'event_group') {
             $controller->storeEventGroup($req);

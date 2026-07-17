@@ -113,4 +113,36 @@ class Cart extends Model
 
         return ($basePrice * $this->quantity) + $extrasPrice;
     }
+
+    /**
+     * Hapus otomatis item Katering Harian yang sudah melewati jadwal pemesanan (menu_date < hari ini).
+     *
+     * @param int|null $userId
+     * @return int
+     */
+    public static function removeExpiredHarianItems($userId = null): int
+    {
+        $userId = $userId ?: auth()->id();
+        if (!$userId) {
+            return 0;
+        }
+
+        $today = \Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d');
+
+        $deletedCount = self::where('user_id', $userId)
+            ->whereNull('cart_group_id')
+            ->whereNotNull('menu_date')
+            ->whereDate('menu_date', '<', $today)
+            ->delete();
+
+        if ($deletedCount > 0 && function_exists('session')) {
+            $message = $deletedCount === 1
+                ? '1 menu harian telah dihapus dari keranjang karena jadwal pemesanannya telah berakhir.'
+                : "{$deletedCount} menu harian telah dihapus dari keranjang karena jadwal pemesanannya telah berakhir.";
+
+            session()->flash('info', $message);
+        }
+
+        return $deletedCount;
+    }
 }

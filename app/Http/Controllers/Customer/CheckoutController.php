@@ -23,6 +23,9 @@ class CheckoutController extends Controller
     public function index($menu_date = null)
     {
         $user = auth()->user();
+        if ($user) {
+            \App\Models\Cart::removeExpiredHarianItems($user->id);
+        }
         $cartsQuery = $user->carts()
             ->whereNull('cart_group_id') // Hanya daily
             ->with(['product.cateringService', 'customOption', 'cateringPackage']);
@@ -66,6 +69,9 @@ class CheckoutController extends Controller
     public function store(Request $request, $menu_date = null)
     {
         $user = auth()->user();
+        if ($user) {
+            \App\Models\Cart::removeExpiredHarianItems($user->id);
+        }
         $cartsQuery = $user->carts()
             ->whereNull('cart_group_id') // Hanya daily
             ->with(['product.cateringService', 'customOption', 'cateringPackage']);
