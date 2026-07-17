@@ -29,37 +29,43 @@
                 <h3 class="text-lg font-bold text-gray-900 mb-4">Pilih Menu</h3>
                 <div class="divide-y divide-gray-100 border-t border-b border-gray-100">
                     @foreach($menus as $idx => $menu)
-                        <div class="py-3 px-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-orange-50/50 rounded-lg transition-colors">
-                            <div class="flex items-center gap-3 flex-1 min-w-0">
-                                <input type="checkbox" id="custom_menu_{{ $idx }}" data-id="{{ $menu->id }}" data-price="{{ $menu->price }}"
-                                    class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-menu-cb shrink-0 cursor-pointer" onchange="toggleCustomMenu({{ $idx }})">
-                                <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 flex-1 min-w-0">
-                                    <label for="custom_menu_{{ $idx }}" class="text-sm font-medium text-gray-800 cursor-pointer truncate">{{ $menu->name }}</label>
-                                    <div class="flex items-center gap-2 shrink-0">
-                                        <span class="text-xs sm:text-sm font-semibold text-orange-600">Rp {{ number_format($menu->price, 0, ',', '.') }}/porsi</span>
-                                        @if($menu->items && count($menu->items) > 0)
-                                            <span class="text-gray-300 text-xs shrink-0">•</span>
-                                            <button type="button" onclick="toggleMenuDetail({{ $idx }}, event)" class="text-xs font-semibold text-blue-600 hover:text-blue-800 focus:outline-none shrink-0 underline">Lihat Detail</button>
-                                        @endif
-                                    </div>
+                        <div class="py-3.5 px-2 hover:bg-orange-50/50 rounded-lg transition-colors">
+                            {{-- Baris 1: Checkbox + Nama Menu (kiri) & Kontrol Jumlah (kanan) --}}
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-3 flex-1 min-w-0">
+                                    <input type="checkbox" id="custom_menu_{{ $idx }}" data-id="{{ $menu->id }}" data-price="{{ $menu->price }}"
+                                        class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-menu-cb shrink-0 cursor-pointer" onchange="toggleCustomMenu({{ $idx }})">
+                                    <label for="custom_menu_{{ $idx }}" class="text-sm sm:text-base font-semibold text-gray-900 cursor-pointer truncate">{{ $menu->name }}</label>
+                                </div>
+                                <div class="flex items-center gap-1.5 opacity-0 pointer-events-none transition-opacity shrink-0" id="custom_menu_qty_container_{{ $idx }}">
+                                    <button type="button" onclick="changeCustomQty({{ $idx }}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 transition-colors">−</button>
+                                    <input type="number" id="custom_menu_input_{{ $idx }}" value="0" min="1"
+                                        class="w-14 text-center py-1 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-900 bg-white shrink-0 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400" oninput="validateCustomInput({{ $idx }})" onchange="validateCustomInputBlur({{ $idx }})">
+                                    <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 custom-menu-plus-btn transition-colors">+</button>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-end gap-1.5 opacity-0 pointer-events-none transition-opacity shrink-0 ml-7 sm:ml-0" id="custom_menu_qty_container_{{ $idx }}">
-                                <button type="button" onclick="changeCustomQty({{ $idx }}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 transition-colors">−</button>
-                                <input type="number" id="custom_menu_input_{{ $idx }}" value="0" min="0" readonly tabindex="-1"
-                                    class="w-12 text-center py-1 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 bg-gray-50 shrink-0 focus:outline-none cursor-default select-none" oninput="recalcCustom()" onchange="recalcCustom()">
-                                <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 custom-menu-plus-btn transition-colors">+</button>
+
+                            {{-- Baris 2: Harga Menu --}}
+                            <div class="pl-7 mt-1">
+                                <span class="text-xs sm:text-sm font-semibold text-orange-600">Rp {{ number_format($menu->price, 0, ',', '.') }} / porsi</span>
                             </div>
+
+                            {{-- Baris 3 & Selanjutnya: Link Lihat Detail & Daftar Isi/Menu --}}
+                            @if($menu->items && count($menu->items) > 0)
+                            <div class="pl-7 mt-1.5">
+                                <button type="button" onclick="toggleMenuDetail({{ $idx }}, event)" class="text-xs font-semibold text-blue-600 hover:text-blue-800 focus:outline-none underline">Lihat Detail</button>
+                            </div>
+                            <div id="menu_detail_{{ $idx }}" class="hidden pl-7 mt-2">
+                                <div class="py-2.5 px-3.5 bg-gray-50/80 text-xs text-gray-700 border-l-2 border-orange-300 rounded-r-lg">
+                                    <ul class="list-disc list-inside space-y-1">
+                                        @foreach($menu->items as $item)
+                                            <li>{{ $item }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                            @endif
                         </div>
-                        @if($menu->items && count($menu->items) > 0)
-                        <div id="menu_detail_{{ $idx }}" class="hidden py-2 px-3 sm:px-7 bg-gray-50/70 text-xs text-gray-600 border-l-2 border-orange-200 ml-7 mb-2 rounded-r">
-                            <ul class="list-disc list-inside space-y-0.5">
-                                @foreach($menu->items as $item)
-                                    <li>{{ $item }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        @endif
                     @endforeach
                 </div>
 
@@ -186,6 +192,31 @@
         }
     }
 
+    function validateCustomInput(idx) {
+        const inputEl = document.getElementById('custom_menu_input_' + idx);
+        if (!inputEl) return;
+        inputEl.value = inputEl.value.replace(/[^0-9]/g, '');
+        if (inputEl.value !== '') {
+            let val = parseInt(inputEl.value, 10);
+            if (isNaN(val) || val < 1) {
+                val = 1;
+                inputEl.value = '1';
+            }
+        }
+        recalcCustom();
+    }
+
+    function validateCustomInputBlur(idx) {
+        const inputEl = document.getElementById('custom_menu_input_' + idx);
+        if (!inputEl) return;
+        inputEl.value = inputEl.value.replace(/[^0-9]/g, '');
+        let val = parseInt(inputEl.value, 10);
+        if (isNaN(val) || val < 1) {
+            inputEl.value = '1';
+        }
+        recalcCustom();
+    }
+
     function recalcCustom() {
         let totalPortions = 0;
         let subtotalMenu = 0;
@@ -196,9 +227,13 @@
             const idx = cb.id.split('_').pop();
             const inputEl = document.getElementById('custom_menu_input_' + idx);
             let qty = parseInt(inputEl.value) || 0;
+            if (qty < 1 && inputEl.value !== '') {
+                qty = 1;
+                inputEl.value = '1';
+            }
             
             if (totalPortions + qty > CUSTOM_MAX_PORTIONS) {
-                qty = Math.max(0, CUSTOM_MAX_PORTIONS - totalPortions);
+                qty = Math.max(1, CUSTOM_MAX_PORTIONS - totalPortions);
                 inputEl.value = qty;
             }
             

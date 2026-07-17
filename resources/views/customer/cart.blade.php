@@ -680,33 +680,34 @@
             let detailBtn = '';
             let detailDiv = '';
             if (menu.items && Array.isArray(menu.items) && menu.items.length > 0) {
-                detailBtn = `<span class="text-gray-300 text-xs shrink-0">•</span><button type="button" onclick="toggleEditMenuDetail(${idx}, event)" class="text-xs font-semibold text-blue-600 hover:text-blue-800 focus:outline-none shrink-0 underline">Lihat Detail</button>`;
+                detailBtn = `<button type="button" onclick="toggleEditMenuDetail(${idx}, event)" class="text-xs font-semibold text-blue-600 hover:text-blue-800 focus:outline-none underline">Lihat Detail</button>`;
                 let itemsListHtml = menu.items.map(item => `<li>${item}</li>`).join('');
-                detailDiv = `<div id="edit_menu_detail_${idx}" class="hidden py-2 px-3 sm:px-7 bg-gray-50/70 text-xs text-gray-600 border-l-2 border-orange-200 ml-7 mb-2 rounded-r"><ul class="list-disc list-inside space-y-0.5">${itemsListHtml}</ul></div>`;
+                detailDiv = `<div id="edit_menu_detail_${idx}" class="hidden pl-7 mt-2"><div class="py-2.5 px-3.5 bg-gray-50/80 text-xs text-gray-700 border-l-2 border-orange-300 rounded-r-lg"><ul class="list-disc list-inside space-y-1">${itemsListHtml}</ul></div></div>`;
             }
 
             menuHtml += `
-            <div class="py-3 px-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-orange-50/50 rounded-lg transition-colors">
-                <div class="flex items-center gap-3 flex-1 min-w-0">
-                    <input type="checkbox" id="edit_menu_cb_${idx}" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}"
-                        class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 edit-menu-checkbox shrink-0 cursor-pointer" ${checked} onchange="toggleEditMenu(${idx}, ${menu.id})">
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 flex-1 min-w-0">
-                        <label for="edit_menu_cb_${idx}" class="text-sm font-medium text-gray-800 cursor-pointer truncate">${menu.name}</label>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <span class="text-xs sm:text-sm font-semibold text-orange-600">Rp ${Number(menu.price).toLocaleString('id-ID')}/porsi</span>
-                            ${detailBtn}
-                        </div>
+            <div class="py-3.5 px-2 hover:bg-orange-50/50 rounded-lg transition-colors">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <input type="checkbox" id="edit_menu_cb_${idx}" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}"
+                            class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 edit-menu-checkbox shrink-0 cursor-pointer" ${checked} onchange="toggleEditMenu(${idx}, ${menu.id})">
+                        <label for="edit_menu_cb_${idx}" class="text-sm sm:text-base font-semibold text-gray-900 cursor-pointer truncate">${menu.name}</label>
+                    </div>
+                    <div class="flex items-center gap-1.5 transition-opacity shrink-0 ${opacityClass}" id="edit_menu_qty_container_${idx}">
+                        <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 transition-colors">−</button>
+                        <input type="number" name="items[${idx}][quantity]" id="edit_event_qty_${idx}" value="${qty}" min="1"
+                            class="w-14 text-center py-1 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-900 bg-white shrink-0 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400 edit-event-qty" data-price="${menu.price}" data-type="custom_menu" oninput="validateEditEventInput(${idx})" onchange="validateEditEventInputBlur(${idx})">
+                        <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 edit-menu-plus-btn transition-colors">+</button>
                     </div>
                 </div>
-                <div class="flex items-center justify-end gap-1.5 transition-opacity shrink-0 ml-7 sm:ml-0 ${opacityClass}" id="edit_menu_qty_container_${idx}">
-                    <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 transition-colors">−</button>
-                    <input type="number" name="items[${idx}][quantity]" id="edit_event_qty_${idx}" value="${qty}" min="0" readonly tabindex="-1"
-                        class="w-12 text-center py-1 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 bg-gray-50 shrink-0 focus:outline-none cursor-default select-none edit-event-qty" data-price="${menu.price}" data-type="custom_menu" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
-                    <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 edit-menu-plus-btn transition-colors">+</button>
+                <div class="pl-7 mt-1">
+                    <span class="text-xs sm:text-sm font-semibold text-orange-600">Rp ${Number(menu.price).toLocaleString('id-ID')} / porsi</span>
                 </div>
+                ${detailBtn ? `<div class="pl-7 mt-1.5">${detailBtn}</div>` : ''}
+                ${detailDiv}
                 <input type="hidden" name="items[${idx}][custom_option_id]" value="${menu.id}" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
                 <input type="hidden" name="items[${idx}][item_type]" value="custom_menu" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
-            </div>${detailDiv}`;
+            </div>`;
         });
         document.getElementById('editEventMenuList').innerHTML = menuHtml;
 
@@ -864,6 +865,31 @@
         return 'custom:' + items.join('|') + '||' + servingVal;
     }
 
+    function validateEditEventInput(idx) {
+        const inputEl = document.getElementById('edit_event_qty_' + idx);
+        if (!inputEl) return;
+        inputEl.value = inputEl.value.replace(/[^0-9]/g, '');
+        if (inputEl.value !== '') {
+            let val = parseInt(inputEl.value, 10);
+            if (isNaN(val) || val < 1) {
+                val = 1;
+                inputEl.value = '1';
+            }
+        }
+        recalcEditEvent();
+    }
+
+    function validateEditEventInputBlur(idx) {
+        const inputEl = document.getElementById('edit_event_qty_' + idx);
+        if (!inputEl) return;
+        inputEl.value = inputEl.value.replace(/[^0-9]/g, '');
+        let val = parseInt(inputEl.value, 10);
+        if (isNaN(val) || val < 1) {
+            inputEl.value = '1';
+        }
+        recalcEditEvent();
+    }
+
     function recalcEditEvent() {
         const group = eventGroupsData[editingGroupId];
         if (!group) return;
@@ -891,9 +917,13 @@
 
                 let qty = parseInt(input.value) || 0;
                 const price = parseFloat(input.dataset.price) || 0;
+                if (qty < 1 && input.value !== '') {
+                    qty = 1;
+                    input.value = '1';
+                }
 
                 if (totalPortions + qty > maxPortion) {
-                    qty = Math.max(0, maxPortion - totalPortions);
+                    qty = Math.max(1, maxPortion - totalPortions);
                     input.value = qty;
                 }
                 totalPortions += qty;
