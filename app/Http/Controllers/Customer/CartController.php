@@ -14,7 +14,7 @@ class CartController extends Controller
     public function index(Request $request)
     {
         if (auth()->check()) {
-            Cart::removeExpiredHarianItems(auth()->id());
+            Cart::cleanupInvalidAndExpiredItems(auth()->id());
         }
 
         $carts = auth()->user()->carts()
@@ -40,6 +40,9 @@ class CartController extends Controller
     public function count(Request $request)
     {
         $user = auth()->user();
+        if ($user) {
+            Cart::cleanupInvalidAndExpiredItems($user->id);
+        }
         return response()->json([
             'success' => true,
             'cart_count' => $user ? $this->getCartCount($user) : 0,
@@ -657,10 +660,11 @@ class CartController extends Controller
 
         if ($pending['type'] === 'daily') {
             $controller->store($req);
-            Cart::removeExpiredHarianItems(auth()->id());
+            Cart::cleanupInvalidAndExpiredItems(auth()->id());
             return redirect()->route('customer.cart', ['tab' => 'daily'])->with('success', 'Produk dan opsi berhasil ditambahkan ke keranjang!');
         } elseif ($pending['type'] === 'event_group') {
             $controller->storeEventGroup($req);
+            Cart::cleanupInvalidAndExpiredItems(auth()->id());
             return redirect()->route('customer.cart', ['tab' => 'event'])->with('success', 'Pesanan event berhasil ditambahkan ke keranjang!');
         }
 

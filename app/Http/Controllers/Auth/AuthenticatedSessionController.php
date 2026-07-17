@@ -29,7 +29,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         if ($request->user()) {
-            \App\Models\Cart::removeExpiredHarianItems($request->user()->id);
+            \App\Models\Cart::cleanupInvalidAndExpiredItems($request->user()->id);
         }
 
         if ($request->user()->isCustomer() && !$request->user()->hasVerifiedEmail()) {

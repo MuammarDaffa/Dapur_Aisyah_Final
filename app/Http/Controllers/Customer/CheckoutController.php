@@ -24,7 +24,7 @@ class CheckoutController extends Controller
     {
         $user = auth()->user();
         if ($user) {
-            \App\Models\Cart::removeExpiredHarianItems($user->id);
+            \App\Models\Cart::cleanupInvalidAndExpiredItems($user->id);
         }
         $cartsQuery = $user->carts()
             ->whereNull('cart_group_id') // Hanya daily
@@ -70,7 +70,7 @@ class CheckoutController extends Controller
     {
         $user = auth()->user();
         if ($user) {
-            \App\Models\Cart::removeExpiredHarianItems($user->id);
+            \App\Models\Cart::cleanupInvalidAndExpiredItems($user->id);
         }
         $cartsQuery = $user->carts()
             ->whereNull('cart_group_id') // Hanya daily
@@ -301,6 +301,9 @@ class CheckoutController extends Controller
     public function showEventCheckout(string $groupId)
     {
         $user = auth()->user();
+        if ($user) {
+            \App\Models\Cart::cleanupInvalidAndExpiredItems($user->id);
+        }
         if ($groupId === 'all') {
             $groupItems = $user->carts()
                 ->whereNotNull('cart_group_id')
@@ -352,6 +355,9 @@ class CheckoutController extends Controller
     public function checkoutEventGroup(Request $request, string $groupId)
     {
         $user = auth()->user();
+        if ($user) {
+            \App\Models\Cart::cleanupInvalidAndExpiredItems($user->id);
+        }
         if ($groupId === 'all') {
             $groupItems = $user->carts()
                 ->whereNotNull('cart_group_id')
