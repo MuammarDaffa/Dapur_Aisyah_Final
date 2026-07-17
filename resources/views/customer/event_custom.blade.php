@@ -27,41 +27,39 @@
             {{-- Pilih Menu --}}
             <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                 <h3 class="text-lg font-bold text-gray-900 mb-4">Pilih Menu</h3>
-                <div class="space-y-3">
+                <div class="divide-y divide-gray-100 border-t border-b border-gray-100">
                     @foreach($menus as $idx => $menu)
-                        <div class="border rounded-xl overflow-hidden hover:border-orange-200 transition-colors">
-                            <div class="flex items-center justify-between p-4 hover:bg-orange-50/50">
-                                <label class="flex items-center gap-3 cursor-pointer flex-1">
-                                    <input type="checkbox" id="custom_menu_{{ $idx }}" data-id="{{ $menu->id }}" data-price="{{ $menu->price }}"
-                                        class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-menu-cb" onchange="toggleCustomMenu({{ $idx }})">
-                                    <div>
-                                        <span class="font-medium text-gray-900">{{ $menu->name }}</span>
-                                        <div class="flex items-center gap-2 mt-0.5">
-                                            <p class="text-sm text-orange-600 font-semibold">Rp {{ number_format($menu->price, 0, ',', '.') }} / porsi</p>
-                                            @if($menu->items && count($menu->items) > 0)
-                                                <span class="text-gray-300 text-xs">•</span>
-                                                <button type="button" onclick="toggleMenuDetail({{ $idx }}, event)" class="text-xs font-semibold text-blue-600 hover:text-blue-800 focus:outline-none">Lihat Detail</button>
-                                            @endif
-                                        </div>
+                        <div class="py-3 px-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-orange-50/50 rounded-lg transition-colors">
+                            <div class="flex items-center gap-3 flex-1 min-w-0">
+                                <input type="checkbox" id="custom_menu_{{ $idx }}" data-id="{{ $menu->id }}" data-price="{{ $menu->price }}"
+                                    class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-menu-cb shrink-0 cursor-pointer" onchange="toggleCustomMenu({{ $idx }})">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 flex-1 min-w-0">
+                                    <label for="custom_menu_{{ $idx }}" class="text-sm font-medium text-gray-800 cursor-pointer truncate">{{ $menu->name }}</label>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <span class="text-xs sm:text-sm font-semibold text-orange-600">Rp {{ number_format($menu->price, 0, ',', '.') }}/porsi</span>
+                                        @if($menu->items && count($menu->items) > 0)
+                                            <span class="text-gray-300 text-xs shrink-0">•</span>
+                                            <button type="button" onclick="toggleMenuDetail({{ $idx }}, event)" class="text-xs font-semibold text-blue-600 hover:text-blue-800 focus:outline-none shrink-0 underline">Lihat Detail</button>
+                                        @endif
                                     </div>
-                                </label>
-                                <div class="flex items-center gap-2 opacity-0 pointer-events-none transition-opacity" id="custom_menu_qty_container_{{ $idx }}">
-                                    <button type="button" onclick="changeCustomQty({{ $idx }}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
-                                    <input type="number" id="custom_menu_input_{{ $idx }}" value="0" min="0"
-                                        class="min-w-[48px] w-16 px-1 text-center border rounded-lg py-1 font-semibold" oninput="recalcCustom()" onchange="recalcCustom()">
-                                    <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 custom-menu-plus-btn">+</button>
                                 </div>
                             </div>
-                            @if($menu->items && count($menu->items) > 0)
-                            <div id="menu_detail_{{ $idx }}" class="hidden border-t border-gray-100 bg-gray-50 p-4">
-                                <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
-                                    @foreach($menu->items as $item)
-                                        <li>{{ $item }}</li>
-                                    @endforeach
-                                </ul>
+                            <div class="flex items-center justify-end gap-1.5 opacity-0 pointer-events-none transition-opacity shrink-0 ml-7 sm:ml-0" id="custom_menu_qty_container_{{ $idx }}">
+                                <button type="button" onclick="changeCustomQty({{ $idx }}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 transition-colors">−</button>
+                                <input type="number" id="custom_menu_input_{{ $idx }}" value="0" min="0" readonly tabindex="-1"
+                                    class="w-12 text-center py-1 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 bg-gray-50 shrink-0 focus:outline-none cursor-default select-none" oninput="recalcCustom()" onchange="recalcCustom()">
+                                <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 custom-menu-plus-btn transition-colors">+</button>
                             </div>
-                            @endif
                         </div>
+                        @if($menu->items && count($menu->items) > 0)
+                        <div id="menu_detail_{{ $idx }}" class="hidden py-2 px-3 sm:px-7 bg-gray-50/70 text-xs text-gray-600 border-l-2 border-orange-200 ml-7 mb-2 rounded-r">
+                            <ul class="list-disc list-inside space-y-0.5">
+                                @foreach($menu->items as $item)
+                                    <li>{{ $item }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
                     @endforeach
                 </div>
 
@@ -75,17 +73,15 @@
             @if($extras->isNotEmpty())
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Tambahan (Extra) — Opsional</h3>
-                    <div class="space-y-3">
+                    <div class="divide-y divide-gray-100 border-t border-b border-gray-100">
                         @foreach($extras as $idx => $extra)
-                            <div class="flex items-center justify-between p-4 border rounded-xl hover:bg-orange-50">
-                                <label class="flex items-center gap-3 cursor-pointer flex-1">
+                            <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-orange-50/50 rounded-lg transition-colors">
+                                <label for="custom_extra_{{ $idx }}" class="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
                                     <input type="checkbox" id="custom_extra_{{ $idx }}" data-id="{{ $extra->id }}" data-price="{{ $extra->price }}"
-                                        class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-extra-cb" onchange="recalcCustom()">
-                                    <div>
-                                        <span class="font-medium text-gray-900">{{ $extra->name }}</span>
-                                        <p class="text-sm text-orange-600 font-semibold">+Rp {{ number_format($extra->price, 0, ',', '.') }}</p>
-                                    </div>
+                                        class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-extra-cb shrink-0 cursor-pointer" onchange="recalcCustom()">
+                                    <span class="text-sm font-medium text-gray-800 truncate">{{ $extra->name }}</span>
                                 </label>
+                                <span class="text-sm font-semibold text-orange-600 shrink-0">+Rp {{ number_format($extra->price, 0, ',', '.') }}</span>
                             </div>
                         @endforeach
                     </div>
@@ -96,13 +92,11 @@
             @if($servings->isNotEmpty())
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Cara Penyajian *</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-6 pt-1">
                         @foreach($servings as $serving)
-                            <label class="relative cursor-pointer">
-                                <input type="radio" name="serving_type_id" value="{{ $serving->id }}" class="peer sr-only custom-serving-radio" onchange="recalcCustom()">
-                                <div class="p-4 text-center border-2 rounded-xl peer-checked:border-orange-500 peer-checked:bg-orange-50 transition-colors">
-                                    <span class="font-medium text-gray-900">{{ $serving->name }}</span>
-                                </div>
+                            <label class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-orange-50/50 cursor-pointer transition-colors border border-gray-100 sm:border-transparent sm:hover:border-gray-100">
+                                <input type="radio" name="serving_type_id" value="{{ $serving->id }}" class="w-4 h-4 text-orange-500 border-gray-300 focus:ring-orange-400 custom-serving-radio cursor-pointer shrink-0" onchange="recalcCustom()">
+                                <span class="text-sm font-medium text-gray-800">{{ $serving->name }}</span>
                             </label>
                         @endforeach
                     </div>

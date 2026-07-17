@@ -404,7 +404,7 @@
                 {{-- Menu Items (akan di-generate JS) --}}
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-800 mb-3" id="editEventMenuHeading">Menu</h4>
-                    <div id="editEventMenuList" class="space-y-2"></div>
+                    <div id="editEventMenuList" class="divide-y divide-gray-100 border-t border-b border-gray-100"></div>
 
                     {{-- Porsi Indicator (hanya untuk custom menu) --}}
                     <div id="editCustomPortionIndicator" class="mt-4 p-4 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-between" style="display:none;">
@@ -415,13 +415,13 @@
                 {{-- Extra --}}
                 <div id="editEventExtrasSection" class="mb-6" style="display:none;">
                     <h4 class="font-semibold text-gray-800 mb-3">Extra</h4>
-                    <div id="editEventExtrasList" class="space-y-2"></div>
+                    <div id="editEventExtrasList" class="divide-y divide-gray-100 border-t border-b border-gray-100"></div>
                 </div>
 
                 {{-- Penyajian --}}
                 <div id="editEventServingSection" class="mb-6" style="display:none;">
                     <h4 class="font-semibold text-gray-800 mb-3">Penyajian</h4>
-                    <div id="editEventServingList" class="grid grid-cols-3 gap-3"></div>
+                    <div id="editEventServingList" class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-6 pt-1"></div>
                 </div>
 
                 {{-- Total --}}
@@ -677,25 +677,36 @@
             const checked = qty > 0 ? 'checked' : '';
             const opacityClass = qty > 0 ? '' : 'opacity-0 pointer-events-none';
 
+            let detailBtn = '';
+            let detailDiv = '';
+            if (menu.items && Array.isArray(menu.items) && menu.items.length > 0) {
+                detailBtn = `<span class="text-gray-300 text-xs shrink-0">•</span><button type="button" onclick="toggleEditMenuDetail(${idx}, event)" class="text-xs font-semibold text-blue-600 hover:text-blue-800 focus:outline-none shrink-0 underline">Lihat Detail</button>`;
+                let itemsListHtml = menu.items.map(item => `<li>${item}</li>`).join('');
+                detailDiv = `<div id="edit_menu_detail_${idx}" class="hidden py-2 px-3 sm:px-7 bg-gray-50/70 text-xs text-gray-600 border-l-2 border-orange-200 ml-7 mb-2 rounded-r"><ul class="list-disc list-inside space-y-0.5">${itemsListHtml}</ul></div>`;
+            }
+
             menuHtml += `
-            <div class="flex items-center justify-between p-3 border rounded-xl mb-2">
-                <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <div class="py-3 px-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-orange-50/50 rounded-lg transition-colors">
+                <div class="flex items-center gap-3 flex-1 min-w-0">
                     <input type="checkbox" id="edit_menu_cb_${idx}" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}"
-                        class="w-5 h-5 rounded border-gray-300 text-orange-500 edit-menu-checkbox" ${checked} onchange="toggleEditMenu(${idx}, ${menu.id})">
-                    <div>
-                        <span class="font-medium text-gray-900">${menu.name}</span>
-                        <p class="text-xs text-orange-600">Rp ${Number(menu.price).toLocaleString('id-ID')} / porsi</p>
+                        class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 edit-menu-checkbox shrink-0 cursor-pointer" ${checked} onchange="toggleEditMenu(${idx}, ${menu.id})">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 flex-1 min-w-0">
+                        <label for="edit_menu_cb_${idx}" class="text-sm font-medium text-gray-800 cursor-pointer truncate">${menu.name}</label>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-xs sm:text-sm font-semibold text-orange-600">Rp ${Number(menu.price).toLocaleString('id-ID')}/porsi</span>
+                            ${detailBtn}
+                        </div>
                     </div>
-                </label>
-                <div class="flex items-center gap-2 transition-opacity ${opacityClass}" id="edit_menu_qty_container_${idx}">
-                    <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
-                    <input type="number" name="items[${idx}][quantity]" id="edit_event_qty_${idx}" value="${qty}" min="0"
-                        class="min-w-[48px] w-16 px-1 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${menu.price}" data-type="custom_menu" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
-                    <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 edit-menu-plus-btn">+</button>
+                </div>
+                <div class="flex items-center justify-end gap-1.5 transition-opacity shrink-0 ml-7 sm:ml-0 ${opacityClass}" id="edit_menu_qty_container_${idx}">
+                    <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 transition-colors">−</button>
+                    <input type="number" name="items[${idx}][quantity]" id="edit_event_qty_${idx}" value="${qty}" min="0" readonly tabindex="-1"
+                        class="w-12 text-center py-1 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 bg-gray-50 shrink-0 focus:outline-none cursor-default select-none edit-event-qty" data-price="${menu.price}" data-type="custom_menu" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
+                    <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 edit-menu-plus-btn transition-colors">+</button>
                 </div>
                 <input type="hidden" name="items[${idx}][custom_option_id]" value="${menu.id}" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
                 <input type="hidden" name="items[${idx}][item_type]" value="custom_menu" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
-            </div>`;
+            </div>${detailDiv}`;
         });
         document.getElementById('editEventMenuList').innerHTML = menuHtml;
 
@@ -710,15 +721,13 @@
                 const eChecked = eQty > 0 ? 'checked' : '';
 
                 extraHtml += `
-                <div class="flex items-center justify-between p-3 border rounded-xl mb-2 hover:bg-orange-50">
-                    <label class="flex items-center gap-3 cursor-pointer flex-1">
+                <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-orange-50/50 rounded-lg transition-colors">
+                    <label for="edit_extra_cb_${eIdx}" class="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
                         <input type="checkbox" id="edit_extra_cb_${eIdx}" data-idx="${eIdx}" data-id="${extra.id}" data-price="${extra.price}"
-                            class="w-5 h-5 rounded border-gray-300 text-orange-500 edit-extra-checkbox" ${eChecked} onchange="toggleEditExtra(${eIdx}, ${extra.id})">
-                        <div>
-                            <span class="font-medium text-gray-900">${extra.name}</span>
-                            <p class="text-xs text-orange-600">+Rp ${Number(extra.price).toLocaleString('id-ID')}</p>
-                        </div>
+                            class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 edit-extra-checkbox shrink-0 cursor-pointer" ${eChecked} onchange="toggleEditExtra(${eIdx}, ${extra.id})">
+                        <span class="text-sm font-medium text-gray-800 truncate">${extra.name}</span>
                     </label>
+                    <span class="text-sm font-semibold text-orange-600 shrink-0">+Rp ${Number(extra.price).toLocaleString('id-ID')}</span>
                     <input type="hidden" name="items[${eIdx}][quantity]" id="edit_event_qty_${eIdx}" value="${eQty}"
                         class="edit-event-qty" data-price="${extra.price}" data-type="addition" ${eQty > 0 ? '' : 'disabled'}>
                     <input type="hidden" name="items[${eIdx}][custom_option_id]" value="${extra.id}" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
@@ -731,28 +740,37 @@
         }
 
         if (servings.length > 0) {
-                document.getElementById('editEventServingSection').style.display = 'block';
-                let servingHtml = '';
-                servings.forEach(s => {
-                    const checked = group.serving_type_id == s.id ? 'checked' : '';
-                    servingHtml += `
-                    <label class="relative cursor-pointer">
-                        <input type="radio" name="serving_type_id" value="${s.id}" class="peer sr-only" ${checked} onchange="recalcEditEvent()">
-                        <div class="p-3 text-center border-2 rounded-xl peer-checked:border-orange-500 peer-checked:bg-orange-50 transition-colors">
-                            <span class="font-medium text-gray-900">${s.name}</span>
-                        </div>
-                    </label>`;
-                });
-                document.getElementById('editEventServingList').innerHTML = servingHtml;
-            } else {
-                document.getElementById('editEventServingSection').style.display = 'none';
-            }
+            document.getElementById('editEventServingSection').style.display = 'block';
+            let servingHtml = '';
+            servings.forEach(s => {
+                const checked = group.serving_type_id == s.id ? 'checked' : '';
+                servingHtml += `
+                <label class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-orange-50/50 cursor-pointer transition-colors border border-gray-100 sm:border-transparent sm:hover:border-gray-100">
+                    <input type="radio" name="serving_type_id" value="${s.id}" class="w-4 h-4 text-orange-500 border-gray-300 focus:ring-orange-400 cursor-pointer shrink-0" ${checked} onchange="recalcEditEvent()">
+                    <span class="text-sm font-medium text-gray-800">${s.name}</span>
+                </label>`;
+            });
+            document.getElementById('editEventServingList').innerHTML = servingHtml;
+        } else {
+            document.getElementById('editEventServingSection').style.display = 'none';
+        }
 
-            const heading = document.getElementById('editEventMenuHeading');
-            if (heading) heading.style.display = 'block';
-            document.getElementById('editCustomPortionIndicator').style.display = 'flex';
-            initialEditEventSnapshot = getEditEventSnapshot();
-            recalcEditEvent();
+        const heading = document.getElementById('editEventMenuHeading');
+        if (heading) heading.style.display = 'block';
+        document.getElementById('editCustomPortionIndicator').style.display = 'flex';
+        initialEditEventSnapshot = getEditEventSnapshot();
+        recalcEditEvent();
+    }
+
+    function toggleEditMenuDetail(idx, event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        const detailPanel = document.getElementById('edit_menu_detail_' + idx);
+        if (detailPanel) {
+            detailPanel.classList.toggle('hidden');
+        }
     }
 
     function toggleEditMenu(idx, menuId) {
