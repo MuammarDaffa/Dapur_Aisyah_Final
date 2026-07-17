@@ -48,7 +48,7 @@
                                 <div class="flex items-center gap-2 opacity-0 pointer-events-none transition-opacity" id="custom_menu_qty_container_{{ $idx }}">
                                     <button type="button" onclick="changeCustomQty({{ $idx }}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
                                     <input type="number" id="custom_menu_input_{{ $idx }}" value="0" min="0"
-                                        class="w-16 text-center border rounded-lg py-1 font-semibold" onchange="recalcCustom()">
+                                        class="min-w-[48px] w-16 px-1 text-center border rounded-lg py-1 font-semibold" oninput="recalcCustom()" onchange="recalcCustom()">
                                     <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 custom-menu-plus-btn">+</button>
                                 </div>
                             </div>

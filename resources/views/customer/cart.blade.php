@@ -170,9 +170,6 @@
                     <div class="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2.5 pt-2 sm:pt-0 border-t border-gray-100 sm:border-t-0">
                         <p class="text-lg font-bold text-gray-900 sm:text-right">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
                         <div class="flex items-center gap-2 sm:justify-end">
-                            <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
-                                Edit
-                            </button>
                             <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $packageItem->id ?? $groupItems->first()->id }}, true)" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
                                 Hapus
                             </button>
@@ -281,7 +278,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Porsi *</label>
                     <div class="flex items-center gap-3">
                         <button type="button" onclick="changeDailyQty(-1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-colors">−</button>
-                        <input type="number" name="quantity" id="dailyModalQty" value="1" min="1" class="w-20 text-center px-3 py-2 rounded-xl border border-gray-200 font-semibold text-gray-900 focus:border-orange-400 focus:ring-2 focus:ring-orange-100" onchange="updateDailyModalTotal()">
+                        <input type="text" inputmode="none" readonly tabindex="-1" name="quantity" id="dailyModalQty" value="1" class="w-20 text-center px-3 py-2 rounded-xl border border-gray-200 font-semibold text-gray-900 focus:outline-none cursor-default select-none">
                         <button type="button" onclick="changeDailyQty(1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-colors">+</button>
                     </div>
                 </div>
@@ -544,7 +541,7 @@
                                     <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
                                     <div id="daily_extra_qty_container_${extra.id}" class="${containerClasses} items-center gap-1">
                                         <button type="button" onclick="changeDailyExtraQty(${extra.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md font-bold text-gray-600 transition-colors text-xs">−</button>
-                                        <input type="text" inputmode="numeric" name="extras[${extra.id}][qty]" id="daily_extra_qty_${extra.id}" value="${extraInCart ? (extraQty || 1) : 0}" oninput="manualDailyExtraQty(${extra.id})" onchange="manualDailyExtraQty(${extra.id})" class="w-8 text-center bg-transparent text-xs font-bold text-gray-900 focus:outline-none" ${disabledState}>
+                                        <input type="text" inputmode="none" readonly tabindex="-1" name="extras[${extra.id}][qty]" id="daily_extra_qty_${extra.id}" value="${extraInCart ? (extraQty || 1) : 0}" class="min-w-[32px] px-1 text-center bg-transparent text-xs font-bold text-gray-900 focus:outline-none cursor-default select-none" ${disabledState}>
                                         <button type="button" onclick="changeDailyExtraQty(${extra.id}, 1)" class="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md font-bold text-gray-600 transition-colors text-xs">+</button>
                                     </div>
                                 </div>
@@ -649,7 +646,7 @@
         editingGroupId = groupId;
         initialEditEventSnapshot = null;
         const group = eventGroupsData[groupId];
-        if (!group) return;
+        if (!group || group.is_package) return;
 
         document.getElementById('editEventForm').action = group.update_url;
         document.getElementById('editEventServiceId').value = group.catering_service_id;
@@ -666,98 +663,74 @@
     }
 
     function renderEditEventModal(group, options) {
+        if (group.is_package) return;
         const menus = options.filter(o => o.type === 'menu');
         const extras = options.filter(o => o.type === 'extra');
         const servings = options.filter(o => o.type === 'serving_type');
 
-        if (group.is_package) {
-            document.getElementById('editEventTitle').textContent = group.package_name || 'Paket';
-            document.getElementById('editEventType').textContent = group.service_name || 'Layanan Event';
-            const currentQty = group.package_quantity || 1;
-            document.getElementById('editEventMenuList').innerHTML = `
-                <div class="p-4 bg-orange-50/60 rounded-xl border border-orange-100 flex items-center justify-between">
-                    <div>
-                        <label class="block font-bold text-gray-900 text-base">Jumlah Paket</label>
-                        
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <button type="button" onclick="changePackageEditQty(-1)" class="w-10 h-10 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 font-bold text-lg shadow-sm transition-colors">−</button>
-                        <input type="number" name="quantity" id="editPackageQtyInput" value="${currentQty}" min="1" class="w-20 text-center py-2 px-3 rounded-xl border border-gray-200 font-bold text-gray-900 focus:border-orange-400 focus:ring-2 focus:ring-orange-100" onchange="recalcEditEvent()">
-                        <button type="button" onclick="changePackageEditQty(1)" class="w-10 h-10 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 font-bold text-lg shadow-sm transition-colors">+</button>
-                    </div>
-                </div>
-            `;
-            document.getElementById('editEventExtrasSection').style.display = 'none';
-            document.getElementById('editEventServingSection').style.display = 'none';
-            const heading = document.getElementById('editEventMenuHeading');
-            if (heading) heading.style.display = 'none';
-            document.getElementById('editCustomPortionIndicator').style.display = 'none';
-            initialEditEventSnapshot = getEditEventSnapshot();
-            recalcEditEvent();
-        } else {
-            document.getElementById('editEventTitle').textContent = 'Custom Menu';
-            document.getElementById('editEventType').textContent = group.service_name || 'Layanan Event';
-            let menuHtml = '';
-            menus.forEach((menu, idx) => {
-                const existingItem = group.items.find(i => i.custom_option_id == menu.id && i.item_type === 'custom_menu');
-                const qty = existingItem ? existingItem.quantity : 0;
-                const checked = qty > 0 ? 'checked' : '';
-                const opacityClass = qty > 0 ? '' : 'opacity-0 pointer-events-none';
+        document.getElementById('editEventTitle').textContent = 'Custom Menu';
+        document.getElementById('editEventType').textContent = group.service_name || 'Layanan Event';
+        let menuHtml = '';
+        menus.forEach((menu, idx) => {
+            const existingItem = group.items.find(i => i.custom_option_id == menu.id && i.item_type === 'custom_menu');
+            const qty = existingItem ? existingItem.quantity : 0;
+            const checked = qty > 0 ? 'checked' : '';
+            const opacityClass = qty > 0 ? '' : 'opacity-0 pointer-events-none';
 
-                menuHtml += `
-                <div class="flex items-center justify-between p-3 border rounded-xl mb-2">
+            menuHtml += `
+            <div class="flex items-center justify-between p-3 border rounded-xl mb-2">
+                <label class="flex items-center gap-3 cursor-pointer flex-1">
+                    <input type="checkbox" id="edit_menu_cb_${idx}" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}"
+                        class="w-5 h-5 rounded border-gray-300 text-orange-500 edit-menu-checkbox" ${checked} onchange="toggleEditMenu(${idx}, ${menu.id})">
+                    <div>
+                        <span class="font-medium text-gray-900">${menu.name}</span>
+                        <p class="text-xs text-orange-600">Rp ${Number(menu.price).toLocaleString('id-ID')} / porsi</p>
+                    </div>
+                </label>
+                <div class="flex items-center gap-2 transition-opacity ${opacityClass}" id="edit_menu_qty_container_${idx}">
+                    <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
+                    <input type="number" name="items[${idx}][quantity]" id="edit_event_qty_${idx}" value="${qty}" min="0"
+                        class="min-w-[48px] w-16 px-1 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${menu.price}" data-type="custom_menu" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
+                    <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 edit-menu-plus-btn">+</button>
+                </div>
+                <input type="hidden" name="items[${idx}][custom_option_id]" value="${menu.id}" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
+                <input type="hidden" name="items[${idx}][item_type]" value="custom_menu" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
+            </div>`;
+        });
+        document.getElementById('editEventMenuList').innerHTML = menuHtml;
+
+        let extraStartIdx = menus.length;
+        if (extras.length > 0) {
+            document.getElementById('editEventExtrasSection').style.display = 'block';
+            let extraHtml = '';
+            extras.forEach((extra, i) => {
+                const eIdx = extraStartIdx + i;
+                const existingExtra = group.items.find(item => item.custom_option_id == extra.id && item.item_type === 'addition');
+                const eQty = existingExtra ? existingExtra.quantity : 0;
+                const eChecked = eQty > 0 ? 'checked' : '';
+
+                extraHtml += `
+                <div class="flex items-center justify-between p-3 border rounded-xl mb-2 hover:bg-orange-50">
                     <label class="flex items-center gap-3 cursor-pointer flex-1">
-                        <input type="checkbox" id="edit_menu_cb_${idx}" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}"
-                            class="w-5 h-5 rounded border-gray-300 text-orange-500 edit-menu-checkbox" ${checked} onchange="toggleEditMenu(${idx}, ${menu.id})">
+                        <input type="checkbox" id="edit_extra_cb_${eIdx}" data-idx="${eIdx}" data-id="${extra.id}" data-price="${extra.price}"
+                            class="w-5 h-5 rounded border-gray-300 text-orange-500 edit-extra-checkbox" ${eChecked} onchange="toggleEditExtra(${eIdx}, ${extra.id})">
                         <div>
-                            <span class="font-medium text-gray-900">${menu.name}</span>
-                            <p class="text-xs text-orange-600">Rp ${Number(menu.price).toLocaleString('id-ID')} / porsi</p>
+                            <span class="font-medium text-gray-900">${extra.name}</span>
+                            <p class="text-xs text-orange-600">+Rp ${Number(extra.price).toLocaleString('id-ID')}</p>
                         </div>
                     </label>
-                    <div class="flex items-center gap-2 transition-opacity ${opacityClass}" id="edit_menu_qty_container_${idx}">
-                        <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600">−</button>
-                        <input type="number" name="items[${idx}][quantity]" id="edit_event_qty_${idx}" value="${qty}" min="0"
-                            class="w-16 text-center border rounded-lg py-1 font-semibold edit-event-qty" data-price="${menu.price}" data-type="custom_menu" oninput="recalcEditEvent()" onchange="recalcEditEvent()">
-                        <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 edit-menu-plus-btn">+</button>
-                    </div>
-                    <input type="hidden" name="items[${idx}][custom_option_id]" value="${menu.id}" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
-                    <input type="hidden" name="items[${idx}][item_type]" value="custom_menu" class="edit-event-item-field" ${qty > 0 ? '' : 'disabled'}>
+                    <input type="hidden" name="items[${eIdx}][quantity]" id="edit_event_qty_${eIdx}" value="${eQty}"
+                        class="edit-event-qty" data-price="${extra.price}" data-type="addition" ${eQty > 0 ? '' : 'disabled'}>
+                    <input type="hidden" name="items[${eIdx}][custom_option_id]" value="${extra.id}" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
+                    <input type="hidden" name="items[${eIdx}][item_type]" value="addition" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
                 </div>`;
             });
-            document.getElementById('editEventMenuList').innerHTML = menuHtml;
+            document.getElementById('editEventExtrasList').innerHTML = extraHtml;
+        } else {
+            document.getElementById('editEventExtrasSection').style.display = 'none';
+        }
 
-            let extraStartIdx = menus.length;
-            if (extras.length > 0) {
-                document.getElementById('editEventExtrasSection').style.display = 'block';
-                let extraHtml = '';
-                extras.forEach((extra, i) => {
-                    const eIdx = extraStartIdx + i;
-                    const existingExtra = group.items.find(item => item.custom_option_id == extra.id && item.item_type === 'addition');
-                    const eQty = existingExtra ? existingExtra.quantity : 0;
-                    const eChecked = eQty > 0 ? 'checked' : '';
-
-                    extraHtml += `
-                    <div class="flex items-center justify-between p-3 border rounded-xl mb-2 hover:bg-orange-50">
-                        <label class="flex items-center gap-3 cursor-pointer flex-1">
-                            <input type="checkbox" id="edit_extra_cb_${eIdx}" data-idx="${eIdx}" data-id="${extra.id}" data-price="${extra.price}"
-                                class="w-5 h-5 rounded border-gray-300 text-orange-500 edit-extra-checkbox" ${eChecked} onchange="toggleEditExtra(${eIdx}, ${extra.id})">
-                            <div>
-                                <span class="font-medium text-gray-900">${extra.name}</span>
-                                <p class="text-xs text-orange-600">+Rp ${Number(extra.price).toLocaleString('id-ID')}</p>
-                            </div>
-                        </label>
-                        <input type="hidden" name="items[${eIdx}][quantity]" id="edit_event_qty_${eIdx}" value="${eQty}"
-                            class="edit-event-qty" data-price="${extra.price}" data-type="addition" ${eQty > 0 ? '' : 'disabled'}>
-                        <input type="hidden" name="items[${eIdx}][custom_option_id]" value="${extra.id}" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
-                        <input type="hidden" name="items[${eIdx}][item_type]" value="addition" class="edit-event-item-field" ${eQty > 0 ? '' : 'disabled'}>
-                    </div>`;
-                });
-                document.getElementById('editEventExtrasList').innerHTML = extraHtml;
-            } else {
-                document.getElementById('editEventExtrasSection').style.display = 'none';
-            }
-
-            if (servings.length > 0) {
+        if (servings.length > 0) {
                 document.getElementById('editEventServingSection').style.display = 'block';
                 let servingHtml = '';
                 servings.forEach(s => {
@@ -781,15 +754,6 @@
             initialEditEventSnapshot = getEditEventSnapshot();
             recalcEditEvent();
         }
-    }
-
-    function changePackageEditQty(delta) {
-        const input = document.getElementById('editPackageQtyInput');
-        if (!input) return;
-        let val = parseInt(input.value) || 1;
-        val = Math.max(1, val + delta);
-        input.value = val;
-        recalcEditEvent();
     }
 
     function toggleEditMenu(idx, menuId) {
@@ -826,9 +790,23 @@
 
     function changeEditEventQty(idx, delta) {
         const input = document.getElementById('edit_event_qty_' + idx);
+        const cb = document.getElementById('edit_menu_cb_' + idx);
         if (!input) return;
         let val = parseInt(input.value) || 0;
         val = Math.max(0, val + delta);
+        if (val <= 0 && cb) {
+            cb.checked = false;
+            const container = document.getElementById('edit_menu_qty_container_' + idx);
+            if (container) container.classList.add('opacity-0', 'pointer-events-none');
+            const hiddens = document.querySelectorAll(`input[name="items[${idx}][custom_option_id]"], input[name="items[${idx}][item_type]"]`);
+            hiddens.forEach(h => h.disabled = true);
+        } else if (cb && !cb.checked && val > 0) {
+            cb.checked = true;
+            const container = document.getElementById('edit_menu_qty_container_' + idx);
+            if (container) container.classList.remove('opacity-0', 'pointer-events-none');
+            const hiddens = document.querySelectorAll(`input[name="items[${idx}][custom_option_id]"], input[name="items[${idx}][item_type]"]`);
+            hiddens.forEach(h => h.disabled = false);
+        }
         input.value = val;
         recalcEditEvent();
     }
@@ -836,12 +814,7 @@
     function getEditEventSnapshot() {
         if (!editingGroupId) return '';
         const group = eventGroupsData[editingGroupId];
-        if (!group) return '';
-
-        if (group.is_package) {
-            const qty = parseInt(document.getElementById('editPackageQtyInput')?.value) || group.package_quantity || 1;
-            return 'package:' + qty;
-        }
+        if (!group || group.is_package) return '';
 
         const items = [];
         document.querySelectorAll('#editEventForm input.edit-event-qty').forEach(input => {
@@ -880,22 +853,11 @@
 
         const btn = document.getElementById('editEventSubmitBtn');
         let isValid = true;
+        if (group.is_package) return;
 
-        if (group.is_package) {
-            const qty = parseInt(document.getElementById('editPackageQtyInput')?.value) || 1;
-            const pkgPrice = group.package_price || 0;
-            const totalPortions = (group.package_portions_per_unit || 0) * qty;
-
-            document.getElementById('editEventTotal').textContent = formatRupiah(pkgPrice * qty);
-            document.getElementById('editEventPortions').textContent = totalPortions;
-            if (btn) {
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-        } else {
-            let totalPrice = 0;
-            let totalPortions = 0;
-            const maxPortion = group.max_portion || 1000;
+        let totalPrice = 0;
+        let totalPortions = 0;
+        const maxPortion = group.max_portion || 1000;
 
             // 1. Hitung totalPorsi dan harga menu terlebih dahulu dari custom_menu yang terpilih
             document.querySelectorAll('.edit-event-qty').forEach(input => {
@@ -971,7 +933,6 @@
                     btn.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
             }
-        }
     }
 
     async function submitEditEventForm() {

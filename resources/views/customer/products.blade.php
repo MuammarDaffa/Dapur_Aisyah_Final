@@ -128,7 +128,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Porsi *</label>
                     <div class="flex items-center gap-3">
                         <button type="button" onclick="changeQty(-1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-colors">−</button>
-                        <input type="number" name="quantity" id="modalQty" value="1" min="1" class="w-20 text-center px-3 py-2 rounded-xl border border-gray-200 font-semibold text-gray-900 focus:border-orange-400 focus:ring-2 focus:ring-orange-100" onchange="updateModalTotal()">
+                        <input type="text" inputmode="none" readonly tabindex="-1" name="quantity" id="modalQty" value="1" class="w-20 text-center px-3 py-2 rounded-xl border border-gray-200 font-semibold text-gray-900 focus:outline-none cursor-default select-none">
                         <button type="button" onclick="changeQty(1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-colors">+</button>
                     </div>
                 </div>
@@ -218,7 +218,7 @@
                                     <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
                                     <div id="extra_qty_container_${extra.id}" class="hidden items-center gap-1">
                                         <button type="button" onclick="changeExtraQty(${extra.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md font-bold text-gray-600 transition-colors text-xs">−</button>
-                                        <input type="text" inputmode="numeric" name="extras[${extra.id}][qty]" id="extra_qty_${extra.id}" value="0" oninput="manualExtraQty(${extra.id})" onchange="manualExtraQty(${extra.id})" class="w-8 text-center bg-transparent text-xs font-bold text-gray-900 focus:outline-none" disabled>
+                                        <input type="text" inputmode="none" readonly tabindex="-1" name="extras[${extra.id}][qty]" id="extra_qty_${extra.id}" value="0" class="min-w-[32px] px-1 text-center bg-transparent text-xs font-bold text-gray-900 focus:outline-none cursor-default select-none" disabled>
                                         <button type="button" onclick="changeExtraQty(${extra.id}, 1)" class="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md font-bold text-gray-600 transition-colors text-xs">+</button>
                                     </div>
                                 </div>
