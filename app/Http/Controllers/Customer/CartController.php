@@ -41,7 +41,7 @@ class CartController extends Controller
     {
         $user = auth()->user();
         if ($user) {
-            Cart::cleanupInvalidAndExpiredItems($user->id);
+            Cart::cleanupInvalidAndExpiredItems($user->id, false);
         }
         return response()->json([
             'success' => true,

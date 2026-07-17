@@ -39,14 +39,14 @@
     <div id="content-daily" style="{{ $activeTab !== 'daily' ? 'display:none' : '' }}">
         @if($dailyGroups->isEmpty())
             <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
-                <div class="w-16 h-16 mx-auto mb-4 text-gray-300 flex items-center justify-center">
+                <!-- <div class="w-16 h-16 mx-auto mb-4 text-gray-300 flex items-center justify-center">
                     <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                </div>
-                <p class="text-gray-500 font-medium mb-4">Keranjang harian Anda kosong</p>
-                <a href="{{ route('customer.products') }}" class="inline-flex items-center px-6 py-3 bg-orange-500 text-white font-medium rounded-full hover:bg-orange-600 transition-colors">
+                </div> -->
+                <p class="text-gray-500 font-medium mb-4">Belum ada pesanan</p>
+                <!-- <a href="{{ route('customer.products') }}" class="inline-flex items-center px-6 py-3 bg-orange-500 text-white font-medium rounded-full hover:bg-orange-600 transition-colors">
                     <span>Lihat Menu</span>
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                </a>
+                </a> -->
             </div>
         @else
             <div class="bg-white rounded-xl shadow-sm border border-orange-100 p-6 space-y-6">
@@ -130,16 +130,16 @@
     <div id="content-event" style="{{ $activeTab !== 'event' ? 'display:none' : '' }}">
         @if($eventGroups->isEmpty())
             <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
-                <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <!-- <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                     </svg>
-                </div>
-                <p class="text-gray-500 font-medium mb-4">Belum ada pesanan event</p>
-                <a href="{{ route('landing') }}#services" class="inline-flex items-center px-6 py-3 bg-purple-500 text-white font-medium rounded-full hover:bg-purple-600 transition-colors">
+                </div> -->
+                <p class="text-gray-500 font-medium mb-4">Belum ada pesanan </p>
+                <!-- <a href="{{ route('landing') }}#services" class="inline-flex items-center px-6 py-3 bg-purple-500 text-white font-medium rounded-full hover:bg-purple-600 transition-colors">
                     <span>Pilih Layanan Event</span>
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                </a>
+                </a> -->
             </div>
         @else
             @php

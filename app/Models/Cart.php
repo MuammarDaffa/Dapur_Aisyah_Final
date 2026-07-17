@@ -118,7 +118,7 @@ class Cart extends Model
      * Sinkronisasi data menu/admin dan keranjang pelanggan (belum checkout).
      * Menghapus item yang kadaluwarsa, menu/paket/komponen yang dihapus/tidak tersedia, dan menu yang habis.
      */
-    public static function cleanupInvalidAndExpiredItems($userId = null): void
+    public static function cleanupInvalidAndExpiredItems($userId = null, bool $flashNotification = true): void
     {
         $userId = $userId ?: auth()->id();
         if (!$userId) {
@@ -306,7 +306,7 @@ class Cart extends Model
         }
 
         // Kirim notifikasi via flash message session (jika ada yang dihapus)
-        if (function_exists('session') && ($expiredCount > 0 || $unavailableCount > 0 || $habisCount > 0)) {
+        if ($flashNotification && function_exists('session') && ($expiredCount > 0 || $unavailableCount > 0 || $habisCount > 0)) {
             $infoMessages = [];
             if ($expiredCount > 0) {
                 $infoMessages[] = $expiredCount === 1
@@ -337,9 +337,9 @@ class Cart extends Model
      * @param int|null $userId
      * @return int
      */
-    public static function removeExpiredHarianItems($userId = null): int
+    public static function removeExpiredHarianItems($userId = null, bool $flashNotification = true): int
     {
-        self::cleanupInvalidAndExpiredItems($userId);
+        self::cleanupInvalidAndExpiredItems($userId, $flashNotification);
         return 0;
     }
 }

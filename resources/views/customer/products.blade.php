@@ -83,13 +83,13 @@
     @else
     {{-- Empty State (Exact Match according to guidelines) --}}
     <div class="text-center py-16 px-4 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-2xl mx-auto my-8">
-        <div class="w-16 h-16 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+        <!-- <div class="w-16 h-16 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
             </svg>
-        </div>
+        </div> -->
         <h3 class="text-lg font-bold text-gray-900 mb-2">Menu Belum Tersedia</h3>
-        <p class="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">Saat ini belum tersedia menu katering harian. Silakan cek kembali nanti.</p>
+        <p class="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">Saat ini belum tersedia menu harian. Silakan cek kembali nanti.</p>
     </div>
     @endif
 </div>

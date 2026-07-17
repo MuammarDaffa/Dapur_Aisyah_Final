@@ -45,6 +45,19 @@ Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('
 
 /*
 |--------------------------------------------------------------------------
+| Clear Notification Session (AJAX)
+|--------------------------------------------------------------------------
+*/
+Route::post('/session/clear-notification', function (\Illuminate\Http\Request $request) {
+    $keys = $request->input('keys', ['info', 'warning', 'success', 'error', 'event_conflict_error']);
+    if (is_array($keys)) {
+        $request->session()->forget($keys);
+    }
+    return response()->json(['status' => 'cleared']);
+})->name('session.clear-notification');
+
+/*
+|--------------------------------------------------------------------------
 | Customer Routes
 |--------------------------------------------------------------------------
 */

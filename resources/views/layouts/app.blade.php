@@ -234,30 +234,64 @@
         </script>
     @endif
     @if(session('info'))
+        @php $infoMsg = session('info'); session()->forget('info'); @endphp
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                Swal.fire({ 
-                    icon: 'info', 
-                    title: 'Informasi', 
-                    text: {!! json_encode(session("info")) !!}, 
-                    showConfirmButton: true, 
-                    confirmButtonText: 'Mengerti',
-                    confirmButtonColor: '#f97316'
-                });
+                const notifText = {!! json_encode($infoMsg) !!};
+                const storageKey = 'swal_notif_info_' + btoa(unescape(encodeURIComponent(notifText)));
+                if (!sessionStorage.getItem(storageKey)) {
+                    sessionStorage.setItem(storageKey, 'true');
+                    Swal.fire({ 
+                        icon: 'info', 
+                        title: 'Informasi', 
+                        text: notifText, 
+                        showConfirmButton: true, 
+                        confirmButtonText: 'Mengerti',
+                        confirmButtonColor: '#f97316',
+                        didClose: () => {
+                            sessionStorage.removeItem(storageKey);
+                            fetch('{{ route("session.clear-notification") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({ keys: ['info', 'warning'] })
+                            }).catch(() => {});
+                        }
+                    });
+                }
             });
         </script>
     @endif
     @if(session('warning'))
+        @php $warningMsg = session('warning'); session()->forget('warning'); @endphp
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                Swal.fire({ 
-                    icon: 'warning', 
-                    title: 'Perhatian!', 
-                    text: {!! json_encode(session("warning")) !!}, 
-                    showConfirmButton: true, 
-                    confirmButtonText: 'Mengerti',
-                    confirmButtonColor: '#f97316'
-                });
+                const notifText = {!! json_encode($warningMsg) !!};
+                const storageKey = 'swal_notif_warning_' + btoa(unescape(encodeURIComponent(notifText)));
+                if (!sessionStorage.getItem(storageKey)) {
+                    sessionStorage.setItem(storageKey, 'true');
+                    Swal.fire({ 
+                        icon: 'warning', 
+                        title: 'Perhatian!', 
+                        text: notifText, 
+                        showConfirmButton: true, 
+                        confirmButtonText: 'Mengerti',
+                        confirmButtonColor: '#f97316',
+                        didClose: () => {
+                            sessionStorage.removeItem(storageKey);
+                            fetch('{{ route("session.clear-notification") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({ keys: ['info', 'warning'] })
+                            }).catch(() => {});
+                        }
+                    });
+                }
             });
         </script>
     @endif
