@@ -13,7 +13,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
-            'not_suspended' => \App\Http\Middleware\EnsureNotSuspended::class,
             'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
             'unverified_customer_redirect' => \App\Http\Middleware\RedirectIfUnverifiedCustomer::class,
         ]);

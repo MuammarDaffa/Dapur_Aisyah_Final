@@ -61,26 +61,6 @@ class User extends Authenticatable implements MustVerifyEmail
         };
     }
 
-    // === Suspend Status Checks ===
-
-    public function isSuspended(): bool
-    {
-        return $this->status_suspend === 'suspended';
-    }
-
-    public function isPendingVerification(): bool
-    {
-        return $this->status_suspend === 'pending_verification';
-    }
-
-    /**
-     * Apakah user sedang diblokir (suspended ATAU pending_verification)?
-     */
-    public function isBlocked(): bool
-    {
-        return in_array($this->status_suspend, ['suspended', 'pending_verification']);
-    }
-
     // === Relationships ===
 
     public function orders(): HasMany

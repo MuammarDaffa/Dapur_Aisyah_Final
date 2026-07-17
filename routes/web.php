@@ -74,10 +74,8 @@ Route::middleware('unverified_customer_redirect')->prefix('dashboard')->name('cu
     Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 
     // Cart Store (masukkan ke keranjang - di-intercept dalam controller jika belum login)
-    Route::middleware('not_suspended')->group(function () {
-        Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
-        Route::post('/event/cart', [CartController::class, 'storeEventGroup'])->name('event.cart.store');
-    });
+    Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+    Route::post('/event/cart', [CartController::class, 'storeEventGroup'])->name('event.cart.store');
 });
 
 Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('customer.')->group(function () {
@@ -86,24 +84,21 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    // === Rute dilindungi not_suspended ===
-    Route::middleware('not_suspended')->group(function () {
-        // Event Cart Update & Destroy
-        Route::put('/event/cart/{groupId}', [CartController::class, 'updateEventGroup'])->name('event.cart.update');
+    // Event Cart Update & Destroy
+    Route::put('/event/cart/{groupId}', [CartController::class, 'updateEventGroup'])->name('event.cart.update');
 
-        // Event Checkout (per group)
-        Route::get('/event/checkout/{groupId}', [CheckoutController::class, 'showEventCheckout'])->name('event.checkout.show');
-        Route::post('/event/checkout/{groupId}', [CheckoutController::class, 'checkoutEventGroup'])->name('event.checkout.store');
+    // Event Checkout (per group)
+    Route::get('/event/checkout/{groupId}', [CheckoutController::class, 'showEventCheckout'])->name('event.checkout.show');
+    Route::post('/event/checkout/{groupId}', [CheckoutController::class, 'checkoutEventGroup'])->name('event.checkout.store');
 
-        // Cart Index & Item Operations (Daily)
-        Route::get('/cart', [CartController::class, 'index'])->name('cart');
-        Route::put('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
-        Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
+    // Cart Index & Item Operations (Daily)
+    Route::get('/cart', [CartController::class, 'index'])->name('cart');
+    Route::put('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
 
-        // Checkout (Daily)
-        Route::get('/checkout/{menu_date?}', [CheckoutController::class, 'index'])->name('checkout');
-        Route::post('/checkout/{menu_date?}', [CheckoutController::class, 'store'])->name('checkout.store');
-    });
+    // Checkout (Daily)
+    Route::get('/checkout/{menu_date?}', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout/{menu_date?}', [CheckoutController::class, 'store'])->name('checkout.store');
 
     // Orders
     Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders');
@@ -149,9 +144,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Customers
     Route::get('/customers', [AdminCustomerController::class, 'index'])->name('customers');
-    Route::get('/customers/{user}', [AdminCustomerController::class, 'show'])->name('customers.show');
-    Route::put('/customers/{user}/suspend', [AdminCustomerController::class, 'suspend'])->name('customers.suspend');
-    Route::put('/customers/{user}/activate', [AdminCustomerController::class, 'activate'])->name('customers.activate');
 
     // Reviews
     Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews');
