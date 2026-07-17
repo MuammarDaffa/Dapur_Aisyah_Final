@@ -16,8 +16,8 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $query = Order::with(['user', 'cateringService'])
-            ->orderBy('order_date', 'asc')
-            ->orderBy('created_at', 'asc');
+            ->orderBy('order_date', 'desc')
+            ->orderBy('created_at', 'desc');
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);

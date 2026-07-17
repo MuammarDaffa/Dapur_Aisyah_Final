@@ -15,12 +15,17 @@
                     @if($catering->image)
                     <img src="{{ asset('storage/' . $catering->image) }}" alt="{{ $catering->name }}" class="w-20 h-20 rounded-xl object-cover border">
                     @else
-                    <div class="w-20 h-20 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center text-3xl">🎉</div>
+                    <div class="w-20 h-20 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center text-purple-600">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                    </div>
                     @endif
                     <div>
                         <h2 class="text-xl font-bold text-gray-900">{{ $catering->name }}</h2>
                         <div class="flex items-center gap-2 mt-1">
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">🎉 Event</span>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                                <span>Event</span>
+                            </span>
                             <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $catering->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
                                 {{ $catering->is_active ? 'Aktif' : 'Nonaktif' }}
                             </span>
@@ -30,8 +35,9 @@
                         @endif
                     </div>
                 </div>
-                <a href="{{ route('admin.catering.edit', $catering) }}" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-                    ✏️ Edit Katering
+                <a href="{{ route('admin.catering.edit', $catering) }}" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <span>Edit Katering</span>
                 </a>
             </div>
 
@@ -63,7 +69,10 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
             <div>
-                <h3 class="font-bold text-gray-800">🍽️ Menu</h3>
+                <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span>Menu</span>
+                </h3>
                 <p class="text-xs text-gray-500 mt-0.5">Menu yang tersedia untuk paket katering ini</p>
             </div>
             <button type="button" onclick="openOptionModal('menu')" class="px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
@@ -102,7 +111,9 @@
                 @empty
                 <tr>
                     <td colspan="4" class="px-6 py-8 text-center text-gray-400">
-                        <p class="text-2xl mb-1">🍽️</p>
+                        <div class="w-12 h-12 mx-auto mb-2 bg-gray-100 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        </div>
                         <p class="text-sm">Belum ada menu. Tambahkan menu untuk digunakan dalam paket.</p>
                     </td>
                 </tr>
@@ -118,7 +129,10 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
             <div>
-                <h3 class="font-bold text-gray-800">✨ Extra</h3>
+                <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                    <span>Extra</span>
+                </h3>
                 <p class="text-xs text-gray-500 mt-0.5">Extra tambahan (Sambal, Kerupuk, Air Mineral, dll)</p>
             </div>
             <button type="button" onclick="openOptionModal('extra')" class="px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
@@ -157,7 +171,9 @@
                 @empty
                 <tr>
                     <td colspan="4" class="px-6 py-8 text-center text-gray-400">
-                        <p class="text-2xl mb-1">✨</p>
+                        <div class="w-12 h-12 mx-auto mb-2 bg-gray-100 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                        </div>
                         <p class="text-sm">Belum ada extra. Contoh: Sambal Tambahan, Kerupuk, Air Mineral.</p>
                     </td>
                 </tr>

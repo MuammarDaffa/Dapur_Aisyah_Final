@@ -47,12 +47,13 @@ class CateringController extends Controller
      */
     public function store(Request $request)
     {
+        $isDaily = $request->input('catering_type') === 'daily';
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'description' => 'required|string',
             'catering_type' => 'required|in:daily,event',
             'serving_types' => 'nullable|array',
-            'min_portion' => 'required|integer|min:1',
+            'min_portion' => $isDaily ? 'nullable|integer|min:1' : 'required|integer|min:1',
             'max_portion' => 'nullable|integer|min:1',
             'base_price' => 'required|numeric|min:0|max:1000000000',
             'order_terms' => 'nullable|string',
@@ -64,6 +65,14 @@ class CateringController extends Controller
         ], [
             'base_price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
+
+        if ($isDaily) {
+            $validated['min_portion'] = $validated['min_portion'] ?? 1;
+            $validated['max_portion'] = null;
+            $validated['order_terms'] = null;
+            $validated['schedule_notes'] = null;
+            $validated['minimal_order_days'] = null;
+        }
 
         // Set available_features berdasarkan tipe
         $validated['available_features'] = $request->catering_type === 'daily'
@@ -128,10 +137,11 @@ class CateringController extends Controller
      */
     public function update(Request $request, CateringService $catering)
     {
+        $isDaily = $catering->isDaily();
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'description' => 'required|string',
-            'min_portion' => 'required|integer|min:1',
+            'min_portion' => $isDaily ? 'nullable|integer|min:1' : 'required|integer|min:1',
             'max_portion' => 'nullable|integer|min:1',
             'base_price' => 'required|numeric|min:0|max:1000000000',
             'order_terms' => 'nullable|string',
@@ -142,6 +152,14 @@ class CateringController extends Controller
         ], [
             'base_price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
+
+        if ($isDaily) {
+            $validated['min_portion'] = $validated['min_portion'] ?? $catering->min_portion ?? 1;
+            $validated['max_portion'] = null;
+            $validated['order_terms'] = null;
+            $validated['schedule_notes'] = null;
+            $validated['minimal_order_days'] = null;
+        }
 
         // Tipe katering tidak boleh diubah — pertahankan available_features yang ada
         $validated['is_active'] = $request->boolean('is_active');

@@ -16,8 +16,9 @@
         @endif
     </a>
     <a href="{{ route('admin.customers', ['tab' => 'suspended']) }}"
-       class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ request('tab') === 'suspended' ? 'bg-red-500 text-white shadow-sm' : 'bg-white text-gray-600 border hover:bg-gray-50' }}">
-        🚫 Ditangguhkan
+       class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all {{ request('tab') === 'suspended' ? 'bg-red-500 text-white shadow-sm' : 'bg-white text-gray-600 border hover:bg-gray-50' }}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"></path></svg>
+        <span>Ditangguhkan</span>
         @if($suspendedCount > 0)
             <span class="ml-1 px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">{{ $suspendedCount }}</span>
         @endif
@@ -63,11 +64,20 @@
                 </td>
                 <td class="px-6 py-4 text-center">
                     @if($c->status_suspend === 'suspended')
-                        <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">🚫 Ditangguhkan</span>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"></path></svg>
+                            <span>Ditangguhkan</span>
+                        </span>
                     @elseif($c->status_suspend === 'pending_verification')
-                        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">⏳ Menunggu Verifikasi</span>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span>Menunggu Verifikasi</span>
+                        </span>
                     @else
-                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">✅ Aktif</span>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Aktif</span>
+                        </span>
                     @endif
                 </td>
                 <td class="px-6 py-4 text-center">{{ $c->orders_count }}</td>

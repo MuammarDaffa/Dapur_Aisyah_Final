@@ -44,18 +44,10 @@
             </div>
 
             {{-- Info Grid --}}
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-4 border-t">
+            <div class="grid grid-cols-2 gap-4 mt-6 pt-4 border-t max-w-md">
                 <div class="text-center p-3 bg-gray-50 rounded-lg">
                     <p class="text-xs text-gray-500 uppercase tracking-wider">Harga Mulai</p>
                     <p class="text-lg font-bold text-orange-600 mt-1">Rp {{ number_format($catering->base_price, 0, ',', '.') }}</p>
-                </div>
-                <div class="text-center p-3 bg-gray-50 rounded-lg">
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Min. Porsi</p>
-                    <p class="text-lg font-bold text-gray-800 mt-1">{{ $catering->min_portion }}</p>
-                </div>
-                <div class="text-center p-3 bg-gray-50 rounded-lg">
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Max. Porsi</p>
-                    <p class="text-lg font-bold text-gray-800 mt-1">{{ $catering->max_portion ?? '∞' }}</p>
                 </div>
                 <div class="text-center p-3 bg-gray-50 rounded-lg">
                     <p class="text-xs text-gray-500 uppercase tracking-wider">Total Produk</p>

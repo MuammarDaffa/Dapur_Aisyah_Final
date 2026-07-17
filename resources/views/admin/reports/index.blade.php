@@ -8,7 +8,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h2 class="text-2xl font-bold text-gray-800">Rekapitulasi Penjualan</h2>
-            <p class="text-sm text-gray-500 mt-1">Ringkasan data penjualan dan pesanan</p>
+            <!-- <p class="text-sm text-gray-500 mt-1">Ringkasan data penjualan dan pesanan</p> -->
         </div>
     </div>
 
@@ -55,7 +55,7 @@
                     <p class="text-3xl font-bold mt-1">{{ number_format($summary['total_orders']) }}</p>
                 </div>
                 <!-- <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                    <span class="text-2xl">📦</span>
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                 </div> -->
             </div>
         </div>
@@ -67,7 +67,7 @@
                     <p class="text-3xl font-bold mt-1">Rp {{ number_format($summary['total_revenue'], 0, ',', '.') }}</p>
                 </div>
                 <!-- <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                    <span class="text-2xl">💰</span>
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div> -->
             </div>
         </div>
@@ -79,7 +79,7 @@
                     <p class="text-3xl font-bold mt-1">Rp {{ number_format($summary['average_order'], 0, ',', '.') }}</p>
                 </div>
                 <!-- <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                    <span class="text-2xl">📊</span>
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                 </div> -->
             </div>
         </div>
@@ -88,35 +88,45 @@
     {{-- Orders Table --}}
     <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
         <div class="px-6 py-4 border-b border-gray-100">
-            <h3 class="font-semibold text-gray-800">Detail Pesanan</h3>
+            <h3 class="font-bold text-gray-800">Daftar Pesanan</h3>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                     <tr>
-                        <th class="text-left px-6 py-4 font-semibold text-gray-600">No. Pesanan</th>
+                        <th class="text-left px-6 py-4 font-semibold text-gray-600">ID Pesanan</th>
                         <th class="text-left px-6 py-4 font-semibold text-gray-600">Pelanggan</th>
                         <th class="text-left px-6 py-4 font-semibold text-gray-600">Layanan</th>
                         <th class="text-left px-6 py-4 font-semibold text-gray-600">Total</th>
-                        <th class="text-left px-6 py-4 font-semibold text-gray-600">Status</th>
+                        <th class="text-center px-6 py-4 font-semibold text-gray-600">Status</th>
                         <th class="text-left px-6 py-4 font-semibold text-gray-600">Tanggal</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($orders as $order)
                         <tr class="hover:bg-orange-50/30 transition-colors">
-                            <td class="px-6 py-4">
-                                <a href="{{ route('admin.orders.show', $order) }}" class="font-mono text-orange-600 hover:text-orange-700 font-medium">
-                                    {{ $order->order_number }}
-                                </a>
-                            </td>
-                            <td class="px-6 py-4 text-gray-700">{{ $order->user->name ?? '-' }}</td>
-                            <td class="px-6 py-4 text-gray-500">{{ $order->cateringService->name ?? '-' }}</td>
-                            <td class="px-6 py-4 font-bold text-gray-800">
-                                Rp {{ number_format($order->total, 0, ',', '.') }}
-                            </td>
-                            <td class="px-6 py-4">
-                                <x-status-badge :status="$order->status" />
+                            <td class="px-6 py-4 font-bold text-blue-600">#{{ $order->id }}</td>
+                            <td class="px-6 py-4 font-medium text-gray-800">{{ $order->user->name ?? '-' }}</td>
+                            <td class="px-6 py-4 text-gray-600">{{ $order->cateringService->name ?? '-' }}</td>
+                            <td class="px-6 py-4 font-bold text-green-600">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 text-center">
+                                @php
+                                    $statusClasses = [
+                                        'pending' => 'bg-yellow-100 text-yellow-700',
+                                        'processing' => 'bg-blue-100 text-blue-700',
+                                        'completed' => 'bg-green-100 text-green-700',
+                                        'cancelled' => 'bg-red-100 text-red-700',
+                                    ];
+                                    $statusLabels = [
+                                        'pending' => 'Menunggu',
+                                        'processing' => 'Diproses',
+                                        'completed' => 'Selesai',
+                                        'cancelled' => 'Dibatalkan',
+                                    ];
+                                @endphp
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $statusClasses[$order->status] ?? 'bg-gray-100 text-gray-700' }}">
+                                    {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
+                                </span>
                             </td>
                             <td class="px-6 py-4 text-gray-500">{{ $order->created_at->format('d M Y') }}</td>
                         </tr>
@@ -124,7 +134,9 @@
                         <tr>
                             <td colspan="6" class="px-6 py-12 text-center">
                                 <div class="flex flex-col items-center gap-2">
-                                    <span class="text-4xl">📊</span>
+                                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-1">
+                                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                    </div>
                                     <p class="text-gray-400 font-medium">Tidak ada data pesanan</p>
                                 </div>
                             </td>

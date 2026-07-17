@@ -26,7 +26,7 @@
                class="bg-gradient-to-b from-gray-900 to-gray-800 text-gray-300 w-64 fixed inset-y-0 left-0 z-50 overflow-y-auto transition-transform duration-300 md:translate-x-0">
             <div class="p-4 flex items-center justify-between">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-2">
-                    <span class="text-xl">🍲</span>
+                    <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     <span class="text-lg font-bold text-white">Admin Panel</span>
                 </a>
                 <button @click="sidebarOpen = false" class="text-gray-400 hover:text-white md:hidden">
@@ -39,13 +39,13 @@
             <nav class="mt-6 px-3 space-y-1">
                 @php
                     $menuItems = [
-                        ['route' => 'admin.dashboard', 'icon' => '📊', 'label' => 'Dashboard'],
-                        ['route' => 'admin.orders', 'icon' => '📦', 'label' => 'Pesanan'],
-                        ['route' => 'admin.catering.index', 'icon' => '🍲', 'label' => 'Katering'],
-                        ['route' => 'admin.customers', 'icon' => '👥', 'label' => 'Pelanggan'],
-                        ['route' => 'admin.reviews', 'icon' => '💬', 'label' => 'Ulasan'],
-                        ['route' => 'admin.shipping.index', 'icon' => '🚚', 'label' => 'Ongkos Kirim'],
-                        ['route' => 'admin.reports', 'icon' => '📈', 'label' => 'Laporan'],
+                        ['route' => 'admin.dashboard', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>', 'label' => 'Dashboard'],
+                        ['route' => 'admin.orders', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>', 'label' => 'Pesanan'],
+                        ['route' => 'admin.catering.index', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>', 'label' => 'Katering'],
+                        ['route' => 'admin.customers', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>', 'label' => 'Pelanggan'],
+                        ['route' => 'admin.reviews', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>', 'label' => 'Ulasan'],
+                        ['route' => 'admin.shipping.index', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path></svg>', 'label' => 'Ongkos Kirim'],
+                        ['route' => 'admin.reports', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>', 'label' => 'Laporan'],
                     ];
                 @endphp
 
@@ -54,7 +54,7 @@
                        @click="sidebarOpen = false"
                        class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-all
                               {{ request()->routeIs($item['route'] . '*') ? 'bg-orange-500/20 text-orange-400 font-medium' : 'hover:bg-white/5 hover:text-white' }}">
-                        <span class="text-lg">{{ $item['icon'] }}</span>
+                        <span class="w-5 h-5 shrink-0 flex items-center justify-center">{!! $item['icon'] !!}</span>
                         <span class="ml-3">{{ $item['label'] }}</span>
                     </a>
                 @endforeach
@@ -65,7 +65,7 @@
                 <form id="logout-form-admin" method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="button" onclick="confirmLogout('logout-form-admin')" class="flex items-center w-full px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-all">
-                        <span class="text-lg">🚪</span>
+                        <span class="w-5 h-5 shrink-0 flex items-center justify-center"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></span>
                         <span class="ml-3">Keluar</span>
                     </button>
                 </form>

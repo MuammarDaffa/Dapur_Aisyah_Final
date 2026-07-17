@@ -173,8 +173,14 @@
                 <p class="text-xs text-gray-400 mt-2">Pembayaran: Transfer (Midtrans)</p>
                 <p class="text-xs text-gray-400">Status: {{ $order->payment_status }}</p>
                 @if($order->refund_status && $order->refund_status !== 'none')
-                    <p class="text-xs font-medium {{ $order->refund_status === 'pending' ? 'text-yellow-600' : 'text-green-600' }}">
-                        Refund: {{ $order->refund_status === 'pending' ? '⏳ Menunggu Refund' : '✅ Sudah Direfund' }}
+                    <p class="text-xs font-medium inline-flex items-center gap-1 {{ $order->refund_status === 'pending' ? 'text-yellow-600' : 'text-green-600' }}">
+                        @if($order->refund_status === 'pending')
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Refund: Menunggu Refund</span>
+                        @else
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Refund: Sudah Direfund</span>
+                        @endif
                     </p>
                 @endif
             </div>
@@ -195,8 +201,9 @@
             <form id="cancelForm" action="{{ route('admin.orders.cancel', $order) }}" method="POST" class="mt-3">
                 @csrf @method('PUT')
                 <input type="hidden" name="cancellation_reason" id="cancelReasonInput">
-                <button type="button" onclick="confirmCancel()" class="w-full px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700">
-                    ❌ Batalkan Pesanan
+                <button type="button" onclick="confirmCancel()" class="w-full px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 inline-flex items-center justify-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <span>Batalkan Pesanan</span>
                 </button>
             </form>
             @endif

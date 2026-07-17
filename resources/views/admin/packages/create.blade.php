@@ -129,7 +129,7 @@ function addBenefit(val = '') {
     const div = document.createElement('div');
     div.className = 'flex items-center gap-2 benefit-row';
     div.innerHTML = `
-        <span class="text-green-600 font-bold px-2">✓</span>
+        <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
         <input type="text" name="benefits[]" value="${val.replace(/"/g, '&quot;')}" placeholder="Contoh: Gratis Dessert, Gratis Air Mineral..." class="flex-1 px-4 py-2 border rounded-lg text-sm focus:ring-orange-500 focus:border-orange-500">
         <button type="button" onclick="this.closest('.benefit-row').remove()" class="px-3 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-bold hover:bg-red-100 transition-colors">&times;</button>
     `;

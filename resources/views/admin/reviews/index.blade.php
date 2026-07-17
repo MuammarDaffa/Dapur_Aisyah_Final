@@ -10,8 +10,9 @@
             <h2 class="text-2xl font-bold text-gray-800">Manajemen Ulasan</h2>
             <p class="text-sm text-gray-500 mt-1">Kelola ulasan dari pelanggan</p>
         </div>
-        <div class="bg-gradient-to-r from-orange-400 to-amber-500 text-white px-4 py-2 rounded-xl font-semibold shadow">
-            💬 {{ $reviews->total() }} Ulasan
+        <div class="bg-gradient-to-r from-orange-400 to-amber-500 text-white px-4 py-2 rounded-xl font-semibold shadow inline-flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+            <span>{{ $reviews->total() }} Ulasan</span>
         </div>
     </div>
 
@@ -70,7 +71,9 @@
                         <tr>
                             <td colspan="6" class="px-6 py-12 text-center">
                                 <div class="flex flex-col items-center gap-2">
-                                    <span class="text-4xl">📝</span>
+                                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-1">
+                                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                    </div>
                                     <p class="text-gray-400 font-medium">Belum ada ulasan</p>
                                 </div>
                             </td>
