@@ -203,6 +203,7 @@
                     text: '{{ session("error") }}', 
                     showConfirmButton: true, 
                     confirmButtonText: 'Oke',
+                });
             });
         </script>
     @endif

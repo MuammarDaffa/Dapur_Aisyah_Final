@@ -209,17 +209,17 @@
                     let html = '';
                     availableExtras.forEach(extra => {
                         html += `
-                            <div class="flex items-center justify-between py-2.5 px-2 border-b border-gray-100 last:border-b-0 hover:bg-orange-50/50 rounded-lg transition-colors">
-                                <label class="flex items-center gap-3 cursor-pointer flex-1">
-                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-price="${extra.price}" id="extra_cb_${extra.id}" onchange="toggleExtra(${extra.id})" class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 extra-checkbox">
-                                    <span class="text-sm font-medium text-gray-700">${extra.name}</span>
+                            <div class="flex items-center justify-between py-2.5 px-2 border-b border-gray-100 last:border-b-0 hover:bg-orange-50/50 rounded-lg transition-colors gap-2">
+                                <label class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
+                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-price="${extra.price}" id="extra_cb_${extra.id}" onchange="toggleExtra(${extra.id})" class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 extra-checkbox shrink-0">
+                                    <span class="text-sm font-medium text-gray-700 truncate">${extra.name}</span>
                                 </label>
-                                <div class="flex items-center gap-3">
-                                    <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
+                                <div class="flex items-center gap-2.5 shrink-0">
+                                    <span class="text-sm font-semibold text-orange-600 shrink-0">+${formatRupiah(extra.price)}</span>
                                     <div id="extra_qty_container_${extra.id}" class="hidden items-center gap-1">
-                                        <button type="button" onclick="changeExtraQty(${extra.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md font-bold text-gray-600 transition-colors text-xs">−</button>
-                                        <input type="text" inputmode="none" readonly tabindex="-1" name="extras[${extra.id}][qty]" id="extra_qty_${extra.id}" value="0" class="min-w-[32px] px-1 text-center bg-transparent text-xs font-bold text-gray-900 focus:outline-none cursor-default select-none" disabled>
-                                        <button type="button" onclick="changeExtraQty(${extra.id}, 1)" class="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md font-bold text-gray-600 transition-colors text-xs">+</button>
+                                        <button type="button" onclick="changeExtraQty(${extra.id}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors text-sm shrink-0">−</button>
+                                        <input type="text" inputmode="none" readonly tabindex="-1" name="extras[${extra.id}][qty]" id="extra_qty_${extra.id}" value="0" class="w-12 text-center py-1 rounded-lg border border-gray-200 text-xs font-bold text-gray-900 focus:outline-none cursor-default select-none bg-gray-50 shrink-0" disabled>
+                                        <button type="button" onclick="changeExtraQty(${extra.id}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors text-sm shrink-0">+</button>
                                     </div>
                                 </div>
                             </div>
