@@ -286,9 +286,9 @@
                     </div>
                 </div>
                 <div id="dailyModalExtrasLoading" class="text-sm text-gray-500 py-2 hidden">Memuat opsi tambahan...</div>
-                <div id="dailyModalExtrasContainer" class="mb-6 hidden">
+                <div id="dailyModalExtrasContainer" class="mb-5 hidden">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Extra Tambahan (Opsional)</label>
-                    <div id="dailyModalExtrasList" class="space-y-2"></div>
+                    <div id="dailyModalExtrasList" class="divide-y divide-gray-100"></div>
                 </div>
                 <div class="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100">
                     <div class="flex justify-between items-center">
@@ -532,23 +532,16 @@
                         let isChecked = extraInCart ? 'checked' : '';
                         let extraQty = extraInCart ? extraInCart.qty : 0;
                         let disabledState = extraInCart ? '' : 'disabled';
-                        let containerClasses = extraInCart ? '' : 'opacity-0 pointer-events-none';
 
                         html += `
-                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:bg-orange-50 transition-colors">
-                                <label class="flex items-center gap-3 cursor-pointer flex-1">
-                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-price="${extra.price}" id="daily_extra_cb_${extra.id}" onchange="toggleDailyExtra(${extra.id})" class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-400 daily-extra-checkbox" ${isChecked}>
+                            <label class="flex items-center justify-between py-2.5 px-2 border-b border-gray-100 last:border-b-0 cursor-pointer hover:bg-orange-50/50 rounded-lg transition-colors">
+                                <div class="flex items-center gap-3 flex-1">
+                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-price="${extra.price}" id="daily_extra_cb_${extra.id}" onchange="toggleDailyExtra(${extra.id})" class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 daily-extra-checkbox" ${isChecked}>
                                     <span class="text-sm font-medium text-gray-700">${extra.name}</span>
-                                </label>
-                                <div class="flex items-center gap-3">
-                                    <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
-                                    <div class="flex items-center gap-1 transition-opacity duration-200 ${containerClasses}" id="daily_extra_qty_container_${extra.id}">
-                                        <button type="button" onclick="changeDailyExtraQty(${extra.id}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors">−</button>
-                                        <input type="text" inputmode="numeric" name="extras[${extra.id}][qty]" id="daily_extra_qty_${extra.id}" value="${extraQty}" oninput="manualDailyExtraQty(${extra.id})" onchange="manualDailyExtraQty(${extra.id})" class="w-10 text-center bg-transparent text-sm font-bold text-gray-900 focus:outline-none" ${disabledState}>
-                                        <button type="button" onclick="changeDailyExtraQty(${extra.id}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors">+</button>
-                                    </div>
                                 </div>
-                            </div>`;
+                                <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
+                                <input type="hidden" name="extras[${extra.id}][qty]" id="daily_extra_qty_${extra.id}" value="${extraInCart ? (extraQty || 1) : 0}" ${disabledState}>
+                            </label>`;
                     });
                     document.getElementById('dailyModalExtrasList').innerHTML = html;
                     document.getElementById('dailyModalExtrasContainer').classList.remove('hidden');
@@ -578,16 +571,20 @@
 
     function toggleDailyExtra(id) {
         const cb = document.getElementById('daily_extra_cb_' + id);
-        const qtyContainer = document.getElementById('daily_extra_qty_container_' + id);
         const qtyInput = document.getElementById('daily_extra_qty_' + id);
-        if (cb.checked) {
-            qtyContainer.classList.remove('opacity-0', 'pointer-events-none');
-            qtyInput.value = 1;
-            qtyInput.disabled = false;
+        
+        if (cb && cb.checked) {
+            if (qtyInput) {
+                let val = parseInt(qtyInput.value) || 0;
+                if (val < 1) val = 1;
+                qtyInput.value = val;
+                qtyInput.disabled = false;
+            }
         } else {
-            qtyContainer.classList.add('opacity-0', 'pointer-events-none');
-            qtyInput.value = 0;
-            qtyInput.disabled = true;
+            if (qtyInput) {
+                qtyInput.value = 0;
+                qtyInput.disabled = true;
+            }
         }
         updateDailyModalTotal();
     }

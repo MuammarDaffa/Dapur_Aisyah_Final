@@ -140,9 +140,9 @@
                 </div>
 
                 {{-- Extras Container --}}
-                <div id="modalExtrasContainer" class="mb-6 hidden">
+                <div id="modalExtrasContainer" class="mb-5 hidden">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Extra Tambahan (Opsional)</label>
-                    <div id="modalExtrasList" class="space-y-2">
+                    <div id="modalExtrasList" class="divide-y divide-gray-100">
                         <!-- Checkboxes will be injected here -->
                     </div>
                 </div>
@@ -209,20 +209,14 @@
                     let html = '';
                     availableExtras.forEach(extra => {
                         html += `
-                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:bg-orange-50 transition-colors">
-                                <label class="flex items-center gap-3 cursor-pointer flex-1">
-                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-price="${extra.price}" id="extra_cb_${extra.id}" onchange="toggleExtra(${extra.id})" class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-400 extra-checkbox">
+                            <label class="flex items-center justify-between py-2.5 px-2 border-b border-gray-100 last:border-b-0 cursor-pointer hover:bg-orange-50/50 rounded-lg transition-colors">
+                                <div class="flex items-center gap-3 flex-1">
+                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-price="${extra.price}" id="extra_cb_${extra.id}" onchange="toggleExtra(${extra.id})" class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 extra-checkbox">
                                     <span class="text-sm font-medium text-gray-700">${extra.name}</span>
-                                </label>
-                                <div class="flex items-center gap-3">
-                                    <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
-                                    <div class="flex items-center gap-1 transition-opacity duration-200 opacity-0 pointer-events-none" id="extra_qty_container_${extra.id}">
-                                        <button type="button" onclick="changeExtraQty(${extra.id}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors">−</button>
-                                        <input type="text" inputmode="numeric" name="extras[${extra.id}][qty]" id="extra_qty_${extra.id}" value="0" oninput="manualExtraQty(${extra.id})" onchange="manualExtraQty(${extra.id})" class="w-10 text-center bg-transparent text-sm font-bold text-gray-900 focus:outline-none" disabled>
-                                        <button type="button" onclick="changeExtraQty(${extra.id}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors">+</button>
-                                    </div>
                                 </div>
-                            </div>
+                                <span class="text-sm font-semibold text-orange-600">+${formatRupiah(extra.price)}</span>
+                                <input type="hidden" name="extras[${extra.id}][qty]" id="extra_qty_${extra.id}" value="0" disabled>
+                            </label>
                         `;
                     });
                     document.getElementById('modalExtrasList').innerHTML = html;
@@ -252,17 +246,18 @@
 
     function toggleExtra(id) {
         const cb = document.getElementById('extra_cb_' + id);
-        const qtyContainer = document.getElementById('extra_qty_container_' + id);
         const qtyInput = document.getElementById('extra_qty_' + id);
         
-        if (cb.checked) {
-            qtyContainer.classList.remove('opacity-0', 'pointer-events-none');
-            qtyInput.value = 1;
-            qtyInput.disabled = false;
+        if (cb && cb.checked) {
+            if (qtyInput) {
+                qtyInput.value = 1;
+                qtyInput.disabled = false;
+            }
         } else {
-            qtyContainer.classList.add('opacity-0', 'pointer-events-none');
-            qtyInput.value = 0;
-            qtyInput.disabled = true;
+            if (qtyInput) {
+                qtyInput.value = 0;
+                qtyInput.disabled = true;
+            }
         }
         updateModalTotal();
     }
