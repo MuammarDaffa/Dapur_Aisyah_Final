@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media (min-width: 1024px) {
+    /* Chrome, Safari, Edge, Opera */
+    input[type=number].desktop-no-spinner::-webkit-outer-spin-button,
+    input[type=number].desktop-no-spinner::-webkit-inner-spin-button,
+    input[type=number].custom-menu-qty-input::-webkit-outer-spin-button,
+    input[type=number].custom-menu-qty-input::-webkit-inner-spin-button,
+    input[type=number].edit-event-qty::-webkit-outer-spin-button,
+    input[type=number].edit-event-qty::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    /* Firefox */
+    input[type=number].desktop-no-spinner,
+    input[type=number].custom-menu-qty-input,
+    input[type=number].edit-event-qty {
+        -moz-appearance: textfield;
+    }
+}

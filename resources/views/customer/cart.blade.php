@@ -390,6 +390,23 @@
             </button>
         </div>
         <div class="overflow-y-auto flex-1 p-6">
+            <style>
+            @media (min-width: 1024px) {
+                /* Chrome, Safari, Edge, Opera */
+                input[type=number].desktop-no-spinner::-webkit-outer-spin-button,
+                input[type=number].desktop-no-spinner::-webkit-inner-spin-button,
+                input[type=number].edit-event-qty::-webkit-outer-spin-button,
+                input[type=number].edit-event-qty::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+                /* Firefox */
+                input[type=number].desktop-no-spinner,
+                input[type=number].edit-event-qty {
+                    -moz-appearance: textfield;
+                }
+            }
+            </style>
             <form id="editEventForm" action="" method="POST">
                 @csrf @method('PUT')
                 <input type="hidden" name="catering_service_id" id="editEventServiceId">
@@ -696,7 +713,7 @@
                     <div class="flex items-center gap-1.5 transition-opacity shrink-0 ${opacityClass}" id="edit_menu_qty_container_${idx}">
                         <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 transition-colors">−</button>
                         <input type="number" name="items[${idx}][quantity]" id="edit_event_qty_${idx}" value="${qty}" min="1"
-                            class="w-14 text-center py-1 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-900 bg-white shrink-0 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400 edit-event-qty" data-price="${menu.price}" data-type="custom_menu" oninput="validateEditEventInput(${idx})" onchange="validateEditEventInputBlur(${idx})">
+                            class="w-14 text-center py-1 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-900 bg-white shrink-0 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400 desktop-no-spinner edit-event-qty" data-price="${menu.price}" data-type="custom_menu" oninput="validateEditEventInput(${idx})" onchange="validateEditEventInputBlur(${idx})">
                         <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 edit-menu-plus-btn transition-colors">+</button>
                     </div>
                 </div>
@@ -1222,5 +1239,24 @@
         }
     }
 </script>
+@endpush
+@push('styles')
+<style>
+@media (min-width: 1024px) {
+    /* Chrome, Safari, Edge, Opera */
+    input[type=number].desktop-no-spinner::-webkit-outer-spin-button,
+    input[type=number].desktop-no-spinner::-webkit-inner-spin-button,
+    input[type=number].edit-event-qty::-webkit-outer-spin-button,
+    input[type=number].edit-event-qty::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    /* Firefox */
+    input[type=number].desktop-no-spinner,
+    input[type=number].edit-event-qty {
+        -moz-appearance: textfield;
+    }
+}
+</style>
 @endpush
 @endsection

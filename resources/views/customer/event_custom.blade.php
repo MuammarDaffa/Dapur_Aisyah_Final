@@ -1,6 +1,23 @@
 @extends('layouts.app')
 @section('title', 'Custom Menu - ' . $service->name)
 @section('content')
+<style>
+@media (min-width: 1024px) {
+    /* Chrome, Safari, Edge, Opera */
+    input[type=number].desktop-no-spinner::-webkit-outer-spin-button,
+    input[type=number].desktop-no-spinner::-webkit-inner-spin-button,
+    input[type=number].custom-menu-qty-input::-webkit-outer-spin-button,
+    input[type=number].custom-menu-qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    /* Firefox */
+    input[type=number].desktop-no-spinner,
+    input[type=number].custom-menu-qty-input {
+        -moz-appearance: textfield;
+    }
+}
+</style>
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
     {{-- Header --}}
@@ -40,7 +57,7 @@
                                 <div class="flex items-center gap-1.5 opacity-0 pointer-events-none transition-opacity shrink-0" id="custom_menu_qty_container_{{ $idx }}">
                                     <button type="button" onclick="changeCustomQty({{ $idx }}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 transition-colors">−</button>
                                     <input type="number" id="custom_menu_input_{{ $idx }}" value="0" min="1"
-                                        class="w-14 text-center py-1 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-900 bg-white shrink-0 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400" oninput="validateCustomInput({{ $idx }})" onchange="validateCustomInputBlur({{ $idx }})">
+                                        class="w-14 text-center py-1 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-900 bg-white shrink-0 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400 desktop-no-spinner custom-menu-qty-input" oninput="validateCustomInput({{ $idx }})" onchange="validateCustomInputBlur({{ $idx }})">
                                     <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 custom-menu-plus-btn transition-colors">+</button>
                                 </div>
                             </div>
@@ -315,5 +332,24 @@
         recalcCustom();
     });
 </script>
+@endpush
+@push('styles')
+<style>
+@media (min-width: 1024px) {
+    /* Chrome, Safari, Edge, Opera */
+    input[type=number].desktop-no-spinner::-webkit-outer-spin-button,
+    input[type=number].desktop-no-spinner::-webkit-inner-spin-button,
+    input[type=number].custom-menu-qty-input::-webkit-outer-spin-button,
+    input[type=number].custom-menu-qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    /* Firefox */
+    input[type=number].desktop-no-spinner,
+    input[type=number].custom-menu-qty-input {
+        -moz-appearance: textfield;
+    }
+}
+</style>
 @endpush
 @endsection
