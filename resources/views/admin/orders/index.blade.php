@@ -14,7 +14,7 @@
             <option value="order_date" {{ request('date_type') == 'order_date' ? 'selected' : '' }}>Tanggal Pengiriman</option>
             <option value="created_at" {{ request('date_type') == 'created_at' ? 'selected' : '' }}>Tanggal Order</option>
         </select>
-        <input type="date" name="filter_date" value="{{ request('filter_date') }}" class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-0">
+        <input type="date" lang="id-ID" name="filter_date" value="{{ request('filter_date') }}" class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-0">
         <button class="px-6 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg">Filter</button>
     </form>
 </div>

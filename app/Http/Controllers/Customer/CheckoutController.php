@@ -333,7 +333,7 @@ class CheckoutController extends Controller
         $additionItems = $groupItems->where('item_type', 'addition');
         $service = $groupItems->first()?->cateringService;
         $servingType = $groupItems->first()?->servingType;
-        $minDays = $groupItems->max(fn ($item) => $item->cateringService?->minimal_order_days ?? 3) ?? 3;
+        $minDays = $service?->minimal_order_days ?? ($groupItems->max(fn ($item) => $item->cateringService?->minimal_order_days) ?? 1);
 
         // Hitung subtotal
         $subtotal = $groupItems->sum(fn ($c) => $c->subtotal);

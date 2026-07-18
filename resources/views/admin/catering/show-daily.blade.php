@@ -71,13 +71,13 @@
                 <div class="flex flex-col md:flex-row items-end gap-4">
                     <div class="flex-1 w-full">
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Mulai <span class="text-red-500">*</span></label>
-                        <input type="date" id="input_start_date" name="start_date" 
+                        <input type="date" lang="id-ID" id="input_start_date" name="start_date" 
                             value="{{ old('start_date', $currentSchedule?->start_date?->format('Y-m-d') ?? now()->format('Y-m-d')) }}"
                             class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-white" required>
                     </div>
                     <div class="flex-1 w-full">
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Selesai <span class="text-red-500">*</span></label>
-                        <input type="date" id="input_end_date" name="end_date" 
+                        <input type="date" lang="id-ID" id="input_end_date" name="end_date" 
                             value="{{ old('end_date', $currentSchedule?->end_date?->format('Y-m-d') ?? now()->addDays(6)->format('Y-m-d')) }}"
                             class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-white" required>
                     </div>

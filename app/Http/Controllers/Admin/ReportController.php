@@ -31,6 +31,10 @@ class ReportController extends Controller
             }
         }
 
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
         // Hitung summary sebelum paginate agar query builder tidak termodifikasi
         $summary = [
             'total_orders' => (clone $query)->count(),

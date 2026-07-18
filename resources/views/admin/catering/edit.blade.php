@@ -87,21 +87,14 @@
             </div>
         </div>
 
-        {{-- Pengaturan Cutoff (Hanya Event) --}}
-        <div class="bg-orange-50/50 border border-orange-100 rounded-xl p-4 space-y-4">
-            <div>
-                <h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span>Pengaturan Cutoff Pemesanan</span>
-                </h4>
-                <p class="text-xs text-gray-500 mt-0.5">Batas waktu minimal pemesanan untuk layanan ini</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Minimal Hari Pemesanan</label>
-                <input type="number" name="minimal_order_days" value="{{ old('minimal_order_days', $catering->minimal_order_days) }}" min="0" placeholder="cth: 3"
-                       class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
-                <p class="text-xs text-gray-400 mt-1">Jumlah hari minimal sebelum tanggal acara/pengiriman</p>
-            </div>
+        {{-- Minimal Hari Pemesanan (Hanya Event) --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Minimal Hari Pemesanan</label>
+            <select name="minimal_order_days" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                @for($i = 1; $i <= 14; $i++)
+                    <option value="{{ $i }}" {{ old('minimal_order_days', $catering->minimal_order_days) == $i ? 'selected' : '' }}>{{ $i }} Hari</option>
+                @endfor
+            </select>
         </div>
         @endif
 
