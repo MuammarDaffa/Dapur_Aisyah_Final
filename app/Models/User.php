@@ -8,6 +8,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Model User merepresentasikan data pengguna sistem (Pelanggan, Admin, maupun Pemilik).
+ * Model ini mengelola proses autentikasi (login/register) dan otorisasi role.
+ */
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
@@ -83,6 +87,14 @@ class User extends Authenticatable implements MustVerifyEmail
      * Setiap produk Katering Harian dihitung sebagai 1 item (cart_group_id null).
      * Setiap Paket Event / Custom Menu dihitung sebagai 1 item (distinct cart_group_id).
      */
+    /**
+         * Menghitung total entitas yang masuk ke dalam keranjang belanja pelanggan.
+         * Alur bisnis:
+         * - Menu Katering Harian dihitung masing-masing sebagai 1 item.
+         * - Katering Event (paket/prasmanan) dihitung sebagai 1 kesatuan grup, 
+         *   meskipun terdiri dari banyak sub-menu/ekstra.
+         * @return int
+         */
     public function cartItemsCount(): int
     {
         $dailyCount = $this->carts()->whereNull('cart_group_id')->count();

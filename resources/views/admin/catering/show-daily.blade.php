@@ -3,106 +3,106 @@
 @section('content')
 <div class="space-y-6">
     {{-- Back Link --}}
-    <a href="{{ route('admin.catering.index') }}" class="inline-flex items-center text-sm text-gray-500 hover:text-orange-500 transition-colors">
+    <a href="{{ route('admin.catering.index') }}" class="d-inline-d-flex align-items-center fs-6 text-secondary hover:text-primary">
         ← Kembali ke Daftar Katering
     </a>
 
     {{-- Header Card --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded shadow-sm border border border-secondary overflow-hidden">
         <div class="p-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
-                <div class="flex items-start gap-4">
+            <div class="d-flex d-flex-column sm:d-flex-row justify-content-between items-start g-3">
+                <div class="d-flex items-start g-3">
                     @if($catering->image)
-                    <img src="{{ asset('storage/' . $catering->image) }}" alt="{{ $catering->name }}" class="w-20 h-20 rounded-xl object-cover border">
+                    <img src="{{ asset('storage/' . $catering->image) }}" alt="{{ $catering->name }}" class="w-20 h-20 rounded object-cover border">
                     @else
-                    <div class="w-20 h-20 rounded-xl bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-orange-600">
-                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <div class="w-20 h-20 rounded d-flex align-items-center justify-content-center text-primary">
+                        <svg style="height: 40px;" class="w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     </div>
                     @endif
                     <div>
-                        <h2 class="text-xl font-bold text-gray-900">{{ $catering->name }}</h2>
-                        <div class="flex items-center gap-2 mt-1">
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                        <h2 class="fs-4 fw-bold text-secondary">{{ $catering->name }}</h2>
+                        <div class="d-flex align-items-center g-3 mt-1">
+                            <span class="d-inline-d-flex align-items-center g-3 px-2.5 py-1 rounded-pill small fw-medium bg-info text-white text-info">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                                 <span>Daily</span>
                             </span>
-                            <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $catering->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                            <span class="px-2.5 py-1 rounded-pill small fw-medium {{ $catering->is_active ? 'bg-success text-white text-success' : 'bg-light text-secondary' }}">
                                 {{ $catering->is_active ? 'Aktif' : 'Nonaktif' }}
                             </span>
                         </div>
                         @if($catering->description)
-                        <p class="text-sm text-gray-600 mt-2 max-w-lg">{{ $catering->description }}</p>
+                        <p class="fs-6 text-secondary mt-2 max-w-lg">{{ $catering->description }}</p>
                         @endif
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <a href="{{ route('admin.catering.edit', $catering) }}" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                <div class="d-flex align-items-center g-3">
+                    <a href="{{ route('admin.catering.edit', $catering) }}" class="d-inline-d-flex align-items-center g-3.5 px-4 py-2 fs-6 fw-medium text-info bg-info text-white rounded hover:bg-info text-white">
+                        <svg style="width: 16px; height: 16px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         <span>Edit Katering</span>
                     </a>
                 </div>
             </div>
 
             {{-- Info Grid --}}
-            <div class="grid grid-cols-2 gap-4 mt-6 pt-4 border-t max-w-md">
-                <div class="text-center p-3 bg-gray-50 rounded-lg">
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Harga Mulai</p>
-                    <p class="text-lg font-bold text-orange-600 mt-1">Rp {{ number_format($catering->base_price, 0, ',', '.') }}</p>
+            <div class="row row-cols-2 g-3 mt-6 pt-4 border-t max-w-md">
+                <div class="text-center p-3 bg-light rounded">
+                    <p class="small text-secondary uppercase tracking-wider">Harga Mulai</p>
+                    <p class="fs-5 fw-bold text-primary mt-1">Rp {{ number_format($catering->base_price, 0, ',', '.') }}</p>
                 </div>
-                <div class="text-center p-3 bg-gray-50 rounded-lg">
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Total Produk</p>
-                    <p class="text-lg font-bold text-gray-800 mt-1">{{ $catering->products()->count() }}</p>
+                <div class="text-center p-3 bg-light rounded">
+                    <p class="small text-secondary uppercase tracking-wider">Total Produk</p>
+                    <p class="fs-5 fw-bold text-secondary mt-1">{{ $catering->products()->count() }}</p>
                 </div>
             </div>
         </div>
     </div>
 
     {{-- Jadwal Menu Mingguan Section --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" id="schedule_section">
-        <div class="px-6 py-4 border-b bg-gray-50">
-            <h3 class="font-bold text-gray-800">Jadwal Menu Mingguan</h3>
-            <!-- <p class="text-xs text-gray-500 mt-0.5">Atur rentang tanggal dan menu harian yang akan ditampilkan kepada pelanggan</p> -->
+    <div class="bg-white rounded shadow-sm border border border-secondary overflow-hidden" id="schedule_section">
+        <div class="px-6 py-4 border-b bg-light">
+            <h3 class="fw-bold text-secondary">Jadwal Menu Mingguan</h3>
+            <!-- <p class="small text-secondary mt-0.5">Atur rentang tanggal dan menu harian yang akan ditampilkan kepada pelanggan</p> -->
         </div>
 
         {{-- Form Pengaturan Jadwal --}}
         <form action="{{ route('admin.menu-periods.store', $catering) }}" method="POST" id="schedule_form">
             @csrf
-            <div class="p-6 bg-white border-b border-gray-100">
-                <div class="flex flex-col md:flex-row items-end gap-4">
-                    <div class="flex-1 w-full">
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Mulai <span class="text-red-500">*</span></label>
+            <div class="p-6 bg-white border-b border border-secondary">
+                <div class="d-flex d-flex-column md:d-flex-row items-end g-3">
+                    <div class="d-flex-1 w-100">
+                        <label class="form-label fw-bold">Tanggal Mulai <span class="text-danger">*</span></label>
                         <input type="date" lang="id-ID" id="input_start_date" name="start_date" 
                             value="{{ old('start_date', $currentSchedule?->start_date?->format('Y-m-d') ?? now()->format('Y-m-d')) }}"
-                            class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-white" required>
+                            class="w-100 px-3.5 py-2 rounded border border border-secondary fs-6 focus:border border-primary -2 bg-white" required>
                     </div>
-                    <div class="flex-1 w-full">
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Selesai <span class="text-red-500">*</span></label>
+                    <div class="d-flex-1 w-100">
+                        <label class="form-label fw-bold">Tanggal Selesai <span class="text-danger">*</span></label>
                         <input type="date" lang="id-ID" id="input_end_date" name="end_date" 
                             value="{{ old('end_date', $currentSchedule?->end_date?->format('Y-m-d') ?? now()->addDays(6)->format('Y-m-d')) }}"
-                            class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-white" required>
+                            class="w-100 px-3.5 py-2 rounded border border border-secondary fs-6 focus:border border-primary -2 bg-white" required>
                     </div>
-                    <div class="w-full md:w-auto">
+                    <div class="w-100 md:w-auto">
                         <button type="button" id="btn_generate" 
-                            class="w-full md:w-auto px-5 py-2 bg-gray-900 text-white text-xs font-semibold rounded-lg hover:bg-orange-500 transition-colors shadow-sm flex items-center justify-center gap-1.5 h-[38px]">
+                            class="btn btn-primary">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                             <span>Buat Jadwal</span>
                         </button>
                     </div>
                 </div>
-                <!-- <p class="text-[11px] text-gray-400 mt-2">
-                    Tekan tombol <strong class="text-gray-600">Buat Jadwal</strong> untuk membentuk daftar tanggal di bawah, lalu pilih produk menu untuk setiap tanggal.
+                <!-- <p class="text-[11px] text-secondary mt-2">
+                    Tekan tombol <strong class="text-secondary">Buat Jadwal</strong> untuk membentuk daftar tanggal di bawah, lalu pilih produk menu untuk setiap tanggal.
                 </p> -->
             </div>
 
             {{-- Tabel Jadwal --}}
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead class="bg-gray-50/50 border-b border-gray-100">
-                        <tr class="text-xs uppercase text-gray-500 tracking-wider">
-                            <th class="px-6 py-3 text-left font-semibold w-1/5">Tanggal</th>
-                            <th class="px-6 py-3 text-left font-semibold w-1/5">Hari</th>
-                            <th class="px-6 py-3 text-left font-semibold w-2/5">Produk Menu</th>
-                            <th class="px-6 py-3 text-left font-semibold w-1/5">Status Produk</th>
+                <table class="w-100 fs-6">
+                    <thead class="bg-light/50 border-b border border-secondary">
+                        <tr class="small uppercase text-secondary tracking-wider">
+                            <th class="px-6 py-3 text-start fw-bold w-1/5">Tanggal</th>
+                            <th class="px-6 py-3 text-start fw-bold w-1/5">Hari</th>
+                            <th class="px-6 py-3 text-start fw-bold w-2/5">Produk Menu</th>
+                            <th class="px-6 py-3 text-start fw-bold w-1/5">Status Produk</th>
                         </tr>
                     </thead>
                     <tbody id="schedule_tbody" class="divide-y divide-gray-100 bg-white">
@@ -113,23 +113,23 @@
 
             {{-- Empty State jika belum generate --}}
             <div id="table_empty_state" class="py-12 text-center bg-white">
-                <!-- <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-orange-50 flex items-center justify-center text-orange-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <!-- <div style="width: 48px; height: 48px;" class="mx-auto mb-3 rounded-pill bg-primary text-white d-flex align-items-center justify-content-center text-primary">
+                    <svg style="width: 24px; height: 24px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div> -->
-                <p class="text-sm font-semibold text-gray-700">Daftar Tanggal Belum Dibuat</p>
-                <p class="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
-                    Silakan tentukan Tanggal Mulai dan Tanggal Selesai di atas, kemudian klik tombol <strong class="text-gray-600 font-medium">Buat Jadwal</strong>.
+                <p class="fs-6 fw-bold text-secondary">Daftar Tanggal Belum Dibuat</p>
+                <p class="small text-secondary mt-1 max-w-sm mx-auto">
+                    Silakan tentukan Tanggal Mulai dan Tanggal Selesai di atas, kemudian klik tombol <strong class="text-secondary fw-medium">Buat Jadwal</strong>.
                 </p>
             </div>
 
             {{-- Footer Simpan --}}
-            <div id="table_footer" class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between" style="display: none;">
-                <span class="text-xs text-gray-500">
-                    Total: <strong id="badge_count" class="text-gray-800 font-semibold">0 hari</strong>
+            <div id="table_footer" class="px-6 py-4 bg-light border-t border border-secondary d-flex align-items-center justify-content-between" style="display: none;">
+                <span class="small text-secondary">
+                    Total: <strong id="badge_count" class="text-secondary fw-bold">0 hari</strong>
                 </span>
                 <div>
                     <button type="submit" id="btn_save_schedule"
-                        class="inline-flex items-center gap-1.5 px-6 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
+                        class="btn btn-primary">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                         <span>Simpan Jadwal</span>
                     </button>
@@ -139,65 +139,65 @@
     </div>
 
     {{-- Produk Section --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
+    <div class="bg-white rounded shadow-sm border border border-secondary overflow-hidden">
+        <div class="px-6 py-4 border-b bg-light d-flex justify-content-between align-items-center">
             <div>
-                <h3 class="font-bold text-gray-800">Daftar Produk</h3>
-                <p class="text-xs text-gray-500 mt-0.5">Produk menu harian untuk katering ini</p>
+                <h3 class="fw-bold text-secondary">Daftar Produk</h3>
+                <p class="small text-secondary mt-0.5">Produk menu harian untuk katering ini</p>
             </div>
             <a href="{{ route('admin.products.create') }}?catering_service_id={{ $catering->id }}"
-               class="inline-flex items-center gap-1 px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
+               class="d-inline-d-flex align-items-center g-3 px-4 py-2 bg-primary text-white text-white small fw-medium rounded hover:bg-primary text-white shadow-sm">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 <span>Tambah Produk</span>
             </a>
         </div>
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50/50">
-                <tr class="text-xs uppercase text-gray-500 tracking-wider">
-                    <th class="px-6 py-3 text-left font-semibold">Produk</th>
-                    <th class="px-6 py-3 text-center font-semibold">Harga</th>
-                    <th class="px-6 py-3 text-center font-semibold">Status</th>
-                    <th class="px-6 py-3 text-center font-semibold">Aksi</th>
+        <table class="w-100 fs-6">
+            <thead class="bg-light/50">
+                <tr class="small uppercase text-secondary tracking-wider">
+                    <th class="px-6 py-3 text-start fw-bold">Produk</th>
+                    <th class="px-6 py-3 text-center fw-bold">Harga</th>
+                    <th class="px-6 py-3 text-center fw-bold">Status</th>
+                    <th class="px-6 py-3 text-center fw-bold">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @forelse($products as $p)
-                <tr class="hover:bg-orange-50/30 transition-colors">
+                <tr class="hover:bg-primary text-white/30">
                     <td class="px-6 py-4">
-                        <div class="flex items-center gap-3">
+                        <div class="d-flex align-items-center g-3">
                             @if($p->image)
-                            <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="w-10 h-10 rounded-lg object-cover">
+                            <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="w-10 h-10 rounded object-cover">
                             @else
-                            <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            <div style="height: 40px;" class="w-10 rounded bg-light d-flex align-items-center justify-content-center text-secondary">
+                                <svg style="width: 24px; height: 24px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                             </div>
                             @endif
                             <div>
-                                <p class="font-medium text-gray-900">{{ $p->name }}</p>
+                                <p class="fw-medium text-secondary">{{ $p->name }}</p>
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-center font-semibold text-orange-600">{{ $p->formatted_price }}</td>
+                    <td class="px-6 py-4 text-center fw-bold text-primary">{{ $p->formatted_price }}</td>
                     <td class="px-6 py-4 text-center">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $p->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                        <span class="px-2.5 py-1 rounded-pill small fw-medium {{ $p->is_active ? 'bg-success text-white text-success' : 'bg-light text-secondary' }}">
                             {{ $p->is_active ? 'Aktif' : 'Nonaktif' }}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-center">
-                        <div class="flex items-center justify-center gap-2">
-                            <a href="{{ route('admin.products.edit', $p) }}" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</a>
-                            <form id="form-delete-product-{{ $p->id }}" action="{{ route('admin.products.destroy', $p) }}" method="POST" class="inline">
+                        <div class="d-flex align-items-center justify-content-center g-3">
+                            <a href="{{ route('admin.products.edit', $p) }}" class="px-3 py-1.5 small fw-medium text-info bg-info text-white rounded hover:bg-info text-white">Edit</a>
+                            <form id="form-delete-product-{{ $p->id }}" action="{{ route('admin.products.destroy', $p) }}" method="POST" class="d-inline">
                                 @csrf @method('DELETE')
-                                <button type="button" onclick="confirmDelete('form-delete-product-{{ $p->id }}', 'Hapus produk ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                                <button type="button" onclick="confirmDelete('form-delete-product-{{ $p->id }}', 'Hapus produk ini?')" class="px-3 py-1.5 small fw-medium text-danger bg-danger text-white rounded hover:bg-danger text-white">Hapus</button>
                             </form>
                         </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-gray-400">
-                        <!-- <svg class="w-10 h-10 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg> -->
-                        <p class="text-sm">Belum ada produk untuk katering ini.</p>
+                    <td colspan="5" class="px-6 py-8 text-center text-secondary">
+                        <!-- <svg style="height: 40px;" class="w-10 mx-auto mb-2 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg> -->
+                        <p class="fs-6">Belum ada produk untuk katering ini.</p>
                     </td>
                 </tr>
                 @endforelse
@@ -209,51 +209,51 @@
     </div>
 
     {{-- Extra Section --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
+    <div class="bg-white rounded shadow-sm border border border-secondary overflow-hidden">
+        <div class="px-6 py-4 border-b bg-light d-flex justify-content-between align-items-center">
             <div>
-                <h3 class="font-bold text-gray-800">Daftar Extra</h3>
-                <p class="text-xs text-gray-500 mt-0.5">Extra tambahan yang dapat dipesan pelanggan</p>
+                <h3 class="fw-bold text-secondary">Daftar Extra</h3>
+                <p class="small text-secondary mt-0.5">Extra tambahan yang dapat dipesan pelanggan</p>
             </div>
-            <button type="button" onclick="openExtraModal()" class="inline-flex items-center gap-1 px-4 py-2 bg-orange-500 text-white text-xs font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
+            <button type="button" onclick="openExtraModal()" class="btn btn-primary">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 <span>Tambah Extra</span>
             </button>
         </div>
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50/50">
-                <tr class="text-xs uppercase text-gray-500 tracking-wider">
-                    <th class="px-6 py-3 text-left font-semibold">Nama</th>
-                    <th class="px-6 py-3 text-center font-semibold">Harga</th>
-                    <th class="px-6 py-3 text-center font-semibold">Status</th>
-                    <th class="px-6 py-3 text-center font-semibold">Aksi</th>
+        <table class="w-100 fs-6">
+            <thead class="bg-light/50">
+                <tr class="small uppercase text-secondary tracking-wider">
+                    <th class="px-6 py-3 text-start fw-bold">Nama</th>
+                    <th class="px-6 py-3 text-center fw-bold">Harga</th>
+                    <th class="px-6 py-3 text-center fw-bold">Status</th>
+                    <th class="px-6 py-3 text-center fw-bold">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @forelse($extras as $extra)
-                <tr class="hover:bg-orange-50/30 transition-colors">
-                    <td class="px-6 py-4 font-medium text-gray-900">{{ $extra->name }}</td>
-                    <td class="px-6 py-4 text-center font-semibold text-orange-600">Rp {{ number_format($extra->price, 0, ',', '.') }}</td>
+                <tr class="hover:bg-primary text-white/30">
+                    <td class="px-6 py-4 fw-medium text-secondary">{{ $extra->name }}</td>
+                    <td class="px-6 py-4 text-center fw-bold text-primary">Rp {{ number_format($extra->price, 0, ',', '.') }}</td>
                     <td class="px-6 py-4 text-center">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $extra->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                        <span class="px-2.5 py-1 rounded-pill small fw-medium {{ $extra->is_active ? 'bg-success text-white text-success' : 'bg-light text-secondary' }}">
                             {{ $extra->is_active ? 'Aktif' : 'Nonaktif' }}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-center">
-                        <div class="flex items-center justify-center gap-2">
-                            <button type="button" onclick="openEditExtraModal({{ $extra->id }}, '{{ $extra->name }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }})" class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
-                            <form id="form-delete-extra-{{ $extra->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="inline">
+                        <div class="d-flex align-items-center justify-content-center g-3">
+                            <button type="button" onclick="openEditExtraModal({{ $extra->id }}, '{{ $extra->name }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }})" class="px-3 py-1.5 small fw-medium text-info bg-info text-white rounded hover:bg-info text-white">Edit</button>
+                            <form id="form-delete-extra-{{ $extra->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="d-inline">
                                 @csrf @method('DELETE')
-                                <button type="button" onclick="confirmDelete('form-delete-extra-{{ $extra->id }}', 'Hapus extra ini?')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                                <button type="button" onclick="confirmDelete('form-delete-extra-{{ $extra->id }}', 'Hapus extra ini?')" class="px-3 py-1.5 small fw-medium text-danger bg-danger text-white rounded hover:bg-danger text-white">Hapus</button>
                             </form>
                         </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="px-6 py-8 text-center text-gray-400">
-                        <!-- <svg class="w-10 h-10 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg> -->
-                        <p class="text-sm">Belum ada extra. Contoh: Sambal Tambahan, Kerupuk, Air Mineral.</p>
+                    <td colspan="4" class="px-6 py-8 text-center text-secondary">
+                        <!-- <svg style="height: 40px;" class="w-10 mx-auto mb-2 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg> -->
+                        <p class="fs-6">Belum ada extra. Contoh: Sambal Tambahan, Kerupuk, Air Mineral.</p>
                     </td>
                 </tr>
                 @endforelse
@@ -263,63 +263,63 @@
 </div>
 
 {{-- Modal Tambah Extra --}}
-<div id="addExtraModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
-        <div class="flex items-center justify-between p-6 border-b border-gray-100">
-            <h3 class="text-lg font-bold text-gray-900">Tambah Extra</h3>
-            <button onclick="document.getElementById('addExtraModal').style.display='none'" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+<div id="addExtraModal" class="position-fixed d-flex align-items-center justify-content-center bg-dark/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-100 max-w-md mx-4">
+        <div class="d-flex align-items-center justify-content-between p-6 border-b border border-secondary">
+            <h3 class="fs-5 fw-bold text-secondary">Tambah Extra</h3>
+            <button onclick="document.getElementById('addExtraModal').style.display='none'" class="p-1 text-secondary hover:text-secondary rounded hover:bg-light">
+                <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <form action="{{ route('admin.catering.options.store', $catering) }}" method="POST" class="p-6 space-y-4">
+        <form action="{{ route('admin.catering.options.store', $catering) }}" method="POST" class="p-6 d-flex flex-column gap-3">
             @csrf
             <input type="hidden" name="type" value="extra">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
-                <input type="text" name="name" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500" placeholder="cth: Sambal Tambahan">
+            <div class="mb-3">
+            <label class="form-label fw-bold">Nama *</label>
+                <input type="text" name="name" required class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary" placeholder="cth: Sambal Tambahan">
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
-                <input type="text" name="price" value="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500 rupiah-input">
+            <div class="mb-3">
+            <label class="form-label fw-bold">Harga (Rp) *</label>
+                <input type="text" name="price" value="0" class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary rupiah-input">
             </div>
-            <div class="flex items-center gap-2">
-                <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
-                <span class="text-sm font-medium text-gray-700">Aktif</span>
+            <div class="d-flex align-items-center g-3">
+                <input type="checkbox" name="is_active" value="1" checked class="rounded border border-secondary text-primary">
+                <span class="fs-6 fw-medium text-secondary">Aktif</span>
             </div>
-            <div class="flex gap-3">
-                <button type="button" onclick="document.getElementById('addExtraModal').style.display='none'" class="w-full px-6 py-2.5 text-gray-700 bg-gray-100 font-medium rounded-lg hover:bg-gray-200 transition-colors">Batal</button>
-                <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Simpan</button>
+            <div class="d-flex g-3">
+                <button type="button" onclick="document.getElementById('addExtraModal').style.display='none'" class="w-100 px-6 py-2.5 text-secondary bg-light fw-medium rounded hover:bg-light">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </form>
     </div>
 </div>
 
 {{-- Modal Edit Extra --}}
-<div id="editExtraModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
-        <div class="flex items-center justify-between p-6 border-b border-gray-100">
-            <h3 class="text-lg font-bold text-gray-900">Edit Extra</h3>
-            <button onclick="document.getElementById('editExtraModal').style.display='none'" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+<div id="editExtraModal" class="position-fixed d-flex align-items-center justify-content-center bg-dark/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-100 max-w-md mx-4">
+        <div class="d-flex align-items-center justify-content-between p-6 border-b border border-secondary">
+            <h3 class="fs-5 fw-bold text-secondary">Edit Extra</h3>
+            <button onclick="document.getElementById('editExtraModal').style.display='none'" class="p-1 text-secondary hover:text-secondary rounded hover:bg-light">
+                <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <form id="editExtraForm" method="POST" class="p-6 space-y-4">
+        <form id="editExtraForm" method="POST" class="p-6 d-flex flex-column gap-3">
             @csrf @method('PUT')
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
-                <input type="text" name="name" id="editExtraName" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+            <div class="mb-3">
+            <label class="form-label fw-bold">Nama *</label>
+                <input type="text" name="name" id="editExtraName" required class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary">
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
-                <input type="text" name="price" id="editExtraPrice" value="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500 rupiah-input">
+            <div class="mb-3">
+            <label class="form-label fw-bold">Harga (Rp) *</label>
+                <input type="text" name="price" id="editExtraPrice" value="0" class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary rupiah-input">
             </div>
-            <div class="flex items-center gap-2">
-                <input type="checkbox" name="is_active" value="1" id="editExtraActive" class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
-                <span class="text-sm font-medium text-gray-700">Aktif</span>
+            <div class="d-flex align-items-center g-3">
+                <input type="checkbox" name="is_active" value="1" id="editExtraActive" class="rounded border border-secondary text-primary">
+                <span class="fs-6 fw-medium text-secondary">Aktif</span>
             </div>
-            <div class="flex gap-3">
-                <button type="button" onclick="document.getElementById('editExtraModal').style.display='none'" class="w-full px-6 py-2.5 text-gray-700 bg-gray-100 font-medium rounded-lg hover:bg-gray-200 transition-colors">Batal</button>
-                <button type="submit" class="w-full px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors">Update</button>
+            <div class="d-flex g-3">
+                <button type="button" onclick="document.getElementById('editExtraModal').style.display='none'" class="w-100 px-6 py-2.5 text-secondary bg-light fw-medium rounded hover:bg-light">Batal</button>
+                <button type="submit" class="btn btn-primary">Update</button>
             </div>
         </form>
     </div>
@@ -424,24 +424,24 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             tr.innerHTML = `
-                <td class="px-6 py-4 font-medium text-gray-900">
+                <td class="px-6 py-4 fw-medium text-secondary">
                     ${dateInfo.formatted}
                     <input type="hidden" name="items[${index}][menu_date]" value="${dateStr}">
                 </td>
                 <td class="px-6 py-4">
-                    <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
+                    <span class="px-2.5 py-1 rounded-pill small fw-medium bg-primary text-white text-primary">
                         ${dateInfo.dayName}
                     </span>
                 </td>
                 <td class="px-6 py-4">
                     <select name="items[${index}][product_id]" required
-                        class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 bg-white transition-all">
+                        class="form-select w-100 px-3.5 py-2 rounded border border border-secondary fs-6 focus:border border-primary -2 bg-white">
                         ${optionsHtml}
                     </select>
                 </td>
                 <td class="px-6 py-4">
                     <select name="items[${index}][status]" required
-                        class="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 bg-white transition-all font-medium ${selectedStatus === 'habis' ? 'text-red-600' : 'text-green-700'}">
+                        class="form-select w-100 px-3.5 py-2 rounded border border border-secondary fs-6 focus:border border-primary -2 bg-white fw-medium ${selectedStatus === 'habis' ? 'text-danger' : 'text-success'}">
                         <option value="tersedia" ${selectedStatus === 'tersedia' ? 'selected' : ''}>Tersedia</option>
                         <option value="habis" ${selectedStatus === 'habis' ? 'selected' : ''}>Habis</option>
                     </select>

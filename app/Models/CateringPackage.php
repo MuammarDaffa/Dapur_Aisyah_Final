@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * Model CateringPackage merepresentasikan paket bundling yang ditawarkan (misal: Paket Hemat, Paket Premium).
+ * Paket ini memiliki relasi dengan CustomOption untuk menentukan isi paket seperti menu, dekorasi, dll.
+ */
 class CateringPackage extends Model
 {
     protected $fillable = [
@@ -52,6 +56,10 @@ class CateringPackage extends Model
     /**
      * Mendapatkan menu yang termasuk dalam paket.
      */
+    /**
+         * Mengambil daftar opsi bertipe 'menu' (makanan/minuman) yang termasuk dalam paket ini.
+         * @return \Illuminate\Database\Eloquent\Collection
+         */
     public function getIncludedMenus()
     {
         return $this->customOptions()->where('type', 'menu')->get();
@@ -60,6 +68,10 @@ class CateringPackage extends Model
     /**
      * Mendapatkan dekorasi yang termasuk dalam paket.
      */
+    /**
+         * Mengambil daftar opsi bertipe 'decoration' (dekorasi) yang disertakan dalam paket ini.
+         * @return \Illuminate\Database\Eloquent\Collection
+         */
     public function getIncludedDecorations()
     {
         return $this->customOptions()->where('type', 'decoration')->get();
@@ -68,6 +80,11 @@ class CateringPackage extends Model
     /**
      * Mendapatkan penyajian yang termasuk dalam paket.
      */
+    /**
+         * Mengambil daftar opsi bertipe 'serving_type' (tipe penyajian) yang tersedia untuk paket ini.
+         * Jika tidak ada batasan khusus di paket, akan mengembalikan semua tipe penyajian yang aktif.
+         * @return \Illuminate\Database\Eloquent\Collection
+         */
     public function getIncludedServingTypes()
     {
         $included = $this->customOptions()->where('type', 'serving_type')->get();

@@ -1,0 +1,34 @@
+[
+  {
+    "filepath": "e:/TA/Dapur_Aisyah/app/Models/Product.php",
+    "comments": {
+      "11": "/**\n * Model Product merepresentasikan menu individual (makanan/minuman) yang ditawarkan.\n * Model ini menjadi entitas utama dalam fitur pemesanan Katering Harian.\n */"
+    }
+  },
+  {
+    "filepath": "e:/TA/Dapur_Aisyah/app/Models/Review.php",
+    "comments": {
+      "8": "/**\n * Model Review menyimpan ulasan atau testimoni pelanggan terhadap pesanannya.\n * Ulasan ini dapat ditampilkan di halaman beranda sebagai bentuk kredibilitas layanan.\n */"
+    }
+  },
+  {
+    "filepath": "e:/TA/Dapur_Aisyah/app/Models/ShippingCost.php",
+    "comments": {
+      "8": "/**\n * Model ShippingCost menyimpan konfigurasi biaya pengiriman (ongkir).\n * Biaya ini dikelompokkan berdasarkan wilayah Kecamatan (District) tujuan pengiriman.\n */",
+      "27": "    /**\n     * Mendapatkan tarif ongkos kirim dinamis berdasarkan ID Kecamatan.\n     * Alur bisnis: Jika kecamatan tidak ditemukan dalam database ongkir khusus,\n     * maka akan dikenakan tarif *default/flat* sebesar Rp 20.000.\n     * @param int|null $districtId\n     * @return float\n     */"
+    }
+  },
+  {
+    "filepath": "e:/TA/Dapur_Aisyah/app/Models/User.php",
+    "comments": {
+      "11": "/**\n * Model User merepresentasikan data pengguna sistem (Pelanggan, Admin, maupun Pemilik).\n * Model ini mengelola proses autentikasi (login/register) dan otorisasi role.\n */",
+      "86": "    /**\n     * Menghitung total entitas yang masuk ke dalam keranjang belanja pelanggan.\n     * Alur bisnis:\n     * - Menu Katering Harian dihitung masing-masing sebagai 1 item.\n     * - Katering Event (paket/prasmanan) dihitung sebagai 1 kesatuan grup, \n     *   meskipun terdiri dari banyak sub-menu/ekstra.\n     * @return int\n     */"
+    }
+  },
+  {
+    "filepath": "e:/TA/Dapur_Aisyah/app/Models/Village.php",
+    "comments": {
+      "8": "/**\n * Model Village menyimpan data Kelurahan atau Desa.\n * Entitas ini melengkapi hierarki alamat pengiriman di bawah Kecamatan (District).\n */"
+    }
+  }
+]

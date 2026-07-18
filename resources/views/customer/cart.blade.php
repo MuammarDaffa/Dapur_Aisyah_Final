@@ -2,9 +2,9 @@
 @section('title', 'Keranjang Belanja')
 @section('content')
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-        <svg class="w-7 h-7 text-orange-500 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
-        <span>Keranjang <span class="text-orange-500">Belanja</span></span>
+    <h2 class="fs-3 fw-bold text-secondary mb-6 d-flex align-items-center">
+        <svg class="w-7 h-7 text-primary me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
+        <span>Keranjang <span class="text-primary">Belanja</span></span>
     </h2>
 
     @php
@@ -14,21 +14,21 @@
     @endphp
 
     {{-- Tab Navigation --}}
-    <div class="flex border-b border-gray-200 mb-6">
+    <div class="d-flex border-b border border-secondary mb-6">
         <button type="button" onclick="switchTab('daily')" id="tab-daily"
-            class="px-6 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center {{ $activeTab === 'daily' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700' }}">
-            <svg class="w-4 h-4 mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            class="px-6 py-3 fs-6 fw-bold border-b-2 d-flex align-items-center {{ $activeTab === 'daily' ? 'border border-primary text-primary' : 'border-transparent text-secondary hover:text-secondary' }}">
+            <svg style="width: 16px; height: 16px;" class="me-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
             <span>Daily</span>
             @if($dailyGroups->isNotEmpty())
-                <span class="ml-1 px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full text-xs font-bold">{{ $dailyGroups->flatten()->count() }}</span>
+                <span class="ms-1 px-2 py-0.5 bg-primary text-white text-primary rounded-pill small fw-bold">{{ $dailyGroups->flatten()->count() }}</span>
             @endif
         </button>
         <button type="button" onclick="switchTab('event')" id="tab-event"
-            class="px-6 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center {{ $activeTab === 'event' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700' }}">
-            <svg class="w-4 h-4 mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+            class="px-6 py-3 fs-6 fw-bold border-b-2 d-flex align-items-center {{ $activeTab === 'event' ? 'border border-primary text-primary' : 'border-transparent text-secondary hover:text-secondary' }}">
+            <svg style="width: 16px; height: 16px;" class="me-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
             <span>Event</span>
             @if($totalEventBadge > 0)
-                <span class="ml-1 px-2 py-0.5 bg-purple-100 text-purple-600 rounded-full text-xs font-bold">{{ $totalEventBadge }}</span>
+                <span class="ms-1 px-2 py-0.5 bg-purple-100 text-purple-600 rounded-pill small fw-bold">{{ $totalEventBadge }}</span>
             @endif
         </button>
     </div>
@@ -38,18 +38,18 @@
     {{-- =============================== --}}
     <div id="content-daily" style="{{ $activeTab !== 'daily' ? 'display:none' : '' }}">
         @if($dailyGroups->isEmpty())
-            <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
-                <!-- <div class="w-16 h-16 mx-auto mb-4 text-gray-300 flex items-center justify-center">
-                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border border-secondary">
+                <!-- <div style="width: 64px; height: 64px;" class="mx-auto mb-4 text-secondary d-flex align-items-center justify-content-center">
+                    <svg style="width: 48px; height: 48px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 </div> -->
-                <p class="text-gray-500 font-medium mb-4">Belum ada pesanan</p>
-                <!-- <a href="{{ route('customer.products') }}" class="inline-flex items-center px-6 py-3 bg-orange-500 text-white font-medium rounded-full hover:bg-orange-600 transition-colors">
+                <p class="text-secondary fw-medium mb-4">Belum ada pesanan</p>
+                <!-- <a href="{{ route('customer.products') }}" class="d-inline-d-flex align-items-center px-6 py-3 bg-primary text-white text-white fw-medium rounded-pill hover:bg-primary text-white">
                     <span>Lihat Menu</span>
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    <svg style="width: 16px; height: 16px;" class="ms-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </a> -->
             </div>
         @else
-            <div class="bg-white rounded-xl shadow-sm border border-orange-100 p-6 space-y-6">
+            <div class="bg-white rounded shadow-sm border border border-primary p-6 space-y-6">
                 @foreach($dailyGroups->flatten() as $cart)
                 @php
                     $basePrice = $cart->product ? (float) $cart->product->price : ($cart->customOption ? (float) $cart->customOption->price : 0);
@@ -71,35 +71,35 @@
                         }
                     }
                 @endphp
-                <div class="flex items-start space-x-4 {{ !$loop->last ? 'border-b border-gray-100 pb-6' : '' }}">
-                    <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
+                <div class="d-flex items-start space-x-4 {{ !$loop->last ? 'border-b border border-secondary pb-6' : '' }}">
+                    <div style="width: 64px; height: 64px;" class="bg-primary text-white rounded d-flex align-items-center justify-content-center fs-2 d-flex-flex-shrink-0">
                         @if($cart->product && $cart->product->image)
-                            <img src="{{ Storage::url($cart->product->image) }}" alt="{{ $cart->product->name }}" class="w-full h-full object-cover rounded-xl">
+                            <img src="{{ Storage::url($cart->product->image) }}" alt="{{ $cart->product->name }}" class="w-100 h-100 object-cover rounded">
                         @else
-                            <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            <svg style="width: 32px; height: 32px;" class="text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         @endif
                     </div>
-                    <div class="flex-1 w-full">
-                        <div class="flex sm:items-start justify-between flex-col sm:flex-row gap-2">
+                    <div class="d-flex-1 w-100">
+                        <div class="d-flex sm:items-start justify-content-between d-flex-column sm:d-flex-row g-3">
                             <div>
-                                <h4 class="font-bold text-gray-900 text-lg">{{ $cart->product->name ?? ($cart->customOption->name ?? 'Item') }}</h4>
-                                <p class="text-sm font-medium text-gray-700">{{ $cart->quantity }} Porsi</p>
+                                <h4 class="fw-bold text-secondary fs-5">{{ $cart->product->name ?? ($cart->customOption->name ?? 'Item') }}</h4>
+                                <p class="fs-6 fw-medium text-secondary">{{ $cart->quantity }} Porsi</p>
                             </div>
-                            <p class="text-lg font-bold text-gray-900">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</p>
+                            <p class="fs-5 fw-bold text-secondary">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</p>
                         </div>
                         
                         @if($extrasList->isNotEmpty())
-                            <div class="text-sm text-gray-600 mt-2">
-                                <span class="font-medium text-gray-800">Extra:</span> 
+                            <div class="fs-6 text-secondary mt-2">
+                                <span class="fw-medium text-secondary">Extra:</span> 
                                 {{ collect($extrasList)->map(fn($ex) => $ex->name . ' ×' . $ex->qty)->implode(', ') }}
                             </div>
                         @endif
 
-                        <div class="flex items-center justify-end mt-4 space-x-3">
-                            <button type="button" onclick="openDailyEditModal({{ $cart->id }})" class="px-4 py-2 bg-orange-100 text-orange-700 text-sm font-semibold rounded-lg hover:bg-orange-200 transition-colors">Ubah Pesanan</button>
-                            <form action="{{ route('customer.cart.destroy', $cart) }}" method="POST" class="inline">
+                        <div class="d-flex align-items-center justify-content-end mt-4 space-x-3">
+                            <button type="button" onclick="openDailyEditModal({{ $cart->id }})" class="px-4 py-2 bg-primary text-white text-primary fs-6 fw-bold rounded hover:bg-primary text-white">Ubah Pesanan</button>
+                            <form action="{{ route('customer.cart.destroy', $cart) }}" method="POST" class="d-inline">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="px-4 py-2 bg-red-50 text-red-600 text-sm font-semibold rounded-lg hover:bg-red-100 transition-colors">
+                                <button type="submit" class="btn btn-outline-danger btn btn-danger px-4 py-2 bg-danger text-white text-danger fs-6 fw-bold rounded hover:bg-danger text-white">
                                     Hapus
                                 </button>
                             </form>
@@ -110,14 +110,14 @@
             </div>
 
             <!-- Tombol Checkout Global untuk Semua Daily -->
-            <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex flex-col sm:flex-row justify-between items-center gap-4 sticky bottom-4 z-10">
+            <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border border-primary d-flex d-flex-column sm:d-flex-row justify-content-between align-items-center g-3 sticky-top">
                 <div>
-                    <h4 class="font-bold text-gray-900 text-lg">Total Seluruh Pesanan Daily</h4>
-                    <p class="text-2xl font-bold text-orange-600">Rp {{ number_format($dailyGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</p>
-                    <!-- <p class="text-sm text-gray-500 mt-1">Satu kali checkout untuk seluruh menu harian.</p> -->
+                    <h4 class="fw-bold text-secondary fs-5">Total Seluruh Pesanan Daily</h4>
+                    <p class="fs-3 fw-bold text-primary">Rp {{ number_format($dailyGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</p>
+                    <!-- <p class="fs-6 text-secondary mt-1">Satu kali checkout untuk seluruh menu harian.</p> -->
                 </div>
                 <a href="{{ route('customer.checkout') }}"
-                    class="w-full sm:w-auto text-center px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl hover:shadow-lg transition-all text-lg flex items-center justify-center gap-2">
+                    class="w-100 sm:w-auto text-center px-8 py-4 text-white fw-bold rounded hover:shadow fs-5 d-flex align-items-center justify-content-center g-3">
                     Checkout 
                 </a>
             </div>
@@ -129,16 +129,16 @@
     {{-- =============================== --}}
     <div id="content-event" style="{{ $activeTab !== 'event' ? 'display:none' : '' }}">
         @if($eventGroups->isEmpty())
-            <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
-                <!-- <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border border-secondary">
+                <!-- <div style="width: 64px; height: 64px;" class="bg-light text-primary rounded-pill d-flex align-items-center justify-content-center mx-auto mb-4">
+                    <svg style="width: 32px; height: 32px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                     </svg>
                 </div> -->
-                <p class="text-gray-500 font-medium mb-4">Belum ada pesanan </p>
-                <!-- <a href="{{ route('landing') }}#services" class="inline-flex items-center px-6 py-3 bg-purple-500 text-white font-medium rounded-full hover:bg-purple-600 transition-colors">
+                <p class="text-secondary fw-medium mb-4">Belum ada pesanan </p>
+                <!-- <a href="{{ route('landing') }}#services" class="d-inline-d-flex align-items-center px-6 py-3 bg-purple-500 text-white fw-medium rounded-pill">
                     <span>Pilih Layanan Event</span>
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    <svg style="width: 16px; height: 16px;" class="ms-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </a> -->
             </div>
         @else
@@ -147,7 +147,7 @@
                 $customGroups = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') === null);
             @endphp
 
-            <div class="divide-y divide-gray-200 border-t border-b border-gray-200 my-2">
+            <div class="divide-y divide-gray-200 border-t border-b border border-secondary my-2">
                 {{-- Kelompok 1: Paket Event --}}
                 @foreach($packageGroups as $groupId => $groupItems)
                 @php
@@ -155,22 +155,22 @@
                     $service = $groupItems->first()->cateringService;
                     $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
                 @endphp
-                <div class="py-6 first:pt-4 last:pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4" id="event-card-{{ $groupId }}">
-                    <div class="flex-1 min-w-0 space-y-1">
-                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <span class="font-bold text-gray-900 text-base sm:text-lg">{{ $packageItem->cateringPackage->name ?? 'Paket' }} ({{ $packageItem->quantity }})</span>
-                            <span class="text-gray-400 font-medium">·</span>
-                            <span class="text-sm text-gray-500 font-medium">{{ $service->name ?? 'Layanan Event' }}</span>
+                <div class="py-6 first:pt-4 last:pb-4 d-flex d-flex-column sm:d-flex-row sm:align-items-center justify-content-between g-3" id="event-card-{{ $groupId }}">
+                    <div class="d-flex-1 min-w-0 space-y-1">
+                        <div class="d-flex d-flex-wrap align-items-center gap-x-2 gap-y-1">
+                            <span class="fw-bold text-secondary text-base sm:fs-5">{{ $packageItem->cateringPackage->name ?? 'Paket' }} ({{ $packageItem->quantity }})</span>
+                            <span class="text-secondary fw-medium">·</span>
+                            <span class="fs-6 text-secondary fw-medium">{{ $service->name ?? 'Layanan Event' }}</span>
                         </div>
                         <div class="pt-0.5">
-                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="text-xs font-semibold text-purple-600 hover:text-purple-800 underline">Lihat Detail Menu</button>
+                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="small fw-bold text-purple-600 underline">Lihat Detail Menu</button>
                         </div>
                     </div>
 
-                    <div class="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2.5 pt-2 sm:pt-0 border-t border-gray-100 sm:border-t-0">
-                        <p class="text-lg font-bold text-gray-900 sm:text-right">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
-                        <div class="flex items-center gap-2 sm:justify-end">
-                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $packageItem->id ?? $groupItems->first()->id }}, true)" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
+                    <div class="d-flex d-flex-row sm:d-flex-column align-items-center sm:items-end justify-content-between sm:justify-content-center g-3.5 pt-2 sm:pt-0 border-t border border-secondary sm:border-t-0">
+                        <p class="fs-5 fw-bold text-secondary sm:text-end">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
+                        <div class="d-flex align-items-center g-3 sm:justify-content-end">
+                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $packageItem->id ?? $groupItems->first()->id }}, true)" class="px-2.5 py-1 rounded small fw-bold bg-danger text-white text-danger hover:bg-danger text-white">
                                 Hapus
                             </button>
                         </div>
@@ -186,28 +186,28 @@
                     $service = $groupItems->first()->cateringService;
                     $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
                 @endphp
-                <div class="py-6 first:pt-4 last:pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4" id="event-card-{{ $groupId }}">
-                    <div class="flex-1 min-w-0 space-y-1">
-                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <span class="font-bold text-gray-900 text-base sm:text-lg">Custom Menu</span>
-                            <span class="text-gray-400 font-medium">·</span>
-                            <span class="text-sm text-gray-500 font-medium">{{ $service->name ?? 'Layanan Event' }}</span>
+                <div class="py-6 first:pt-4 last:pb-4 d-flex d-flex-column sm:d-flex-row sm:align-items-center justify-content-between g-3" id="event-card-{{ $groupId }}">
+                    <div class="d-flex-1 min-w-0 space-y-1">
+                        <div class="d-flex d-flex-wrap align-items-center gap-x-2 gap-y-1">
+                            <span class="fw-bold text-secondary text-base sm:fs-5">Custom Menu</span>
+                            <span class="text-secondary fw-medium">·</span>
+                            <span class="fs-6 text-secondary fw-medium">{{ $service->name ?? 'Layanan Event' }}</span>
                         </div>
-                        <p class="text-sm font-medium text-gray-600">
+                        <p class="fs-6 fw-medium text-secondary">
                             {{ $menuItems->count() }} Menu Dipilih
                         </p>
                         <div class="pt-0.5">
-                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="text-xs font-semibold text-purple-600 hover:text-purple-800 underline">Lihat Detail</button>
+                            <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="small fw-bold text-purple-600 underline">Lihat Detail</button>
                         </div>
                     </div>
 
-                    <div class="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2.5 pt-2 sm:pt-0 border-t border-gray-100 sm:border-t-0">
-                        <p class="text-lg font-bold text-gray-900 sm:text-right">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
-                        <div class="flex items-center gap-2 sm:justify-end">
-                            <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
+                    <div class="d-flex d-flex-row sm:d-flex-column align-items-center sm:items-end justify-content-between sm:justify-content-center g-3.5 pt-2 sm:pt-0 border-t border border-secondary sm:border-t-0">
+                        <p class="fs-5 fw-bold text-secondary sm:text-end">Rp {{ number_format($groupSubtotal, 0, ',', '.') }}</p>
+                        <div class="d-flex align-items-center g-3 sm:justify-content-end">
+                            <button type="button" onclick="openEditEventModal('{{ $groupId }}')" class="px-2.5 py-1 rounded small fw-bold bg-light text-secondary hover:bg-light">
                                 Edit
                             </button>
-                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $customHeader?->id ?? $groupItems->first()->id }}, false)" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
+                            <button type="button" onclick="confirmDeleteEvent('{{ $groupId }}', {{ $customHeader?->id ?? $groupItems->first()->id }}, false)" class="px-2.5 py-1 rounded small fw-bold bg-danger text-white text-danger hover:bg-danger text-white">
                                 Hapus
                             </button>
                         </div>
@@ -217,17 +217,17 @@
             </div>
 
             <!-- Ringkasan Belanja & Tombol Checkout Global untuk Semua Event -->
-            <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-purple-100 flex flex-col sm:flex-row justify-between items-center gap-4 sticky bottom-4 z-10">
+            <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-purple-100 d-flex d-flex-column sm:d-flex-row justify-content-between align-items-center g-3 sticky-top">
                 <div>
-                    <!-- <h4 class="font-bold text-gray-900 text-lg">Ringkasan Belanja Event</h4> -->
-                    <div class="flex items-center gap-4 mt-1 text-sm text-gray-600">
-                        <!-- <span>Subtotal: <strong class="text-gray-900">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
+                    <!-- <h4 class="fw-bold text-secondary fs-5">Ringkasan Belanja Event</h4> -->
+                    <div class="d-flex align-items-center g-3 mt-1 fs-6 text-secondary">
+                        <!-- <span>Subtotal: <strong class="text-secondary">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
                         <span>•</span> -->
-                        <span>Total: <strong class="text-gray-600 font-bold text-lg">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
+                        <span>Total: <strong class="text-secondary fw-bold fs-5">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
                     </div>
                 </div>
                 <a href="{{ route('customer.event.checkout.show', 'all') }}"
-                    class="w-full sm:w-auto text-center px-8 py-4 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold rounded-xl hover:shadow-lg transition-all text-base">
+                    class="w-100 sm:w-auto text-center px-8 py-4 text-white fw-bold rounded hover:shadow text-base">
                     Checkout 
                 </a>
             </div>
@@ -256,48 +256,48 @@
     });
 @endphp
 
-<div id="dailyEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] flex flex-col transform transition-all">
-        <div class="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
-            <h3 class="text-lg font-bold text-gray-900 flex items-center">
-                <svg class="w-5 h-5 text-orange-500 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+<div id="dailyEditModal" class="position-fixed d-flex align-items-center justify-content-center bg-dark/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-100 max-w-lg mx-4 max-h-[90vh] d-flex d-flex-column">
+        <div class="d-flex align-items-center justify-content-between p-6 border-b border border-secondary d-flex-flex-shrink-0">
+            <h3 class="fs-5 fw-bold text-secondary d-flex align-items-center">
+                <svg style="width: 20px; height: 20px;" class="text-primary me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                 <span>Ubah Pesanan</span>
             </h3>
-            <button type="button" onclick="closeDailyEditModal()" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <button type="button" onclick="closeDailyEditModal()" class="p-1 text-secondary hover:text-secondary rounded hover:bg-light">
+                <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <div class="overflow-y-auto flex-1 p-6">
+        <div class="overflow-y-auto d-flex-1 p-6">
             <form id="dailyEditForm" action="" method="POST">
                 @csrf @method('PUT')
-                <div class="mb-6 bg-orange-50/50 rounded-xl p-4">
-                    <h4 id="dailyModalProductName" class="font-bold text-gray-900"></h4>
-                    <p id="dailyModalProductPrice" class="text-orange-600 font-semibold text-sm"></p>
+                <div class="mb-6 bg-primary text-white/50 rounded p-4">
+                    <h4 id="dailyModalProductName" class="fw-bold text-secondary"></h4>
+                    <p id="dailyModalProductPrice" class="text-primary fw-bold fs-6"></p>
                 </div>
                 <div class="mb-6">
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Porsi *</label>
-                    <div class="flex items-center gap-3">
-                        <button type="button" onclick="changeDailyQty(-1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-colors">−</button>
-                        <input type="text" inputmode="none" readonly tabindex="-1" name="quantity" id="dailyModalQty" value="1" class="w-20 text-center px-3 py-2 rounded-xl border border-gray-200 font-semibold text-gray-900 focus:outline-none cursor-default select-none">
-                        <button type="button" onclick="changeDailyQty(1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-colors">+</button>
+                    <label class="form-label fw-bold">Jumlah Porsi *</label>
+                    <div class="d-flex align-items-center g-3">
+                        <button type="button" onclick="changeDailyQty(-1)" style="height: 40px;" class="w-10 rounded bg-light hover:bg-light d-flex align-items-center justify-content-center text-secondary fw-bold fs-5">−</button>
+                        <input type="text" inputmode="none" readonly tabindex="-1" name="quantity" id="dailyModalQty" value="1" class="form-control w-20 text-center px-3 py-2 rounded border border border-secondary fw-bold text-secondary focus: cursor-default select-none">
+                        <button type="button" onclick="changeDailyQty(1)" style="height: 40px;" class="w-10 rounded bg-light hover:bg-light d-flex align-items-center justify-content-center text-secondary fw-bold fs-5">+</button>
                     </div>
                 </div>
-                <div id="dailyModalExtrasLoading" class="text-sm text-gray-500 py-2 hidden">Memuat opsi tambahan...</div>
-                <div id="dailyModalExtrasContainer" class="mb-5 hidden">
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Extra Tambahan (Opsional)</label>
+                <div id="dailyModalExtrasLoading" class="fs-6 text-secondary py-2 d-none">Memuat opsi tambahan...</div>
+                <div id="dailyModalExtrasContainer" class="mb-5 d-none">
+                    <label class="form-label fw-bold">Extra Tambahan (Opsional)</label>
                     <div id="dailyModalExtrasList" class="divide-y divide-gray-100"></div>
                 </div>
-                <div class="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100">
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Estimasi Total</span>
-                        <span id="dailyModalTotal" class="text-xl font-bold text-orange-600">Rp 0</span>
+                <div class="rounded p-4 border border border-primary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fs-6 text-secondary">Estimasi Total</span>
+                        <span id="dailyModalTotal" class="fs-4 fw-bold text-primary">Rp 0</span>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="p-6 border-t border-gray-100 flex-shrink-0 flex gap-3">
-            <button type="button" onclick="closeDailyEditModal()" class="flex-1 px-6 py-3.5 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors text-sm">Batal</button>
-            <button type="button" onclick="document.getElementById('dailyEditForm').submit()" class="flex-1 px-6 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all text-sm">Update</button>
+        <div class="p-6 border-t border border-secondary d-flex-flex-shrink-0 d-flex g-3">
+            <button type="button" onclick="closeDailyEditModal()" class="d-flex-1 px-6 py-3.5 bg-light text-secondary fw-bold rounded hover:bg-light fs-6">Batal</button>
+            <button type="button" onclick="document.getElementById('dailyEditForm').submit()" class="d-flex-1 px-6 py-3.5 text-white fw-bold rounded hover:shadow fs-6">Update</button>
         </div>
     </div>
 </div>
@@ -346,50 +346,50 @@
 {{-- =============================== --}}
 {{-- MODAL: Event Detail --}}
 {{-- =============================== --}}
-<div id="detailEventModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] flex flex-col">
-        <div class="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
+<div id="detailEventModal" class="position-fixed d-flex align-items-center justify-content-center bg-dark/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-100 max-w-lg mx-4 max-h-[90vh] d-flex d-flex-column">
+        <div class="d-flex align-items-center justify-content-between p-6 border-b border border-secondary d-flex-flex-shrink-0">
             <div>
-                <span id="detailModalBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700"></span>
-                <h3 id="detailModalTitle" class="text-lg font-bold text-gray-900 mt-1"></h3>
+                <span id="detailModalBadge" class="px-2.5 py-0.5 rounded-pill small fw-bold bg-purple-100 text-purple-700"></span>
+                <h3 id="detailModalTitle" class="fs-5 fw-bold text-secondary mt-1"></h3>
             </div>
-            <button type="button" onclick="closeDetailModal()" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <button type="button" onclick="closeDetailModal()" class="p-1 text-secondary hover:text-secondary rounded hover:bg-light">
+                <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <div class="overflow-y-auto flex-1 p-6 space-y-4">
+        <div class="overflow-y-auto d-flex-1 p-6 d-flex flex-column gap-3">
             <div>
-                <h5 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Daftar Menu</h5>
-                <div id="detailModalList" class="divide-y divide-gray-100 border border-gray-100 rounded-xl px-4 py-2"></div>
+                <h5 class="small fw-bold uppercase tracking-wider text-secondary mb-2">Daftar Menu</h5>
+                <div id="detailModalList" class="divide-y divide-gray-100 border border border-secondary rounded px-4 py-2"></div>
             </div>
-            <div id="detailModalServingSection" class="hidden">
-                <h5 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Penyajian</h5>
-                <p id="detailModalServing" class="text-sm font-medium text-gray-800 bg-gray-50 p-3 rounded-xl border border-gray-100"></p>
+            <div id="detailModalServingSection" class="d-none">
+                <h5 class="small fw-bold uppercase tracking-wider text-secondary mb-1">Penyajian</h5>
+                <p id="detailModalServing" class="fs-6 fw-medium text-secondary bg-light p-3 rounded border border border-secondary"></p>
             </div>
-            <div id="detailModalNotesSection" class="hidden">
-                <h5 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Catatan</h5>
-                <p id="detailModalNotes" class="text-sm text-gray-700 italic bg-gray-50 p-3 rounded-xl border border-gray-100"></p>
+            <div id="detailModalNotesSection" class="d-none">
+                <h5 class="small fw-bold uppercase tracking-wider text-secondary mb-1">Catatan</h5>
+                <p id="detailModalNotes" class="fs-6 text-secondary italic bg-light p-3 rounded border border border-secondary"></p>
             </div>
         </div>
-        <div class="p-6 border-t border-gray-100 flex-shrink-0 flex justify-between items-center bg-gray-50 rounded-b-2xl">
-            <span class="text-sm text-gray-600">Total Harga Group</span>
-            <span id="detailModalTotal" class="text-lg font-bold text-purple-600"></span>
+        <div class="p-6 border-t border border-secondary d-flex-flex-shrink-0 d-flex justify-content-between align-items-center bg-light rounded-b-2xl">
+            <span class="fs-6 text-secondary">Total Harga Group</span>
+            <span id="detailModalTotal" class="fs-5 fw-bold text-purple-600"></span>
         </div>
     </div>
 </div>
 
-<div id="editEventModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] flex flex-col">
-        <div class="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
-            <h3 class="text-lg font-bold text-gray-900 flex items-center">
-                <svg class="w-5 h-5 text-orange-500 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+<div id="editEventModal" class="position-fixed d-flex align-items-center justify-content-center bg-dark/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-100 max-w-2xl mx-4 max-h-[90vh] d-flex d-flex-column">
+        <div class="d-flex align-items-center justify-content-between p-6 border-b border border-secondary d-flex-flex-shrink-0">
+            <h3 class="fs-5 fw-bold text-secondary d-flex align-items-center">
+                <svg style="width: 20px; height: 20px;" class="text-primary me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                 <span>Edit Pesanan Event</span>
             </h3>
-            <button type="button" onclick="closeEditEventModal()" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <button type="button" onclick="closeEditEventModal()" class="p-1 text-secondary hover:text-secondary rounded hover:bg-light">
+                <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <div class="overflow-y-auto flex-1 p-6">
+        <div class="overflow-y-auto d-flex-1 p-6">
             <style>
             @media (min-width: 1024px) {
                 /* Chrome, Safari, Edge, Opera */
@@ -413,52 +413,52 @@
                 <input type="hidden" name="catering_package_id" id="editEventPackageId">
 
                 {{-- Info Header --}}
-                <div id="editEventHeader" class="bg-purple-50 rounded-xl p-4 mb-6">
-                    <p class="font-bold text-gray-900" id="editEventTitle"></p>
-                    <p class="text-sm text-purple-600" id="editEventType"></p>
+                <div id="editEventHeader" class="bg-light rounded p-4 mb-6">
+                    <p class="fw-bold text-secondary" id="editEventTitle"></p>
+                    <p class="fs-6 text-purple-600" id="editEventType"></p>
                 </div>
 
                 {{-- Menu Items (akan di-generate JS) --}}
                 <div class="mb-6">
-                    <h4 class="font-semibold text-gray-800 mb-3" id="editEventMenuHeading">Menu</h4>
-                    <div id="editEventMenuList" class="divide-y divide-gray-100 border-t border-b border-gray-100"></div>
+                    <h4 class="fw-bold text-secondary mb-3" id="editEventMenuHeading">Menu</h4>
+                    <div id="editEventMenuList" class="divide-y divide-gray-100 border-t border-b border border-secondary"></div>
 
                     {{-- Porsi Indicator (hanya untuk custom menu) --}}
-                    <div id="editCustomPortionIndicator" class="mt-4 p-4 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-between" style="display:none;">
-                        <span class="text-base font-bold text-gray-900">Total Porsi : <span id="editCustomPortionsDisplay">0</span> / <span id="editCustomMaxTarget">100</span></span>
+                    <div id="editCustomPortionIndicator" class="mt-4 p-4 rounded border border border-secondary bg-light d-flex align-items-center justify-content-between" style="display:none;">
+                        <span class="text-base fw-bold text-secondary">Total Porsi : <span id="editCustomPortionsDisplay">0</span> / <span id="editCustomMaxTarget">100</span></span>
                     </div>
                 </div>
 
                 {{-- Extra --}}
                 <div id="editEventExtrasSection" class="mb-6" style="display:none;">
-                    <h4 class="font-semibold text-gray-800 mb-3">Extra</h4>
-                    <div id="editEventExtrasList" class="divide-y divide-gray-100 border-t border-b border-gray-100"></div>
+                    <h4 class="fw-bold text-secondary mb-3">Extra</h4>
+                    <div id="editEventExtrasList" class="divide-y divide-gray-100 border-t border-b border border-secondary"></div>
                 </div>
 
                 {{-- Penyajian --}}
                 <div id="editEventServingSection" class="mb-6" style="display:none;">
-                    <h4 class="font-semibold text-gray-800 mb-3">Penyajian</h4>
-                    <div id="editEventServingList" class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-6 pt-1"></div>
+                    <h4 class="fw-bold text-secondary mb-3">Penyajian</h4>
+                    <div id="editEventServingList" class="d-flex d-flex-column sm:d-flex-row sm:d-flex-wrap g-3 sm:g-3 pt-1"></div>
                 </div>
 
                 {{-- Total --}}
-                <div class="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100">
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Total Harga</span>
-                        <span id="editEventTotal" class="text-xl font-bold text-orange-600">Rp 0</span>
+                <div class="rounded p-4 border border border-primary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fs-6 text-secondary">Total Harga</span>
+                        <span id="editEventTotal" class="fs-4 fw-bold text-primary">Rp 0</span>
                     </div>
-                    <div class="flex justify-between items-center mt-1">
-                        <span class="text-sm text-gray-500">Total Porsi</span>
-                        <span class="font-semibold text-gray-700">
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <span class="fs-6 text-secondary">Total Porsi</span>
+                        <span class="fw-bold text-secondary">
                             <span id="editEventPortions">0</span> Porsi
                         </span>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="p-6 border-t border-gray-100 flex-shrink-0 flex gap-3">
-            <button type="button" onclick="closeEditEventModal()" class="flex-1 px-6 py-3.5 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors text-sm">Batal</button>
-            <button type="button" id="editEventSubmitBtn" onclick="submitEditEventForm()" class="flex-1 px-6 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all text-sm">Update</button>
+        <div class="p-6 border-t border border-secondary d-flex-flex-shrink-0 d-flex g-3">
+            <button type="button" onclick="closeEditEventModal()" class="d-flex-1 px-6 py-3.5 bg-light text-secondary fw-bold rounded hover:bg-light fs-6">Batal</button>
+            <button type="button" id="editEventSubmitBtn" onclick="submitEditEventForm()" class="d-flex-1 px-6 py-3.5 text-white fw-bold rounded hover:shadow fs-6">Update</button>
         </div>
     </div>
 </div>
@@ -466,18 +466,18 @@
 {{-- =============================== --}}
 {{-- MODAL: Delete Confirmation --}}
 {{-- =============================== --}}
-<div id="deleteConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display:none;">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 text-center">
-        <div class="w-16 h-16 mx-auto mb-4 text-red-500 flex items-center justify-center">
-            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+<div id="deleteConfirmModal" class="position-fixed d-flex align-items-center justify-content-center bg-dark/50 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-100 max-w-sm mx-4 p-6 text-center">
+        <div style="width: 64px; height: 64px;" class="mx-auto mb-4 text-danger d-flex align-items-center justify-content-center">
+            <svg style="width: 48px; height: 48px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
         </div>
-        <h3 class="text-lg font-bold text-gray-900 mb-2">Hapus Pesanan?</h3>
-        <p class="text-gray-500 mb-6">Apakah Anda ingin menghapus pesanan ini?</p>
-        <div class="flex gap-3">
-            <button type="button" onclick="closeDeleteModal()" class="flex-1 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors">Tidak</button>
-            <form id="deleteEventForm" action="" method="POST" class="flex-1">
+        <h3 class="fs-5 fw-bold text-secondary mb-2">Hapus Pesanan?</h3>
+        <p class="text-secondary mb-6">Apakah Anda ingin menghapus pesanan ini?</p>
+        <div class="d-flex g-3">
+            <button type="button" onclick="closeDeleteModal()" class="d-flex-1 px-6 py-3 bg-light text-secondary fw-bold rounded hover:bg-light">Tidak</button>
+            <form id="deleteEventForm" action="" method="POST" class="d-flex-1">
                 @csrf @method('DELETE')
-                <button type="submit" class="w-full px-6 py-3 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-colors">Ya</button>
+                <button type="submit" class="btn btn-danger">Ya</button>
             </form>
         </div>
     </div>
@@ -549,17 +549,17 @@
                         let containerClasses = extraInCart ? 'flex' : 'hidden';
 
                         html += `
-                            <div class="flex items-center justify-between py-2.5 px-2 border-b border-gray-100 last:border-b-0 hover:bg-orange-50/50 rounded-lg transition-colors gap-2">
-                                <label class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
-                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-price="${extra.price}" id="daily_extra_cb_${extra.id}" onchange="toggleDailyExtra(${extra.id})" class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 daily-extra-checkbox shrink-0" ${isChecked}>
-                                    <span class="text-sm font-medium text-gray-700 truncate">${extra.name}</span>
+                            <div class="d-flex align-items-center justify-content-between py-2.5 px-2 border-b border border-secondary last:border-b-0 hover:bg-primary text-white/50 rounded g-3">
+                                <label class="d-flex align-items-center g-3.5 cursor-pointer d-flex-1 min-w-0">
+                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-price="${extra.price}" id="daily_extra_cb_${extra.id}" onchange="toggleDailyExtra(${extra.id})" style="width: 16px; height: 16px;" class="rounded border border-secondary text-primary daily-extra-checkbox flex-shrink-0" ${isChecked}>
+                                    <span class="fs-6 fw-medium text-secondary truncate">${extra.name}</span>
                                 </label>
-                                <div class="flex items-center gap-2.5 shrink-0">
-                                    <span class="text-sm font-semibold text-orange-600 shrink-0">+${formatRupiah(extra.price)}</span>
-                                    <div id="daily_extra_qty_container_${extra.id}" class="${containerClasses} items-center gap-1">
-                                        <button type="button" onclick="changeDailyExtraQty(${extra.id}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors text-sm shrink-0">−</button>
-                                        <input type="text" inputmode="none" readonly tabindex="-1" name="extras[${extra.id}][qty]" id="daily_extra_qty_${extra.id}" value="${extraInCart ? (extraQty || 1) : 0}" class="w-12 text-center py-1 rounded-lg border border-gray-200 text-xs font-bold text-gray-900 focus:outline-none cursor-default select-none bg-gray-50 shrink-0" ${disabledState}>
-                                        <button type="button" onclick="changeDailyExtraQty(${extra.id}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 transition-colors text-sm shrink-0">+</button>
+                                <div class="d-flex align-items-center g-3.5 flex-shrink-0">
+                                    <span class="fs-6 fw-bold text-primary flex-shrink-0">+${formatRupiah(extra.price)}</span>
+                                    <div id="daily_extra_qty_container_${extra.id}" class="${containerClasses} align-items-center g-3">
+                                        <button type="button" onclick="changeDailyExtraQty(${extra.id}, -1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0">−</button>
+                                        <input type="text" inputmode="none" readonly tabindex="-1" name="extras[${extra.id}][qty]" id="daily_extra_qty_${extra.id}" value="${extraInCart ? (extraQty || 1) : 0}" class="form-control w-12 text-center py-1 rounded border border border-secondary small fw-bold text-secondary focus: cursor-default select-none bg-light flex-shrink-0" ${disabledState}>
+                                        <button type="button" onclick="changeDailyExtraQty(${extra.id}, 1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0">+</button>
                                     </div>
                                 </div>
                             </div>`;
@@ -697,30 +697,30 @@
             let detailBtn = '';
             let detailDiv = '';
             if (menu.items && Array.isArray(menu.items) && menu.items.length > 0) {
-                detailBtn = `<button type="button" onclick="toggleEditMenuDetail(${idx}, event)" class="text-xs font-semibold text-blue-600 hover:text-blue-800 focus:outline-none underline">Lihat Detail</button>`;
+                detailBtn = `<button type="button" onclick="toggleEditMenuDetail(${idx}, event)" class="small fw-bold text-info hover:text-info focus: underline">Lihat Detail</button>`;
                 let itemsListHtml = menu.items.map(item => `<li>${item}</li>`).join('');
-                detailDiv = `<div id="edit_menu_detail_${idx}" class="hidden pl-7 mt-2"><div class="py-2.5 px-3.5 bg-gray-50/80 text-xs text-gray-700 border-l-2 border-orange-300 rounded-r-lg"><ul class="list-disc list-inside space-y-1">${itemsListHtml}</ul></div></div>`;
+                detailDiv = `<div id="edit_menu_detail_${idx}" class="d-none ps-7 mt-2"><div class="py-2.5 px-3.5 bg-light/80 small text-secondary border-l-2 border border-primary rounded-r-lg"><ul class="list-disc list-inside space-y-1">${itemsListHtml}</ul></div></div>`;
             }
 
             menuHtml += `
-            <div class="py-3.5 px-2 hover:bg-orange-50/50 rounded-lg transition-colors">
-                <div class="flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="py-3.5 px-2 hover:bg-primary text-white/50 rounded">
+                <div class="d-flex align-items-center justify-content-between g-3">
+                    <div class="d-flex align-items-center g-3 d-flex-1 min-w-0">
                         <input type="checkbox" id="edit_menu_cb_${idx}" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}"
-                            class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 edit-menu-checkbox shrink-0 cursor-pointer" ${checked} onchange="toggleEditMenu(${idx}, ${menu.id})">
-                        <label for="edit_menu_cb_${idx}" class="text-sm sm:text-base font-semibold text-gray-900 cursor-pointer truncate">${menu.name}</label>
+                            style="width: 16px; height: 16px;" class="rounded border border-secondary text-primary edit-menu-checkbox flex-shrink-0 cursor-pointer" ${checked} onchange="toggleEditMenu(${idx}, ${menu.id})">
+                        <label for="edit_menu_cb_${idx}" class="fs-6 sm:text-base fw-bold text-secondary cursor-pointer truncate">${menu.name}</label>
                     </div>
-                    <div class="flex items-center gap-1.5 transition-opacity shrink-0 ${opacityClass}" id="edit_menu_qty_container_${idx}">
-                        <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 transition-colors">−</button>
+                    <div class="d-flex align-items-center g-3.5 transition-opacity flex-shrink-0 ${opacityClass}" id="edit_menu_qty_container_${idx}">
+                        <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0">−</button>
                         <input type="number" id="edit_event_qty_${idx}" value="${qty}" min="1"
-                            class="w-14 text-center py-1 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-900 bg-white shrink-0 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400 desktop-no-spinner edit-event-qty" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}" data-type="custom_menu" oninput="validateEditEventInput(${idx})" onchange="validateEditEventInputBlur(${idx})">
-                        <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 edit-menu-plus-btn transition-colors">+</button>
+                            class="form-control w-14 text-center py-1 border border border-secondary rounded small sm:fs-6 fw-bold text-secondary bg-white flex-shrink-0 focus: focus:border border-primary -1 desktop-no-spinner edit-event-qty" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}" data-type="custom_menu" oninput="validateEditEventInput(${idx})" onchange="validateEditEventInputBlur(${idx})">
+                        <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0 edit-menu-plus-btn">+</button>
                     </div>
                 </div>
-                <div class="pl-7 mt-1">
-                    <span class="text-xs sm:text-sm font-semibold text-orange-600">Rp ${Number(menu.price).toLocaleString('id-ID')} / porsi</span>
+                <div class="ps-7 mt-1">
+                    <span class="small sm:fs-6 fw-bold text-primary">Rp ${Number(menu.price).toLocaleString('id-ID')} / porsi</span>
                 </div>
-                ${detailBtn ? `<div class="pl-7 mt-1.5">${detailBtn}</div>` : ''}
+                ${detailBtn ? `<div class="ps-7 mt-1.5">${detailBtn}</div>` : ''}
                 ${detailDiv}
             </div>`;
         });
@@ -737,13 +737,13 @@
                 const eChecked = eQty > 0 ? 'checked' : '';
 
                 extraHtml += `
-                <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-orange-50/50 rounded-lg transition-colors">
-                    <label for="edit_extra_cb_${eIdx}" class="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
+                <div class="py-3 px-2 d-flex align-items-center justify-content-between g-3 hover:bg-primary text-white/50 rounded">
+                    <label for="edit_extra_cb_${eIdx}" class="d-flex align-items-center g-3 cursor-pointer d-flex-1 min-w-0">
                         <input type="checkbox" id="edit_extra_cb_${eIdx}" data-idx="${eIdx}" data-id="${extra.id}" data-price="${extra.price}"
-                            class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 edit-extra-checkbox shrink-0 cursor-pointer" ${eChecked} onchange="toggleEditExtra(${eIdx}, ${extra.id})">
-                        <span class="text-sm font-medium text-gray-800 truncate">${extra.name}</span>
+                            style="width: 16px; height: 16px;" class="rounded border border-secondary text-primary edit-extra-checkbox flex-shrink-0 cursor-pointer" ${eChecked} onchange="toggleEditExtra(${eIdx}, ${extra.id})">
+                        <span class="fs-6 fw-medium text-secondary truncate">${extra.name}</span>
                     </label>
-                    <span class="text-sm font-semibold text-orange-600 shrink-0">+Rp ${Number(extra.price).toLocaleString('id-ID')}</span>
+                    <span class="fs-6 fw-bold text-primary flex-shrink-0">+Rp ${Number(extra.price).toLocaleString('id-ID')}</span>
                     <input type="hidden" id="edit_event_qty_${eIdx}" value="${eQty}"
                         class="edit-event-qty" data-idx="${eIdx}" data-id="${extra.id}" data-price="${extra.price}" data-type="addition">
                 </div>`;
@@ -759,9 +759,9 @@
             servings.forEach(s => {
                 const checked = group.serving_type_id == s.id ? 'checked' : '';
                 servingHtml += `
-                <label class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-orange-50/50 cursor-pointer transition-colors border border-gray-100 sm:border-transparent sm:hover:border-gray-100">
-                    <input type="radio" name="serving_type_id" value="${s.id}" class="w-4 h-4 text-orange-500 border-gray-300 focus:ring-orange-400 cursor-pointer shrink-0" ${checked} onchange="recalcEditEvent()">
-                    <span class="text-sm font-medium text-gray-800">${s.name}</span>
+                <label class="d-flex align-items-center g-3 py-2 px-3 rounded hover:bg-primary text-white/50 cursor-pointer border border border-secondary sm:border-transparent sm:hover:border border-secondary">
+                    <input type="radio" name="serving_type_id" value="${s.id}" style="width: 16px; height: 16px;" class="text-primary border border-secondary cursor-pointer flex-shrink-0" ${checked} onchange="recalcEditEvent()">
+                    <span class="fs-6 fw-medium text-secondary">${s.name}</span>
                 </label>`;
             });
             document.getElementById('editEventServingList').innerHTML = servingHtml;
@@ -1100,19 +1100,19 @@
         
         let html = '';
         group.items.forEach(i => {
-            const badge = i.item_type === 'package_item' ? '<span class="text-xs text-green-600 font-medium">(Termasuk)</span>' : '';
+            const badge = i.item_type === 'package_item' ? '<span class="small text-success fw-medium">(Termasuk)</span>' : '';
             const priceStr = i.item_type === 'package_item' ? '' : `Rp ${Number(i.subtotal).toLocaleString('id-ID')}`;
             html += `
-            <div class="py-2.5 flex items-center justify-between text-sm">
+            <div class="py-2.5 d-flex align-items-center justify-content-between fs-6">
                 <div>
-                    <span class="font-medium text-gray-900">${i.name}</span>
-                    <span class="text-gray-500 text-xs ml-1">× ${i.quantity}</span>
+                    <span class="fw-medium text-secondary">${i.name}</span>
+                    <span class="text-secondary small ms-1">× ${i.quantity}</span>
                     ${badge}
                 </div>
-                <span class="font-medium text-gray-700">${priceStr}</span>
+                <span class="fw-medium text-secondary">${priceStr}</span>
             </div>`;
         });
-        document.getElementById('detailModalList').innerHTML = html || '<p class="text-sm text-gray-500 py-2">Tidak ada menu</p>';
+        document.getElementById('detailModalList').innerHTML = html || '<p class="fs-6 text-secondary py-2">Tidak ada menu</p>';
         
         if (group.serving_name) {
             document.getElementById('detailModalServingSection').classList.remove('hidden');

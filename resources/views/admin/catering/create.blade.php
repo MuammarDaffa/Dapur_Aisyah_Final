@@ -3,139 +3,139 @@
 @section('content')
 <div class="max-w-2xl">
     <div class="mb-6">
-        <a href="{{ route('admin.catering.index') }}" class="text-sm text-gray-500 hover:text-orange-500 transition-colors">← Kembali ke Daftar Katering</a>
+        <a href="{{ route('admin.catering.index') }}" class="fs-6 text-secondary hover:text-primary">← Kembali ke Daftar Katering</a>
     </div>
 
-    <form action="{{ route('admin.catering.store') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-xl p-6 shadow-sm border space-y-5">
+    <form action="{{ route('admin.catering.store') }}" method="POST" enctype="multipart/form-data" class="card shadow-sm mb-4 p-4">
         @csrf
 
         {{-- Nama --}}
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Katering *</label>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Nama Katering *</label>
             <input type="text" name="name" required value="{{ old('name') }}"
-                   class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500"
+                   class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary"
                    placeholder="cth: Katering Harian">
-            @error('name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+            @error('name')<p class="text-danger small mt-1">{{ $message }}</p>@enderror
         </div>
 
         {{-- Deskripsi --}}
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi *</label>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Deskripsi *</label>
             <textarea name="description" rows="3" required
-                      class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500"
+                      class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary"
                       placeholder="Deskripsi singkat katering...">{{ old('description') }}</textarea>
         </div>
 
         {{-- Tipe Katering --}}
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Katering *</label>
-            <div class="grid grid-cols-2 gap-3">
-                <label class="relative cursor-pointer">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Tipe Katering *</label>
+            <div class="row row-cols-2 g-3">
+                <label class="position-relative cursor-pointer">
                     <input type="radio" name="catering_type" value="daily" {{ old('catering_type', 'daily') === 'daily' ? 'checked' : '' }}
                            onchange="toggleCateringTypeFields()" class="peer sr-only">
-                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-gray-300">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-6 h-6 text-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    <div class="p-4 border-2 rounded peer-checked:border-blue-500 peer-checked:bg-info text-white hover:border border-secondary">
+                        <div class="d-flex align-items-center g-3">
+                            <svg style="width: 24px; height: 24px;" class="text-info flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                             <div>
-                                <p class="font-semibold text-gray-800">Daily</p>
-                                <p class="text-xs text-gray-500">Menu harian dengan produk</p>
+                                <p class="fw-bold text-secondary">Daily</p>
+                                <p class="small text-secondary">Menu harian dengan produk</p>
                             </div>
                         </div>
                     </div>
                 </label>
-                <label class="relative cursor-pointer">
+                <label class="position-relative cursor-pointer">
                     <input type="radio" name="catering_type" value="event" {{ old('catering_type') === 'event' ? 'checked' : '' }}
                            onchange="toggleCateringTypeFields()" class="peer sr-only">
-                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 hover:border-gray-300">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-6 h-6 text-purple-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                    <div class="p-4 border-2 rounded peer-checked:border-purple-500 peer-checked:bg-light hover:border border-secondary">
+                        <div class="d-flex align-items-center g-3">
+                            <svg style="width: 24px; height: 24px;" class="text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
                             <div>
-                                <p class="font-semibold text-gray-800">Event</p>
-                                <p class="text-xs text-gray-500">Acara dengan paket catering</p>
+                                <p class="fw-bold text-secondary">Event</p>
+                                <p class="small text-secondary">Acara dengan paket catering</p>
                             </div>
                         </div>
                     </div>
                 </label>
             </div>
-            @error('catering_type')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+            @error('catering_type')<p class="text-danger small mt-1">{{ $message }}</p>@enderror
         </div>
 
         {{-- Harga & Porsi --}}
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="base_price_grid">
-            <div id="base_price_wrapper" class="sm:col-span-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Harga Dasar (Rp) *</label>
+        <div class="row row-cols-1 row-cols-md-3 g-3" id="base_price_grid">
+            <div id="base_price_wrapper" class="col-md-4">
+                <label class="form-label fw-bold">Harga Dasar (Rp) *</label>
                 <input type="text" name="base_price" required value="{{ old('base_price') }}" 
-                       class="w-full pl-4 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all rupiah-input">
+                       class="form-control w-100 ps-4 pe-4 py-2.5 rounded border border border-secondary focus:border border-primary -2 rupiah-input">
             </div>
             <div id="min_portion_wrapper">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Min. Porsi *</label>
+                <label class="form-label fw-bold">Min. Porsi *</label>
                 <input type="number" name="min_portion" value="{{ old('min_portion', 1) }}" min="1"
-                       class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                       class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary">
             </div>
             <div id="max_portion_wrapper">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Max. Porsi</label>
+                <label class="form-label fw-bold">Max. Porsi</label>
                 <input type="number" name="max_portion" value="{{ old('max_portion') }}" placeholder="Tidak dibatasi"
-                       class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
+                       class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary">
             </div>
         </div>
 
         {{-- Ketentuan & Jadwal (Hanya Event) --}}
-        <div id="terms_schedule_wrapper" class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ketentuan Pemesanan</label>
+        <div id="terms_schedule_wrapper" class="row row-cols-2 g-3">
+            <div class="mb-3">
+            <label class="form-label fw-bold">Ketentuan Pemesanan</label>
                 <textarea name="order_terms" rows="2"
-                          class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500"
+                          class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary"
                           placeholder="Ketentuan khusus...">{{ old('order_terms') }}</textarea>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Catatan Jadwal</label>
+            <div class="mb-3">
+            <label class="form-label fw-bold">Catatan Jadwal</label>
                 <textarea name="schedule_notes" rows="2"
-                          class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500"
+                          class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary"
                           placeholder="Info jadwal...">{{ old('schedule_notes') }}</textarea>
             </div>
         </div>
 
         {{-- Pengaturan Cutoff (Hanya Event) --}}
-        <div id="cutoff_wrapper" class="bg-orange-50/50 border border-orange-100 rounded-xl p-4 space-y-4">
+        <div id="cutoff_wrapper" class="bg-primary text-white/50 border border border-primary rounded p-4 d-flex flex-column gap-3">
             <div>
-                <h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h4 class="fs-6 fw-bold text-secondary d-flex align-items-center g-3">
+                    <svg style="width: 16px; height: 16px;" class="text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span>Pengaturan Cutoff Pemesanan</span>
                 </h4>
-                <p class="text-xs text-gray-500 mt-0.5">Batas waktu minimal pemesanan untuk layanan ini</p>
+                <p class="small text-secondary mt-0.5">Batas waktu minimal pemesanan untuk layanan ini</p>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Minimal Hari Pemesanan</label>
+            <div class="mb-3">
+            <label class="form-label fw-bold">Minimal Hari Pemesanan</label>
                 <input type="number" name="minimal_order_days" value="{{ old('minimal_order_days') }}" min="0" placeholder="cth: 3"
-                       class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-orange-500 focus:border-orange-500">
-                <p class="text-xs text-gray-400 mt-1">Jumlah hari minimal sebelum tanggal acara/pengiriman</p>
+                       class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary">
+                <p class="small text-secondary mt-1">Jumlah hari minimal sebelum tanggal acara/pengiriman</p>
             </div>
         </div>
 
         {{-- Gambar --}}
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Gambar</label>
             <input type="file" name="image" accept="image/*"
-                   class="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-orange-50 file:text-orange-700 file:font-medium hover:file:bg-orange-100">
-            <div id="imagePreviewContainer" class="hidden mt-3">
-                <p class="text-xs text-gray-500 mb-1.5 font-medium">Preview Gambar:</p>
-                <div class="inline-block border border-gray-200 rounded-xl overflow-hidden bg-gray-50 shadow-sm">
-                    <img id="imagePreview" src="" alt="Preview Gambar" class="h-28 w-auto object-cover block">
+                   class="w-100 px-4 py-2.5 rounded border border border-secondary fs-6 file:me-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-primary text-white file:text-primary file:fw-medium hover:file:bg-primary text-white">
+            <div id="imagePreviewContainer" class="d-none mt-3">
+                <p class="small text-secondary mb-1.5 fw-medium">Preview Gambar:</p>
+                <div class="d-inline-block border border border-secondary rounded overflow-hidden bg-light shadow-sm">
+                    <img id="imagePreview" src="" alt="Preview Gambar" style="height: 112px;" class="w-auto object-fit-cover d-block">
                 </div>
             </div>
         </div>
 
         {{-- Status --}}
-        <div class="flex items-center gap-3 pt-2">
-            <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-orange-500 focus:ring-orange-400">
-                <span class="text-sm font-medium text-gray-700">Aktif</span>
+        <div class="d-flex align-items-center g-3 pt-2">
+            <label class="d-flex align-items-center g-3 cursor-pointer">
+                <input type="checkbox" name="is_active" value="1" checked class="rounded border border-secondary text-primary">
+                <span class="fs-6 fw-medium text-secondary">Aktif</span>
             </label>
         </div>
 
         {{-- Submit --}}
         <div class="pt-4 border-t">
-            <button type="submit" class="px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm">
+            <button type="submit" class="btn btn-primary">
                 Simpan Katering
             </button>
         </div>
@@ -178,11 +178,11 @@ function toggleCateringTypeFields() {
         if (isDaily) {
             baseGrid.classList.remove('sm:grid-cols-3');
             baseGrid.classList.add('sm:grid-cols-1');
-            baseWrapper.classList.remove('sm:col-span-1');
+            baseWrapper.classList.remove('col-md-4');
         } else {
             baseGrid.classList.remove('sm:grid-cols-1');
             baseGrid.classList.add('sm:grid-cols-3');
-            baseWrapper.classList.add('sm:col-span-1');
+            baseWrapper.classList.add('col-md-4');
         }
     }
 }

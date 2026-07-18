@@ -5,52 +5,52 @@
 @section('content')
 <div class="space-y-6">
     {{-- Header --}}
-    <div class="flex items-center justify-between">
+    <div class="d-flex align-items-center justify-content-between">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800">Manajemen Ulasan</h2>
-            <p class="text-sm text-gray-500 mt-1">Kelola ulasan dari pelanggan</p>
+            <h2 class="fs-3 fw-bold text-secondary">Manajemen Ulasan</h2>
+            <p class="fs-6 text-secondary mt-1">Kelola ulasan dari pelanggan</p>
         </div>
-        <div class="bg-gradient-to-r from-orange-400 to-amber-500 text-white px-4 py-2 rounded-xl font-semibold shadow inline-flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+        <div class="text-white px-4 py-2 rounded fw-bold shadow d-inline-d-flex align-items-center g-3">
+            <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
             <span>{{ $reviews->total() }} Ulasan</span>
         </div>
     </div>
 
     {{-- Table Card --}}
-    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+    <div class="bg-white rounded shadow-md overflow-hidden border border border-secondary">
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+            <table class="w-100 fs-6">
+                <thead class="border-b border border-secondary">
                     <tr>
-                        <th class="text-left px-6 py-4 font-semibold text-gray-600">Pelanggan</th>
-                        <th class="text-left px-6 py-4 font-semibold text-gray-600">Layanan</th>
-                        <th class="text-left px-6 py-4 font-semibold text-gray-600">Komentar</th>
-                        <th class="text-left px-6 py-4 font-semibold text-gray-600">Tanggal</th>
-                        <th class="text-center px-6 py-4 font-semibold text-gray-600">Aksi</th>
+                        <th class="text-start px-6 py-4 fw-bold text-secondary">Pelanggan</th>
+                        <th class="text-start px-6 py-4 fw-bold text-secondary">Layanan</th>
+                        <th class="text-start px-6 py-4 fw-bold text-secondary">Komentar</th>
+                        <th class="text-start px-6 py-4 fw-bold text-secondary">Tanggal</th>
+                        <th class="text-center px-6 py-4 fw-bold text-secondary">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($reviews as $review)
-                        <tr class="hover:bg-orange-50/30 transition-colors">
+                        <tr class="hover:bg-primary text-white/30">
                             <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                <div class="d-flex align-items-center g-3">
+                                    <div style="height: 36px;" class="w-9 rounded-pill d-flex align-items-center justify-content-center text-white fs-6 fw-bold">
                                         {{ strtoupper(substr($review->user->name ?? '?', 0, 1)) }}
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-800">{{ $review->user->name ?? '-' }}</p>
-                                        <p class="text-xs text-gray-400">{{ $review->user->email ?? '' }}</p>
+                                        <p class="fw-medium text-secondary">{{ $review->user->name ?? '-' }}</p>
+                                        <p class="small text-secondary">{{ $review->user->email ?? '' }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <span class="text-gray-700">{{ $review->order->cateringService->name ?? '-' }}</span>
+                                <span class="text-secondary">{{ $review->order->cateringService->name ?? '-' }}</span>
                             </td>
                             <td class="px-6 py-4">
-                                <p class="text-gray-600 max-w-md">{{ $review->comment ?? '-' }}</p>
+                                <p class="text-secondary max-w-md">{{ $review->comment ?? '-' }}</p>
                             </td>
                             <td class="px-6 py-4">
-                                <span class="text-gray-500">{{ $review->created_at->format('d M Y') }}</span>
+                                <span class="text-secondary">{{ $review->created_at->format('d M Y') }}</span>
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST"
@@ -58,9 +58,9 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                            class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-all"
+                                            class="btn btn-outline-danger btn btn-danger text-danger hover:text-danger hover:bg-danger text-white p-2 rounded"
                                             title="Hapus Ulasan">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                         </svg>
                                     </button>
@@ -70,11 +70,11 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-6 py-12 text-center">
-                                <div class="flex flex-col items-center gap-2">
-                                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-1">
-                                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                <div class="d-flex d-flex-column align-items-center g-3">
+                                    <div style="width: 64px; height: 64px;" class="bg-light rounded-pill d-flex align-items-center justify-content-center mb-1">
+                                        <svg style="width: 32px; height: 32px;" class="text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                                     </div>
-                                    <p class="text-gray-400 font-medium">Belum ada ulasan</p>
+                                    <p class="text-secondary fw-medium">Belum ada ulasan</p>
                                 </div>
                             </td>
                         </tr>
@@ -85,7 +85,7 @@
 
         {{-- Pagination --}}
         @if($reviews->hasPages())
-            <div class="px-6 py-4 border-t border-gray-100">
+            <div class="px-6 py-4 border-t border border-secondary">
                 {{ $reviews->links() }}
             </div>
         @endif

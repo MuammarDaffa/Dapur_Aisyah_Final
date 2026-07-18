@@ -1,50 +1,50 @@
 @props(['product'])
 
-<div class="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-1">
+<div class="group bg-white rounded shadow-md overflow-hidden border border border-secondary hover:-translate-y-1">
     {{-- Product Image --}}
-    <div class="relative overflow-hidden h-48">
+    <div style="height: 192px;" class="position-relative overflow-hidden">
         @if($product->image)
             <img src="{{ asset('storage/' . $product->image) }}"
                  alt="{{ $product->name }}"
-                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                 class="w-100 h-100 object-cover group- transition-">
         @else
-            <div class="w-full h-full bg-gradient-to-br from-orange-100 to-amber-50 flex items-center justify-center">
+            <div class="w-100 h-100 d-flex align-items-center justify-content-center">
                 <span class="text-5xl">🍽️</span>
             </div>
         @endif
 
         {{-- Service Badge --}}
         @if($product->cateringService)
-            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full shadow">
+            <div class="position-absolute bg-white/90 backdrop-blur-sm text-secondary small fw-medium px-2.5 py-1 rounded-pill shadow">
                 {{ $product->cateringService->name }}
             </div>
         @endif
     </div>
 
     {{-- Card Content --}}
-    <div class="p-4 space-y-3">
-        <h3 class="font-semibold text-gray-800 text-lg leading-tight line-clamp-1 group-hover:text-orange-600 transition-colors">
+    <div class="p-4 d-flex flex-column gap-2">
+        <h3 class="fw-bold text-secondary fs-5 leading-tight line-clamp-1 group-hover:text-primary">
             {{ $product->name }}
         </h3>
 
         @if($product->description)
-            <p class="text-sm text-gray-500 line-clamp-2">{{ $product->description }}</p>
+            <p class="fs-6 text-secondary line-clamp-2">{{ $product->description }}</p>
         @endif
 
         {{-- Available Days --}}
         @if($product->available_days)
-            <div class="flex flex-wrap gap-1">
-                <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">
+            <div class="d-flex d-flex-wrap g-3">
+                <span class="small bg-success text-white text-success px-2 py-0.5 rounded-pill fw-medium">
                     {{ ucfirst($product->available_days) }}
                 </span>
             </div>
         @endif
 
         {{-- Price & Action --}}
-        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+        <div class="d-flex align-items-center justify-content-between pt-2 border-t border border-secondary">
             <div>
-                <span class="text-xs text-gray-400">Mulai dari</span>
-                <p class="text-lg font-bold text-orange-600">
+                <span class="small text-secondary">Mulai dari</span>
+                <p class="fs-5 fw-bold text-primary">
                     Rp {{ number_format($product->price, 0, ',', '.') }}
                 </p>
             </div>
@@ -54,9 +54,9 @@
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <input type="hidden" name="quantity" value="1">
                 <button type="submit"
-                        class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white p-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
+                        class="hover: hover: text-white p-2.5 rounded shadow-md hover:shadow active:"
                         title="Tambah ke Keranjang">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
                 </button>

@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * Model CustomOption menyimpan data kustomisasi atau opsi fleksibel dalam pemesanan.
+ * Ini bisa berupa tipe penyajian, dekorasi, atau ekstra lauk yang dapat dipilih oleh pelanggan.
+ */
 class CustomOption extends Model
 {
     protected $fillable = [

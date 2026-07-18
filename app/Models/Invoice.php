@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Model Invoice menyimpan data tagihan pembayaran untuk sebuah pesanan.
+ * Terhubung (relasi) dengan entitas Order dan menyimpan bukti PDF jika ada.
+ */
 class Invoice extends Model
 {
     protected $fillable = [
@@ -18,6 +22,11 @@ class Invoice extends Model
         ];
     }
 
+    /**
+         * Menghasilkan nomor invoice unik secara otomatis.
+         * Format yang dihasilkan: INV-YYYYMMDD-XXXX (contoh: INV-20260718-0001).
+         * @return string
+         */
     public static function generateInvoiceNumber(): string
     {
         $date = now()->format('Ymd');

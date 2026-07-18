@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
+/**
+ * Model CateringService merepresentasikan jenis layanan utama (Katering Harian, Prasmanan, dll).
+ * Model ini menjadi pusat konfigurasi untuk harga dasar, batas porsi, dan fitur layanan.
+ */
 class CateringService extends Model
 {
     use HasFactory;
@@ -44,6 +48,11 @@ class CateringService extends Model
      * Cek apakah layanan memiliki fitur tertentu.
      * Fitur: 'daily_menu', 'packages', 'full_custom'
      */
+    /**
+         * Memeriksa apakah layanan ini mendukung fitur tertentu (misal: daily_menu, packages, full_custom).
+         * @param string $feature
+         * @return bool
+         */
     public function hasFeature(string $feature): bool
     {
         return is_array($this->available_features)

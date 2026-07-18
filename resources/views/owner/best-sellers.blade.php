@@ -5,50 +5,50 @@
 @section('content')
 <div class="space-y-6">
     {{-- Header --}}
-    <div class="flex items-center justify-between">
+    <div class="d-flex align-items-center justify-content-between">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800">Produk Best Seller</h2>
-            <p class="text-sm text-gray-500 mt-1">Top produk berdasarkan jumlah pembelian</p>
+            <h2 class="fs-3 fw-bold text-secondary">Produk Best Seller</h2>
+            <p class="fs-6 text-secondary mt-1">Top produk berdasarkan jumlah pembelian</p>
         </div>
-        <div class="bg-gradient-to-r from-amber-400 to-orange-500 text-white px-4 py-2 rounded-xl font-semibold shadow">
+        <div class="text-white px-4 py-2 rounded fw-bold shadow">
             ⭐ {{ $bestSellers->total() }} Produk
         </div>
     </div>
 
     {{-- Product Grid --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="row row-cols-1 sm:row-cols-2 lg:row-cols-4 g-3">
         @forelse($bestSellers as $index => $product)
-            <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div class="bg-white rounded shadow-md overflow-hidden border border border-secondary hover:-translate-y-1">
                 {{-- Image --}}
-                <div class="relative h-44 overflow-hidden">
+                <div class="position-relative h-44 overflow-hidden">
                     @if($product->image)
                         <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
-                             class="w-full h-full object-cover">
+                             class="w-100 h-100 object-cover">
                     @else
-                        <div class="w-full h-full bg-gradient-to-br from-orange-100 to-amber-50 flex items-center justify-center">
+                        <div class="w-100 h-100 d-flex align-items-center justify-content-center">
                             <span class="text-5xl">🍽️</span>
                         </div>
                     @endif
 
                     {{-- Rank Badge --}}
-                    <div class="absolute top-3 left-3 w-9 h-9 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                    <div style="height: 36px;" class="position-absolute w-9 rounded-pill d-flex align-items-center justify-content-center text-white fw-bold fs-6 shadow">
                         #{{ $bestSellers->firstItem() + $index }}
                     </div>
                 </div>
 
                 {{-- Content --}}
-                <div class="p-4 space-y-2">
-                    <h3 class="font-semibold text-gray-800 truncate">{{ $product->name }}</h3>
+                <div class="p-4 d-flex flex-column gap-2">
+                    <h3 class="fw-bold text-secondary truncate">{{ $product->name }}</h3>
 
                     @if($product->cateringService)
-                        <p class="text-xs text-gray-400">{{ $product->cateringService->name }}</p>
+                        <p class="small text-secondary">{{ $product->cateringService->name }}</p>
                     @endif
 
-                    <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                        <span class="font-bold text-green-600">
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-t border border-secondary">
+                        <span class="fw-bold text-success">
                             Rp {{ number_format($product->price, 0, ',', '.') }}
                         </span>
-                        <div class="flex items-center gap-1 bg-teal-50 text-teal-700 px-2.5 py-1 rounded-full text-xs font-semibold">
+                        <div class="d-flex align-items-center g-3 bg-teal-50 text-teal-700 px-2.5 py-1 rounded-pill small fw-bold">
                             <span>📦</span>
                             <span>{{ $product->order_items_count }} terjual</span>
                         </div>
@@ -57,15 +57,15 @@
             </div>
         @empty
             <div class="col-span-full text-center py-12">
-                <span class="text-5xl block mb-3">📦</span>
-                <p class="text-gray-400 font-medium text-lg">Belum ada data penjualan</p>
+                <span class="text-5xl d-block mb-3">📦</span>
+                <p class="text-secondary fw-medium fs-5">Belum ada data penjualan</p>
             </div>
         @endforelse
     </div>
 
     {{-- Pagination --}}
     @if($bestSellers->hasPages())
-        <div class="flex justify-center">
+        <div class="d-flex justify-content-center">
             {{ $bestSellers->links() }}
         </div>
     @endif

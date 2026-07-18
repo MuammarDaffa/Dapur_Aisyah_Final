@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Model MenuPeriod merepresentasikan periode jadwal untuk layanan Katering Harian.
+ * Berfungsi mengelompokkan menu-menu harian (MenuPeriodItem) ke dalam rentang tanggal tertentu.
+ */
 class MenuPeriod extends Model
 {
     use HasFactory;
@@ -36,6 +40,11 @@ class MenuPeriod extends Model
     /**
      * Formatted range tanggal.
      */
+    /**
+         * Mendapatkan format pembacaan rentang tanggal periode secara manusiawi.
+         * Contoh Output: 01 Jul 2026 — 07 Jul 2026
+         * @return string
+         */
     public function getFormattedRangeAttribute(): string
     {
         return $this->start_date->translatedFormat('d M Y') . ' — ' . $this->end_date->translatedFormat('d M Y');

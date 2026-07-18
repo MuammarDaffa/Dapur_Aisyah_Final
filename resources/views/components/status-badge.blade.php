@@ -62,6 +62,6 @@
 @endphp
 
 <span {{ $attributes->merge(['class' => "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ring-1 {$config['bg']} {$config['text']} {$config['ring']}"]) }}>
-    <span class="w-1.5 h-1.5 rounded-full {{ $config['dot'] }} animate-pulse"></span>
+    <span class="w-1.5 h-1.5 rounded-pill {{ $config['dot'] }} animate-pulse"></span>
     {{ $config['label'] }}
 </span>

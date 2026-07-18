@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Model District merepresentasikan entitas Kecamatan.
+ * Berfungsi sebagai relasi wilayah (Village) dan basis perhitungan tarif pengiriman (ShippingCost).
+ */
 class District extends Model
 {
     public $timestamps = false;

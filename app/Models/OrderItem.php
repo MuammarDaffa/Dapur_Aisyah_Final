@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Model OrderItem merepresentasikan satuan item/menu dalam sebuah pesanan.
+ * Menyimpan nama final item (termasuk kustomisasi) serta harga dan subtotal per item.
+ */
 class OrderItem extends Model
 {
     public $timestamps = false;
@@ -40,6 +44,11 @@ class OrderItem extends Model
     /**
      * Nama menu yang sudah dibersihkan dari tag Extra dan Kirim.
      */
+    /**
+         * Mendapatkan nama menu inti dengan menghapus teks atribut tambahan (seperti Ekstra atau Kirim).
+         * Tujuannya agar rekapitulasi nama makanan di dapur menjadi lebih bersih.
+         * @return string
+         */
     public function getFormattedMenuNameAttribute(): string
     {
         $name = $this->item_name ?? '';
@@ -58,6 +67,12 @@ class OrderItem extends Model
     /**
      * Daftar extra yang diformat ringkas, misal "Sayur Sup (1), Sambal (1)" atau null jika tidak ada.
      */
+    /**
+         * Mengekstrak detail opsi tambahan (ekstra) dari dalam string nama item dan memformatnya kembali.
+         * Proses: Membaca pola (Extra: ...) menggunakan Regex dan memisahkannya.
+         * Output yang diharapkan: "Sayur Sup (1), Sambal (2)".
+         * @return string|null
+         */
     public function getFormattedExtrasAttribute(): ?string
     {
         $raw = $this->item_name ?? '';

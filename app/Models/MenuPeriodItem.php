@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Model MenuPeriodItem merepresentasikan satu produk/menu yang dijadwalkan pada hari tertentu.
+ * Digunakan dalam fitur Katering Harian untuk mengontrol ketersediaan menu per tanggal.
+ */
 class MenuPeriodItem extends Model
 {
     use HasFactory;
@@ -74,6 +78,11 @@ class MenuPeriodItem extends Model
      * - Menu dengan tanggal sebelum hari ini tidak dapat dipesan.
      * - Tidak menggunakan batas jam pemesanan (cut-off time) maupun minimal_order_days.
      */
+    /**
+         * Memeriksa apakah menu harian ini masih diizinkan untuk dipesan pelanggan.
+         * Alur bisnis: Hanya menu dengan tanggal pengiriman hari ini atau ke depannya yang bisa dipesan.
+         * @return bool
+         */
     public function canOrder(): bool
     {
         return !$this->isPast();

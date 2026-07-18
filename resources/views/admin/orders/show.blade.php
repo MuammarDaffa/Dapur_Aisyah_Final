@@ -1,46 +1,46 @@
 @extends('layouts.admin')
 @section('title', 'Detail Pesanan')
 @section('content')
-<a href="{{ route('admin.orders') }}" class="text-sm text-orange-500 hover:text-orange-600 mb-4 inline-block">← Kembali</a>
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<a href="{{ route('admin.orders') }}" class="fs-6 text-primary hover:text-primary mb-4 d-inline-block">← Kembali</a>
+<div class="row row-cols-1 lg:row-cols-3 g-3">
     <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white rounded-xl p-6 shadow-sm border">
-            <div class="flex flex-col sm:flex-row justify-between items-start gap-2 mb-4">
-                <h3 class="text-xl font-bold">{{ $order->order_number }}</h3>
-                <span class="px-3 py-1 rounded-full text-sm font-medium {{ match($order->status) { 'processing'=>'bg-blue-100 text-blue-700','on_delivery'=>'bg-purple-100 text-purple-700','completed'=>'bg-green-100 text-green-700','cancelled'=>'bg-red-100 text-red-700',default=>'bg-gray-100 text-gray-700' } }}">{{ $order->status_label }}</span>
+        <div class="card shadow-sm mb-4 p-4">
+            <div class="d-flex d-flex-column sm:d-flex-row justify-content-between items-start g-3 mb-4">
+                <h3 class="fs-4 fw-bold">{{ $order->order_number }}</h3>
+                <span class="px-3 py-1 rounded-pill fs-6 fw-medium {{ match($order->status) { 'processing'=>'bg-info text-white text-info','on_delivery'=>'bg-purple-100 text-purple-700','completed'=>'bg-success text-white text-success','cancelled'=>'bg-danger text-white text-danger',default=>'bg-light text-secondary' } }}">{{ $order->status_label }}</span>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                <div><span class="text-gray-500">Pelanggan:</span><br><b>{{ $order->user->name }}</b><br>{{ $order->user->phone }}<br>{{ $order->user->email }}</div>
-                <div><span class="text-gray-500">Layanan:</span><br><b>{{ $order->cateringService->name ?? '-' }}</b></div>
-                <div><span class="text-gray-500">Tanggal:</span><br><b>{{ $order->order_date->format('d M Y') }}</b></div>
-                <div><span class="text-gray-500">Metode:</span><br><b>{{ ucfirst($order->pickup_method) }}</b></div>
+            <div class="row row-cols-1 sm:row-cols-2 g-3 fs-6">
+                <div><span class="text-secondary">Pelanggan:</span><br><b>{{ $order->user->name }}</b><br>{{ $order->user->phone }}<br>{{ $order->user->email }}</div>
+                <div><span class="text-secondary">Layanan:</span><br><b>{{ $order->cateringService->name ?? '-' }}</b></div>
+                <div><span class="text-secondary">Tanggal:</span><br><b>{{ $order->order_date->format('d M Y') }}</b></div>
+                <div><span class="text-secondary">Metode:</span><br><b>{{ ucfirst($order->pickup_method) }}</b></div>
             </div>
             @if($order->pickup_method === 'delivery')
-            <div class="mt-4 pt-4 border-t text-sm">
+            <div class="mt-4 pt-4 border-t fs-6">
                 <b>Alamat:</b> {{ $order->district->name ?? '' }}, {{ $order->village->name ?? '' }}<br>{{ $order->address_detail }}
                 @if($order->latitude && $order->longitude)
-                    <p class="text-xs text-gray-400 mt-1">Koordinat: {{ $order->latitude }}, {{ $order->longitude }}</p>
+                    <p class="small text-secondary mt-1">Koordinat: {{ $order->latitude }}, {{ $order->longitude }}</p>
                 @endif
             </div>
             @endif
             @if($order->cancellation_reason)
-            <div class="mt-4 pt-4 border-t text-sm">
-                <p class="text-red-600 font-medium">Alasan Pembatalan:</p>
-                <p class="text-gray-700">{{ $order->cancellation_reason }}</p>
+            <div class="mt-4 pt-4 border-t fs-6">
+                <p class="text-danger fw-medium">Alasan Pembatalan:</p>
+                <p class="text-secondary">{{ $order->cancellation_reason }}</p>
             </div>
             @endif
         </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border">
-            <h3 class="font-bold mb-4">Item Pesanan</h3>
+        <div class="card shadow-sm mb-4 p-4">
+            <h3 class="fw-bold mb-4">Item Pesanan</h3>
             <div class="divide-y divide-gray-100">
                 @if($order->cateringService?->isDaily())
                     @foreach($order->items as $item)
                     <div class="py-3">
-                        <p class="font-medium text-gray-900">{{ $item->formatted_menu_name }}</p>
+                        <p class="fw-medium text-secondary">{{ $item->formatted_menu_name }}</p>
                         @if($item->formatted_extras)
-                            <p class="text-sm text-gray-600 mt-0.5"><span class="font-medium">Extra:</span> {{ $item->formatted_extras }}</p>
+                            <p class="fs-6 text-secondary mt-0.5"><span class="fw-medium">Extra:</span> {{ $item->formatted_extras }}</p>
                         @endif
-                        <p class="text-sm font-medium text-gray-900 mt-1">Total: Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
+                        <p class="fs-6 fw-medium text-secondary mt-1">Total: Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
                     </div>
                     @endforeach
                 @else
@@ -73,39 +73,39 @@
                             $allPkgPelengkap = array_merge($pkgBenefits, $pkgExtras->map(fn($e) => $e->formatted_menu_name)->toArray());
                         @endphp
                         <div class="py-4 first:pt-0 last:pb-0">
-                            <div class="flex items-center justify-between gap-4">
+                            <div class="d-flex align-items-center justify-content-between g-3">
                                 <div>
-                                    <h4 class="font-semibold text-gray-900 text-base">{{ $pkg->formatted_menu_name }} <span class="text-gray-600">({{ $pkg->quantity }})</span></h4>
-                                    <button type="button" onclick="toggleOrderItemDetail(this, 'admin-detail-pkg-{{ $pIdx }}')" class="mt-1 text-xs font-semibold text-orange-500 hover:text-orange-600 focus:outline-none">Lihat Detail</button>
+                                    <h4 class="fw-bold text-secondary text-base">{{ $pkg->formatted_menu_name }} <span class="text-secondary">({{ $pkg->quantity }})</span></h4>
+                                    <button type="button" onclick="toggleOrderItemDetail(this, 'admin-detail-pkg-{{ $pIdx }}')" class="mt-1 small fw-bold text-primary hover:text-primary focus:">Lihat Detail</button>
                                 </div>
-                                <div class="text-right">
-                                    <p class="font-bold text-gray-900 text-base">Rp {{ number_format($pkg->subtotal, 0, ',', '.') }}</p>
+                                <div class="text-end">
+                                    <p class="fw-bold text-secondary text-base">Rp {{ number_format($pkg->subtotal, 0, ',', '.') }}</p>
                                 </div>
                             </div>
-                            <div id="admin-detail-pkg-{{ $pIdx }}" class="hidden mt-3 pt-3 border-t border-gray-100 text-sm text-gray-700 space-y-1.5">
-                                <div class="flex items-start">
-                                    <span class="w-28 shrink-0 text-gray-500">Total Porsi</span>
-                                    <span class="mr-2 text-gray-400">:</span>
-                                    <span class="font-medium text-gray-900">{{ $pkgPortion }} Porsi</span>
+                            <div id="admin-detail-pkg-{{ $pIdx }}" class="d-none mt-3 pt-3 border-t border border-secondary fs-6 text-secondary space-y-1.5">
+                                <div class="d-flex items-start">
+                                    <span class="w-28 flex-shrink-0 text-secondary">Total Porsi</span>
+                                    <span class="me-2 text-secondary">:</span>
+                                    <span class="fw-medium text-secondary">{{ $pkgPortion }} Porsi</span>
                                 </div>
                                 @if($servingName)
-                                <div class="flex items-start">
-                                    <span class="w-28 shrink-0 text-gray-500">Penyajian</span>
-                                    <span class="mr-2 text-gray-400">:</span>
-                                    <span class="font-medium text-gray-900">{{ $servingName }}</span>
+                                <div class="d-flex items-start">
+                                    <span class="w-28 flex-shrink-0 text-secondary">Penyajian</span>
+                                    <span class="me-2 text-secondary">:</span>
+                                    <span class="fw-medium text-secondary">{{ $servingName }}</span>
                                 </div>
                                 @endif
                                 @if($pkgMenus->isNotEmpty())
-                                <div class="flex items-start">
-                                    <span class="w-28 shrink-0 text-gray-500">Menu</span>
-                                    <span class="mr-2 text-gray-400">:</span>
-                                    <span class="font-medium text-gray-900">{{ $pkgMenus->map(fn($m) => $m->formatted_menu_name)->join(', ') }}</span>
+                                <div class="d-flex items-start">
+                                    <span class="w-28 flex-shrink-0 text-secondary">Menu</span>
+                                    <span class="me-2 text-secondary">:</span>
+                                    <span class="fw-medium text-secondary">{{ $pkgMenus->map(fn($m) => $m->formatted_menu_name)->join(', ') }}</span>
                                 </div>
                                 @endif
-                                <div class="flex items-start">
-                                    <span class="w-28 shrink-0 text-gray-500">Pelengkap</span>
-                                    <span class="mr-2 text-gray-400">:</span>
-                                    <span class="font-medium text-gray-900">{{ !empty($allPkgPelengkap) ? implode(', ', $allPkgPelengkap) : '-' }}</span>
+                                <div class="d-flex items-start">
+                                    <span class="w-28 flex-shrink-0 text-secondary">Pelengkap</span>
+                                    <span class="me-2 text-secondary">:</span>
+                                    <span class="fw-medium text-secondary">{{ !empty($allPkgPelengkap) ? implode(', ', $allPkgPelengkap) : '-' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -121,39 +121,39 @@
                         @endphp
                         @if($displayCustomMenus->isNotEmpty() || $displayCustomExtras->isNotEmpty() || $packageItems->isEmpty())
                         <div class="py-4 first:pt-0 last:pb-0">
-                            <div class="flex items-center justify-between gap-4">
+                            <div class="d-flex align-items-center justify-content-between g-3">
                                 <div>
-                                    <h4 class="font-semibold text-gray-900 text-base">Custom Menu</h4>
-                                    <button type="button" onclick="toggleOrderItemDetail(this, 'admin-detail-custom-0')" class="mt-1 text-xs font-semibold text-orange-500 hover:text-orange-600 focus:outline-none">Lihat Detail</button>
+                                    <h4 class="fw-bold text-secondary text-base">Custom Menu</h4>
+                                    <button type="button" onclick="toggleOrderItemDetail(this, 'admin-detail-custom-0')" class="mt-1 small fw-bold text-primary hover:text-primary focus:">Lihat Detail</button>
                                 </div>
-                                <div class="text-right">
-                                    <p class="font-bold text-gray-900 text-base">Rp {{ number_format($customTotal, 0, ',', '.') }}</p>
+                                <div class="text-end">
+                                    <p class="fw-bold text-secondary text-base">Rp {{ number_format($customTotal, 0, ',', '.') }}</p>
                                 </div>
                             </div>
-                            <div id="admin-detail-custom-0" class="hidden mt-3 pt-3 border-t border-gray-100 text-sm text-gray-700 space-y-1.5">
-                                <div class="flex items-start">
-                                    <span class="w-28 shrink-0 text-gray-500">Total Porsi</span>
-                                    <span class="mr-2 text-gray-400">:</span>
-                                    <span class="font-medium text-gray-900">{{ $customPortion }} Porsi</span>
+                            <div id="admin-detail-custom-0" class="d-none mt-3 pt-3 border-t border border-secondary fs-6 text-secondary space-y-1.5">
+                                <div class="d-flex items-start">
+                                    <span class="w-28 flex-shrink-0 text-secondary">Total Porsi</span>
+                                    <span class="me-2 text-secondary">:</span>
+                                    <span class="fw-medium text-secondary">{{ $customPortion }} Porsi</span>
                                 </div>
                                 @if($servingName)
-                                <div class="flex items-start">
-                                    <span class="w-28 shrink-0 text-gray-500">Penyajian</span>
-                                    <span class="mr-2 text-gray-400">:</span>
-                                    <span class="font-medium text-gray-900">{{ $servingName }}</span>
+                                <div class="d-flex items-start">
+                                    <span class="w-28 flex-shrink-0 text-secondary">Penyajian</span>
+                                    <span class="me-2 text-secondary">:</span>
+                                    <span class="fw-medium text-secondary">{{ $servingName }}</span>
                                 </div>
                                 @endif
                                 @if($displayCustomMenus->isNotEmpty())
-                                <div class="flex items-start">
-                                    <span class="w-28 shrink-0 text-gray-500">Menu</span>
-                                    <span class="mr-2 text-gray-400">:</span>
-                                    <span class="font-medium text-gray-900">{{ $displayCustomMenus->map(fn($cm) => $cm->formatted_menu_name . ' (' . $cm->quantity . ')')->join(', ') }}</span>
+                                <div class="d-flex items-start">
+                                    <span class="w-28 flex-shrink-0 text-secondary">Menu</span>
+                                    <span class="me-2 text-secondary">:</span>
+                                    <span class="fw-medium text-secondary">{{ $displayCustomMenus->map(fn($cm) => $cm->formatted_menu_name . ' (' . $cm->quantity . ')')->join(', ') }}</span>
                                 </div>
                                 @endif
-                                <div class="flex items-start">
-                                    <span class="w-28 shrink-0 text-gray-500">Pelengkap</span>
-                                    <span class="mr-2 text-gray-400">:</span>
-                                    <span class="font-medium text-gray-900">{{ $displayCustomExtras->isNotEmpty() ? $displayCustomExtras->map(fn($e) => ($e->customOption?->name ?? $e->formatted_menu_name) . ' (' . $e->quantity . ')')->join(', ') : '-' }}</span>
+                                <div class="d-flex items-start">
+                                    <span class="w-28 flex-shrink-0 text-secondary">Pelengkap</span>
+                                    <span class="me-2 text-secondary">:</span>
+                                    <span class="fw-medium text-secondary">{{ $displayCustomExtras->isNotEmpty() ? $displayCustomExtras->map(fn($e) => ($e->customOption?->name ?? $e->formatted_menu_name) . ' (' . $e->quantity . ')')->join(', ') : '-' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -164,16 +164,16 @@
         </div>
     </div>
     <div class="space-y-6">
-        <div class="bg-white rounded-xl p-6 shadow-sm border sticky top-24">
-            <h3 class="font-bold mb-4">Pembayaran</h3>
-            <div class="space-y-2 text-sm">
-                <div class="flex justify-between"><span class="text-gray-500">Subtotal</span><span>Rp {{ number_format($order->subtotal,0,',','.') }}</span></div>
-                <div class="flex justify-between"><span class="text-gray-500">Ongkir</span><span>Rp {{ number_format($order->shipping_cost,0,',','.') }}</span></div>
-                <div class="flex justify-between text-lg font-bold pt-3 border-t"><span>Total</span><span class="text-orange-600">Rp {{ number_format($order->total,0,',','.') }}</span></div>
-                <p class="text-xs text-gray-400 mt-2">Pembayaran: Transfer (Midtrans)</p>
-                <p class="text-xs text-gray-400">Status: {{ $order->payment_status }}</p>
+        <div class="card shadow-sm mb-4 p-4">
+            <h3 class="fw-bold mb-4">Pembayaran</h3>
+            <div class="d-flex flex-column gap-2 fs-6">
+                <div class="d-flex justify-content-between"><span class="text-secondary">Subtotal</span><span>Rp {{ number_format($order->subtotal,0,',','.') }}</span></div>
+                <div class="d-flex justify-content-between"><span class="text-secondary">Ongkir</span><span>Rp {{ number_format($order->shipping_cost,0,',','.') }}</span></div>
+                <div class="d-flex justify-content-between fs-5 fw-bold pt-3 border-t"><span>Total</span><span class="text-primary">Rp {{ number_format($order->total,0,',','.') }}</span></div>
+                <p class="small text-secondary mt-2">Pembayaran: Transfer (Midtrans)</p>
+                <p class="small text-secondary">Status: {{ $order->payment_status }}</p>
                 @if($order->refund_status && $order->refund_status !== 'none')
-                    <p class="text-xs font-medium inline-flex items-center gap-1 {{ $order->refund_status === 'pending' ? 'text-yellow-600' : 'text-green-600' }}">
+                    <p class="small fw-medium d-inline-d-flex align-items-center g-3 {{ $order->refund_status === 'pending' ? 'text-warning' : 'text-success' }}">
                         @if($order->refund_status === 'pending')
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span>Refund: Menunggu Refund</span>
@@ -188,21 +188,21 @@
             {{-- Form Update Status --}}
             <form id="statusForm" action="{{ route('admin.orders.status', $order) }}" method="POST" class="mt-4">
                 @csrf @method('PUT')
-                <label class="block text-sm font-medium text-gray-700 mb-1">Update Status</label>
-                <select name="status" id="statusSelect" class="w-full px-3 py-2 rounded-lg border text-sm mb-2">
+                <label class="form-label fw-bold">Update Status</label>
+                <select name="status" id="statusSelect" class="form-select w-100 px-3 py-2 rounded border fs-6 mb-2">
                     @foreach(['processing'=>'Diproses','on_delivery'=>'Dikirim','completed'=>'Selesai'] as $k=>$v)
                     <option value="{{ $k }}" {{ $order->status==$k?'selected':'' }}>{{ $v }}</option>
                     @endforeach
                 </select>
-                <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">Update Status</button>
+                <button type="submit" class="w-100 px-4 py-2 bg-info text-white text-white fs-6 rounded hover:bg-info text-white">Update Status</button>
             </form>
 
             {{-- Tombol Batalkan --}}
             <form id="cancelForm" action="{{ route('admin.orders.cancel', $order) }}" method="POST" class="mt-3">
                 @csrf @method('PUT')
                 <input type="hidden" name="cancellation_reason" id="cancelReasonInput">
-                <button type="button" onclick="confirmCancel()" class="w-full px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 inline-flex items-center justify-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button type="button" onclick="confirmCancel()" class="btn btn-danger">
+                    <svg style="width: 16px; height: 16px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     <span>Batalkan Pesanan</span>
                 </button>
             </form>

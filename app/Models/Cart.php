@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Model Cart merepresentasikan item keranjang belanja pelanggan sebelum checkout.
+ * Bertanggung jawab menyimpan data produk, paket, atau kustomisasi yang dipilih beserta kuantitasnya.
+ */
 class Cart extends Model
 {
     protected $fillable = [
@@ -55,6 +59,11 @@ class Cart extends Model
     /**
      * Cek apakah item ini adalah bagian dari event order.
      */
+    /**
+         * Mengecek apakah item keranjang ini merupakan pesanan Event (Prasmanan/Kotakan).
+         * Ditandai dengan adanya cart_group_id.
+         * @return bool
+         */
     public function isEventItem(): bool
     {
         return !empty($this->cart_group_id);
@@ -63,6 +72,11 @@ class Cart extends Model
     /**
      * Cek apakah item ini adalah harian (bukan event).
      */
+    /**
+         * Mengecek apakah item keranjang ini merupakan pesanan Katering Harian.
+         * Ditandai dengan cart_group_id yang kosong (null).
+         * @return bool
+         */
     public function isDailyItem(): bool
     {
         return empty($this->cart_group_id);
@@ -82,6 +96,12 @@ class Cart extends Model
      * Item tambahan dihitung normal.
      * Item tipe 'package' = harga paket itu sendiri.
      */
+    /**
+         * Menghitung subtotal dari satu item keranjang.
+         * Jika item adalah bagian dari paket (package_item), harga dianggap 0.
+         * Jika berupa produk harian/tambahan, dihitung (harga dasar x qty) + harga opsi tambahan.
+         * @return float
+         */
     public function getSubtotalAttribute(): float
     {
         // Item paket (isi paket atau extra paket) atau custom_header → harga 0, sudah termasuk dalam harga grup/paket
@@ -118,6 +138,14 @@ class Cart extends Model
      * Sinkronisasi data menu/admin dan keranjang pelanggan (belum checkout).
      * Menghapus item yang kadaluwarsa, menu/paket/komponen yang dihapus/tidak tersedia, dan menu yang habis.
      */
+    /**
+         * Membersihkan keranjang pengguna dari item yang sudah tidak valid.
+         * Proses bisnis: Menghapus item harian yang tanggal pemesanannya lewat, 
+         * menu/paket yang dinonaktifkan admin, atau menu yang kehabisan stok.
+         * @param int|null $userId
+         * @param bool $flashNotification
+         * @return void
+         */
     public static function cleanupInvalidAndExpiredItems($userId = null, bool $flashNotification = true): void
     {
         $userId = $userId ?: auth()->id();

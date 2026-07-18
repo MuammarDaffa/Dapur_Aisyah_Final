@@ -56,25 +56,24 @@
     </style>
 
     <!-- Hero Section -->
-    <section id="hero" class="relative overflow-hidden flex items-center justify-center text-center hero-section w-full section-item">
+    <section id="hero" class="position-relative overflow-hidden d-flex align-items-center justify-content-center text-center hero-section w-100 section-item" style="background-color: #333;">
         <!-- Background Container -->
-        <div class="absolute inset-0 z-0">
-            <div id="hero-bg-1" class="absolute inset-0 hero-bg bg-cover bg-center"></div>
-            <div id="hero-bg-2" class="absolute inset-0 hero-bg bg-cover bg-center opacity-0"></div>
+        <div class="position-absolute top-0 start-0 w-100 h-100">
+            <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: url('{{ asset('images/katering.png') }}'); background-size: cover; background-position: center;"></div>
             <!-- Dark Overlay -->
-            <div class="absolute inset-0 bg-black/45 z-10"></div>
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark" style="opacity: 0.6;"></div>
         </div>
 
         <!-- Content Container -->
-        <div class="relative z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center h-full">
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-4 max-w-3xl">
+        <div class="position-relative container d-flex flex-column align-items-center justify-content-center h-100 z-1" style="z-index: 2;">
+            <h1 class="display-5 fw-bold text-white mb-4" style="max-width: 800px;">
                 Katering Rumahan Berkualitas Premium
             </h1>
-            <p class="text-sm sm:text-base lg:text-lg text-gray-200 max-w-xl mb-8 leading-relaxed">
+            <p class="fs-5 text-light mb-5" style="max-width: 600px;">
                 Nikmati masakan rumahan berkualitas untuk kebutuhan harian atau acara.
             </p>
             <div>
-                <a href="#services" class="inline-block px-8 py-3.5 font-bold rounded-full cursor-pointer hero-btn text-base shadow-sm scroll-to-services">
+                <a href="#services" class="btn btn-primary btn-lg rounded-0 px-5 py-3 fw-bold shadow scroll-to-services">
                     Pesan Sekarang
                 </a>
             </div>
@@ -83,42 +82,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const images = [
-                "{{ asset('images/hero-1.jpg') }}",
-                "{{ asset('images/hero-2.jpg') }}",
-                "{{ asset('images/hero-3.jpg') }}",
-                "{{ asset('images/hero-4.jpg') }}",
-                "{{ asset('images/hero-5.jpg') }}"
-            ];
-            
-            let currentIndex = 0;
-            const bg1 = document.getElementById('hero-bg-1');
-            const bg2 = document.getElementById('hero-bg-2');
-            
-            if (bg1 && bg2 && images.length > 0) {
-                // Initialize first background
-                bg1.style.backgroundImage = `url('${images[0]}')`;
-                
-                let activeBg = bg1;
-                let inactiveBg = bg2;
-                
-                setInterval(function() {
-                    currentIndex = (currentIndex + 1) % images.length;
-                    
-                    // Set background of inactive element
-                    inactiveBg.style.backgroundImage = `url('${images[currentIndex]}')`;
-                    
-                    // Fade in inactive element and fade out active element
-                    inactiveBg.style.opacity = '1';
-                    activeBg.style.opacity = '0';
-                    
-                    // Swap active/inactive references
-                    const temp = activeBg;
-                    activeBg = inactiveBg;
-                    inactiveBg = temp;
-                }, 5000);
-            }
-
             const scrollBtn = document.querySelector('.scroll-to-services');
             if (scrollBtn) {
                 scrollBtn.addEventListener('click', function(e) {
@@ -203,68 +166,68 @@
 
     <!-- Services Section -->
     <section id="services" class="py-16 bg-white section-item">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">Layanan <span class="text-orange-500">Katering</span> Kami</h2>
-                <p class="mt-3 text-gray-500 max-w-2xl mx-auto">Pilih layanan katering sesuai kebutuhan Anda</p>
+                <h2 class="fs-2 fw-bold text-secondary">Layanan <span class="text-primary">Katering</span> Kami</h2>
+                <p class="mt-3 text-secondary max-w-2xl mx-auto">Pilih layanan katering sesuai kebutuhan Anda</p>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-{{ count($services) > 2 ? '3' : count($services) }} gap-8 items-stretch">
+            <div class="row row-cols-1 sm:row-cols-2 lg:row-cols-{{ count($services) > 2 ? '3' : count($services) }} g-3 items-stretch">
                 @forelse($services as $service)
                     @php
                         $serviceUrl = $service->isEvent()
                             ? route('customer.event.service', $service)
                             : route('customer.products', ['service' => $service->id]);
                     @endphp
-                    <a href="{{ $serviceUrl }}" class="group relative bg-white rounded-2xl border border-gray-100 hover:shadow-xl hover:shadow-orange-100 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full overflow-hidden">
+                    <a href="{{ $serviceUrl }}" class="group position-relative bg-white rounded-2xl border border border-secondary hover:-translate-y-1 d-flex d-flex-column h-100 overflow-hidden">
                         @if($service->image)
-                            <div class="h-56 w-full overflow-hidden relative shrink-0">
-                                <img src="{{ Storage::url($service->image) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                                <h3 class="absolute bottom-4 left-4 text-2xl font-bold text-white mb-0 drop-shadow-md">{{ $service->name }}</h3>
+                            <div class="w-100 overflow-hidden position-relative flex-shrink-0" style="height: 200px;">
+                                <img src="{{ Storage::url($service->image) }}" class="w-100 h-100 object-fit-cover">
+                                <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);"></div>
+                                <h3 class="position-absolute bottom-0 start-0 p-3 fs-4 fw-bold text-white mb-0">{{ $service->name }}</h3>
                             </div>
-                            <div class="p-6 flex-1 flex flex-col justify-between">
-                                <p class="text-sm text-gray-600 mb-6 line-clamp-3 leading-relaxed flex-1">{{ $service->description }}</p>
-                                <div class="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-                                    <span class="text-lg font-bold text-orange-600">
+                            <div class="p-6 d-flex-1 d-flex d-flex-column justify-content-between">
+                                <p class="fs-6 text-secondary mb-6 line-clamp-3 leading-relaxed d-flex-1">{{ $service->description }}</p>
+                                <div class="d-flex align-items-center justify-content-between pt-4 border-t border border-secondary mt-auto">
+                                    <span class="fs-5 fw-bold text-primary">
                                         Mulai Rp {{ number_format($service->base_price, 0, ',', '.') }}
                                     </span>
                                     @if($service->isEvent())
-                                        <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">Event</span>
+                                        <span class="small bg-purple-100 text-purple-700 px-2 py-1 rounded-pill fw-medium">Event</span>
                                     @else
-                                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">Tersedia</span>
+                                        <span class="small bg-success text-white text-success px-2 py-1 rounded-pill fw-medium">Tersedia</span>
                                     @endif
                                 </div>
                             </div>
                         @else
-                            <div class="p-6 bg-gradient-to-br from-orange-50 to-amber-50 flex-1 flex flex-col justify-between h-full">
+                            <div class="p-6 d-flex-1 d-flex d-flex-column justify-content-between h-100">
                                 <div>
-                                    <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-500 rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform shadow-sm">
+                                    <div style="width: 64px; height: 64px;" class="rounded-2xl d-flex align-items-center justify-content-center text-white mb-6 group- transition- shadow-sm">
                                         @if($service->isDaily())
-                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                            <svg style="width: 32px; height: 32px;" class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                                         @elseif($service->isEvent())
-                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                                            <svg style="width: 32px; height: 32px;" class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
                                         @else
-                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
+                                            <svg style="width: 32px; height: 32px;" class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
                                         @endif
                                     </div>
-                                    <h3 class="text-xl font-bold text-gray-900 mb-3">{{ $service->name }}</h3>
-                                    <p class="text-sm text-gray-600 mb-6 line-clamp-3 leading-relaxed">{{ $service->description }}</p>
+                                    <h3 class="fs-4 fw-bold text-secondary mb-3">{{ $service->name }}</h3>
+                                    <p class="fs-6 text-secondary mb-6 line-clamp-3 leading-relaxed">{{ $service->description }}</p>
                                 </div>
-                                <div class="flex items-center justify-between pt-4 border-t border-orange-100/60 mt-auto">
-                                    <span class="text-lg font-bold text-orange-600">
+                                <div class="d-flex align-items-center justify-content-between pt-4 border-t border border-primary/60 mt-auto">
+                                    <span class="fs-5 fw-bold text-primary">
                                         Mulai Rp {{ number_format($service->base_price, 0, ',', '.') }}
                                     </span>
                                     @if($service->isEvent())
-                                        <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">Event</span>
+                                        <span class="small bg-purple-100 text-purple-700 px-2 py-1 rounded-pill fw-medium">Event</span>
                                     @else
-                                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">Tersedia</span>
+                                        <span class="small bg-success text-white text-success px-2 py-1 rounded-pill fw-medium">Tersedia</span>
                                     @endif
                                 </div>
                             </div>
                         @endif
                     </a>
                 @empty
-                    <div class="col-span-full text-center text-gray-500 py-8">
+                    <div class="col-span-full text-center text-secondary py-8">
                         Belum ada layanan tersedia.
                     </div>
                 @endforelse
@@ -273,19 +236,21 @@
     </section>
 
     <!-- Tentang Dapur Aisyah Section -->
-    <section id="about" class="py-16 bg-gray-50 section-item">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+    <section id="about" class="py-16 bg-light section-item">
+        <div class="container py-5">
+            <div class="row align-items-center">
                 <!-- Kolom Kiri: Gambar -->
-                <div class="w-full h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-lg border border-gray-100">
-                    <img src="{{ asset('images/katering_team.jpg') }}" alt="Tentang Dapur Aisyah" class="w-full h-full object-cover">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="w-100 rounded overflow-hidden shadow border border-secondary" style="height: 350px;">
+                        <img src="{{ asset('images/tim_katering.png') }}" alt="Tentang Dapur Aisyah" class="w-100 h-100 object-fit-cover">
+                    </div>
                 </div>
                 <!-- Kolom Kanan: Judul & Deskripsi -->
-                <div class="flex flex-col justify-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-6">
-                        Tentang <span class="text-orange-500">Dapur Aisyah</span>
+                <div class="col-lg-6 px-lg-5">
+                    <h2 class="fs-1 fw-bold text-dark mb-4">
+                        Tentang <span class="text-primary">Dapur Aisyah</span>
                     </h2>
-                    <p class="text-gray-600 text-base sm:text-lg leading-relaxed text-justify">
+                    <p class="text-secondary fs-5 leading-relaxed" style="text-align: justify; line-height: 1.8;">
                         Dapur Aisyah adalah penyedia layanan katering rumahan yang menyajikan hidangan berkualitas untuk kebutuhan harian maupun berbagai acara. Dengan bahan segar, cita rasa rumahan, dan pelayanan yang terpercaya, kami berkomitmen memberikan pengalaman terbaik di setiap sajian.
                     </p>
                 </div>
@@ -295,26 +260,28 @@
 
     <!-- Testimonials -->
     @if($reviews->count() > 0)
-    <section id="testimonials" class="py-16 bg-white section-item">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">Apa Kata <span class="text-orange-500">Pelanggan</span></h2>
-                <p class="mt-3 text-gray-500">Ulasan dari pelanggan setia kami</p>
+    <section id="testimonials" class="py-5 bg-white section-item">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fs-1 fw-bold text-dark">Apa Kata <span class="text-primary">Pelanggan</span></h2>
+                <p class="text-secondary fs-5">Ulasan dari pelanggan setia kami</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ $reviews->count() >= 3 ? '3' : ($reviews->count() == 2 ? '2' : '1') }} gap-8 max-w-{{ $reviews->count() >= 3 ? '7xl' : ($reviews->count() == 2 ? '5xl' : '3xl') }} mx-auto items-stretch">
+            <div class="row justify-content-center g-4">
                 @foreach($reviews as $review)
-                    <div class="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-7 border border-orange-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between h-full">
-                        <div>
-                            <div class="flex items-center space-x-3 mb-4">
-                                <div class="w-11 h-11 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full flex items-center justify-center text-white font-bold text-base shadow-sm shrink-0">
-                                    {{ strtoupper(substr($review->user->name ?? 'U', 0, 1)) }}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-primary shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0 bg-primary" style="width: 48px; height: 48px;">
+                                        {{ strtoupper(substr($review->user->name ?? 'U', 0, 1)) }}
+                                    </div>
+                                    <div class="ms-3">
+                                        <h5 class="fw-bold text-dark mb-0 fs-6">{{ $review->user->name ?? 'Pelanggan' }}</h5>
+                                        <small class="text-primary fw-medium">{{ $review->order->cateringService->name ?? 'Pelanggan Setia' }}</small>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="font-semibold text-gray-900 text-base">{{ $review->user->name ?? 'Pelanggan' }}</p>
-                                    <p class="text-xs text-orange-500 font-medium mt-0.5">{{ $review->order->cateringService->name ?? 'Pelanggan Setia' }}</p>
-                                </div>
+                                <p class="card-text text-secondary mb-0" style="font-style: italic;">"{{ $review->comment ?? 'Pelayanan sangat memuaskan!' }}"</p>
                             </div>
-                            <p class="text-sm text-gray-600 line-clamp-4 leading-relaxed">{{ $review->comment ?? 'Pelayanan sangat memuaskan!' }}</p>
                         </div>
                     </div>
                 @endforeach
@@ -324,16 +291,16 @@
     @endif
 
     <!-- CTA Section -->
-    <!-- <section class="py-16 bg-gradient-to-r from-orange-500 to-amber-500">
+    <!-- <section class="py-16">
         <div class="max-w-4xl mx-auto px-4 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Siap Memesan Katering?</h2>
-            <p class="text-orange-100 text-lg mb-8">Pesan sekarang dan nikmati kemudahan layanan katering online kami.</p>
+            <h2 class="fs-2 md:fs-1 fw-bold text-white mb-4">Siap Memesan Katering?</h2>
+            <p class="text-primary fs-5 mb-8">Pesan sekarang dan nikmati kemudahan layanan katering online kami.</p>
             @auth
-                <a href="{{ route('customer.products') }}" class="inline-block px-10 py-4 bg-white text-orange-600 font-bold rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all">
+                <a href="{{ route('customer.products') }}" class="d-inline-block px-10 py-4 bg-white text-primary fw-bold rounded-pill shadow-lg hover:shadow-2xl">
                     Lihat Menu & Pesan →
                 </a>
             @else
-                <a href="{{ route('register') }}" class="inline-block px-10 py-4 bg-white text-orange-600 font-bold rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all">
+                <a href="{{ route('register') }}" class="d-inline-block px-10 py-4 bg-white text-primary fw-bold rounded-pill shadow-lg hover:shadow-2xl">
                     Daftar Gratis & Pesan →
                 </a>
             @endauth

@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * Model Order merepresentasikan keseluruhan transaksi pesanan dari pelanggan.
+ * Menampung informasi tujuan pengiriman, ringkasan harga (subtotal & ongkir),
+ * status transaksi (dari Midtrans), dan metode pembayaran.
+ */
 class Order extends Model
 {
     protected $fillable = [
@@ -31,6 +36,10 @@ class Order extends Model
 
     // === Status Labels ===
 
+    /**
+         * Mengonversi status pesanan database ke label Bahasa Indonesia yang mudah dipahami (UI-Friendly).
+         * @return string
+         */
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
@@ -69,6 +78,10 @@ class Order extends Model
 
     // === Order Number Generation ===
 
+    /**
+         * Membuat nomor pesanan unik dengan memanggil Service khusus pemesanan.
+         * @return string
+         */
     public static function generateOrderNumber(): string
     {
         return \App\Services\OrderService::generateOrderNumber();

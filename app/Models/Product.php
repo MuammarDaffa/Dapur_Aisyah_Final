@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
+/**
+ * Model Product merepresentasikan menu individual (makanan/minuman) yang ditawarkan.
+ * Model ini menjadi entitas utama dalam fitur pemesanan Katering Harian.
+ */
 class Product extends Model
 {
     use HasFactory;

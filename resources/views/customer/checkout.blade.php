@@ -6,32 +6,32 @@
 @endpush
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-        <svg class="w-7 h-7 text-orange-500 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+    <h2 class="fs-3 fw-bold text-secondary mb-6 d-flex align-items-center">
+        <svg class="w-7 h-7 text-primary me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
         <span>Checkout</span>
     </h2>
     <form action="{{ route('customer.checkout.store') }}" method="POST" id="checkout-form">
         @csrf
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="row row-cols-1 lg:row-cols-3 g-3">
             <div class="lg:col-span-2 space-y-6">
                 <!-- Delivery Info -->
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-900 mb-4">Detail Pengiriman</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Pengiriman</label>
+                <div class="card shadow-sm mb-4 p-4">
+                    <h3 class="fw-bold text-secondary mb-4">Detail Pengiriman</h3>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="mb-3">
+            <label class="form-label fw-bold">Tanggal Pengiriman</label>
                             <input type="hidden" name="order_date" value="{{ $orderDate }}">
-                            <p class="text-sm font-medium text-gray-700 bg-orange-50 p-3 rounded-lg border border-orange-200">Pengiriman mengikuti jadwal yang tertera pada menu yang dipilih.</p>
+                            <p class="fs-6 fw-medium text-secondary bg-primary text-white p-3 rounded border border border-primary">Pengiriman mengikuti jadwal yang tertera pada menu yang dipilih.</p>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Metode Pengambilan *</label>
-                            <select name="pickup_method" id="pickup_method" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400" onchange="toggleDelivery()">
+                        <div class="mb-3">
+            <label class="form-label fw-bold">Metode Pengambilan *</label>
+                            <select name="pickup_method" id="pickup_method" required class="form-select w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary" onchange="toggleDelivery()">
                                 <option value="pickup" {{ old('pickup_method') == 'pickup' ? 'selected' : '' }}>Ambil di Tempat (Pick Up)</option>
                                 <option value="delivery" {{ old('pickup_method') == 'delivery' ? 'selected' : '' }}>Delivery (Antar ke Alamat)</option>
                             </select>
                         </div>
-                        <div id="delivery-fields" class="{{ old('pickup_method') == 'delivery' ? '' : 'hidden' }} space-y-4">
-                                <select name="district_id" id="district_id" class="hidden">
+                        <div id="delivery-fields" class="{{ old('pickup_method') == 'delivery' ? '' : 'd-none' }} d-flex flex-column gap-3">
+                                <select name="district_id" id="district_id" class="form-select d-none">
                                     <option value="">-- Pilih dari peta di bawah --</option>
                                     @foreach($districts as $district)
                                         <option value="{{ $district->id }}" data-lat="{{ $district->latitude ?? '' }}" data-lng="{{ $district->longitude ?? '' }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
@@ -42,52 +42,52 @@
 
                          
                             <!-- Peta Lokasi (Leaflet.js) -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Tandai Lokasi Pengiriman di Peta</label>
-                                <!-- <p class="text-xs text-gray-500 mb-2">Klik pada peta untuk menentukan titik lokasi pengiriman yang tepat.</p> -->
+                            <div class="mb-3">
+            <label class="form-label fw-bold">Tandai Lokasi Pengiriman di Peta</label>
+                                <!-- <p class="small text-secondary mb-2">Klik pada peta untuk menentukan titik lokasi pengiriman yang tepat.</p> -->
                                 <div id="map"></div>
-                                <p id="location-validation-msg" class="text-sm font-medium mt-2 hidden"></p>
+                                <p id="location-validation-msg" class="fs-6 fw-medium mt-2 d-none"></p>
                                 <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
                                 <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
-                                <div class="flex justify-between items-center mt-2 hidden">
-                                    <p class="text-xs text-gray-400" id="coord-display">Koordinat belum dipilih</p>
+                                <div class="d-flex justify-content-between align-items-center mt-2 d-none">
+                                    <p class="small text-secondary" id="coord-display">Koordinat belum dipilih</p>
                                 </div>
-                                <span id="geocode-status" class="hidden"></span>
-                                <p id="map_error" class="text-sm text-red-500 mt-2 font-medium hidden">
-                                    <svg class="w-4 h-4 inline-block text-red-500 mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                <span id="geocode-status" class="d-none"></span>
+                                <p id="map_error" class="fs-6 text-danger mt-2 fw-medium d-none">
+                                    <svg style="width: 16px; height: 16px;" class="d-inline-block text-danger me-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                                     Anda wajib menandai lokasi pengiriman di peta.
                                 </p>
                                 @error('district_id')
-                                    <p class="text-sm text-red-500 mt-2 font-medium">
-                                        <svg class="w-4 h-4 inline-block text-red-500 mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                    <p class="fs-6 text-danger mt-2 fw-medium">
+                                        <svg style="width: 16px; height: 16px;" class="d-inline-block text-danger me-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                                         Anda harus menandai lokasi pengiriman di peta dengan benar.
                                     </p>
                                 @enderror
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Berdasarkan Peta</label>
-                                <div id="osm-address-display" class="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 min-h-[42px]">
+                            <div class="mb-3">
+            <label class="form-label fw-bold">Alamat Berdasarkan Peta</label>
+                                <div id="osm-address-display" class="p-3 bg-light border border border-secondary rounded fs-6 text-secondary min-h-[42px]">
                                     Lokasi belum ditandai di peta.
                                 </div>
                                 <input type="hidden" name="osm_address" id="osm_address">
                             </div>
                             <!-- detail field -->
-                            <!-- <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Detail Patokan/Blok/No. Rumah (Opsional)</label>
-                                <textarea name="address_detail" id="address_detail_input" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400 @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateCheckout()">{{ old('address_detail') }}</textarea>
-                                <p id="address_error" class="text-sm text-red-500 mt-1 hidden"></p>
-                                @error('address_detail') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+                            <!-- <div class="mb-3">
+            <label class="form-label fw-bold">Detail Patokan/Blok/No. Rumah (Opsional)</label>
+                                <textarea name="address_detail" id="address_detail_input" rows="2" class="form-control w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateCheckout()">{{ old('address_detail') }}</textarea>
+                                <p id="address_error" class="fs-6 text-danger mt-1 d-none"></p>
+                                @error('address_detail') <p class="fs-6 text-danger mt-1">{{ $message }}</p> @enderror
                             </div> -->
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Catatan (Opsional)</label>
-                            <textarea name="notes" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-orange-400" placeholder="Catatan tambahan...">{{ old('notes') }}</textarea>
+                        <div class="mb-3">
+            <label class="form-label fw-bold">Catatan (Opsional)</label>
+                            <textarea name="notes" rows="2" class="form-control w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary" placeholder="Catatan tambahan...">{{ old('notes') }}</textarea>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pembayaran</label>
-                            <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                <p class="text-sm text-blue-800 font-medium">Transfer Bank</p>
-                                <!-- <p class="text-xs text-blue-600">Semua pembayaran dilakukan melalui Midtrans Payment Gateway.</p> -->
+                        <div class="mb-3">
+            <label class="form-label fw-bold">Pembayaran</label>
+                            <div class="p-3 bg-info text-white border border-blue-200 rounded">
+                                <p class="fs-6 text-info fw-medium">Transfer Bank</p>
+                                <!-- <p class="small text-info">Semua pembayaran dilakukan melalui Midtrans Payment Gateway.</p> -->
                             </div>
                             <input type="hidden" name="payment_method" value="transfer">
                         </div>
@@ -97,9 +97,9 @@
 
             <!-- Order Summary -->
             <div>
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 sticky top-24">
-                    <h3 class="font-bold text-gray-900 mb-4">Ringkasan Pesanan</h3>
-                    <div class="divide-y divide-gray-100 mb-4 max-h-64 overflow-y-auto">
+                <div class="card shadow-sm mb-4 p-4">
+                    <h3 class="fw-bold text-secondary mb-4">Ringkasan Pesanan</h3>
+                    <div style="height: 256px;" class="divide-y divide-gray-100 mb-4 max- overflow-y-auto">
                         @foreach($groupedCarts as $groupKey => $groupItems)
                             @php
                                 $isEvent = $groupItems->first()->cart_group_id !== null;
@@ -110,24 +110,24 @@
                                 {{-- Event group summary --}}
                                 @if($pkgItem && $pkgItem->cateringPackage)
                                 <div class="py-3">
-                                    <p class="font-medium text-gray-900 flex items-center">
-                                        <svg class="w-4 h-4 text-orange-500 mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                                    <p class="fw-medium text-secondary d-flex align-items-center">
+                                        <svg style="width: 16px; height: 16px;" class="text-primary me-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                                         <span>{{ $pkgItem->cateringPackage->name }}</span>
                                     </p>
-                                    <p class="text-xs text-orange-600 font-medium">Rp {{ number_format($pkgItem->cateringPackage->price, 0, ',', '.') }}</p>
+                                    <p class="small text-primary fw-medium">Rp {{ number_format($pkgItem->cateringPackage->price, 0, ',', '.') }}</p>
                                 </div>
                                 @endif
                                 @foreach($groupItems->where('item_type', '!=', 'package') as $cart)
-                                <div class="py-2 flex justify-between text-sm">
+                                <div class="py-2 d-flex justify-content-between fs-6">
                                     <div>
-                                        <p class="text-gray-700">{{ $cart->customOption->name ?? 'Item' }}</p>
-                                        <p class="text-xs text-gray-500">× {{ $cart->quantity }}
+                                        <p class="text-secondary">{{ $cart->customOption->name ?? 'Item' }}</p>
+                                        <p class="small text-secondary">× {{ $cart->quantity }}
                                             @if($cart->item_type === 'package_item')
-                                                <span class="text-green-600">(termasuk)</span>
+                                                <span class="text-success">(termasuk)</span>
                                             @endif
                                         </p>
                                     </div>
-                                    <p class="font-medium {{ $cart->item_type === 'package_item' ? 'text-green-600' : 'text-gray-900' }}">
+                                    <p class="fw-medium {{ $cart->item_type === 'package_item' ? 'text-success' : 'text-secondary' }}">
                                         {{ $cart->item_type === 'package_item' ? 'Rp 0' : 'Rp ' . number_format($cart->subtotal, 0, ',', '.') }}
                                     </p>
                                 </div>
@@ -135,32 +135,32 @@
                             @else
                                 {{-- Regular items --}}
                                 @foreach($groupItems as $cart)
-                                <div class="py-3 flex justify-between text-sm">
+                                <div class="py-3 d-flex justify-content-between fs-6">
                                     <div>
-                                        <p class="font-medium text-gray-900">{{ $cart->product->name ?? ($cart->customOption->name ?? 'Item') }}</p>
-                                        <p class="text-xs text-gray-500">× {{ $cart->quantity }}</p>
+                                        <p class="fw-medium text-secondary">{{ $cart->product->name ?? ($cart->customOption->name ?? 'Item') }}</p>
+                                        <p class="small text-secondary">× {{ $cart->quantity }}</p>
                                     </div>
-                                    <p class="font-medium text-gray-900">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</p>
+                                    <p class="fw-medium text-secondary">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</p>
                                 </div>
                                 @endforeach
                             @endif
                         @endforeach
                     </div>
-                    <div class="border-t border-gray-200 pt-4 space-y-2">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Subtotal</span>
-                            <span class="font-medium">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                    <div class="border-t border border-secondary pt-4 d-flex flex-column gap-2">
+                        <div class="d-flex justify-content-between fs-6">
+                            <span class="text-secondary">Subtotal</span>
+                            <span class="fw-medium">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Ongkos Kirim</span>
-                            <span class="font-medium" id="shipping-display">Gratis</span>
+                        <div class="d-flex justify-content-between fs-6">
+                            <span class="text-secondary">Ongkos Kirim</span>
+                            <span class="fw-medium" id="shipping-display">Gratis</span>
                         </div>
-                        <div class="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
+                        <div class="d-flex justify-content-between fs-5 fw-bold pt-2 border-t border border-secondary">
                             <span>Total</span>
-                            <span class="text-orange-600" id="total-display">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                            <span class="text-primary" id="total-display">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
                     </div>
-                    <button type="submit" id="submit-btn" class="w-full mt-4 px-6 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button type="submit" id="submit-btn" class="w-100 mt-4 px-6 py-3.5 text-white fw-bold rounded hover:shadow disabled:opacity-50 disabled:cursor-not-allowed">
                         Bayar Sekarang
                     </button>
                 </div>
@@ -273,7 +273,7 @@ function reverseGeocode(lat, lng) {
     const osmAddressInput = document.getElementById('osm_address');
 
     if (statusEl) statusEl.classList.add('hidden');
-    addressDisplay.innerHTML = '<span class="text-gray-400 italic">Mengambil alamat dari peta...</span>';
+    addressDisplay.innerHTML = '<span class="text-secondary italic">Mengambil alamat dari peta...</span>';
 
     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
         .then(res => res.json())
@@ -282,10 +282,10 @@ function reverseGeocode(lat, lng) {
                 let districtName = data.address.city_district || data.address.suburb || data.address.town || data.address.county || '';
                 
                 if (data.display_name) {
-                    addressDisplay.innerHTML = `<span class="font-medium text-gray-800">${data.display_name}</span>`;
+                    addressDisplay.innerHTML = `<span class="fw-medium text-secondary">${data.display_name}</span>`;
                     osmAddressInput.value = data.display_name;
                 } else {
-                    addressDisplay.innerHTML = '<span class="text-red-500">Alamat tidak dapat diurai secara detail.</span>';
+                    addressDisplay.innerHTML = '<span class="text-danger">Alamat tidak dapat diurai secara detail.</span>';
                     osmAddressInput.value = '';
                 }
 
@@ -308,7 +308,7 @@ function reverseGeocode(lat, lng) {
             }
         })
         .catch(err => {
-            addressDisplay.innerHTML = '<span class="text-red-500">Gagal mengambil alamat dari peta.</span>';
+            addressDisplay.innerHTML = '<span class="text-danger">Gagal mengambil alamat dari peta.</span>';
             osmAddressInput.value = '';
             checkLocationRealtime(lat, lng);
         });

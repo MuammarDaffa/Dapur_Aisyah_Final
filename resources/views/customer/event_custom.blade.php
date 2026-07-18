@@ -22,12 +22,12 @@
 
     {{-- Header --}}
     <div class="mb-6">
-        <a href="{{ route('customer.event.service', $service->id) }}" class="inline-flex items-center text-sm text-orange-500 hover:text-orange-600">
-            <svg class="w-4 h-4 mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        <a href="{{ route('customer.event.service', $service->id) }}" class="d-inline-d-flex align-items-center fs-6 text-primary hover:text-primary">
+            <svg style="width: 16px; height: 16px;" class="me-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             <span>Kembali ke Layanan</span>
         </a>
-        <h2 class="text-2xl font-bold text-gray-900 mt-2">Custom Menu</h2>
-        <p class="text-gray-500">Pilih menu sesuka Anda sesuai kebutuhan acara.</p>
+        <h2 class="fs-3 fw-bold text-secondary mt-2">Custom Menu</h2>
+        <p class="text-secondary">Pilih menu sesuka Anda sesuai kebutuhan acara.</p>
     </div>
 
     <form id="customForm" action="{{ route('customer.event.cart.store') }}" method="POST" onkeydown="return event.key != 'Enter';">
@@ -42,38 +42,38 @@
 
         <div class="space-y-6">
             {{-- Pilih Menu --}}
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <h3 class="text-lg font-bold text-gray-900 mb-4">Pilih Menu</h3>
-                <div class="divide-y divide-gray-100 border-t border-b border-gray-100">
+            <div class="card shadow-sm mb-4 p-4">
+                <h3 class="fs-5 fw-bold text-secondary mb-4">Pilih Menu</h3>
+                <div class="divide-y divide-gray-100 border-t border-b border border-secondary">
                     @foreach($menus as $idx => $menu)
-                        <div class="py-3.5 px-2 hover:bg-orange-50/50 rounded-lg transition-colors">
+                        <div class="py-3.5 px-2 hover:bg-primary text-white/50 rounded">
                             {{-- Baris 1: Checkbox + Nama Menu (kiri) & Kontrol Jumlah (kanan) --}}
-                            <div class="flex items-center justify-between gap-3">
-                                <div class="flex items-center gap-3 flex-1 min-w-0">
+                            <div class="d-flex align-items-center justify-content-between g-3">
+                                <div class="d-flex align-items-center g-3 d-flex-1 min-w-0">
                                     <input type="checkbox" id="custom_menu_{{ $idx }}" data-id="{{ $menu->id }}" data-price="{{ $menu->price }}"
-                                        class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-menu-cb shrink-0 cursor-pointer" onchange="toggleCustomMenu({{ $idx }})">
-                                    <label for="custom_menu_{{ $idx }}" class="text-sm sm:text-base font-semibold text-gray-900 cursor-pointer truncate">{{ $menu->name }}</label>
+                                        class="w-4 h-4 rounded border border-secondary text-primary custom-menu-cb shrink-0 cursor-pointer" onchange="toggleCustomMenu({{ $idx }})">
+                                    <label for="custom_menu_{{ $idx }}" class="fs-6 sm:text-base fw-bold text-secondary cursor-pointer truncate">{{ $menu->name }}</label>
                                 </div>
-                                <div class="flex items-center gap-1.5 opacity-0 pointer-events-none transition-opacity shrink-0" id="custom_menu_qty_container_{{ $idx }}">
-                                    <button type="button" onclick="changeCustomQty({{ $idx }}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 transition-colors">−</button>
+                                <div class="d-flex align-items-center g-3.5 opacity-0 pointer-events-none transition-opacity flex-shrink-0" id="custom_menu_qty_container_{{ $idx }}">
+                                    <button type="button" onclick="changeCustomQty({{ $idx }}, -1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0">−</button>
                                     <input type="number" id="custom_menu_input_{{ $idx }}" value="0" min="1"
-                                        class="w-14 text-center py-1 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-900 bg-white shrink-0 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400 desktop-no-spinner custom-menu-qty-input" oninput="validateCustomInput({{ $idx }})" onchange="validateCustomInputBlur({{ $idx }})">
-                                    <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-gray-600 text-sm shrink-0 custom-menu-plus-btn transition-colors">+</button>
+                                        class="form-control w-14 text-center py-1 border border border-secondary rounded small sm:fs-6 fw-bold text-secondary bg-white flex-shrink-0 focus: focus:border border-primary -1 desktop-no-spinner custom-menu-qty-input" oninput="validateCustomInput({{ $idx }})" onchange="validateCustomInputBlur({{ $idx }})">
+                                    <button type="button" onclick="changeCustomQty({{ $idx }}, 1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0 custom-menu-plus-btn">+</button>
                                 </div>
                             </div>
 
                             {{-- Baris 2: Harga Menu --}}
-                            <div class="pl-7 mt-1">
-                                <span class="text-xs sm:text-sm font-semibold text-orange-600">Rp {{ number_format($menu->price, 0, ',', '.') }} / porsi</span>
+                            <div class="ps-7 mt-1">
+                                <span class="small sm:fs-6 fw-bold text-primary">Rp {{ number_format($menu->price, 0, ',', '.') }} / porsi</span>
                             </div>
 
                             {{-- Baris 3 & Selanjutnya: Link Lihat Detail & Daftar Isi/Menu --}}
                             @if($menu->items && count($menu->items) > 0)
-                            <div class="pl-7 mt-1.5">
-                                <button type="button" onclick="toggleMenuDetail({{ $idx }}, event)" class="text-xs font-semibold text-blue-600 hover:text-blue-800 focus:outline-none underline">Lihat Detail</button>
+                            <div class="ps-7 mt-1.5">
+                                <button type="button" onclick="toggleMenuDetail({{ $idx }}, event)" class="small fw-bold text-info hover:text-info focus: underline">Lihat Detail</button>
                             </div>
-                            <div id="menu_detail_{{ $idx }}" class="hidden pl-7 mt-2">
-                                <div class="py-2.5 px-3.5 bg-gray-50/80 text-xs text-gray-700 border-l-2 border-orange-300 rounded-r-lg">
+                            <div id="menu_detail_{{ $idx }}" class="d-none ps-7 mt-2">
+                                <div class="py-2.5 px-3.5 bg-light/80 small text-secondary border-l-2 border border-primary rounded-r-lg">
                                     <ul class="list-disc list-inside space-y-1">
                                         @foreach($menu->items as $item)
                                             <li>{{ $item }}</li>
@@ -87,24 +87,24 @@
                 </div>
 
                 {{-- Porsi Indicator --}}
-                <div class="mt-4 p-4 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-between" id="custom-portion-indicator">
-                    <span class="text-base font-bold text-gray-900">Total Porsi: <span id="custom-total-portions">0</span> / {{ $service->max_portion }}</span>
+                <div class="mt-4 p-4 rounded border border border-secondary bg-light d-flex align-items-center justify-content-between" id="custom-portion-indicator">
+                    <span class="text-base fw-bold text-secondary">Total Porsi: <span id="custom-total-portions">0</span> / {{ $service->max_portion }}</span>
                 </div>
             </div>
 
             {{-- Extra --}}
             @if($extras->isNotEmpty())
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Tambahan (Extra) — Opsional</h3>
-                    <div class="divide-y divide-gray-100 border-t border-b border-gray-100">
+                <div class="card shadow-sm mb-4 p-4">
+                    <h3 class="fs-5 fw-bold text-secondary mb-4">Tambahan (Extra) — Opsional</h3>
+                    <div class="divide-y divide-gray-100 border-t border-b border border-secondary">
                         @foreach($extras as $idx => $extra)
-                            <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-orange-50/50 rounded-lg transition-colors">
-                                <label for="custom_extra_{{ $idx }}" class="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
+                            <div class="py-3 px-2 d-flex align-items-center justify-content-between g-3 hover:bg-primary text-white/50 rounded">
+                                <label for="custom_extra_{{ $idx }}" class="d-flex align-items-center g-3 cursor-pointer d-flex-1 min-w-0">
                                     <input type="checkbox" id="custom_extra_{{ $idx }}" data-id="{{ $extra->id }}" data-price="{{ $extra->price }}"
-                                        class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 custom-extra-cb shrink-0 cursor-pointer" onchange="recalcCustom()">
-                                    <span class="text-sm font-medium text-gray-800 truncate">{{ $extra->name }}</span>
+                                        class="w-4 h-4 rounded border border-secondary text-primary custom-extra-cb shrink-0 cursor-pointer" onchange="recalcCustom()">
+                                    <span class="fs-6 fw-medium text-secondary truncate">{{ $extra->name }}</span>
                                 </label>
-                                <span class="text-sm font-semibold text-orange-600 shrink-0">+Rp {{ number_format($extra->price, 0, ',', '.') }}</span>
+                                <span class="fs-6 fw-bold text-primary flex-shrink-0">+Rp {{ number_format($extra->price, 0, ',', '.') }}</span>
                             </div>
                         @endforeach
                     </div>
@@ -113,13 +113,13 @@
 
             {{-- Penyajian --}}
             @if($servings->isNotEmpty())
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Cara Penyajian *</h3>
-                    <div class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-6 pt-1">
+                <div class="card shadow-sm mb-4 p-4">
+                    <h3 class="fs-5 fw-bold text-secondary mb-4">Cara Penyajian *</h3>
+                    <div class="d-flex d-flex-column sm:d-flex-row sm:d-flex-wrap g-3 sm:g-3 pt-1">
                         @foreach($servings as $serving)
-                            <label class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-orange-50/50 cursor-pointer transition-colors border border-gray-100 sm:border-transparent sm:hover:border-gray-100">
-                                <input type="radio" name="serving_type_id" value="{{ $serving->id }}" class="w-4 h-4 text-orange-500 border-gray-300 focus:ring-orange-400 custom-serving-radio cursor-pointer shrink-0" onchange="recalcCustom()">
-                                <span class="text-sm font-medium text-gray-800">{{ $serving->name }}</span>
+                            <label class="d-flex align-items-center g-3 py-2 px-3 rounded hover:bg-primary text-white/50 cursor-pointer border border border-secondary sm:border-transparent sm:hover:border border-secondary">
+                                <input type="radio" name="serving_type_id" value="{{ $serving->id }}" class="w-4 h-4 text-primary border border-secondary custom-serving-radio cursor-pointer shrink-0" onchange="recalcCustom()">
+                                <span class="fs-6 fw-medium text-secondary">{{ $serving->name }}</span>
                             </label>
                         @endforeach
                     </div>
@@ -127,24 +127,24 @@
             @endif
 
             {{-- Ringkasan & Tombol --}}
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <div class="p-4 bg-orange-50 rounded-xl border border-orange-100 space-y-2 mb-4">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Subtotal Menu:</span>
-                        <span id="custom-subtotal-menu" class="font-medium">Rp 0</span>
+            <div class="card shadow-sm mb-4 p-4">
+                <div class="p-4 bg-primary text-white rounded border border border-primary d-flex flex-column gap-2 mb-4">
+                    <div class="d-flex justify-content-between fs-6">
+                        <span class="text-secondary">Subtotal Menu:</span>
+                        <span id="custom-subtotal-menu" class="fw-medium">Rp 0</span>
                     </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Subtotal Extra:</span>
-                        <span id="custom-subtotal-extra" class="font-medium">Rp 0</span>
+                    <div class="d-flex justify-content-between fs-6">
+                        <span class="text-secondary">Subtotal Extra:</span>
+                        <span id="custom-subtotal-extra" class="fw-medium">Rp 0</span>
                     </div>
-                    <div class="pt-2 border-t border-orange-200 flex justify-between items-center">
-                        <span class="font-bold text-gray-900">Total Harga</span>
-                        <span id="custom-total-price" class="text-2xl font-bold text-orange-600">Rp 0</span>
+                    <div class="pt-2 border-t border border-primary d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-secondary">Total Harga</span>
+                        <span id="custom-total-price" class="fs-3 fw-bold text-primary">Rp 0</span>
                     </div>
                 </div>
                 <button type="submit" id="custom-submit-btn" disabled
-                    class="w-full px-6 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-lg rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span class="inline-flex items-center justify-center gap-2"><span>Masukkan ke Keranjang</span><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg></span>
+                    class="w-100 px-6 py-4 text-white fw-bold fs-5 rounded hover:shadow disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="d-inline-d-flex align-items-center justify-content-center g-3"><span>Masukkan ke Keranjang</span><svg style="width: 20px; height: 20px;" class="flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg></span>
                 </button>
             </div>
         </div>
