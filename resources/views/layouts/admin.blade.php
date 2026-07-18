@@ -9,6 +9,8 @@
     <link href="https://fonts.bunny.net/css?family=poppins:300,400,500,600,700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Flatpickr Date Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     @stack('styles')
 </head>
 <body class="font-sans antialiased bg-gray-100" x-data="{ sidebarOpen: false }">
@@ -266,6 +268,30 @@
             }
         });
     };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+    <script>
+    window.initIndonesianDatePickers = function() {
+        if (typeof flatpickr !== 'undefined' && flatpickr.l10n && flatpickr.l10n.id) {
+            flatpickr.localize(flatpickr.l10n.id);
+            document.querySelectorAll('input[type="date"]').forEach(function(input) {
+                if (input._flatpickr) return;
+                flatpickr(input, {
+                    locale: "id",
+                    dateFormat: "Y-m-d",
+                    disableMobile: true,
+                    minDate: input.getAttribute('min') || undefined,
+                    maxDate: input.getAttribute('max') || undefined,
+                    onChange: function(selectedDates, dateStr, instance) {
+                        instance.element.dispatchEvent(new Event('change', { bubbles: true }));
+                        instance.element.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+            });
+        }
+    };
+    document.addEventListener('DOMContentLoaded', window.initIndonesianDatePickers);
     </script>
     @stack('scripts')
 </body>
