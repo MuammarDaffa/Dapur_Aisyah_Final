@@ -3,107 +3,95 @@
 @section('title', 'Rekapitulasi Penjualan')
 
 @section('content')
-<div class="space-y-6">
-    {{-- Header --}}
-    <div class="d-flex align-items-center justify-content-between">
-        <div>
-            <h2 class="fs-3 fw-bold text-secondary">Rekapitulasi Penjualan</h2>
-            <!-- <p class="fs-6 text-secondary mt-1">Ringkasan data penjualan dan pesanan</p> -->
-        </div>
-    </div>
-
-    {{-- Filters --}}
-    <div class="bg-white rounded shadow-md border border border-secondary p-5">
-        <form action="{{ route('admin.reports') }}" method="GET" class="d-flex d-flex-wrap items-end g-3">
-            <div class="d-flex-1 min-w-[140px]">
-                <label class="form-label fw-bold">Periode</label>
-                <select name="period"
-                        class="form-select w-100 border border-secondary rounded shadow-sm focus:border border-primary fs-6">
-                    <option value="">Semua Periode</option>
-                    <option value="daily" {{ request('period') == 'daily' ? 'selected' : '' }}>Hari Ini</option>
-                    <option value="monthly" {{ request('period') == 'monthly' ? 'selected' : '' }}>Bulan Ini</option>
-                    <option value="yearly" {{ request('period') == 'yearly' ? 'selected' : '' }}>Tahun Ini</option>
-                </select>
+<div class="row">
+    <div class="col-12">
+        {{-- Filters --}}
+        <div class="card card-outline card-primary mb-4">
+            <div class="card-header">
+                <h3 class="card-title">Filter Laporan</h3>
             </div>
-            <div class="d-flex-1 min-w-[140px]">
-                <label class="form-label fw-bold">Status</label>
-                <select name="status"
-                        class="form-select w-100 border border-secondary rounded shadow-sm focus:border border-primary fs-6">
-                    <option value="">Semua Status</option>
-                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
-                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
-                    <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Diproses</option>
-                </select>
+            <div class="card-body">
+                <form action="{{ route('admin.reports') }}" method="GET" class="row gx-3 gy-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Periode</label>
+                        <select name="period" class="form-select">
+                            <option value="">Semua Periode</option>
+                            <option value="daily" {{ request('period') == 'daily' ? 'selected' : '' }}>Hari Ini</option>
+                            <option value="monthly" {{ request('period') == 'monthly' ? 'selected' : '' }}>Bulan Ini</option>
+                            <option value="yearly" {{ request('period') == 'yearly' ? 'selected' : '' }}>Tahun Ini</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="">Semua Status</option>
+                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
+                            <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Diproses</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Tanggal</label>
+                        <input type="date" name="date" value="{{ request('date') }}" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-filter"></i> Terapkan</button>
+                        <a href="{{ route('admin.reports') }}" class="btn btn-default"><i class="fa-solid fa-rotate-left"></i> Reset</a>
+                    </div>
+                </form>
             </div>
-            <div class="d-flex-1 min-w-[140px]">
-                <label class="form-label fw-bold">Tanggal</label>
-                <input type="date" lang="id-ID" name="date" value="{{ request('date') }}"
-                       class="w-100 border border-secondary rounded shadow-sm focus:border border-primary fs-6">
-            </div>
-            <button type="submit"
-                    class="hover: hover: text-white px-5 py-2.5 rounded fw-bold shadow-md hover:shadow fs-6">
-                Terapkan Filter
-            </button>
-            <a href="{{ route('admin.reports') }}"
-               class="text-secondary hover:text-secondary px-4 py-2.5 rounded border border border-secondary hover:bg-light fs-6 fw-medium">
-                Reset
-            </a>
-        </form>
-    </div>
-
-    {{-- Orders Table --}}
-    <div class="bg-white rounded shadow-md overflow-hidden border border border-secondary">
-        <div class="px-6 py-4 border-b border border-secondary">
-            <h3 class="fw-bold text-secondary">Daftar Pesanan</h3>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="w-100 fs-6">
-                <thead class="border-b border border-secondary">
-                    <tr>
-                        <th class="text-start px-6 py-4 fw-bold text-secondary">Nomor Order</th>
-                        <th class="text-start px-6 py-4 fw-bold text-secondary">Pelanggan</th>
-                        <th class="text-start px-6 py-4 fw-bold text-secondary">Layanan</th>
-                        <th class="text-start px-6 py-4 fw-bold text-secondary">Total</th>
-                        <th class="text-center px-6 py-4 fw-bold text-secondary">Status</th>
-                        <th class="text-start px-6 py-4 fw-bold text-secondary">Tanggal</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    @forelse($orders as $order)
-                        <tr class="hover:bg-primary text-white/30">
-                            <td class="px-6 py-4 fw-medium text-secondary">{{ $order->order_number }}</td>
-                            <td class="px-6 py-4 fw-medium text-secondary">{{ $order->user->name ?? '-' }}</td>
-                            <td class="px-6 py-4 text-secondary">{{ $order->cateringService->name ?? '-' }}</td>
-                            <td class="px-6 py-4 fw-bold text-success">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-2 py-1 rounded-pill small fw-medium {{ match($order->status) { 'processing'=>'bg-info text-white text-info','on_delivery'=>'bg-purple-100 text-purple-700','completed'=>'bg-success text-white text-success','cancelled'=>'bg-danger text-white text-danger', default=>'bg-light text-secondary' } }}">
-                                    {{ $order->status_label }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-secondary">{{ $order->created_at->format('d M Y') }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-6 py-12 text-center">
-                                <div class="d-flex d-flex-column align-items-center g-3">
-                                    <div style="width: 64px; height: 64px;" class="bg-light rounded-pill d-flex align-items-center justify-content-center mb-1">
-                                        <svg style="width: 32px; height: 32px;" class="text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                                    </div>
-                                    <p class="text-secondary fw-medium">Tidak ada data pesanan</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
         </div>
 
-        {{-- Pagination --}}
-        @if($orders->hasPages())
-            <div class="px-6 py-4 border-t border border-secondary">
-                {{ $orders->withQueryString()->links() }}
+        {{-- Orders Table --}}
+        <div class="card card-outline card-info">
+            <div class="card-header">
+                <h3 class="card-title">Daftar Pesanan</h3>
             </div>
-        @endif
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Nomor Order</th>
+                                <th>Pelanggan</th>
+                                <th>Layanan</th>
+                                <th>Total</th>
+                                <th class="text-center">Status</th>
+                                <th>Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($orders as $order)
+                                <tr>
+                                    <td class="align-middle fw-medium">{{ $order->order_number }}</td>
+                                    <td class="align-middle">{{ $order->user->name ?? '-' }}</td>
+                                    <td class="align-middle">{{ $order->cateringService->name ?? '-' }}</td>
+                                    <td class="align-middle fw-bold text-success">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+                                    <td class="align-middle text-center">
+                                        <span class="badge {{ match($order->status) { 'pending_payment' => 'text-bg-warning', 'processing' => 'text-bg-info', 'on_delivery' => 'text-bg-primary', 'completed' => 'text-bg-success', 'cancelled' => 'text-bg-danger', default => 'text-bg-secondary' } }}">
+                                            {{ $order->status_label }}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle">{{ $order->created_at->format('d M Y') }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center py-5">
+                                        <i class="fa-solid fa-inbox fa-3x text-muted mb-3 d-block"></i>
+                                        <p class="text-muted fw-medium mb-0">Tidak ada data pesanan</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @if($orders->hasPages())
+                <div class="card-footer">
+                    {{ $orders->withQueryString()->links('pagination::bootstrap-5') }}
+                </div>
+            @endif
+        </div>
     </div>
 </div>
 @endsection

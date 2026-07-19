@@ -1,146 +1,100 @@
 @extends('layouts.admin')
 @section('title', 'Edit Produk')
 @section('content')
+<div class="row">
+    <div class="col-md-8">
+        <div class="mb-3">
+            @php
+                $backServiceId = $product->catering_service_id;
+                $backService = $backServiceId ? \App\Models\CateringService::find($backServiceId) : null;
+            @endphp
+            @if($backService)
+                <a href="{{ route('admin.catering.show', $backService->id) }}" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Kembali ke detail katering: {{ $backService->name }}</a>
+            @else
+                <a href="{{ url()->previous() }}" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
+            @endif
+        </div>
 
-
-<div class="max-w-2xl">
-    <div class="mb-6">
-        <a href="{{ url()->previous() }}" class="fs-6 text-secondary hover:text-primary">← Kembali</a>
-    </div>
-    <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="card shadow-sm mb-4 p-4">
-        @csrf @method('PUT')
-        <input type="hidden" name="catering_service_id" value="{{ $product->catering_service_id }}">
-        <div class="mb-3">
-            <label class="form-label fw-bold">Nama Produk *</label><input type="text" name="name" required value="{{ old('name', $product->name) }}" class="w-100 px-4 py-2 rounded border"></div>
-        <div class="mb-3">
-            <label class="form-label fw-bold">Deskripsi</label><textarea name="description" rows="3" class="form-control w-100 px-4 py-2 rounded border">{{ old('description', $product->description) }}</textarea></div>
-        <div class="mb-3">
-            <label class="form-label fw-bold">Harga (Rp) *</label><input type="text" name="price" required value="{{ old('price', $product->price) }}" class="w-100 px-4 py-2 rounded border rupiah-input"></div>
-        <div class="mb-3">
-            <label class="form-label fw-bold">Gambar</label>
-            <div class="d-flex d-flex-column sm:d-flex-row items-start g-3 mt-1">
-                <div class="w-36 h-36 flex-shrink-0 rounded border border border-secondary bg-light d-flex d-flex-column align-items-center justify-content-center overflow-hidden position-relative shadow-sm">
-                    @if($product->image)
-                        <img src="{{ Storage::url($product->image) }}" id="image-preview" alt="Preview Gambar" class="w-100 h-100 object-cover">
-                        <div id="image-placeholder" class="d-none d-flex-column align-items-center justify-content-center text-center p-2 text-secondary">
-                            <svg style="width: 32px; height: 32px;" class="mb-1 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            <span class="small fw-medium">Belum ada gambar</span>
-                        </div>
-                    @else
-                        <img src="" id="image-preview" alt="Preview Gambar" class="d-none w-100 h-100 object-fit-cover">
-                        <div id="image-placeholder" class="d-flex d-flex-column align-items-center justify-content-center text-center p-2 text-secondary">
-                            <svg style="width: 32px; height: 32px;" class="mb-1 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            <span class="small fw-medium">Belum ada gambar</span>
-                        </div>
-                    @endif
-                </div>
-                    <input type="file" name="image" id="image-input" accept="image/*" class="w-100 px-4 py-2 rounded border">
-                    @if($product->image)
-                        <p class="small text-secondary mt-1 d-inline-d-flex align-items-center g-3">
-                            <svg style="width: 16px; height: 16px;" class="text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            <span>Sudah ada gambar. Upload baru untuk mengganti.</span>
-                        </p>
-                    @endif
-                </div>
-            </div>
-        <div class="d-flex g-3"><label class="d-flex align-items-center g-3"><input type="checkbox" name="is_active" value="1" {{ $product->is_active?'checked':'' }} class="rounded border border-secondary text-primary"><span class="fs-6">Aktif</span></label></div>
-        @if(isset($extras) && $extras->count() > 0)
-        @php $selectedExtras = $product->extras->pluck('id')->toArray() ?? []; @endphp
-        <div class="d-flex flex-column gap-2" id="extra-selector-container">
-            <label class="form-label fw-bold">Extra Tambahan (Opsional)</label>
+        <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="catering_service_id" value="{{ $backServiceId }}">
             
-            <!-- Tags Container -->
-            <div id="selected-extras-tags" class="d-flex d-flex-wrap g-3 empty:d-none">
-                <!-- Tags will be rendered here by JS -->
-            </div>
-
-            <!-- Dropdown Toggle -->
-            <div class="position-relative">
-                <button type="button" onclick="toggleExtraDropdown()" class="d-flex align-items-center g-3 px-4 py-2 bg-white border border border-secondary rounded fs-6 fw-medium text-secondary hover:bg-light focus: -2">
-                    <svg style="width: 16px; height: 16px;" class="text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    Tambah Extra
-                </button>
-
-                <!-- Dropdown Menu -->
-                <div id="extra-dropdown" class="d-none position-absolute mt-2 w-64 bg-white border border border-secondary rounded shadow max-h-60 overflow-y-auto">
-                    <div class="p-2 space-y-1">
-                        @foreach($extras as $extra)
-                            @php $isChecked = in_array($extra->id, old('extras', $selectedExtras)); @endphp
-                            <label class="d-flex align-items-center g-3 px-3 py-2 hover:bg-primary text-white rounded cursor-pointer">
-                                <input type="checkbox" name="extras[]" value="{{ $extra->id }}" data-name="{{ $extra->name }}" onchange="updateExtraTags()" class="w-4 h-4 text-primary border border-secondary rounded extra-checkbox-input" {{ $isChecked ? 'checked' : '' }}>
-                                <span class="fs-6 text-secondary fw-medium">{{ $extra->name }}</span>
-                            </label>
-                        @endforeach
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Informasi Produk</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nama Produk <span class="text-danger">*</span></label>
+                        <input type="text" name="name" required value="{{ old('name', $product->name) }}" class="form-control" placeholder="Nama Produk">
+                        @error('name')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Deskripsi</label>
+                        <textarea name="description" rows="3" class="form-control" placeholder="Deskripsi opsional">{{ old('description', $product->description) }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Harga (Rp) <span class="text-danger">*</span></label>
+                        <input type="text" name="price" required value="{{ old('price', number_format($product->price, 0, '', '')) }}" class="form-control rupiah-input">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Gambar</label>
+                        <input type="file" name="image" accept="image/*" class="form-control" id="image-input">
+                        <div id="imagePreviewContainer" class="mt-3 {{ $product->image ? '' : 'd-none' }}">
+                            <p class="small text-muted fw-medium mb-1">Preview Gambar:</p>
+                            <div class="border rounded bg-light p-1" style="display: inline-block;">
+                                <img id="imagePreview" src="{{ $product->image ? Storage::url($product->image) : '' }}" alt="Preview Gambar" style="height: 112px; object-fit: cover;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }} id="isActiveCheck">
+                        <label class="form-check-label fw-bold" for="isActiveCheck">Aktif</label>
+                    </div>
+
+                    @if(isset($extras) && $extras->count() > 0)
+                    @php $selectedExtras = {{ old('extras', $product->customOptions->pluck('id')->toArray()) }}; @endphp
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Extra Tambahan (Opsional)</label>
+                        <div class="border rounded p-3 bg-light">
+                            <div class="row">
+                                @foreach($extras as $extra)
+                                    @php $isChecked = in_array($extra->id, $selectedExtras); @endphp
+                                    <div class="col-md-6 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="extras[]" value="{{ $extra->id }}" id="extra_{{ $extra->id }}" {{ $isChecked ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="extra_{{ $extra->id }}">
+                                                {{ $extra->name }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @error('extras')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    </div>
+                    @endif
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Simpan Produk</button>
+                    <a href="{{ isset($backService) ? route('admin.catering.show', $backService->id) : url()->previous() }}" class="btn btn-default">Batal</a>
                 </div>
             </div>
-            @error('extras')<p class="text-danger fs-6 mt-1">{{ $message }}</p>@enderror
-        </div>
-        @endif
-        <div class="d-flex justify-content-end g-3 pt-2">
-            <a href="{{ url()->previous() }}" class="px-6 py-2.5 text-secondary bg-light fw-medium rounded hover:bg-light">Batal</a>
-            <button type="submit" class="btn btn-primary">Update Produk</button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
-
 @push('scripts')
 <script>
-    function toggleExtraDropdown() {
-        const dropdown = document.getElementById('extra-dropdown');
-        dropdown.classList.toggle('hidden');
-    }
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-        const container = document.getElementById('extra-selector-container');
-        const dropdown = document.getElementById('extra-dropdown');
-        if (container && dropdown && !container.contains(event.target)) {
-            dropdown.classList.add('hidden');
-        }
-    });
-
-    function updateExtraTags() {
-        const checkboxes = document.querySelectorAll('.extra-checkbox-input');
-        const tagsContainer = document.getElementById('selected-extras-tags');
-        if (!tagsContainer) return;
-        
-        tagsContainer.innerHTML = ''; // Clear current tags
-
-        checkboxes.forEach(cb => {
-            if (cb.checked) {
-                const tag = document.createElement('div');
-                tag.className = 'inline-flex items-center gap-1.5 px-3 py-1 bg-orange-100 text-orange-800 text-sm font-medium rounded-full border border-orange-200 shadow-sm';
-                
-                const label = document.createElement('span');
-                label.textContent = cb.getAttribute('data-name');
-                
-                const closeBtn = document.createElement('button');
-                closeBtn.type = 'button';
-                closeBtn.className = 'flex items-center justify-center w-4 h-4 rounded-full text-orange-600 hover:bg-orange-200 hover:text-orange-900 transition-colors focus:outline-none';
-                closeBtn.innerHTML = '×';
-                closeBtn.onclick = function() {
-                    cb.checked = false;
-                    updateExtraTags();
-                };
-
-                tag.appendChild(label);
-                tag.appendChild(closeBtn);
-                tagsContainer.appendChild(tag);
-            }
-        });
-    }
-
-    // Initialize tags on page load
     document.addEventListener('DOMContentLoaded', function() {
-        updateExtraTags();
-
-        // === Image Preview Script ===
         const imageInput = document.getElementById('image-input');
-        const imagePreview = document.getElementById('image-preview');
-        const imagePlaceholder = document.getElementById('image-placeholder');
-        const originalSrc = imagePreview && !imagePreview.classList.contains('hidden') ? imagePreview.src : null;
-
+        const imgContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        
         if (imageInput) {
             imageInput.addEventListener('change', function(e) {
                 const file = e.target.files && e.target.files[0];
@@ -149,31 +103,12 @@
                     reader.onload = function(event) {
                         if (imagePreview) {
                             imagePreview.src = event.target.result;
-                            imagePreview.classList.remove('hidden');
-                        }
-                        if (imagePlaceholder) {
-                            imagePlaceholder.classList.add('hidden');
+                            imgContainer.classList.remove('d-none');
                         }
                     };
                     reader.readAsDataURL(file);
                 } else {
-                    if (originalSrc) {
-                        if (imagePreview) {
-                            imagePreview.src = originalSrc;
-                            imagePreview.classList.remove('hidden');
-                        }
-                        if (imagePlaceholder) {
-                            imagePlaceholder.classList.add('hidden');
-                        }
-                    } else {
-                        if (imagePreview) {
-                            imagePreview.src = '';
-                            imagePreview.classList.add('hidden');
-                        }
-                        if (imagePlaceholder) {
-                            imagePlaceholder.classList.remove('hidden');
-                        }
-                    }
+                    imgContainer.classList.add('d-none');
                 }
             });
         }

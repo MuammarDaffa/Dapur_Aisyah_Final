@@ -1,149 +1,194 @@
 @extends('layouts.admin')
 @section('title', 'Edit Katering')
 @section('content')
-<div class="max-w-2xl">
-    <div class="mb-6">
-        <a href="{{ route('admin.catering.index') }}" class="fs-6 text-secondary hover:text-primary">← Kembali ke Daftar Katering</a>
-    </div>
-
-    <form action="{{ route('admin.catering.update', $catering) }}" method="POST" enctype="multipart/form-data" class="card shadow-sm mb-4 p-4">
-        @csrf @method('PUT')
-
-        {{-- Nama --}}
+<div class="row">
+    <div class="col-md-8">
         <div class="mb-3">
-            <label class="form-label fw-bold">Nama Katering *</label>
-            <input type="text" name="name" required value="{{ old('name', $catering->name) }}"
-                   class="w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary">
-            @error('name')<p class="text-danger small mt-1">{{ $message }}</p>@enderror
+            <a href="{{ route('admin.catering.index') }}" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Katering</a>
         </div>
 
-        {{-- Deskripsi --}}
-        <div class="mb-3">
-            <label class="form-label fw-bold">Deskripsi *</label>
-            <textarea name="description" rows="3" required
-                      class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary">{{ old('description', $catering->description) }}</textarea>
-        </div>
-
-        {{-- Tipe Katering (Read-only setelah dibuat) --}}
-        @php
-            $currentType = $catering->isDaily() ? 'daily' : ($catering->isEvent() ? 'event' : 'daily');
-        @endphp
-        <input type="hidden" name="catering_type" value="{{ $currentType }}">
-        <div class="mb-3">
-            <label class="form-label fw-bold">Tipe Katering</label>
-            <div class="p-4 border-2 rounded {{ $currentType === 'daily' ? 'border-blue-300 bg-info text-white' : 'border-purple-300 bg-light' }}">
-                <div class="d-flex align-items-center g-3">
-                    @if($currentType === 'daily')
-                    <svg style="width: 24px; height: 24px;" class="text-info flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                    @else
-                    <svg style="width: 24px; height: 24px;" class="text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-                    @endif
-                    <div>
-                        <p class="fw-bold text-secondary">{{ $currentType === 'daily' ? 'Daily' : 'Event' }}</p>
-                        <p class="small text-secondary">{{ $currentType === 'daily' ? 'Menu harian dengan produk' : 'Acara dengan paket catering' }}</p>
+        <form action="{{ route('admin.catering.update', $service) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            <div class="card card-outline card-warning">
+                <div class="card-header">
+                    <h3 class="card-title">Informasi Katering</h3>
+                </div>
+                <div class="card-body">
+                    {{-- Nama --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nama Katering <span class="text-danger">*</span></label>
+                        <input type="text" name="name" required value="{{ old('name', $service->name) }}" class="form-control" placeholder="cth: Katering Harian">
+                        @error('name')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
-                    <!-- <span class="ml-auto d-inline-d-flex align-items-center g-3 px-2.5 py-1 rounded-pill small fw-medium bg-light text-secondary">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        <span>Tidak dapat diubah</span>
-                    </span> -->
+
+                    {{-- Deskripsi --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Deskripsi <span class="text-danger">*</span></label>
+                        <textarea name="description" rows="3" required class="form-control" placeholder="Deskripsi singkat katering...">{{ old('description', $service->description) }}</textarea>
+                    </div>
+
+                    {{-- Tipe Katering --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold d-block">Tipe Katering <span class="text-danger">*</span></label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="w-100 cursor-pointer">
+                                    <input type="radio" name="catering_type" value="daily" {{ old('catering_type', $service->isDaily() ? 'daily' : 'event') === 'daily' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
+                                    <div class="card mb-0 h-100 border type-selector">
+                                        <div class="card-body d-flex align-items-center">
+                                            <i class="fa-solid fa-calendar-day fa-2x text-info me-3"></i>
+                                            <div>
+                                                <h5 class="mb-1 fw-bold">Daily</h5>
+                                                <small class="text-muted">Menu harian dengan produk</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="w-100 cursor-pointer">
+                                    <input type="radio" name="catering_type" value="event" {{ old('catering_type', $service->isEvent() ? 'event' : '') === 'event' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
+                                    <div class="card mb-0 h-100 border type-selector">
+                                        <div class="card-body d-flex align-items-center">
+                                            <i class="fa-solid fa-glass-cheers fa-2x text-purple me-3" style="color: #6f42c1;"></i>
+                                            <div>
+                                                <h5 class="mb-1 fw-bold">Event</h5>
+                                                <small class="text-muted">Acara dengan paket catering</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        @error('catering_type')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    </div>
+
+                    {{-- Harga & Porsi --}}
+                    <div class="row g-3" id="base_price_grid">
+                        <div id="base_price_wrapper" class="col-md-4">
+                            <label class="form-label fw-bold">Harga Dasar (Rp) <span class="text-danger">*</span></label>
+                            <input type="text" name="base_price" required value="{{ old('base_price', number_format($service->base_price, 0, '', '')) }}" class="form-control rupiah-input">
+                        </div>
+                        <div id="min_portion_wrapper" class="col-md-4">
+                            <label class="form-label fw-bold">Min. Porsi <span class="text-danger">*</span></label>
+                            <input type="number" name="min_portion" value="{{ old('min_portion', $service->min_portion) }}" min="1" class="form-control">
+                        </div>
+                        <div id="max_portion_wrapper" class="col-md-4">
+                            <label class="form-label fw-bold">Max. Porsi</label>
+                            <input type="number" name="max_portion" value="{{ old('max_portion', $service->max_portion) }}" placeholder="Tidak dibatasi" class="form-control">
+                        </div>
+                    </div>
+
+                    {{-- Ketentuan & Jadwal (Hanya Event) --}}
+                    <div id="terms_schedule_wrapper" class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ketentuan Pemesanan</label>
+                            <textarea name="order_terms" rows="2" class="form-control" placeholder="Ketentuan khusus...">{{ old('order_terms', $service->order_terms) }}</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Catatan Jadwal</label>
+                            <textarea name="schedule_notes" rows="2" class="form-control" placeholder="Info jadwal...">{{ old('schedule_notes', $service->schedule_notes) }}</textarea>
+                        </div>
+                    </div>
+
+                    {{-- Pengaturan Cutoff (Hanya Event) --}}
+                    <div id="cutoff_wrapper" class="callout callout-info mt-3 bg-light border-start border-4 border-info">
+                        <h5><i class="fa-solid fa-info-circle text-info"></i> Pengaturan Cutoff Pemesanan</h5>
+                        <p class="text-muted mb-2">Batas waktu minimal pemesanan untuk layanan ini</p>
+                        <label class="form-label fw-bold">Minimal Hari Pemesanan</label>
+                        <input type="number" name="minimal_order_days" value="{{ old('minimal_order_days', $service->minimal_order_days) }}" min="0" placeholder="cth: 3" class="form-control">
+                        <small class="text-muted">Jumlah hari minimal sebelum tanggal acara/pengiriman</small>
+                    </div>
+
+                    {{-- Gambar --}}
+                    <div class="mb-3 mt-3">
+                        <label class="form-label fw-bold">Gambar</label>
+                        <input type="file" name="image" accept="image/*" class="form-control">
+                        <div id="imagePreviewContainer" class="mt-3 {{ $service->image ? '' : 'd-none' }}">
+                            <p class="small text-muted fw-medium mb-1">Preview Gambar:</p>
+                            <div class="border rounded bg-light p-1" style="display: inline-block;">
+                                <img id="imagePreview" src="{{ $service->image ? Storage::url($service->image) : '' }}" alt="Preview Gambar" style="height: 112px; object-fit: cover;">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Status --}}
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ old('is_active', $service->is_active) ? 'checked' : '' }} id="isActiveCheck">
+                        <label class="form-check-label fw-bold" for="isActiveCheck">
+                            Aktif
+                        </label>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-warning"><i class="fa-solid fa-save"></i> Perbarui Katering</button>
                 </div>
             </div>
-            <p class="small text-secondary mt-1">Tipe katering tidak dapat diubah setelah dibuat.</p>
-        </div>
-
-        {{-- Harga & Porsi --}}
-        <div class="row row-cols-1 {{ !$catering->isDaily() ? 'sm:row-cols-3' : '' }} g-3">
-            <div class="mb-3">
-            <label class="form-label fw-bold">Harga Dasar (Rp) *</label>
-                <input type="text" name="base_price" required value="{{ old('base_price', $catering->base_price) }}"
-                       class="w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary rupiah-input">
-            </div>
-            @if(!$catering->isDaily())
-            <div class="mb-3">
-            <label class="form-label fw-bold">Min. Porsi *</label>
-                <input type="number" name="min_portion" required value="{{ old('min_portion', $catering->min_portion) }}" min="1"
-                       class="w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary">
-            </div>
-            <div class="mb-3">
-            <label class="form-label fw-bold">Max. Porsi</label>
-                <input type="number" name="max_portion" value="{{ old('max_portion', $catering->max_portion) }}" placeholder="Tidak dibatasi"
-                       class="w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary">
-            </div>
-            @endif
-        </div>
-
-        @if(!$catering->isDaily())
-        {{-- Ketentuan & Jadwal (Hanya Event) --}}
-        <div class="row row-cols-2 g-3">
-            <div class="mb-3">
-            <label class="form-label fw-bold">Ketentuan Pemesanan</label>
-                <textarea name="order_terms" rows="2"
-                          class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary">{{ old('order_terms', $catering->order_terms) }}</textarea>
-            </div>
-            <div class="mb-3">
-            <label class="form-label fw-bold">Catatan Jadwal</label>
-                <textarea name="schedule_notes" rows="2"
-                          class="form-control w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary">{{ old('schedule_notes', $catering->schedule_notes) }}</textarea>
-            </div>
-        </div>
-
-        {{-- Minimal Hari Pemesanan (Hanya Event) --}}
-        <div class="mb-3">
-            <label class="form-label fw-bold">Minimal Hari Pemesanan</label>
-            <select name="minimal_order_days" class="form-select w-100 px-4 py-2.5 rounded border border border-secondary focus:border border-primary">
-                @for($i = 1; $i <= 14; $i++)
-                    <option value="{{ $i }}" {{ old('minimal_order_days', $catering->minimal_order_days) == $i ? 'selected' : '' }}>{{ $i }} Hari</option>
-                @endfor
-            </select>
-        </div>
-        @endif
-
-        {{-- Gambar --}}
-        <div class="mb-3">
-            <label class="form-label fw-bold">Gambar</label>
-            <input type="file" name="image" accept="image/*"
-                   class="w-100 px-4 py-2.5 rounded border border border-secondary fs-6 file:me-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-primary text-white file:text-primary file:fw-medium hover:file:bg-primary text-white">
-            @if($catering->image)
-            <p class="small text-secondary mt-1 d-inline-d-flex align-items-center g-3">
-                <svg style="width: 16px; height: 16px;" class="text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                <span>Gambar saat ini tersimpan. Upload baru untuk mengganti.</span>
-            </p>
-            @endif
-            <div id="imagePreviewContainer" class="{{ $catering->image ? '' : 'd-none' }} mt-3">
-                <p class="small text-secondary mb-1.5 fw-medium">Preview Gambar:</p>
-                <div class="d-inline-block border border border-secondary rounded overflow-hidden bg-light shadow-sm">
-                    <img id="imagePreview" src="{{ $catering->image ? asset('storage/' . $catering->image) : '' }}" alt="Preview Gambar" class="h-28 w-auto object-cover d-block">
-                </div>
-            </div>
-        </div>
-
-        {{-- Status --}}
-        <div class="d-flex align-items-center g-3 pt-2">
-            <label class="d-flex align-items-center g-3 cursor-pointer">
-                <input type="checkbox" name="is_active" value="1" {{ $catering->is_active ? 'checked' : '' }}
-                       class="rounded border border-secondary text-primary">
-                <span class="fs-6 fw-medium text-secondary">Aktif</span>
-            </label>
-        </div>
-
-        {{-- Submit --}}
-        <div class="pt-4 border-t">
-            <button type="submit" class="px-6 py-2.5 bg-info text-white text-white fw-medium rounded hover:bg-info text-white shadow-sm">
-                Simpan Perubahan
-            </button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
+
+@push('styles')
+<style>
+    .type-selector.active {
+        border-color: var(--bs-primary) !important;
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+    input[type=radio]:checked + .type-selector {
+        border-color: var(--bs-primary) !important;
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+</style>
+@endpush
 
 @push('scripts')
 <script>
+function toggleCateringTypeFields() {
+    const typeRadio = document.querySelector('input[name="catering_type"]:checked');
+    const isDaily = typeRadio && typeRadio.value === 'daily';
+
+    const minWrapper = document.getElementById('min_portion_wrapper');
+    const maxWrapper = document.getElementById('max_portion_wrapper');
+    const termsWrapper = document.getElementById('terms_schedule_wrapper');
+    const cutoffWrapper = document.getElementById('cutoff_wrapper');
+    const baseGrid = document.getElementById('base_price_grid');
+    const baseWrapper = document.getElementById('base_price_wrapper');
+
+    if (minWrapper) {
+        minWrapper.style.display = isDaily ? 'none' : 'block';
+        const input = minWrapper.querySelector('input');
+        if (input) input.disabled = isDaily;
+    }
+    if (maxWrapper) {
+        maxWrapper.style.display = isDaily ? 'none' : 'block';
+        const input = maxWrapper.querySelector('input');
+        if (input) input.disabled = isDaily;
+    }
+    if (termsWrapper) {
+        termsWrapper.style.display = isDaily ? 'none' : 'flex';
+        termsWrapper.querySelectorAll('textarea').forEach(el => el.disabled = isDaily);
+    }
+    if (cutoffWrapper) {
+        cutoffWrapper.style.display = isDaily ? 'none' : 'block';
+        const input = cutoffWrapper.querySelector('input');
+        if (input) input.disabled = isDaily;
+    }
+    if (baseGrid && baseWrapper) {
+        if (isDaily) {
+            baseWrapper.className = 'col-12';
+        } else {
+            baseWrapper.className = 'col-md-4';
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    toggleCateringTypeFields();
+
     const imgInput = document.querySelector('input[name="image"]');
     const imgContainer = document.getElementById('imagePreviewContainer');
     const imgPreview = document.getElementById('imagePreview');
-    const hasExisting = {{ $catering->image ? 'true' : 'false' }};
-    const existingSrc = "{{ $catering->image ? asset('storage/' . $catering->image) : '' }}";
-
     if (imgInput && imgContainer && imgPreview) {
         imgInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -151,15 +196,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const reader = new FileReader();
                 reader.onload = function(evt) {
                     imgPreview.src = evt.target.result;
-                    imgContainer.classList.remove('hidden');
+                    imgContainer.classList.remove('d-none');
                 };
                 reader.readAsDataURL(file);
-            } else if (hasExisting && existingSrc) {
-                imgPreview.src = existingSrc;
-                imgContainer.classList.remove('hidden');
             } else {
                 imgPreview.src = '';
-                imgContainer.classList.add('hidden');
+                imgContainer.classList.add('d-none');
             }
         });
     }

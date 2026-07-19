@@ -1,78 +1,95 @@
 @extends('layouts.admin')
-
 @section('title', 'Tambah Ongkos Kirim')
-
 @section('content')
-<div class="max-w-2xl mx-auto space-y-6">
-    {{-- Header --}}
-    <div class="d-flex align-items-center g-3">
-        <a href="{{ route('admin.shipping.index') }}" class="text-secondary hover:text-secondary">
-            <svg style="width: 24px; height: 24px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-        </a>
-        <div>
-            <h2 class="fs-3 fw-bold text-secondary">Tambah Ongkos Kirim</h2>
-            <p class="fs-6 text-secondary mt-1">Atur biaya pengiriman untuk kecamatan baru</p>
+<div class="row">
+    <div class="col-md-8">
+        <div class="mb-3">
+            <a href="{{ route('admin.shipping.index') }}" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Ongkos Kirim</a>
         </div>
-    </div>
 
-    {{-- Form Card --}}
-    <div class="bg-white rounded shadow-md border border border-secondary p-6">
-        <form action="{{ route('admin.shipping.store') }}" method="POST" class="d-flex flex-column gap-3">
+        <form action="{{ route('admin.shipping.store') }}" method="POST">
             @csrf
-
-            {{-- Kecamatan --}}
-            <div>
-                <label for="district_id" class="d-block fs-6 fw-bold text-secondary mb-1.5">Kecamatan <span class="text-danger">*</span></label>
-                <select name="district_id" id="district_id" required
-                        class="form-select w-100 border border-secondary rounded shadow-sm focus:border border-primary">
-                    <option value="">Pilih Kecamatan</option>
-                    @foreach($districts as $district)
-                        <option value="{{ $district->id }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>
-                            {{ $district->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('district_id')
-                    <p class="fs-6 text-danger mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Biaya --}}
-            <div>
-                <label for="cost" class="d-block fs-6 fw-bold text-secondary mb-1.5">Biaya (Rp) <span class="text-danger">*</span></label>
-                <div class="position-relative">
-                    <span class="position-absolute /2 -translate-y-1/2 text-secondary fs-6 fw-medium">Rp</span>
-                    <input type="text" name="cost" id="cost" value="{{ old('cost', 20000) }}" required class="form-control w-100 ps-12 pe-4 py-3 rounded border border border-secondary focus:border border-primary -2 bg-light focus:bg-white rupiah-input">
+            
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Data Wilayah dan Tarif</h3>
                 </div>
-                @error('cost')
-                    <p class="fs-6 text-danger mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kecamatan <span class="text-danger">*</span></label>
+                        <select name="district_id" id="district_id" class="form-select" required>
+                            <option value="">Pilih Kecamatan...</option>
+                            @foreach($districts as $district)
+                                <option value="{{ $district->id }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>
+                                    {{ $district->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('district_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    </div>
 
-            {{-- Catatan --}}
-            <div>
-                <label for="notes" class="d-block fs-6 fw-bold text-secondary mb-1.5">Catatan</label>
-                <textarea name="notes" id="notes" rows="3" placeholder="Catatan opsional..."
-                          class="form-control w-100 border border-secondary rounded shadow-sm focus:border border-primary">{{ old('notes') }}</textarea>
-                @error('notes')
-                    <p class="fs-6 text-danger mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kelurahan <span class="text-danger">*</span></label>
+                        <select name="village_id" id="village_id" class="form-select" required>
+                            <option value="">Pilih Kelurahan...</option>
+                        </select>
+                        @error('village_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    </div>
 
-            {{-- Actions --}}
-            <div class="d-flex align-items-center g-3 pt-4 border-t border border-secondary">
-                <button type="submit"
-                        class="hover: hover: text-white px-6 py-2.5 rounded fw-bold shadow-md hover:shadow">
-                    Simpan
-                </button>
-                <a href="{{ route('admin.shipping.index') }}"
-                   class="text-secondary hover:text-secondary px-6 py-2.5 rounded border border border-secondary hover:bg-light fw-medium">
-                    Batal
-                </a>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ongkos Kirim (Rp) <span class="text-danger">*</span></label>
+                        <input type="text" name="cost" class="form-control rupiah-input" value="{{ old('cost') }}" required>
+                        @error('cost')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Simpan Ongkos Kirim</button>
+                    <a href="{{ route('admin.shipping.index') }}" class="btn btn-default">Batal</a>
+                </div>
             </div>
         </form>
     </div>
 </div>
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const districtSelect = document.getElementById('district_id');
+        const villageSelect = document.getElementById('village_id');
+        const oldVillageId = '{{ old('village_id') }}';
+
+        function loadVillages(districtId, selectedVillageId = null) {
+            villageSelect.innerHTML = '<option value="">Memuat...</option>';
+            villageSelect.disabled = true;
+
+            if (districtId) {
+                fetch(`/api/districts/${districtId}/villages`)
+                    .then(response => response.json())
+                    .then(data => {
+                        villageSelect.innerHTML = '<option value="">Pilih Kelurahan...</option>';
+                        data.forEach(village => {
+                            const selected = selectedVillageId == village.id ? 'selected' : '';
+                            villageSelect.innerHTML += `<option value="${village.id}" ${selected}>${village.name}</option>`;
+                        });
+                        villageSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        villageSelect.innerHTML = '<option value="">Gagal memuat kelurahan</option>';
+                    });
+            } else {
+                villageSelect.innerHTML = '<option value="">Pilih Kelurahan...</option>';
+                villageSelect.disabled = true;
+            }
+        }
+
+        districtSelect.addEventListener('change', function() {
+            loadVillages(this.value);
+        });
+
+        if (districtSelect.value) {
+            loadVillages(districtSelect.value, oldVillageId);
+        }
+    });
+</script>
+@endpush
 @endsection

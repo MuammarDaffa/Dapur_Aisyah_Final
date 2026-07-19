@@ -1,39 +1,48 @@
 @extends('layouts.admin')
-@section('title', 'Pelanggan')
+@section('title', 'Data Pelanggan')
 @section('content')
-
-{{-- Search --}}
-<div class="bg-white rounded shadow-sm border p-4 mb-4">
-    <form action="{{ route('admin.customers') }}" method="GET" class="d-flex d-flex-wrap g-3 items-end">
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, atau telepon..." class="form-control px-4 py-2 rounded border border border-secondary fs-6 d-flex-1 min-w-[200px]">
-        <button type="submit" class="btn btn-primary">Cari</button>
-    </form>
-</div>
-
-{{-- Table --}}
-<div class="bg-white rounded shadow-sm border overflow-hidden">
-    <div class="overflow-x-auto">
-    <table class="w-100 fs-6 min-w-[500px]">
-        <thead class="bg-light small uppercase text-secondary">
-            <tr>
-                <th class="px-6 py-3 text-start">Nama</th>
-                <th class="px-6 py-3 text-start">Email</th>
-                <th class="px-6 py-3 text-center">Telepon</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y">
-            @forelse($customers as $c)
-            <tr class="hover:bg-light">
-                <td class="px-6 py-4 fw-medium">{{ $c->name }}</td>
-                <td class="px-6 py-4">{{ $c->email }}</td>
-                <td class="px-6 py-4 text-center">{{ $c->phone ?? '-' }}</td>
-            </tr>
-            @empty
-            <tr><td colspan="3" class="px-6 py-8 text-center text-secondary">Tidak ada pelanggan.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-outline card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Daftar Pelanggan</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>Total Pesanan</th>
+                                <th>Terdaftar Pada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($customers as $c)
+                            <tr>
+                                <td class="align-middle fw-medium">{{ $c->name }}</td>
+                                <td class="align-middle">{{ $c->email }}</td>
+                                <td class="align-middle">
+                                    <span class="badge text-bg-info">{{ $c->orders_count }} Pesanan</span>
+                                </td>
+                                <td class="align-middle text-muted">{{ $c->created_at->format('d M Y') }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">Belum ada pelanggan terdaftar.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @if($customers->hasPages())
+            <div class="card-footer">
+                {{ $customers->links('pagination::bootstrap-5') }}
+            </div>
+            @endif
+        </div>
     </div>
 </div>
-<div class="mt-4">{{ $customers->withQueryString()->links() }}</div>
 @endsection
