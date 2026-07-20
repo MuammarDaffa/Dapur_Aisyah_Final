@@ -96,7 +96,7 @@ class CateringController extends Controller
             $servings = \App\Models\OpsiKustom::where('type', 'tipe_penyajian')->get();
             $extras = $catering->opsiKustom()->where('type', 'extra')->get();
 
-            return view('admin.catering.show-acara', compact('catering', 'packages', 'menus', 'servings', 'extras'));
+            return view('admin.catering.show-acara', compact('catering', 'pakets', 'menus', 'servings', 'extras'));
         }
 
         return redirect()->route('admin.catering.index')
