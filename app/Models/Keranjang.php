@@ -66,7 +66,7 @@ class Keranjang extends Model
          * Ditandai dengan adanya cart_group_id.
          * @return bool
          */
-    public function isEventItem(): bool
+    public function isAcaraItem(): bool
     {
         return !empty($this->cart_group_id);
     }
@@ -79,7 +79,7 @@ class Keranjang extends Model
          * Ditandai dengan cart_group_id yang kosong (null).
          * @return bool
          */
-    public function isDailyItem(): bool
+    public function isHarianItem(): bool
     {
         return empty($this->cart_group_id);
     }
@@ -189,11 +189,11 @@ class Keranjang extends Model
             : collect();
 
         // Lookup ItemPeriodeMenu untuk Katering Harian
-        $dailyCartsWithDate = $userCarts->whereNull('cart_group_id')->whereNotNull('produk_id')->whereNotNull('menu_date');
+        $keranjangHarianWithDate = $userCarts->whereNull('cart_group_id')->whereNotNull('produk_id')->whereNotNull('menu_date');
         $menuPeriodMap = collect();
-        if ($dailyCartsWithDate->isNotEmpty()) {
-            $pIds = $dailyCartsWithDate->pluck('produk_id')->unique();
-            $dates = $dailyCartsWithDate->pluck('menu_date')->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))->unique();
+        if ($keranjangHarianWithDate->isNotEmpty()) {
+            $pIds = $keranjangHarianWithDate->pluck('produk_id')->unique();
+            $dates = $keranjangHarianWithDate->pluck('menu_date')->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))->unique();
             $mpItems = \App\Models\ItemPeriodeMenu::whereIn('produk_id', $pIds)->whereIn('menu_date', $dates)->get();
             foreach ($mpItems as $mpi) {
                 $dateStr = \Carbon\Carbon::parse($mpi->menu_date)->format('Y-m-d');
@@ -202,8 +202,8 @@ class Keranjang extends Model
         }
 
         $expiredIds = [];
-        $unavailableDailyIds = [];
-        $habisDailyIds = [];
+        $unavailableHarianIds = [];
+        $habisHarianIds = [];
         $unavailableGroupIds = [];
 
         // 1. Cek Katering Harian (cart_group_id IS NULL)
@@ -219,7 +219,7 @@ class Keranjang extends Model
 
             // Cek produk deleted/inactive atau null (Jika produk menu)
             if (!$keranjang->produk_id || !isset($activeProducts[$keranjang->produk_id])) {
-                $unavailableDailyIds[] = $keranjang->id;
+                $unavailableHarianIds[] = $keranjang->id;
                 continue;
             }
 
@@ -234,7 +234,7 @@ class Keranjang extends Model
                 }
             }
             if ($hasDeletedExtra) {
-                $unavailableDailyIds[] = $keranjang->id;
+                $unavailableHarianIds[] = $keranjang->id;
                 continue;
             }
 
@@ -244,19 +244,19 @@ class Keranjang extends Model
                 $mpi = $menuPeriodMap->get("{$keranjang->produk_id}_{$dateStr}");
                 if (!$mpi) {
                     // Menu sudah tidak ada di jadwal periode aktif
-                    $unavailableDailyIds[] = $keranjang->id;
+                    $unavailableHarianIds[] = $keranjang->id;
                     continue;
                 } elseif ($mpi->isOutOfStock()) {
                     // Status menu diubah menjadi Habis
-                    $habisDailyIds[] = $keranjang->id;
+                    $habisHarianIds[] = $keranjang->id;
                     continue;
                 }
             }
         }
 
         // 2. Cek Katering Event (cart_group_id IS NOT NULL)
-        $eventGroups = $userCarts->whereNotNull('cart_group_id')->groupBy('cart_group_id');
-        foreach ($eventGroups as $groupId => $groupItems) {
+        $grupAcara = $userCarts->whereNotNull('cart_group_id')->groupBy('cart_group_id');
+        foreach ($grupAcara as $groupId => $groupItems) {
             $packageRow = $groupItems->firstWhere('item_type', 'package');
             if ($packageRow) {
                 // Paket Event
@@ -317,22 +317,22 @@ class Keranjang extends Model
 
         // Eksekusi bulk delete
         $expiredCount = count($expiredIds);
-        $unavailableCount = count($unavailableDailyIds) + count($unavailableGroupIds);
-        $habisCount = count($habisDailyIds);
+        $unavailableCount = count($unavailableHarianIds) + count($unavailableGroupIds);
+        $habisCount = count($habisHarianIds);
 
         if ($expiredCount > 0) {
             self::whereIn('id', $expiredIds)->delete();
         }
         if ($unavailableCount > 0) {
-            if (!empty($unavailableDailyIds)) {
-                self::whereIn('id', $unavailableDailyIds)->delete();
+            if (!empty($unavailableHarianIds)) {
+                self::whereIn('id', $unavailableHarianIds)->delete();
             }
             if (!empty($unavailableGroupIds)) {
                 self::whereIn('cart_group_id', $unavailableGroupIds)->delete();
             }
         }
         if ($habisCount > 0) {
-            self::whereIn('id', $habisDailyIds)->delete();
+            self::whereIn('id', $habisHarianIds)->delete();
         }
 
         // Kirim notifikasi via flash message session (jika ada yang dihapus)

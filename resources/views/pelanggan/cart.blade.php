@@ -8,25 +8,25 @@
     </h2>
 
     @php
-        $packageGroupsCount = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') !== null)->count();
-        $customGroupsCount = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') === null)->count();
+        $packageGroupsCount = $grupAcara->filter(fn($items) => $items->firstWhere('item_type', 'package') !== null)->count();
+        $customGroupsCount = $grupAcara->filter(fn($items) => $items->firstWhere('item_type', 'package') === null)->count();
         $totalEventBadge = $packageGroupsCount + $customGroupsCount;
     @endphp
 
     {{-- Tab Navigation --}}
     <div class="d-flex border-b border border-secondary mb-6">
-        <button type="button" onclick="switchTab('harian')" id="tab-daily"
+        <button type="button" onclick="switchTab('harian')" id="tab-harian"
             class="px-6 py-3 fs-6 fw-bold border-b-2 d-flex align-items-center {{ $activeTab === 'harian' ? 'border border-primary text-primary' : 'border-transparent text-secondary hover:text-secondary' }}">
             <svg style="width: 16px; height: 16px;" class="me-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            <span>Daily</span>
-            @if($dailyGroups->isNotEmpty())
-                <span class="ms-1 px-2 py-0.5 bg-primary text-white text-primary rounded-pill small fw-bold">{{ $dailyGroups->flatten()->count() }}</span>
+            <span>Harian</span>
+            @if($grupHarian->isNotEmpty())
+                <span class="ms-1 px-2 py-0.5 bg-primary text-white text-primary rounded-pill small fw-bold">{{ $grupHarian->flatten()->count() }}</span>
             @endif
         </button>
-        <button type="button" onclick="switchTab('acara')" id="tab-event"
+        <button type="button" onclick="switchTab('acara')" id="tab-acara"
             class="px-6 py-3 fs-6 fw-bold border-b-2 d-flex align-items-center {{ $activeTab === 'acara' ? 'border border-primary text-primary' : 'border-transparent text-secondary hover:text-secondary' }}">
             <svg style="width: 16px; height: 16px;" class="me-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-            <span>Event</span>
+            <span>Acara</span>
             @if($totalEventBadge > 0)
                 <span class="ms-1 px-2 py-0.5 bg-purple-100 text-purple-600 rounded-pill small fw-bold">{{ $totalEventBadge }}</span>
             @endif
@@ -36,8 +36,8 @@
     {{-- =============================== --}}
     {{-- TAB DAILY --}}
     {{-- =============================== --}}
-    <div id="content-daily" style="{{ $activeTab !== 'harian' ? 'display:none' : '' }}">
-        @if($dailyGroups->isEmpty())
+    <div id="content-harian" style="{{ $activeTab !== 'harian' ? 'display:none' : '' }}">
+        @if($grupHarian->isEmpty())
             <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border border-secondary">
                 <!-- <div style="width: 64px; height: 64px;" class="mx-auto mb-4 text-secondary d-flex align-items-center justify-content-center">
                     <svg style="width: 48px; height: 48px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
@@ -50,7 +50,7 @@
             </div>
         @else
             <div class="bg-white rounded shadow-sm border border border-primary p-6 space-y-6">
-                @foreach($dailyGroups->flatten() as $keranjang)
+                @foreach($grupHarian->flatten() as $keranjang)
                 @php
                     $basePrice = $keranjang->produk ? (float) $keranjang->produk->harga : ($keranjang->opsiKustom ? (float) $keranjang->opsiKustom->harga : 0);
                     $extrasList = collect();
@@ -96,7 +96,7 @@
                         @endif
 
                         <div class="d-flex align-items-center justify-content-end mt-4 space-x-3">
-                            <button type="button" onclick="openDailyEditModal({{ $keranjang->id }})" class="px-4 py-2 bg-primary text-white text-primary fs-6 fw-bold rounded hover:bg-primary text-white">Ubah Pesanan</button>
+                            <button type="button" onclick="openHarianEditModal({{ $keranjang->id }})" class="px-4 py-2 bg-primary text-white text-primary fs-6 fw-bold rounded hover:bg-primary text-white">Ubah Pesanan</button>
                             <form action="{{ route('pelanggan.keranjang.destroy', $keranjang) }}" method="POST" class="d-inline">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-outline-danger btn btn-danger px-4 py-2 bg-danger text-white text-danger fs-6 fw-bold rounded hover:bg-danger text-white">
@@ -112,8 +112,8 @@
             <!-- Tombol Lanjut Ke Pembayaran Global untuk Semua Daily -->
             <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border border-primary d-flex d-flex-column sm:d-flex-row justify-content-between align-items-center g-3 sticky-top">
                 <div>
-                    <h4 class="fw-bold text-secondary fs-5">Total Seluruh Pesanan Daily</h4>
-                    <p class="fs-3 fw-bold text-primary">Rp {{ number_format($dailyGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</p>
+                    <h4 class="fw-bold text-secondary fs-5">Total Seluruh Pesanan Harian</h4>
+                    <p class="fs-3 fw-bold text-primary">Rp {{ number_format($grupHarian->flatten()->sum('subtotal'), 0, ',', '.') }}</p>
                     <!-- <p class="fs-6 text-secondary mt-1">Satu kali checkout untuk seluruh menu harian.</p> -->
                 </div>
                 <a href="{{ route('pelanggan.checkout') }}"
@@ -125,8 +125,8 @@
     {{-- =============================== --}}
     {{-- TAB EVENT --}}
     {{-- =============================== --}}
-    <div id="content-event" style="{{ $activeTab !== 'acara' ? 'display:none' : '' }}">
-        @if($eventGroups->isEmpty())
+    <div id="content-acara" style="{{ $activeTab !== 'acara' ? 'display:none' : '' }}">
+        @if($grupAcara->isEmpty())
             <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border border-secondary">
                 <!-- <div style="width: 64px; height: 64px;" class="bg-light text-primary rounded-pill d-flex align-items-center justify-content-center mx-auto mb-4">
                     <svg style="width: 32px; height: 32px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,30 +135,30 @@
                 </div> -->
                 <p class="text-secondary fw-medium mb-4">Belum ada pesanan </p>
                 <!-- <a href="{{ route('landing') }}#services" class="d-inline-d-flex align-items-center px-6 py-3 bg-purple-500 text-white fw-medium rounded-pill">
-                    <span>Pilih Layanan Event</span>
+                    <span>Pilih Layanan Acara</span>
                     <svg style="width: 16px; height: 16px;" class="ms-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </a> -->
             </div>
         @else
             @php
-                $packageGroups = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') !== null);
-                $customGroups = $eventGroups->filter(fn($items) => $items->firstWhere('item_type', 'package') === null);
+                $packageGroups = $grupAcara->filter(fn($items) => $items->firstWhere('item_type', 'package') !== null);
+                $customGroups = $grupAcara->filter(fn($items) => $items->firstWhere('item_type', 'package') === null);
             @endphp
 
             <div class="divide-y divide-gray-200 border-t border-b border border-secondary my-2">
-                {{-- Kelompok 1: Paket Event --}}
+                {{-- Kelompok 1: Paket Acara --}}
                 @foreach($packageGroups as $groupId => $groupItems)
                 @php
                     $packageItem = $groupItems->firstWhere('item_type', 'package');
                     $service = $groupItems->first()->layananKatering;
                     $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
                 @endphp
-                <div class="py-6 first:pt-4 last:pb-4 d-flex d-flex-column sm:d-flex-row sm:align-items-center justify-content-between g-3" id="event-card-{{ $groupId }}">
+                <div class="py-6 first:pt-4 last:pb-4 d-flex d-flex-column sm:d-flex-row sm:align-items-center justify-content-between g-3" id="acara-card-{{ $groupId }}">
                     <div class="d-flex-1 min-w-0 space-y-1">
                         <div class="d-flex d-flex-wrap align-items-center gap-x-2 gap-y-1">
                             <span class="fw-bold text-secondary text-base sm:fs-5">{{ $packageItem->paketKatering->name ?? 'Paket' }} ({{ $packageItem->jumlah }})</span>
                             <span class="text-secondary fw-medium">·</span>
-                            <span class="fs-6 text-secondary fw-medium">{{ $service->name ?? 'Layanan Event' }}</span>
+                            <span class="fs-6 text-secondary fw-medium">{{ $service->name ?? 'Layanan Acara' }}</span>
                         </div>
                         <div class="pt-0.5">
                             <button type="button" onclick="openDetailModal('{{ $groupId }}')" class="small fw-bold text-purple-600 underline">Lihat Detail Menu</button>
@@ -184,12 +184,12 @@
                     $service = $groupItems->first()->layananKatering;
                     $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
                 @endphp
-                <div class="py-6 first:pt-4 last:pb-4 d-flex d-flex-column sm:d-flex-row sm:align-items-center justify-content-between g-3" id="event-card-{{ $groupId }}">
+                <div class="py-6 first:pt-4 last:pb-4 d-flex d-flex-column sm:d-flex-row sm:align-items-center justify-content-between g-3" id="acara-card-{{ $groupId }}">
                     <div class="d-flex-1 min-w-0 space-y-1">
                         <div class="d-flex d-flex-wrap align-items-center gap-x-2 gap-y-1">
                             <span class="fw-bold text-secondary text-base sm:fs-5">Custom Menu</span>
                             <span class="text-secondary fw-medium">·</span>
-                            <span class="fs-6 text-secondary fw-medium">{{ $service->name ?? 'Layanan Event' }}</span>
+                            <span class="fs-6 text-secondary fw-medium">{{ $service->name ?? 'Layanan Acara' }}</span>
                         </div>
                         <p class="fs-6 fw-medium text-secondary">
                             {{ $menuItems->count() }} Menu Dipilih
@@ -217,14 +217,14 @@
             <!-- Ringkasan Belanja & Tombol Lanjut Ke Pembayaran Global untuk Semua Event -->
             <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-purple-100 d-flex d-flex-column sm:d-flex-row justify-content-between align-items-center g-3 sticky-top">
                 <div>
-                    <!-- <h4 class="fw-bold text-secondary fs-5">Ringkasan Belanja Event</h4> -->
+                    <!-- <h4 class="fw-bold text-secondary fs-5">Ringkasan Belanja Acara</h4> -->
                     <div class="d-flex align-items-center g-3 mt-1 fs-6 text-secondary">
-                        <!-- <span>Subtotal: <strong class="text-secondary">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
+                        <!-- <span>Subtotal: <strong class="text-secondary">Rp {{ number_format($grupAcara->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
                         <span>•</span> -->
-                        <span>Total: <strong class="text-secondary fw-bold fs-5">Rp {{ number_format($eventGroups->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
+                        <span>Total: <strong class="text-secondary fw-bold fs-5">Rp {{ number_format($grupAcara->flatten()->sum('subtotal'), 0, ',', '.') }}</strong></span>
                     </div>
                 </div>
-                <a href="{{ route('pelanggan.event.checkout.show', 'all') }}"
+                <a href="{{ route('pelanggan.acara.checkout.show', 'all') }}"
                     class="w-100 sm:w-auto text-center px-8 py-4 text-white fw-bold rounded hover:shadow text-base">Lanjut Ke Pembayaran</a>
             </div>
         @endif
@@ -235,7 +235,7 @@
 {{-- MODAL: Daily Edit (tetap seperti lama) --}}
 {{-- =============================== --}}
 @php
-    $allDailyCartsJson = $dailyGroups->flatten()->keyBy('id')->map(function($c) {
+    $allHarianCartsJson = $grupHarian->flatten()->keyBy('id')->map(function($c) {
         $basePrice = $c->produk ? (float) $c->produk->harga : ($c->opsiKustom ? (float) $c->opsiKustom->harga : 0);
         $name = $c->produk->name ?? ($c->opsiKustom->name ?? 'Item');
         $serviceId = $c->produk->layanan_katering_id ?? ($c->opsiKustom->layanan_katering_id ?? null);
@@ -252,48 +252,48 @@
     });
 @endphp
 
-<div id="dailyEditModal" class="position-fixed d-flex align-items-center justify-content-center bg-dark/50 backdrop-blur-sm" style="display:none;">
+<div id="harianEditModal" class="position-fixed d-flex align-items-center justify-content-center bg-dark/50 backdrop-blur-sm" style="display:none;">
     <div class="bg-white rounded-2xl shadow-2xl w-100 max-w-lg mx-4 max-h-[90vh] d-flex d-flex-column">
         <div class="d-flex align-items-center justify-content-between p-6 border-b border border-secondary d-flex-flex-shrink-0">
             <h3 class="fs-5 fw-bold text-secondary d-flex align-items-center">
                 <svg style="width: 20px; height: 20px;" class="text-primary me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                 <span>Ubah Pesanan</span>
             </h3>
-            <button type="button" onclick="closeDailyEditModal()" class="p-1 text-secondary hover:text-secondary rounded hover:bg-light">
+            <button type="button" onclick="closeHarianEditModal()" class="p-1 text-secondary hover:text-secondary rounded hover:bg-light">
                 <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
         <div class="overflow-y-auto d-flex-1 p-6">
-            <form id="dailyEditForm" action="" method="POST">
+            <form id="harianEditForm" action="" method="POST">
                 @csrf @method('PUT')
                 <div class="mb-6 bg-primary text-white/50 rounded p-4">
-                    <h4 id="dailyModalProductName" class="fw-bold text-secondary"></h4>
-                    <p id="dailyModalProductPrice" class="text-primary fw-bold fs-6"></p>
+                    <h4 id="harianModalProductName" class="fw-bold text-secondary"></h4>
+                    <p id="harianModalProductPrice" class="text-primary fw-bold fs-6"></p>
                 </div>
                 <div class="mb-6">
                     <label class="form-label fw-bold">Jumlah Porsi *</label>
                     <div class="d-flex align-items-center g-3">
-                        <button type="button" onclick="changeDailyQty(-1)" style="height: 40px;" class="w-10 rounded bg-light hover:bg-light d-flex align-items-center justify-content-center text-secondary fw-bold fs-5">−</button>
-                        <input type="text" inputmode="none" readonly tabindex="-1" name="jumlah" id="dailyModalQty" value="1" class="form-control w-20 text-center px-3 py-2 rounded border border border-secondary fw-bold text-secondary focus: cursor-default select-none">
-                        <button type="button" onclick="changeDailyQty(1)" style="height: 40px;" class="w-10 rounded bg-light hover:bg-light d-flex align-items-center justify-content-center text-secondary fw-bold fs-5">+</button>
+                        <button type="button" onclick="changeHarianQty(-1)" style="height: 40px;" class="w-10 rounded bg-light hover:bg-light d-flex align-items-center justify-content-center text-secondary fw-bold fs-5">−</button>
+                        <input type="text" inputmode="none" readonly tabindex="-1" name="jumlah" id="harianModalQty" value="1" class="form-control w-20 text-center px-3 py-2 rounded border border border-secondary fw-bold text-secondary focus: cursor-default select-none">
+                        <button type="button" onclick="changeHarianQty(1)" style="height: 40px;" class="w-10 rounded bg-light hover:bg-light d-flex align-items-center justify-content-center text-secondary fw-bold fs-5">+</button>
                     </div>
                 </div>
-                <div id="dailyModalExtrasLoading" class="fs-6 text-secondary py-2 d-none">Memuat opsi tambahan...</div>
-                <div id="dailyModalExtrasContainer" class="mb-5 d-none">
+                <div id="harianModalExtrasLoading" class="fs-6 text-secondary py-2 d-none">Memuat opsi tambahan...</div>
+                <div id="harianModalExtrasContainer" class="mb-5 d-none">
                     <label class="form-label fw-bold">Extra Tambahan (Opsional)</label>
-                    <div id="dailyModalExtrasList" class="divide-y divide-gray-100"></div>
+                    <div id="harianModalExtrasList" class="divide-y divide-gray-100"></div>
                 </div>
                 <div class="rounded p-4 border border border-primary">
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fs-6 text-secondary">Estimasi Total</span>
-                        <span id="dailyModalTotal" class="fs-4 fw-bold text-primary">Rp 0</span>
+                        <span id="harianModalTotal" class="fs-4 fw-bold text-primary">Rp 0</span>
                     </div>
                 </div>
             </form>
         </div>
         <div class="p-6 border-t border border-secondary d-flex-flex-shrink-0 d-flex g-3">
-            <button type="button" onclick="closeDailyEditModal()" class="d-flex-1 px-6 py-3.5 bg-light text-secondary fw-bold rounded hover:bg-light fs-6">Batal</button>
-            <button type="button" onclick="document.getElementById('dailyEditForm').submit()" class="d-flex-1 px-6 py-3.5 text-white fw-bold rounded hover:shadow fs-6">Update</button>
+            <button type="button" onclick="closeHarianEditModal()" class="d-flex-1 px-6 py-3.5 bg-light text-secondary fw-bold rounded hover:bg-light fs-6">Batal</button>
+            <button type="button" onclick="document.getElementById('harianEditForm').submit()" class="d-flex-1 px-6 py-3.5 text-white fw-bold rounded hover:shadow fs-6">Update</button>
         </div>
     </div>
 </div>
@@ -302,16 +302,16 @@
 {{-- MODAL: Event Edit --}}
 {{-- =============================== --}}
 @php
-    $eventGroupsJson = [];
-    foreach($eventGroups as $gId => $gItems) {
+    $grupAcaraJson = [];
+    foreach($grupAcara as $gId => $gItems) {
         $pkgItem = $gItems->firstWhere('item_type', 'package');
         $customHeader = $gItems->firstWhere('item_type', 'custom_header');
         $setsQty = $customHeader ? (int) $customHeader->jumlah : ($pkgItem ? (int) $pkgItem->jumlah : 1);
         if ($setsQty <= 0) $setsQty = 1;
 
-        $eventGroupsJson[$gId] = [
+        $grupAcaraJson[$gId] = [
             'group_id' => $gId,
-            'service_name' => $gItems->first()->layananKatering->name ?? 'Layanan Event',
+            'service_name' => $gItems->first()->layananKatering->name ?? 'Layanan Acara',
             'package_name' => $pkgItem?->paketKatering?->name,
             'package_quantity' => $pkgItem ? (int) $pkgItem->jumlah : 1,
             'package_portions_per_unit' => $pkgItem?->paketKatering?->total_portions ?? 0,
@@ -326,7 +326,7 @@
             'is_package' => $pkgItem !== null,
             'min_portion' => $gItems->first()->layananKatering->min_portion ?? 1,
             'maksimal_porsi' => $gItems->first()->layananKatering->maksimal_porsi ?? 1000,
-            'update_url' => route('pelanggan.event.keranjang.update', $gId),
+            'update_url' => route('pelanggan.acara.keranjang.update', $gId),
             'items' => $gItems->filter(fn($c) => in_array($c->item_type, ['package_item', 'custom_menu', 'addition']))->map(fn($c) => [
                 'opsi_kustom_id' => $c->opsi_kustom_id,
                 'jumlah' => $c->jumlah,
@@ -379,7 +379,7 @@
         <div class="d-flex align-items-center justify-content-between p-6 border-b border border-secondary d-flex-flex-shrink-0">
             <h3 class="fs-5 fw-bold text-secondary d-flex align-items-center">
                 <svg style="width: 20px; height: 20px;" class="text-primary me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                <span>Edit Pesanan Event</span>
+                <span>Edit Pesanan Acara</span>
             </h3>
             <button type="button" onclick="closeEditEventModal()" class="p-1 text-secondary hover:text-secondary rounded hover:bg-light">
                 <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -391,19 +391,19 @@
                 /* Chrome, Safari, Edge, Opera */
                 input[type=number].desktop-no-spinner::-webkit-outer-spin-button,
                 input[type=number].desktop-no-spinner::-webkit-inner-spin-button,
-                input[type=number].edit-event-qty::-webkit-outer-spin-button,
-                input[type=number].edit-event-qty::-webkit-inner-spin-button {
+                input[type=number].edit-acara-qty::-webkit-outer-spin-button,
+                input[type=number].edit-acara-qty::-webkit-inner-spin-button {
                     -webkit-appearance: none;
                     margin: 0;
                 }
                 /* Firefox */
                 input[type=number].desktop-no-spinner,
-                input[type=number].edit-event-qty {
+                input[type=number].edit-acara-qty {
                     -moz-appearance: textfield;
                 }
             }
             </style>
-            <form id="editEventForm" action="" method="POST">
+            <form id="editAcaraForm" action="" method="POST">
                 @csrf @method('PUT')
                 <input type="hidden" name="layanan_katering_id" id="editEventServiceId">
                 <input type="hidden" name="catering_package_id" id="editEventPackageId">
@@ -411,7 +411,7 @@
                 {{-- Info Header --}}
                 <div id="editEventHeader" class="bg-light rounded p-4 mb-6">
                     <p class="fw-bold text-secondary" id="editEventTitle"></p>
-                    <p class="fs-6 text-purple-600" id="editEventType"></p>
+                    <p class="fs-6 text-purple-600" id="editAcaraType"></p>
                 </div>
 
                 {{-- Menu Items (akan di-generate JS) --}}
@@ -485,11 +485,11 @@
     // TAB SWITCHING
     // =======================
     function switchTab(tab) {
-        document.getElementById('content-daily').style.display = tab === 'harian' ? '' : 'none';
-        document.getElementById('content-event').style.display = tab === 'acara' ? '' : 'none';
+        document.getElementById('content-harian').style.display = tab === 'harian' ? '' : 'none';
+        document.getElementById('content-acara').style.display = tab === 'acara' ? '' : 'none';
 
-        const tabDaily = document.getElementById('tab-daily');
-        const tabEvent = document.getElementById('tab-event');
+        const tabDaily = document.getElementById('tab-harian');
+        const tabEvent = document.getElementById('tab-acara');
         tabDaily.classList.toggle('border-orange-500', tab === 'harian');
         tabDaily.classList.toggle('text-orange-600', tab === 'harian');
         tabDaily.classList.toggle('border-transparent', tab !== 'harian');
@@ -503,42 +503,42 @@
     // =======================
     // DAILY EDIT MODAL
     // =======================
-    const dailyCartsData = @json($allDailyCartsJson);
-    let currentDailyCart = null;
-    let dailyAvailableExtras = [];
+    const harianCartsData = @json($allHarianCartsJson);
+    let currentHarianCart = null;
+    let harianAvailableExtras = [];
 
     function formatRupiah(value) {
         return 'Rp ' + Number(value).toLocaleString('id-ID');
     }
 
-    function openDailyEditModal(cartId) {
-        currentDailyCart = dailyCartsData[cartId];
-        if (!currentDailyCart) return;
+    function openHarianEditModal(cartId) {
+        currentHarianCart = harianCartsData[cartId];
+        if (!currentHarianCart) return;
 
-        document.getElementById('dailyEditForm').action = currentDailyCart.update_url;
-        document.getElementById('dailyModalProductName').textContent = currentDailyCart.name;
-        document.getElementById('dailyModalProductPrice').textContent = formatRupiah(currentDailyCart.harga);
-        document.getElementById('dailyModalQty').value = currentDailyCart.jumlah;
+        document.getElementById('harianEditForm').action = currentHarianCart.update_url;
+        document.getElementById('harianModalProductName').textContent = currentHarianCart.name;
+        document.getElementById('harianModalProductPrice').textContent = formatRupiah(currentHarianCart.harga);
+        document.getElementById('harianModalQty').value = currentHarianCart.jumlah;
 
-        document.getElementById('dailyModalExtrasList').innerHTML = '';
-        document.getElementById('dailyModalExtrasContainer').classList.add('hidden');
-        document.getElementById('dailyModalExtrasLoading').classList.remove('hidden');
+        document.getElementById('harianModalExtrasList').innerHTML = '';
+        document.getElementById('harianModalExtrasContainer').classList.add('hidden');
+        document.getElementById('harianModalExtrasLoading').classList.remove('hidden');
 
-        let extrasUrl = `/api/service/${currentDailyCart.service_id}/custom-options`;
-        if (currentDailyCart.produk_id) {
-            extrasUrl = `/api/produk/${currentDailyCart.produk_id}/extras`;
+        let extrasUrl = `/api/service/${currentHarianCart.service_id}/custom-options`;
+        if (currentHarianCart.produk_id) {
+            extrasUrl = `/api/produk/${currentHarianCart.produk_id}/extras`;
         }
 
         fetch(extrasUrl)
             .then(res => res.json())
             .then(data => {
-                dailyAvailableExtras = data.filter(opt => opt.type === 'extra');
-                document.getElementById('dailyModalExtrasLoading').classList.add('hidden');
+                harianAvailableExtras = data.filter(opt => opt.type === 'extra');
+                document.getElementById('harianModalExtrasLoading').classList.add('hidden');
 
-                if (dailyAvailableExtras.length > 0) {
+                if (harianAvailableExtras.length > 0) {
                     let html = '';
-                    dailyAvailableExtras.forEach(extra => {
-                        let extraInCart = currentDailyCart.extras.find(e => parseInt(e.id) === parseInt(extra.id));
+                    harianAvailableExtras.forEach(extra => {
+                        let extraInCart = currentHarianCart.extras.find(e => parseInt(e.id) === parseInt(extra.id));
                         let isChecked = extraInCart ? 'checked' : '';
                         let extraQty = extraInCart ? extraInCart.qty : 0;
                         let disabledState = extraInCart ? '' : 'disabled';
@@ -547,7 +547,7 @@
                         html += `
                             <div class="d-flex align-items-center justify-content-between py-2.5 px-2 border-b border border-secondary last:border-b-0 hover:bg-primary text-white/50 rounded g-3">
                                 <label class="d-flex align-items-center g-3.5 cursor-pointer d-flex-1 min-w-0">
-                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-harga="${extra.harga}" id="daily_extra_cb_${extra.id}" onchange="toggleDailyExtra(${extra.id})" style="width: 16px; height: 16px;" class="rounded border border-secondary text-primary daily-extra-checkbox flex-shrink-0" ${isChecked}>
+                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-harga="${extra.harga}" id="harian_extra_cb_${extra.id}" onchange="toggleHarianExtra(${extra.id})" style="width: 16px; height: 16px;" class="rounded border border-secondary text-primary harian-extra-checkbox flex-shrink-0" ${isChecked}>
                                     <span class="fs-6 fw-medium text-secondary truncate">${extra.name}</span>
                                 </label>
                                 <div class="d-flex align-items-center g-3.5 flex-shrink-0">
@@ -560,34 +560,34 @@
                                 </div>
                             </div>`;
                     });
-                    document.getElementById('dailyModalExtrasList').innerHTML = html;
-                    document.getElementById('dailyModalExtrasContainer').classList.remove('hidden');
+                    document.getElementById('harianModalExtrasList').innerHTML = html;
+                    document.getElementById('harianModalExtrasContainer').classList.remove('hidden');
                 }
                 updateDailyModalTotal();
             })
             .catch(err => {
                 console.error("Gagal memuat extras", err);
-                document.getElementById('dailyModalExtrasLoading').classList.add('hidden');
+                document.getElementById('harianModalExtrasLoading').classList.add('hidden');
             });
 
         updateDailyModalTotal();
-        document.getElementById('dailyEditModal').style.display = 'flex';
+        document.getElementById('harianEditModal').style.display = 'flex';
     }
 
-    function closeDailyEditModal() {
-        document.getElementById('dailyEditModal').style.display = 'none';
+    function closeHarianEditModal() {
+        document.getElementById('harianEditModal').style.display = 'none';
     }
 
-    function changeDailyQty(delta) {
-        const input = document.getElementById('dailyModalQty');
+    function changeHarianQty(delta) {
+        const input = document.getElementById('harianModalQty');
         let val = parseInt(input.value) + delta;
         if (val < 1) val = 1;
         input.value = val;
         updateDailyModalTotal();
     }
 
-    function toggleDailyExtra(id) {
-        const cb = document.getElementById('daily_extra_cb_' + id);
+    function toggleHarianExtra(id) {
+        const cb = document.getElementById('harian_extra_cb_' + id);
         const qtyContainer = document.getElementById('daily_extra_qty_container_' + id);
         const qtyInput = document.getElementById('daily_extra_qty_' + id);
         
@@ -616,16 +616,16 @@
     }
 
     function changeDailyExtraQty(id, delta) {
-        const cb = document.getElementById('daily_extra_cb_' + id);
+        const cb = document.getElementById('harian_extra_cb_' + id);
         if (!cb || !cb.checked) return;
         const input = document.getElementById('daily_extra_qty_' + id);
         let val = parseInt(input.value) || 0;
         val += delta;
-        if (val < 1) { cb.checked = false; toggleDailyExtra(id); } else { input.value = val; updateDailyModalTotal(); }
+        if (val < 1) { cb.checked = false; toggleHarianExtra(id); } else { input.value = val; updateDailyModalTotal(); }
     }
 
     function manualDailyExtraQty(id) {
-        const cb = document.getElementById('daily_extra_cb_' + id);
+        const cb = document.getElementById('harian_extra_cb_' + id);
         if (!cb || !cb.checked) return;
         const input = document.getElementById('daily_extra_qty_' + id);
         let val = parseInt(input.value);
@@ -634,23 +634,23 @@
     }
 
     function updateDailyModalTotal() {
-        if (!currentDailyCart) return;
-        const qty = parseInt(document.getElementById('dailyModalQty').value) || 1;
-        let total = currentDailyCart.harga * qty;
-        document.querySelectorAll('.daily-extra-checkbox:checked').forEach(cb => {
+        if (!currentHarianCart) return;
+        const qty = parseInt(document.getElementById('harianModalQty').value) || 1;
+        let total = currentHarianCart.harga * qty;
+        document.querySelectorAll('.harian-extra-checkbox:checked').forEach(cb => {
             const extraId = cb.value;
             const extraQty = parseInt(document.getElementById('daily_extra_qty_' + extraId).value) || 0;
             total += parseFloat(cb.getAttribute('data-harga')) * extraQty;
         });
-        document.getElementById('dailyModalTotal').textContent = formatRupiah(total);
+        document.getElementById('harianModalTotal').textContent = formatRupiah(total);
     }
 
-    document.getElementById('dailyEditModal').addEventListener('click', function(e) { if (e.target === this) closeDailyEditModal(); });
+    document.getElementById('harianEditModal').addEventListener('click', function(e) { if (e.target === this) closeHarianEditModal(); });
 
     // =======================
     // EVENT EDIT MODAL
     // =======================
-    const eventGroupsData = @json($eventGroupsJson);
+    const eventGroupsData = @json($grupAcaraJson);
     let editingGroupId = null;
     let editServiceOptions = [];
     let initialEditEventSnapshot = null;
@@ -661,7 +661,7 @@
         const group = eventGroupsData[groupId];
         if (!group || group.is_package) return;
 
-        document.getElementById('editEventForm').action = group.update_url;
+        document.getElementById('editAcaraForm').action = group.update_url;
         document.getElementById('editEventServiceId').value = group.layanan_katering_id;
         document.getElementById('editEventPackageId').value = group.catering_package_id || '';
 
@@ -682,7 +682,7 @@
         const servings = options.filter(o => o.type === 'tipe_penyajian');
 
         document.getElementById('editEventTitle').textContent = 'Custom Menu';
-        document.getElementById('editEventType').textContent = group.service_name || 'Layanan Event';
+        document.getElementById('editAcaraType').textContent = group.service_name || 'Layanan Acara';
         let menuHtml = '';
         menus.forEach((menu, idx) => {
             const existingItem = group.items.find(i => i.opsi_kustom_id == menu.id && i.item_type === 'custom_menu');
@@ -693,7 +693,7 @@
             let detailBtn = '';
             let detailDiv = '';
             if (menu.items && Array.isArray(menu.items) && menu.items.length > 0) {
-                detailBtn = `<button type="button" onclick="toggleEditMenuDetail(${idx}, event)" class="small fw-bold text-info hover:text-info focus: underline">Lihat Detail</button>`;
+                detailBtn = `<button type="button" onclick="toggleEditMenuAcaraDetail(${idx}, event)" class="small fw-bold text-info hover:text-info focus: underline">Lihat Detail</button>`;
                 let itemsListHtml = menu.items.map(item => `<li>${item}</li>`).join('');
                 detailDiv = `<div id="edit_menu_detail_${idx}" class="d-none ps-7 mt-2"><div class="py-2.5 px-3.5 bg-light/80 small text-secondary border-l-2 border border-primary rounded-r-lg"><ul class="list-disc list-inside space-y-1">${itemsListHtml}</ul></div></div>`;
             }
@@ -709,7 +709,7 @@
                     <div class="d-flex align-items-center g-3.5 transition-opacity flex-shrink-0 ${opacityClass}" id="edit_menu_qty_container_${idx}">
                         <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0">−</button>
                         <input type="number" id="edit_event_qty_${idx}" value="${qty}" min="1"
-                            class="form-control w-14 text-center py-1 border border border-secondary rounded small sm:fs-6 fw-bold text-secondary bg-white flex-shrink-0 focus: focus:border border-primary -1 desktop-no-spinner edit-event-qty" data-idx="${idx}" data-id="${menu.id}" data-harga="${menu.harga}" data-type="custom_menu" oninput="validateEditEventInput(${idx})" onchange="validateEditEventInputBlur(${idx})">
+                            class="form-control w-14 text-center py-1 border border border-secondary rounded small sm:fs-6 fw-bold text-secondary bg-white flex-shrink-0 focus: focus:border border-primary -1 desktop-no-spinner edit-acara-qty" data-idx="${idx}" data-id="${menu.id}" data-harga="${menu.harga}" data-type="custom_menu" oninput="validateEditAcaraInput(${idx})" onchange="validateEditAcaraInputBlur(${idx})">
                         <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0 edit-menu-plus-btn">+</button>
                     </div>
                 </div>
@@ -741,7 +741,7 @@
                     </label>
                     <span class="fs-6 fw-bold text-primary flex-shrink-0">+Rp ${Number(extra.harga).toLocaleString('id-ID')}</span>
                     <input type="hidden" id="edit_event_qty_${eIdx}" value="${eQty}"
-                        class="edit-event-qty" data-idx="${eIdx}" data-id="${extra.id}" data-harga="${extra.harga}" data-type="addition">
+                        class="edit-acara-qty" data-idx="${eIdx}" data-id="${extra.id}" data-harga="${extra.harga}" data-type="addition">
                 </div>`;
             });
             document.getElementById('editEventExtrasList').innerHTML = extraHtml;
@@ -772,7 +772,7 @@
         recalcEditEvent();
     }
 
-    function toggleEditMenuDetail(idx, event) {
+    function toggleEditMenuAcaraDetail(idx, event) {
         if (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -833,7 +833,7 @@
         if (!group || group.is_package) return '';
 
         const items = [];
-        document.querySelectorAll('#editEventForm input.edit-event-qty').forEach(input => {
+        document.querySelectorAll('#editAcaraForm input.edit-acara-qty').forEach(input => {
             const idx = input.dataset.idx || input.id.split('_').pop();
 
             let active = true;
@@ -854,13 +854,13 @@
         });
         items.sort();
 
-        const servingRadio = document.querySelector('#editEventForm input[name="serving_type_id"]:checked');
+        const servingRadio = document.querySelector('#editAcaraForm input[name="serving_type_id"]:checked');
         const servingVal = servingRadio ? servingRadio.value : '';
 
         return 'custom:' + items.join('|') + '||' + servingVal;
     }
 
-    function validateEditEventInput(idx) {
+    function validateEditAcaraInput(idx) {
         const inputEl = document.getElementById('edit_event_qty_' + idx);
         if (!inputEl) return;
         inputEl.value = inputEl.value.replace(/[^0-9]/g, '');
@@ -874,7 +874,7 @@
         recalcEditEvent();
     }
 
-    function validateEditEventInputBlur(idx) {
+    function validateEditAcaraInputBlur(idx) {
         const inputEl = document.getElementById('edit_event_qty_' + idx);
         if (!inputEl) return;
         inputEl.value = inputEl.value.replace(/[^0-9]/g, '');
@@ -898,7 +898,7 @@
         const maxPortion = group.maksimal_porsi || 1000;
 
             // 1. Hitung totalPorsi dan harga menu terlebih dahulu dari custom_menu yang terpilih
-            document.querySelectorAll('.edit-event-qty').forEach(input => {
+            document.querySelectorAll('.edit-acara-qty').forEach(input => {
                 const type = input.dataset.type;
                 if (type !== 'custom_menu') return;
 
@@ -922,7 +922,7 @@
             });
 
             // 2. Hitung harga extra mengikuti Total Porsi menu hasil penjumlahan
-            document.querySelectorAll('.edit-event-qty').forEach(input => {
+            document.querySelectorAll('.edit-acara-qty').forEach(input => {
                 const type = input.dataset.type;
                 if (type !== 'addition') return;
 
@@ -951,8 +951,8 @@
                 plusBtn.classList.toggle('cursor-not-allowed', isMaxReached);
             });
 
-            const hasServing = document.querySelector('#editEventForm input[name="serving_type_id"]:checked');
-            const isServingRequired = document.querySelector('#editEventForm input[name="serving_type_id"]') !== null;
+            const hasServing = document.querySelector('#editAcaraForm input[name="serving_type_id"]:checked');
+            const isServingRequired = document.querySelector('#editAcaraForm input[name="serving_type_id"]') !== null;
 
             isValid = totalPortions > 0 && totalPortions <= maxPortion && (!isServingRequired || hasServing);
 
@@ -971,9 +971,9 @@
     }
 
     function buildEditEventPayload(totalPortions = 0) {
-        document.querySelectorAll('.edit-event-payload-item').forEach(el => el.remove());
+        document.querySelectorAll('.edit-acara-payload-item').forEach(el => el.remove());
 
-        const form = document.getElementById('editEventForm');
+        const form = document.getElementById('editAcaraForm');
         if (!form) return;
         let formIdx = 0;
 
@@ -1006,7 +1006,7 @@
         input.type = 'hidden';
         input.name = name;
         input.value = value;
-        input.className = 'edit-event-payload-item';
+        input.className = 'edit-acara-payload-item';
         form.appendChild(input);
     }
 
@@ -1029,7 +1029,7 @@
         btn.textContent = 'Update';
 
         buildEditEventPayload(parseInt(document.getElementById('editEventPortions')?.textContent) || 0);
-        const form = document.getElementById('editEventForm');
+        const form = document.getElementById('editAcaraForm');
         const formData = new FormData(form);
 
         try {
@@ -1201,22 +1201,22 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
 
-            const newDaily = doc.getElementById('content-daily');
-            const newEvent = doc.getElementById('content-event');
-            const newTabDaily = doc.getElementById('tab-daily');
-            const newTabEvent = doc.getElementById('tab-event');
+            const newDaily = doc.getElementById('content-harian');
+            const newEvent = doc.getElementById('content-acara');
+            const newTabDaily = doc.getElementById('tab-harian');
+            const newTabEvent = doc.getElementById('tab-acara');
 
-            if (newDaily && document.getElementById('content-daily')) {
-                document.getElementById('content-daily').innerHTML = newDaily.innerHTML;
+            if (newDaily && document.getElementById('content-harian')) {
+                document.getElementById('content-harian').innerHTML = newDaily.innerHTML;
             }
-            if (newEvent && document.getElementById('content-event')) {
-                document.getElementById('content-event').innerHTML = newEvent.innerHTML;
+            if (newEvent && document.getElementById('content-acara')) {
+                document.getElementById('content-acara').innerHTML = newEvent.innerHTML;
             }
-            if (newTabDaily && document.getElementById('tab-daily')) {
-                document.getElementById('tab-daily').innerHTML = newTabDaily.innerHTML;
+            if (newTabDaily && document.getElementById('tab-harian')) {
+                document.getElementById('tab-harian').innerHTML = newTabDaily.innerHTML;
             }
-            if (newTabEvent && document.getElementById('tab-event')) {
-                document.getElementById('tab-event').innerHTML = newTabEvent.innerHTML;
+            if (newTabEvent && document.getElementById('tab-acara')) {
+                document.getElementById('tab-acara').innerHTML = newTabEvent.innerHTML;
             }
             if (typeof window.refreshCartBadges === 'function') {
                 window.refreshCartBadges();
@@ -1234,13 +1234,13 @@
                         } catch(e) {}
                     }
                 }
-                if (text.includes('const dailyCartsData =')) {
-                    const matchDaily = text.match(/const dailyCartsData = (\{[\s\S]*?\});\s*(?:let|const|function|var|\n|$)/);
+                if (text.includes('const harianCartsData =')) {
+                    const matchDaily = text.match(/const harianCartsData = (\{[\s\S]*?\});\s*(?:let|const|function|var|\n|$)/);
                     if (matchDaily && matchDaily[1]) {
                         try {
                             const parsed = JSON.parse(matchDaily[1]);
-                            for (let k in dailyCartsData) delete dailyCartsData[k];
-                            Object.assign(dailyCartsData, parsed);
+                            for (let k in harianCartsData) delete harianCartsData[k];
+                            Object.assign(harianCartsData, parsed);
                         } catch(e) {}
                     }
                 }
@@ -1258,14 +1258,14 @@
     /* Chrome, Safari, Edge, Opera */
     input[type=number].desktop-no-spinner::-webkit-outer-spin-button,
     input[type=number].desktop-no-spinner::-webkit-inner-spin-button,
-    input[type=number].edit-event-qty::-webkit-outer-spin-button,
-    input[type=number].edit-event-qty::-webkit-inner-spin-button {
+    input[type=number].edit-acara-qty::-webkit-outer-spin-button,
+    input[type=number].edit-acara-qty::-webkit-inner-spin-button {
         -webkit-appearance: none;
         margin: 0;
     }
     /* Firefox */
     input[type=number].desktop-no-spinner,
-    input[type=number].edit-event-qty {
+    input[type=number].edit-acara-qty {
         -moz-appearance: textfield;
     }
 }

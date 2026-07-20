@@ -7,7 +7,7 @@
             <a href="{{ route('admin.catering.index') }}" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Katering</a>
         </div>
 
-        <form action="{{ route('admin.catering.update', $service) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.catering.update', $catering) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="card card-outline card-warning">
@@ -18,14 +18,14 @@
                     {{-- Nama --}}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nama Katering <span class="text-danger">*</span></label>
-                        <input type="text" name="name" required value="{{ old('name', $service->name) }}" class="form-control" placeholder="cth: Katering Harian">
+                        <input type="text" name="name" required value="{{ old('name', $catering->name) }}" class="form-control" placeholder="cth: Katering Harian">
                         @error('name')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
                     {{-- Deskripsi --}}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Deskripsi <span class="text-danger">*</span></label>
-                        <textarea name="deskripsi" rows="3" required class="form-control" placeholder="Deskripsi singkat katering...">{{ old('deskripsi', $service->deskripsi) }}</textarea>
+                        <textarea name="deskripsi" rows="3" required class="form-control" placeholder="Deskripsi singkat katering...">{{ old('deskripsi', $catering->deskripsi) }}</textarea>
                     </div>
 
                     {{-- Tipe Katering --}}
@@ -34,12 +34,12 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="w-100 cursor-pointer">
-                                    <input type="radio" name="catering_type" value="harian" {{ old('catering_type', $service->isDaily() ? 'harian' : 'acara') === 'harian' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
+                                    <input type="radio" name="catering_type" value="harian" {{ old('catering_type', $catering->isHarian() ? 'harian' : 'acara') === 'harian' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
                                     <div class="card mb-0 h-100 border type-selector">
                                         <div class="card-body d-flex align-items-center">
                                             <i class="fa-solid fa-calendar-day fa-2x text-info me-3"></i>
                                             <div>
-                                                <h5 class="mb-1 fw-bold">Daily</h5>
+                                                <h5 class="mb-1 fw-bold">Harian</h5>
                                                 <small class="text-muted">Menu harian dengan produk</small>
                                             </div>
                                         </div>
@@ -48,12 +48,12 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="w-100 cursor-pointer">
-                                    <input type="radio" name="catering_type" value="acara" {{ old('catering_type', $service->isEvent() ? 'acara' : '') === 'acara' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
+                                    <input type="radio" name="catering_type" value="acara" {{ old('catering_type', $catering->isAcara() ? 'acara' : '') === 'acara' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
                                     <div class="card mb-0 h-100 border type-selector">
                                         <div class="card-body d-flex align-items-center">
                                             <i class="fa-solid fa-glass-cheers fa-2x text-purple me-3" style="color: #6f42c1;"></i>
                                             <div>
-                                                <h5 class="mb-1 fw-bold">Event</h5>
+                                                <h5 class="mb-1 fw-bold">Acara</h5>
                                                 <small class="text-muted">Acara dengan paket catering</small>
                                             </div>
                                         </div>
@@ -68,36 +68,36 @@
                     <div class="row g-3" id="base_price_grid">
                         <div id="base_price_wrapper" class="col-md-4">
                             <label class="form-label fw-bold">Harga Dasar (Rp) <span class="text-danger">*</span></label>
-                            <input type="text" name="base_price" required value="{{ old('base_price', number_format($service->base_price, 0, '', '')) }}" class="form-control rupiah-input">
+                            <input type="text" name="base_price" required value="{{ old('base_price', number_format($catering->base_price, 0, '', '')) }}" class="form-control rupiah-input">
                         </div>
                         <div id="min_portion_wrapper" class="col-md-4">
                             <label class="form-label fw-bold">Min. Porsi <span class="text-danger">*</span></label>
-                            <input type="number" name="min_portion" value="{{ old('min_portion', $service->min_portion) }}" min="1" class="form-control">
+                            <input type="number" name="min_portion" value="{{ old('min_portion', $catering->min_portion) }}" min="1" class="form-control">
                         </div>
                         <div id="max_portion_wrapper" class="col-md-4">
                             <label class="form-label fw-bold">Max. Porsi</label>
-                            <input type="number" name="maksimal_porsi" value="{{ old('maksimal_porsi', $service->maksimal_porsi) }}" placeholder="Tidak dibatasi" class="form-control">
+                            <input type="number" name="maksimal_porsi" value="{{ old('maksimal_porsi', $catering->maksimal_porsi) }}" placeholder="Tidak dibatasi" class="form-control">
                         </div>
                     </div>
 
-                    {{-- Ketentuan & Jadwal (Hanya Event) --}}
+                    {{-- Ketentuan & Jadwal (Hanya Acara) --}}
                     <div id="terms_schedule_wrapper" class="row g-3 mt-1">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Ketentuan Pemesanan</label>
-                            <textarea name="order_terms" rows="2" class="form-control" placeholder="Ketentuan khusus...">{{ old('order_terms', $service->order_terms) }}</textarea>
+                            <textarea name="order_terms" rows="2" class="form-control" placeholder="Ketentuan khusus...">{{ old('order_terms', $catering->order_terms) }}</textarea>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Catatan Jadwal</label>
-                            <textarea name="schedule_notes" rows="2" class="form-control" placeholder="Info jadwal...">{{ old('schedule_notes', $service->schedule_notes) }}</textarea>
+                            <textarea name="schedule_notes" rows="2" class="form-control" placeholder="Info jadwal...">{{ old('schedule_notes', $catering->schedule_notes) }}</textarea>
                         </div>
                     </div>
 
-                    {{-- Pengaturan Cutoff (Hanya Event) --}}
+                    {{-- Pengaturan Cutoff (Hanya Acara) --}}
                     <div id="cutoff_wrapper" class="callout callout-info mt-3 bg-light border-start border-4 border-info">
                         <h5><i class="fa-solid fa-info-circle text-info"></i> Pengaturan Cutoff Pemesanan</h5>
                         <p class="text-muted mb-2">Batas waktu minimal pemesanan untuk layanan ini</p>
                         <label class="form-label fw-bold">Minimal Hari Pemesanan</label>
-                        <input type="number" name="minimal_order_days" value="{{ old('minimal_order_days', $service->minimal_order_days) }}" min="0" placeholder="cth: 3" class="form-control">
+                        <input type="number" name="minimal_order_days" value="{{ old('minimal_order_days', $catering->minimal_order_days) }}" min="0" placeholder="cth: 3" class="form-control">
                         <small class="text-muted">Jumlah hari minimal sebelum tanggal acara/pengiriman</small>
                     </div>
 
@@ -105,17 +105,17 @@
                     <div class="mb-3 mt-3">
                         <label class="form-label fw-bold">Gambar</label>
                         <input type="file" name="image" accept="image/*" class="form-control">
-                        <div id="imagePreviewContainer" class="mt-3 {{ $service->image ? '' : 'd-none' }}">
+                        <div id="imagePreviewContainer" class="mt-3 {{ $catering->image ? '' : 'd-none' }}">
                             <p class="small text-muted fw-medium mb-1">Preview Gambar:</p>
                             <div class="border rounded bg-light p-1" style="display: inline-block;">
-                                <img id="imagePreview" src="{{ $service->image ? Storage::url($service->image) : '' }}" alt="Preview Gambar" style="height: 112px; object-fit: cover;">
+                                <img id="imagePreview" src="{{ $catering->image ? Storage::url($catering->image) : '' }}" alt="Preview Gambar" style="height: 112px; object-fit: cover;">
                             </div>
                         </div>
                     </div>
 
                     {{-- Status --}}
                     <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ old('is_active', $service->is_active) ? 'checked' : '' }} id="isActiveCheck">
+                        <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ old('is_active', $catering->is_active) ? 'checked' : '' }} id="isActiveCheck">
                         <label class="form-check-label fw-bold" for="isActiveCheck">
                             Aktif
                         </label>

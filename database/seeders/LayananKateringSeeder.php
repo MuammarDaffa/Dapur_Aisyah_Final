@@ -26,7 +26,7 @@ class LayananKateringSeeder extends Seeder
                 'order_terms' => 'Pemesanan minimal H-1 sebelum jam 21:00 WIB. Pembatalan maksimal H-1 sebelum jam 21:00 WIB.',
                 'schedule_notes' => 'Pengiriman setiap hari Senin - Sabtu, pukul 10:00 - 13:00 WIB.',
                 'service_area' => ['Pontianak Barat', 'Pontianak Kota', 'Pontianak Selatan', 'Pontianak Tenggara', 'Pontianak Timur', 'Pontianak Utara'],
-                'fitur_tersedia' => ['daily_menu'],
+                'fitur_tersedia' => ['menu_harian'],
                 'is_active' => true,
                 'image' => null,
             ]
@@ -68,7 +68,7 @@ class LayananKateringSeeder extends Seeder
                 'order_terms' => 'Pemesanan minimal H-3 sebelum tanggal acara. Pembatalan maksimal H-3.',
                 'schedule_notes' => 'Tersedia setiap hari, termasuk akhir pekan. Koordinasi waktu pengiriman saat pemesanan.',
                 'service_area' => ['Pontianak Barat', 'Pontianak Kota', 'Pontianak Selatan', 'Pontianak Tenggara', 'Pontianak Timur', 'Pontianak Utara'],
-                'fitur_tersedia' => ['packages', 'full_custom'],
+                'fitur_tersedia' => ['paket', 'kustom_penuh'],
                 'is_active' => true,
                 'image' => null,
             ]

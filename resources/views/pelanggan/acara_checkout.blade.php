@@ -11,7 +11,7 @@
             <svg style="width: 16px; height: 16px;" class="me-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             <span>Kembali ke Keranjang</span>
         </a>
-        <h2 class="fs-3 fw-bold text-secondary mt-2">Lanjut Ke Pembayaran<span class="text-primary">Event</span></h2>
+        <h2 class="fs-3 fw-bold text-secondary mt-2">Lanjut Ke Pembayaran<span class="text-primary">Acara</span></h2>
     </div>
 
     <form id="event-checkout-form" action="{{ route('pelanggan.event.checkout.store', $groupId) }}" method="POST">
@@ -130,7 +130,7 @@
 
                     {{-- Groups List --}}
                     <div class="d-flex flex-column gap-3 mb-4 pb-4 border-b border border-secondary max-h-72 overflow-y-auto">
-                        @foreach($eventGroups as $gId => $gItems)
+                        @foreach($grupAcara as $gId => $gItems)
                         @php
                             $gPkg = $gItems->firstWhere('item_type', 'package');
                             $gMenus = $gItems->whereIn('item_type', ['package_item', 'custom_menu']);

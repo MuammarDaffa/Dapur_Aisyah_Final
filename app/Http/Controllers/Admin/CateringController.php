@@ -21,13 +21,7 @@ class CateringController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        if ($request->filled('type')) {
-            if ($request->type === 'harian') {
-                $query->daily();
-            } elseif ($request->type === 'acara') {
-                $query->event();
-            }
-        }
+
 
         $caterings = $query->latest()->paginate(10);
 
@@ -47,13 +41,13 @@ class CateringController extends Controller
      */
     public function store(Request $request)
     {
-        $isDaily = $request->input('catering_type') === 'harian';
+        $isHarian = $request->input('catering_type') === 'harian';
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'deskripsi' => 'required|string',
-            'catering_type' => 'required|in:daily,event',
+            'catering_type' => 'required|in:harian,acara',
             'serving_types' => 'nullable|array',
-            'min_portion' => $isDaily ? 'nullable|integer|min:1' : 'required|integer|min:1',
+            'min_portion' => $isHarian ? 'nullable|integer|min:1' : 'required|integer|min:1',
             'maksimal_porsi' => 'nullable|integer|min:1',
             'base_price' => 'required|numeric|min:0|max:1000000000',
             'order_terms' => 'nullable|string',
@@ -66,7 +60,7 @@ class CateringController extends Controller
             'base_price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
-        if ($isDaily) {
+        if ($isHarian) {
             $validated['min_portion'] = $validated['min_portion'] ?? 1;
             $validated['maksimal_porsi'] = null;
             $validated['order_terms'] = null;
@@ -98,7 +92,7 @@ class CateringController extends Controller
      */
     public function show(LayananKatering $catering)
     {
-        if ($catering->isDaily()) {
+        if ($catering->isHarian()) {
             $produk = $catering->produk()->latest()->paginate(10);
             $allProducts = $catering->produk()->active()->get();
             $extras = $catering->opsiKustom()->where('type', 'extra')->get();
@@ -111,7 +105,7 @@ class CateringController extends Controller
             return view('admin.catering.show-harian', compact('catering', 'produk', 'allProducts', 'extras', 'currentSchedule'));
         }
 
-        if ($catering->isEvent()) {
+        if ($catering->isAcara()) {
             $pakets = $catering->packages()->with('opsiKustom')->latest()->paginate(10);
             $menus = $catering->opsiKustom()->where('type', 'menu')->get();
             $servings = \App\Models\OpsiKustom::where('type', 'tipe_penyajian')->get();
@@ -137,11 +131,11 @@ class CateringController extends Controller
      */
     public function update(Request $request, LayananKatering $catering)
     {
-        $isDaily = $catering->isDaily();
+        $isHarian = $catering->isHarian();
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'deskripsi' => 'required|string',
-            'min_portion' => $isDaily ? 'nullable|integer|min:1' : 'required|integer|min:1',
+            'min_portion' => $isHarian ? 'nullable|integer|min:1' : 'required|integer|min:1',
             'maksimal_porsi' => 'nullable|integer|min:1',
             'base_price' => 'required|numeric|min:0|max:1000000000',
             'order_terms' => 'nullable|string',
@@ -153,7 +147,7 @@ class CateringController extends Controller
             'base_price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
-        if ($isDaily) {
+        if ($isHarian) {
             $validated['min_portion'] = $validated['min_portion'] ?? $catering->min_portion ?? 1;
             $validated['maksimal_porsi'] = null;
             $validated['order_terms'] = null;

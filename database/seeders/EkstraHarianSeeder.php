@@ -14,7 +14,7 @@ class EkstraHarianSeeder extends Seeder
     public function run(): void
     {
         // Cari layanan Catering Daily
-        $dailyService = LayananKatering::whereJsonContains('fitur_tersedia', 'daily_menu')->first();
+        $dailyService = LayananKatering::whereJsonContains('fitur_tersedia', 'menu_harian')->first();
 
         if (!$dailyService) {
             $this->command->warn("Layanan Catering Daily tidak ditemukan. Seeder dibatalkan.");

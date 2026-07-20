@@ -25,7 +25,7 @@ class MenuPeriodController extends Controller
      */
     public function store(Request $request, LayananKatering $catering)
     {
-        abort_if(!$catering->isDaily(), 404);
+        abort_if(!$catering->isHarian(), 404);
 
         $validated = $request->validate([
             'start_date' => 'required|date',

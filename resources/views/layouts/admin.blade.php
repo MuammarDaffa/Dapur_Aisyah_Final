@@ -66,8 +66,8 @@
                     <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
                         @php
                             $menuItems = [
-                                ['route' => 'admin.dashboard', 'label' => 'Dashboard', 'icon' => 'fa-solid fa-tachometer-alt'],
-                                ['route' => 'admin.pesanan', 'label' => 'Pesanan', 'icon' => 'fa-solid fa-shopping-keranjang'],
+                                ['route' => 'admin.dashboard', 'label' => 'Dashboard', 'icon' => 'fa-solid fa-house'],
+                                ['route' => 'admin.pesanan', 'label' => 'Pesanan', 'icon' => 'fa-solid fa-shopping-cart'],
                                 ['route' => 'admin.catering.index', 'label' => 'Katering', 'icon' => 'fa-solid fa-utensils'],
                                 ['route' => 'admin.customers', 'label' => 'Pelanggan', 'icon' => 'fa-solid fa-users'],
                                 ['route' => 'admin.ulasan', 'label' => 'Ulasan', 'icon' => 'fa-solid fa-star'],

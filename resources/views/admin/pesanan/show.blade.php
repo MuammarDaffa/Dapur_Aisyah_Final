@@ -69,7 +69,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if($pesanan->layananKatering?->isDaily())
+                            @if($pesanan->layananKatering?->isHarian())
                                 @foreach($pesanan->items as $item)
                                 <tr>
                                     <td class="align-middle fw-medium">{{ $item->formatted_menu_name }}</td>

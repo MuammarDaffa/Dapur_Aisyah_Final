@@ -24,7 +24,7 @@
                         <div>
                             <h2 class="fs-4 fw-bold mb-1">{{ $catering->name }}</h2>
                             <div class="mb-2">
-                                <span class="badge text-bg-info"><i class="fa-solid fa-calendar-day"></i> Daily</span>
+                                <span class="badge text-bg-info"><i class="fa-solid fa-calendar-day"></i> Harian</span>
                                 <span class="badge {{ $catering->is_active ? 'text-bg-success' : 'text-bg-secondary' }}">
                                     {{ $catering->is_active ? 'Aktif' : 'Nonaktif' }}
                                 </span>

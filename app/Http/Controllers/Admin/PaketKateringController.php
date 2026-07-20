@@ -22,14 +22,14 @@ class PaketKateringController extends Controller
         $pakets = $query->latest()->paginate(15);
 
         // Hanya layanan yang punya fitur packages atau full_custom
-        $services = LayananKatering::active()->event()->get();
+        $services = LayananKatering::active()->acara()->get();
 
         return redirect()->route('admin.dashboard')->with('error', 'Silakan akses paket dari menu layanan katering.');
     }
 
     public function create()
     {
-        $services = LayananKatering::active()->event()->get();
+        $services = LayananKatering::active()->acara()->get();
         return view('admin.paket_katering.create', compact('services'));
     }
 
@@ -86,7 +86,7 @@ class PaketKateringController extends Controller
 
     public function edit(PaketKatering $paket)
     {
-        $services = LayananKatering::active()->event()->get();
+        $services = LayananKatering::active()->acara()->get();
         $paket->load('opsiKustom');
         return view('admin.paket_katering.edit', compact('package', 'services'));
     }

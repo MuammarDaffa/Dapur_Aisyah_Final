@@ -5,7 +5,7 @@
 
     {{-- Header --}}
     <div class="mb-6">
-        <a href="{{ route('pelanggan.event.service', $service->id) }}" class="d-inline-d-flex align-items-center fs-6 fw-medium text-primary hover:text-primary">
+        <a href="{{ route('pelanggan.acara.service', $service->id) }}" class="d-inline-d-flex align-items-center fs-6 fw-medium text-primary hover:text-primary">
             <svg style="width: 16px; height: 16px;" class="me-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             <span>Kembali ke Pilih Layanan</span>
         </a>
@@ -110,7 +110,7 @@
             <hr class="border border-secondary my-8">
 
             {{-- Section: Catatan & Tombol Masukkan Keranjang --}}
-            <form action="{{ route('pelanggan.event.keranjang.store') }}" method="POST">
+            <form action="{{ route('pelanggan.acara.keranjang.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="layanan_katering_id" value="{{ $service->id }}">
                 <input type="hidden" name="catering_package_id" value="{{ $paket->id }}">

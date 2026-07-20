@@ -22,7 +22,7 @@
 
     {{-- Header --}}
     <div class="mb-6">
-        <a href="{{ route('pelanggan.event.service', $service->id) }}" class="d-inline-d-flex align-items-center fs-6 text-primary hover:text-primary">
+        <a href="{{ route('pelanggan.acara.service', $service->id) }}" class="d-inline-d-flex align-items-center fs-6 text-primary hover:text-primary">
             <svg style="width: 16px; height: 16px;" class="me-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             <span>Kembali ke Layanan</span>
         </a>
@@ -30,7 +30,7 @@
         <p class="text-secondary">Pilih menu sesuka Anda sesuai kebutuhan acara.</p>
     </div>
 
-    <form id="customForm" action="{{ route('pelanggan.event.keranjang.store') }}" method="POST" onkeydown="return event.key != 'Enter';">
+    <form id="customForm" action="{{ route('pelanggan.acara.keranjang.store') }}" method="POST" onkeydown="return event.key != 'Enter';">
         @csrf
         <input type="hidden" name="layanan_katering_id" value="{{ $service->id }}">
 

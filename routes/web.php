@@ -49,7 +49,7 @@ Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('
 |--------------------------------------------------------------------------
 */
 Route::post('/session/clear-notification', function (\Illuminate\Http\Request $request) {
-    $keys = $request->input('keys', ['info', 'warning', 'success', 'error', 'event_conflict_error']);
+    $keys = $request->input('keys', ['info', 'warning', 'success', 'error', 'acara_conflict_error']);
     if (is_array($keys)) {
         $request->session()->forget($keys);
     }
@@ -65,17 +65,17 @@ Route::middleware('unverified_customer_redirect')->prefix('dashboard')->name('pe
     // Produk (Menu Mingguan/Harian)
     Route::get('/produk', [CustomerDashboard::class, 'produk'])->name('produk');
 
-    // Event Configurator (Split)
-    Route::get('/event/{service}', [CustomerDashboard::class, 'eventService'])->name('event.service');
-    Route::get('/event/{service}/package/{package}', [CustomerDashboard::class, 'eventPackage'])->name('event.package');
-    Route::get('/event/{service}/custom', [CustomerDashboard::class, 'eventCustom'])->name('event.custom');
+    // Acara Configurator (Split)
+    Route::get('/acara/{service}', [CustomerDashboard::class, 'acaraService'])->name('acara.service');
+    Route::get('/acara/{service}/package/{package}', [CustomerDashboard::class, 'acaraPackage'])->name('acara.package');
+    Route::get('/acara/{service}/custom', [CustomerDashboard::class, 'acaraCustom'])->name('acara.custom');
 
     // Keranjang Count (untuk badge di navbar, mengembalikan 0 jika guest)
     Route::get('/keranjang/count', [KeranjangController::class, 'count'])->name('keranjang.count');
 
     // Keranjang Store (masukkan ke keranjang - di-intercept dalam controller jika belum login)
     Route::post('/keranjang', [KeranjangController::class, 'store'])->name('keranjang.store');
-    Route::post('/event/keranjang', [KeranjangController::class, 'storeEventGroup'])->name('event.keranjang.store');
+    Route::post('/acara/keranjang', [KeranjangController::class, 'storeAcaraGroup'])->name('acara.keranjang.store');
 });
 
 Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('pelanggan.')->group(function () {
@@ -84,12 +84,12 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     Route::get('/profile', [ProfilController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfilController::class, 'update'])->name('profile.update');
 
-    // Event Keranjang Update & Destroy
-    Route::put('/event/keranjang/{groupId}', [KeranjangController::class, 'updateEventGroup'])->name('event.keranjang.update');
+    // Acara Keranjang Update & Destroy
+    Route::put('/acara/keranjang/{groupId}', [KeranjangController::class, 'updateAcaraGroup'])->name('acara.keranjang.update');
 
-    // Event Lanjut Ke Pembayaran (per group)
-    Route::get('/event/pembayaran/{groupId}', [PembayaranController::class, 'showEventCheckout'])->name('event.checkout.show');
-    Route::post('/event/pembayaran/{groupId}', [PembayaranController::class, 'checkoutEventGroup'])->name('event.checkout.store');
+    // Acara Lanjut Ke Pembayaran (per group)
+    Route::get('/acara/pembayaran/{groupId}', [PembayaranController::class, 'showAcaraCheckout'])->name('acara.checkout.show');
+    Route::post('/acara/pembayaran/{groupId}', [PembayaranController::class, 'checkoutAcaraGroup'])->name('acara.checkout.store');
 
     // Keranjang Index & Item Operations (Daily)
     Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang');
@@ -197,7 +197,7 @@ Route::middleware('auth')->group(function () {
     // API: Custom options per layanan (grouped by type)
     Route::get('/api/service/{service}/custom-options', function (\App\Models\LayananKatering $service) {
         $options = $service->opsiKustom()->where('type', '!=', 'tipe_penyajian')->where('is_active', true)->get(['id', 'type', 'name', 'harga', 'min_qty', 'items']);
-        if ($service->isEvent()) {
+        if ($service->isAcara()) {
             $servings = \App\Models\OpsiKustom::where('type', 'tipe_penyajian')->where('is_active', true)->get(['id', 'type', 'name', 'harga', 'min_qty', 'items']);
             $options = $options->concat($servings);
         }

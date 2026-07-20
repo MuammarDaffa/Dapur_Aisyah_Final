@@ -5,7 +5,7 @@
 
     {{-- Header --}}
     <div class="mb-8">
-        <a href="{{ route('pelanggan.event.service', $service->id) }}" class="d-inline-d-flex align-items-center fs-6 fw-medium text-primary hover:text-primary">
+        <a href="{{ route('pelanggan.acara.service', $service->id) }}" class="d-inline-d-flex align-items-center fs-6 fw-medium text-primary hover:text-primary">
             <svg style="width: 16px; height: 16px;" class="me-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             <span>Kembali ke Pilih Layanan</span>
         </a>
@@ -16,7 +16,7 @@
     @if($pakets->isEmpty())
         <div class="bg-white rounded-2xl p-12 text-center border border border-secondary shadow-sm">
             <p class="text-secondary fw-medium mb-4">Belum ada paket yang tersedia untuk layanan ini.</p>
-            <a href="{{ route('pelanggan.event.service', $service->id) }}" class="px-6 py-2.5 bg-light text-secondary fw-medium rounded hover:bg-light">Kembali</a>
+            <a href="{{ route('pelanggan.acara.service', $service->id) }}" class="px-6 py-2.5 bg-light text-secondary fw-medium rounded hover:bg-light">Kembali</a>
         </div>
     @else
         <div class="row row-cols-1 sm:row-cols-2 lg:row-cols-3 g-3">
@@ -52,7 +52,7 @@
                                 <p class="small text-secondary">Harga Paket</p>
                                 <p class="fs-5 fw-bold text-primary">{{ $pkg->formatted_price }}</p>
                             </div>
-                            <a href="{{ route('pelanggan.event.package', [$service->id, $pkg->id]) }}" 
+                            <a href="{{ route('pelanggan.acara.package', [$service->id, $pkg->id]) }}" 
                                class="px-5 py-2.5 bg-primary text-white hover:bg-primary text-white text-white fw-bold fs-6 rounded shadow-sm">
                                 Lihat Detail
                             </a>

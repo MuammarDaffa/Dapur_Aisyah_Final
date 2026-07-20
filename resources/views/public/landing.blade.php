@@ -174,8 +174,8 @@
             <div class="row row-cols-1 sm:row-cols-2 lg:row-cols-{{ count($services) > 2 ? '3' : count($services) }} g-3 items-stretch">
                 @forelse($services as $service)
                     @php
-                        $serviceUrl = $service->isEvent()
-                            ? route('pelanggan.event.service', $service)
+                        $serviceUrl = $service->isAcara()
+                            ? route('pelanggan.acara.service', $service)
                             : route('pelanggan.produk', ['service' => $service->id]);
                     @endphp
                     <a href="{{ $serviceUrl }}" class="group position-relative bg-white rounded-2xl border border border-secondary hover:-translate-y-1 d-flex d-flex-column h-100 overflow-hidden">
@@ -191,8 +191,8 @@
                                     <span class="fs-5 fw-bold text-primary">
                                         Mulai Rp {{ number_format($service->base_price, 0, ',', '.') }}
                                     </span>
-                                    @if($service->isEvent())
-                                        <span class="small bg-purple-100 text-purple-700 px-2 py-1 rounded-pill fw-medium">Event</span>
+                                    @if($service->isAcara())
+                                        <span class="small bg-purple-100 text-purple-700 px-2 py-1 rounded-pill fw-medium">Acara</span>
                                     @else
                                         <span class="small bg-success text-white text-success px-2 py-1 rounded-pill fw-medium">Tersedia</span>
                                     @endif
@@ -202,9 +202,9 @@
                             <div class="p-6 d-flex-1 d-flex d-flex-column justify-content-between h-100">
                                 <div>
                                     <div style="width: 64px; height: 64px;" class="rounded-2xl d-flex align-items-center justify-content-center text-white mb-6 group- transition- shadow-sm">
-                                        @if($service->isDaily())
+                                        @if($service->isHarian())
                                             <svg style="width: 32px; height: 32px;" class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                        @elseif($service->isEvent())
+                                        @elseif($service->isAcara())
                                             <svg style="width: 32px; height: 32px;" class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
                                         @else
                                             <svg style="width: 32px; height: 32px;" class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
@@ -217,8 +217,8 @@
                                     <span class="fs-5 fw-bold text-primary">
                                         Mulai Rp {{ number_format($service->base_price, 0, ',', '.') }}
                                     </span>
-                                    @if($service->isEvent())
-                                        <span class="small bg-purple-100 text-purple-700 px-2 py-1 rounded-pill fw-medium">Event</span>
+                                    @if($service->isAcara())
+                                        <span class="small bg-purple-100 text-purple-700 px-2 py-1 rounded-pill fw-medium">Acara</span>
                                     @else
                                         <span class="small bg-success text-white text-success px-2 py-1 rounded-pill fw-medium">Tersedia</span>
                                     @endif

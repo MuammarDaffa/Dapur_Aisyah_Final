@@ -27,7 +27,7 @@ class PembayaranController extends Controller
             \App\Models\Keranjang::cleanupInvalidAndExpiredItems($user->id);
         }
         $cartsQuery = $user->keranjang()
-            ->whereNull('cart_group_id') // Hanya daily
+            ->whereNull('cart_group_id') // Hanya harian
             ->with(['produk.layananKatering', 'opsiKustom', 'paketKatering']);
             
         $keranjang = $cartsQuery->get();
@@ -43,7 +43,7 @@ class PembayaranController extends Controller
                 ->with('error', 'Keranjang harian kosong atau tanggal tidak valid.');
         }
 
-        // Group (untuk daily, setiap item = 1 group)
+        // Group (untuk harian, setiap item = 1 group)
         $groupedCarts = $keranjang->groupBy(function ($keranjang) {
             return 'ungrouped_' . $keranjang->id;
         });
@@ -64,7 +64,7 @@ class PembayaranController extends Controller
     }
 
     /**
-     * Store daily checkout.
+     * Store checkout harian.
      */
     public function store(Request $request, $menu_date = null)
     {
@@ -73,7 +73,7 @@ class PembayaranController extends Controller
             \App\Models\Keranjang::cleanupInvalidAndExpiredItems($user->id);
         }
         $cartsQuery = $user->keranjang()
-            ->whereNull('cart_group_id') // Hanya daily
+            ->whereNull('cart_group_id') // Hanya harian
             ->with(['produk.layananKatering', 'opsiKustom', 'paketKatering']);
             
         $keranjang = $cartsQuery->get();
@@ -228,7 +228,7 @@ class PembayaranController extends Controller
                     }
                 }
                 
-                // Append menu date specifically for daily items since they are checked out together
+                // Append menu date specifically for item harian since they are checked out together
                 if ($keranjang->menu_date) {
                     $itemName .= " [Kirim: " . $keranjang->menu_date->format('d M Y') . "]";
                 }
@@ -249,7 +249,7 @@ class PembayaranController extends Controller
             // Buat tagihan
             InvoiceService::createInvoice($pesanan);
 
-            // Hapus semua keranjang daily yang sudah dicheckout
+            // Hapus semua keranjang harian yang sudah dicheckout
             $user->keranjang()->whereNull('cart_group_id')->delete();
 
             return $pesanan;
@@ -296,9 +296,9 @@ class PembayaranController extends Controller
     }
 
     /**
-     * Tampilkan halaman checkout untuk event group (atau semua event group jika $groupId === 'all').
+     * Tampilkan halaman checkout untuk acara group (atau semua acara group jika $groupId === 'all').
      */
-    public function showEventCheckout(string $groupId)
+    public function showAcaraCheckout(string $groupId)
     {
         $user = auth()->user();
         if ($user) {
@@ -324,10 +324,10 @@ class PembayaranController extends Controller
 
         if ($groupItems->isEmpty() && !$existingOrder) {
             return redirect()->route('pelanggan.keranjang', ['tab' => 'acara'])
-                ->with('error', 'Pesanan event tidak ditemukan.');
+                ->with('error', 'Pesanan acara tidak ditemukan.');
         }
 
-        $eventGroups = $groupItems->groupBy('cart_group_id');
+        $grupAcara = $groupItems->groupBy('cart_group_id');
         $packageItem = $groupItems->firstWhere('item_type', 'package');
         $menuItems = $groupItems->whereIn('item_type', ['package_item', 'custom_menu']);
         $additionItems = $groupItems->where('item_type', 'addition');
@@ -344,15 +344,15 @@ class PembayaranController extends Controller
         $kecamatan = Kecamatan::with('desa')->get();
 
         return view('pelanggan.acara_checkout', compact(
-            'groupId', 'groupItems', 'eventGroups', 'packageItem', 'menuItems',
+            'groupId', 'groupItems', 'acaraGroups', 'packageItem', 'menuItems',
             'additionItems', 'service', 'servingType', 'subtotal', 'kecamatan', 'minDays', 'existingOrder'
         ));
     }
 
     /**
-     * Lanjut Ke Pembayaran per event group atau seluruh event group sekaligus.
+     * Lanjut Ke Pembayaran per acara group atau seluruh acara group sekaligus.
      */
-    public function checkoutEventGroup(Request $request, string $groupId)
+    public function checkoutGrupAcara(Request $request, string $groupId)
     {
         $user = auth()->user();
         if ($user) {
@@ -390,13 +390,13 @@ class PembayaranController extends Controller
                         if ($request->expectsJson() || $request->ajax()) {
                             return response()->json([
                                 'success' => false,
-                                'message' => 'Pesanan event sudah ada (#' . $existingOrder->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
+                                'message' => 'Pesanan acara sudah ada (#' . $existingOrder->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
                                 'pesanan_id' => $existingOrder->id,
                                 'nomor_pesanan' => $existingOrder->nomor_pesanan,
                             ], 500);
                         }
                         return redirect()->route('pelanggan.pesanan.show', $existingOrder)
-                            ->with('error', 'Pesanan event sudah ada, namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage());
+                            ->with('error', 'Pesanan acara sudah ada, namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage());
                     }
                 }
 
@@ -414,9 +414,9 @@ class PembayaranController extends Controller
             }
 
             if ($request->expectsJson() || $request->ajax()) {
-                return response()->json(['message' => 'Pesanan event tidak ditemukan atau sudah diproses.'], 400);
+                return response()->json(['message' => 'Pesanan acara tidak ditemukan atau sudah diproses.'], 400);
             }
-            return back()->with('error', 'Pesanan event tidak ditemukan.');
+            return back()->with('error', 'Pesanan acara tidak ditemukan.');
         }
 
         $validated = $request->validate([
@@ -607,7 +607,7 @@ class PembayaranController extends Controller
             $snapToken = PaymentService::createSnapToken($pesanan);
             $pesanan->update(['midtrans_snap_token' => $snapToken]);
         } catch (\Exception $e) {
-            \Log::error('Midtrans Snap Token Error on checkoutEventGroup (Pesanan #' . $pesanan->nomor_pesanan . '): ' . $e->getMessage(), [
+            \Log::error('Midtrans Snap Token Error on checkoutGrupAcara (Pesanan #' . $pesanan->nomor_pesanan . '): ' . $e->getMessage(), [
                 'pesanan_id' => $pesanan->id,
                 'exception' => $e
             ]);
@@ -615,14 +615,14 @@ class PembayaranController extends Controller
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Pesanan event berhasil disimpan (#' . $pesanan->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
+                    'message' => 'Pesanan acara berhasil disimpan (#' . $pesanan->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
                     'pesanan_id' => $pesanan->id,
                     'nomor_pesanan' => $pesanan->nomor_pesanan,
                 ], 500);
             }
 
             return redirect()->route('pelanggan.pesanan.show', $pesanan)
-                ->with('error', 'Pesanan event berhasil disimpan (#' . $pesanan->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage());
+                ->with('error', 'Pesanan acara berhasil disimpan (#' . $pesanan->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage());
         }
 
         // Kirim notifikasi
@@ -639,6 +639,6 @@ class PembayaranController extends Controller
         }
 
         return redirect()->route('pelanggan.pesanan.show', $pesanan)
-            ->with('success', 'Pesanan event berhasil dibuat! Silakan lakukan pembayaran.');
+            ->with('success', 'Pesanan acara berhasil dibuat! Silakan lakukan pembayaran.');
     }
 }

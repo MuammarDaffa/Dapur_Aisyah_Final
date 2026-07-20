@@ -23,7 +23,7 @@
                 </div>
                 <div class="row row-cols-2 g-3 fs-6">
                     <div><span class="text-secondary">Layanan:</span><br><span class="fw-medium">{{ $pesanan->layananKatering->name ?? '-' }}</span></div>
-                    @if(!($pesanan->layananKatering?->isDaily()))
+                    @if(!($pesanan->layananKatering?->isHarian()))
                         <div><span class="text-secondary">Tanggal Acara:</span><br><span class="fw-medium">{{ $pesanan->tanggal_pesanan->format('d M Y') }}</span></div>
                     @endif
                     <div><span class="text-secondary">Metode:</span><br><span class="fw-medium">{{ $pesanan->metode_pengambilan === 'delivery' ? 'Delivery' : 'Pick Up' }}</span></div>
@@ -54,20 +54,20 @@
             <div class="card shadow-sm mb-4 p-4">
                 <h3 class="fw-bold text-secondary mb-4">Item Pesanan</h3>
                 <div class="divide-y divide-gray-200">
-                    @if($pesanan->layananKatering?->isDaily())
-                        {{-- 1. Pesanan Daily Catering --}}
+                    @if($pesanan->layananKatering?->isHarian())
+                        {{-- 1. Pesanan Katering Harian --}}
                         @foreach($pesanan->items as $idx => $item)
                         <div class="py-4 first:pt-0 last:pb-0">
                             <div class="d-flex align-items-center justify-content-between g-3">
                                 <div>
                                     <h4 class="fw-bold text-secondary text-base">{{ $item->formatted_menu_name }} <span class="text-secondary">({{ $item->jumlah }})</span></h4>
-                                    <button type="button" onclick="toggleOrderItemDetail(this, 'detail-daily-{{ $idx }}')" class="mt-1 small fw-bold text-primary hover:text-primary focus:">Lihat Detail</button>
+                                    <button type="button" onclick="toggleOrderItemDetail(this, 'detail-harian-{{ $idx }}')" class="mt-1 small fw-bold text-primary hover:text-primary focus:">Lihat Detail</button>
                                 </div>
                                 <div class="text-end">
                                     <p class="fw-bold text-secondary text-base">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
                                 </div>
                             </div>
-                            <div id="detail-daily-{{ $idx }}" class="d-none mt-3 pt-3 border-t border border-secondary fs-6 text-secondary space-y-1.5">
+                            <div id="detail-harian-{{ $idx }}" class="d-none mt-3 pt-3 border-t border border-secondary fs-6 text-secondary space-y-1.5">
                                 <div class="d-flex items-start">
                                     <span class="w-28 flex-shrink-0 text-secondary">Porsi</span>
                                     <span class="me-2 text-secondary">:</span>
@@ -89,7 +89,7 @@
                         </div>
                         @endforeach
                     @else
-                        {{-- 2. Pesanan Event Catering (Paket & Custom Menu) --}}
+                        {{-- 2. Pesanan Katering Acara (Paket & Custom Menu) --}}
                         @php
                             $packageItems = $pesanan->items->filter(fn($i) => str_starts_with($i->item_name, 'Paket: '));
                             $menuItems = $pesanan->items->filter(fn($i) => str_starts_with($i->item_name, 'Menu: '));
@@ -105,7 +105,7 @@
                         @endphp
 
                         @if($packageItems->isNotEmpty())
-                            {{-- Jika pesanan berupa Paket Event --}}
+                            {{-- Jika pesanan berupa Paket Acara --}}
                             @foreach($packageItems as $pIdx => $pkg)
                             @php
                                 $customPortion = $customMenus->isNotEmpty() ? $customMenus->sum('jumlah') : ($customExtras->first()->jumlah ?? 0);

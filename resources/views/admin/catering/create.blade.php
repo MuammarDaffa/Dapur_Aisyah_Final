@@ -38,7 +38,7 @@
                                         <div class="card-body d-flex align-items-center">
                                             <i class="fa-solid fa-calendar-day fa-2x text-info me-3"></i>
                                             <div>
-                                                <h5 class="mb-1 fw-bold">Daily</h5>
+                                                <h5 class="mb-1 fw-bold">Harian</h5>
                                                 <small class="text-muted">Menu harian dengan produk</small>
                                             </div>
                                         </div>
@@ -52,7 +52,7 @@
                                         <div class="card-body d-flex align-items-center">
                                             <i class="fa-solid fa-glass-cheers fa-2x text-purple me-3" style="color: #6f42c1;"></i>
                                             <div>
-                                                <h5 class="mb-1 fw-bold">Event</h5>
+                                                <h5 class="mb-1 fw-bold">Acara</h5>
                                                 <small class="text-muted">Acara dengan paket catering</small>
                                             </div>
                                         </div>
@@ -79,7 +79,7 @@
                         </div>
                     </div>
 
-                    {{-- Ketentuan & Jadwal (Hanya Event) --}}
+                    {{-- Ketentuan & Jadwal (Hanya Acara) --}}
                     <div id="terms_schedule_wrapper" class="row g-3 mt-1">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Ketentuan Pemesanan</label>
@@ -91,7 +91,7 @@
                         </div>
                     </div>
 
-                    {{-- Pengaturan Cutoff (Hanya Event) --}}
+                    {{-- Pengaturan Cutoff (Hanya Acara) --}}
                     <div id="cutoff_wrapper" class="callout callout-info mt-3 bg-light border-start border-4 border-info">
                         <h5><i class="fa-solid fa-info-circle text-info"></i> Pengaturan Cutoff Pemesanan</h5>
                         <p class="text-muted mb-2">Batas waktu minimal pemesanan untuk layanan ini</p>

@@ -28,7 +28,7 @@ class DashboardController extends Controller
      */
     public function produk(Request $request)
     {
-        $servicesQuery = LayananKatering::daily()->where('is_active', true);
+        $servicesQuery = LayananKatering::harian()->where('is_active', true);
         if ($request->filled('service')) {
             $servicesQuery->where('id', $request->service);
         }
@@ -67,12 +67,12 @@ class DashboardController extends Controller
     }
 
     /**
-     * Halaman pilih layanan event (Cards)
+     * Halaman pilih layanan acara (Cards)
      */
     public function eventService(LayananKatering $service)
     {
-        if (!$service->isEvent()) {
-            return redirect()->route('pelanggan.produk')->with('error', 'Layanan tidak valid untuk event.');
+        if (!$service->isAcara()) {
+            return redirect()->route('pelanggan.produk')->with('error', 'Layanan tidak valid untuk acara.');
         }
 
         $pakets = $service->packages()->where('is_active', true)->get();
@@ -80,12 +80,12 @@ class DashboardController extends Controller
     }
 
     /**
-     * Halaman konfigurasi paket event
+     * Halaman konfigurasi paket acara
      */
     public function eventPackage(LayananKatering $service, \App\Models\PaketKatering $paket)
     {
-        if (!$service->isEvent() || $paket->layanan_katering_id !== $service->id || !$paket->is_active) {
-            return redirect()->route('pelanggan.event.service', $service)->with('error', 'Paket tidak valid.');
+        if (!$service->isAcara() || $paket->layanan_katering_id !== $service->id || !$paket->is_active) {
+            return redirect()->route('pelanggan.acara.service', $service)->with('error', 'Paket tidak valid.');
         }
 
         $paket->load(['opsiKustom' => function ($q) {
@@ -96,12 +96,12 @@ class DashboardController extends Controller
     }
 
     /**
-     * Halaman konfigurasi custom menu event
+     * Halaman konfigurasi custom menu acara
      */
     public function eventCustom(LayananKatering $service)
     {
-        if (!$service->isEvent() || !$service->hasFeature('full_custom')) {
-            return redirect()->route('pelanggan.event.service', $service)->with('error', 'Layanan tidak mendukung custom menu.');
+        if (!$service->isAcara() || !$service->hasFeature('full_custom')) {
+            return redirect()->route('pelanggan.acara.service', $service)->with('error', 'Layanan tidak mendukung custom menu.');
         }
 
         $options = $service->opsiKustom()->where('type', '!=', 'tipe_penyajian')->where('is_active', true)->get();

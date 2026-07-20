@@ -85,20 +85,20 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Menghitung total jumlah item di keranjang.
      * Setiap produk Katering Harian dihitung sebagai 1 item (cart_group_id null).
-     * Setiap Paket Event / Custom Menu dihitung sebagai 1 item (distinct cart_group_id).
+     * Setiap Paket Acara / Custom Menu dihitung sebagai 1 item (distinct cart_group_id).
      */
     /**
          * Menghitung total entitas yang masuk ke dalam keranjang belanja pelanggan.
          * Alur bisnis:
          * - Menu Katering Harian dihitung masing-masing sebagai 1 item.
-         * - Katering Event (paket/prasmanan) dihitung sebagai 1 kesatuan grup, 
+         * - Katering Acara (paket/prasmanan) dihitung sebagai 1 kesatuan grup, 
          *   meskipun terdiri dari banyak sub-menu/ekstra.
          * @return int
          */
     public function cartItemsCount(): int
     {
-        $dailyCount = $this->keranjang()->whereNull('cart_group_id')->count();
-        $eventCount = $this->keranjang()->whereNotNull('cart_group_id')->distinct()->count('cart_group_id');
-        return $dailyCount + $eventCount;
+        $jumlahHarian = $this->keranjang()->whereNull('cart_group_id')->count();
+        $jumlahAcara = $this->keranjang()->whereNotNull('cart_group_id')->distinct()->count('cart_group_id');
+        return $jumlahHarian + $jumlahAcara;
     }
 }

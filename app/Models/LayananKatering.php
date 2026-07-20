@@ -48,10 +48,10 @@ class LayananKatering extends Model
 
     /**
      * Cek apakah layanan memiliki fitur tertentu.
-     * Fitur: 'daily_menu', 'packages', 'full_custom'
+     * Fitur: 'menu_harian', 'paket', 'kustom_penuh'
      */
     /**
-         * Memeriksa apakah layanan ini mendukung fitur tertentu (misal: daily_menu, packages, full_custom).
+         * Memeriksa apakah layanan ini mendukung fitur tertentu (misal: menu_harian, paket, kustom_penuh).
          * @param string $feature
          * @return bool
          */
@@ -64,17 +64,17 @@ class LayananKatering extends Model
     /**
      * Apakah layanan tipe Harian (berbasis produk)?
      */
-    public function isDaily(): bool
+    public function isHarian(): bool
     {
-        return $this->hasFeature('daily_menu');
+        return $this->hasFeature('menu_harian');
     }
 
     /**
      * Apakah layanan tipe Event (paket dan/atau full custom)?
      */
-    public function isEvent(): bool
+    public function isAcara(): bool
     {
-        return $this->hasFeature('packages') || $this->hasFeature('full_custom');
+        return $this->hasFeature('paket') || $this->hasFeature('kustom_penuh');
     }
 
     // === Scopes ===
@@ -84,28 +84,28 @@ class LayananKatering extends Model
         return $query->where('is_active', true);
     }
 
-    public function scopeDaily($query)
+    public function scopeHarian($query)
     {
-        return $query->whereJsonContains('fitur_tersedia', 'daily_menu');
+        return $query->whereJsonContains('fitur_tersedia', 'menu_harian');
     }
 
-    public function scopeEvent($query)
+    public function scopeAcara($query)
     {
         return $query->where(function ($q) {
-            $q->whereJsonContains('fitur_tersedia', 'packages')
-              ->orWhereJsonContains('fitur_tersedia', 'full_custom');
+            $q->whereJsonContains('fitur_tersedia', 'paket')
+              ->orWhereJsonContains('fitur_tersedia', 'kustom_penuh');
         });
     }
 
     // === Accessors ===
 
     /**
-     * Label tipe katering: Daily / Event / -
+     * Label tipe katering: Harian / Acara / -
      */
     public function getTypeLabelAttribute(): string
     {
-        if ($this->isDaily()) return 'Daily';
-        if ($this->isEvent()) return 'Event';
+        if ($this->isHarian()) return 'Harian';
+        if ($this->isAcara()) return 'Acara';
         return '-';
     }
 

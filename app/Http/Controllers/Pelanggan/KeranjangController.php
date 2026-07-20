@@ -21,20 +21,20 @@ class KeranjangController extends Controller
             ->with(['produk.layananKatering', 'opsiKustom', 'paketKatering', 'layananKatering', 'servingType'])
             ->get();
 
-        // Pisahkan Daily dan Event
-        $dailyCarts = $keranjang->filter(fn ($c) => $c->isDailyItem());
-        $eventCarts = $keranjang->filter(fn ($c) => $c->isEventItem());
+        // Pisahkan Daily dan Acara
+        $keranjangHarian = $keranjang->filter(fn ($c) => $c->isHarianItem());
+        $keranjangAcara = $keranjang->filter(fn ($c) => $c->isAcaraItem());
 
-        // Group daily items by menu_date
-        $dailyGroups = $dailyCarts->groupBy(fn ($c) => $c->menu_date ? $c->menu_date->format('Y-m-d') : 'unknown');
+        // Group harian items by menu_date
+        $grupHarian = $keranjangHarian->groupBy(fn ($c) => $c->menu_date ? $c->menu_date->format('Y-m-d') : 'unknown');
 
-        // Group event items by cart_group_id
-        $eventGroups = $eventCarts->groupBy('cart_group_id');
+        // Group acara items by cart_group_id
+        $grupAcara = $keranjangAcara->groupBy('cart_group_id');
 
         // Active tab dari query param
-        $activeTab = $request->get('tab', $dailyGroups->isNotEmpty() ? 'harian' : ($eventGroups->isNotEmpty() ? 'acara' : 'harian'));
+        $activeTab = $request->get('tab', $grupHarian->isNotEmpty() ? 'harian' : ($grupAcara->isNotEmpty() ? 'acara' : 'harian'));
 
-        return view('pelanggan.keranjang', compact('dailyGroups', 'eventGroups', 'activeTab'));
+        return view('pelanggan.keranjang', compact('harianGroups', 'acaraGroups', 'activeTab'));
     }
 
     public function count(Request $request)
@@ -56,7 +56,7 @@ class KeranjangController extends Controller
     }
 
     /**
-     * Store daily keranjang item (tidak berubah dari logic lama).
+     * Store harian keranjang item (tidak berubah dari logic lama).
      */
     public function store(Request $request)
     {
@@ -165,9 +165,9 @@ class KeranjangController extends Controller
     }
 
     /**
-     * Simpan pesanan event group (Paket atau Custom) dari halaman konfigurasi.
+     * Simpan pesanan acara group (Paket atau Custom) dari halaman konfigurasi.
      */
-    public function storeEventGroup(Request $request)
+    public function storeGrupAcara(Request $request)
     {
         if ($request->has('items') && is_array($request->input('items'))) {
             $cleanItems = array_values(array_filter($request->input('items'), function ($item) {
@@ -190,7 +190,7 @@ class KeranjangController extends Controller
         if (!auth()->check()) {
             session([
                 'pending_cart_item' => [
-                    'type' => 'event_group',
+                    'type' => 'acara_group',
                     'data' => $request->all(),
                 ]
             ]);
@@ -210,13 +210,13 @@ class KeranjangController extends Controller
         $service = \App\Models\LayananKatering::findOrFail($validated['layanan_katering_id']);
         $user = auth()->user();
 
-        // Validasi: Cek apakah ada item event di keranjang yang belum di-checkout dari layanan (layanan_katering_id) yang berbeda
-        $existingEventCart = $user->keranjang()
+        // Validasi: Cek apakah ada item acara di keranjang yang belum di-checkout dari layanan (layanan_katering_id) yang berbeda
+        $existingAcaraCart = $user->keranjang()
             ->whereNotNull('cart_group_id')
             ->first();
 
-        if ($existingEventCart && (int) $existingEventCart->layanan_katering_id !== (int) $service->id) {
-            $errorMessage = 'Anda masih memiliki pesanan Event yang belum di-checkout. Selesaikan checkout pesanan tersebut terlebih dahulu sebelum memesan layanan Event lainnya.';
+        if ($existingAcaraCart && (int) $existingAcaraCart->layanan_katering_id !== (int) $service->id) {
+            $errorMessage = 'Anda masih memiliki pesanan Acara yang belum di-checkout. Selesaikan checkout pesanan tersebut terlebih dahulu sebelum memesan layanan Acara lainnya.';
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -224,7 +224,7 @@ class KeranjangController extends Controller
                     'is_conflict' => true,
                 ], 422);
             }
-            return back()->with('event_conflict_error', $errorMessage);
+            return back()->with('acara_conflict_error', $errorMessage);
         }
 
         $groupId = (string) Str::uuid();
@@ -414,24 +414,24 @@ class KeranjangController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Pesanan event berhasil ditambahkan ke keranjang!',
+                'message' => 'Pesanan acara berhasil ditambahkan ke keranjang!',
                 'cart_count' => $this->getCartCount($user),
             ]);
         }
 
-        return redirect()->route('pelanggan.keranjang', ['tab' => 'acara'])->with('success', 'Pesanan event berhasil ditambahkan ke keranjang!');
+        return redirect()->route('pelanggan.keranjang', ['tab' => 'acara'])->with('success', 'Pesanan acara berhasil ditambahkan ke keranjang!');
     }
 
     /**
-     * Update seluruh konfigurasi event group (dari modal edit).
+     * Update seluruh konfigurasi acara group (dari modal edit).
      */
-    public function updateEventGroup(Request $request, string $groupId)
+    public function updateAcaraGroup(Request $request, string $groupId)
     {
         $user = auth()->user();
 
         // Pastikan group milik user ini
         $existingGroup = $user->keranjang()->where('cart_group_id', $groupId)->get();
-        abort_if($existingGroup->isEmpty(), 404, 'Pesanan event tidak ditemukan.');
+        abort_if($existingGroup->isEmpty(), 404, 'Pesanan acara tidak ditemukan.');
 
         // 1. Jika edit untuk Paket Katering Tetap (Fixed Paket Katering)
         if ($existingGroup->contains('item_type', 'package')) {
@@ -485,13 +485,13 @@ class KeranjangController extends Controller
 
         $service = \App\Models\LayananKatering::findOrFail($validated['layanan_katering_id']);
 
-        $existingOtherEventCart = $user->keranjang()
+        $existingOtherAcaraCart = $user->keranjang()
             ->whereNotNull('cart_group_id')
             ->where('cart_group_id', '!=', $groupId)
             ->first();
 
-        if ($existingOtherEventCart && (int) $existingOtherEventCart->layanan_katering_id !== (int) $service->id) {
-            $errorMessage = 'Anda masih memiliki pesanan Event yang belum di-checkout. Selesaikan checkout pesanan tersebut terlebih dahulu sebelum memesan layanan Event lainnya.';
+        if ($existingOtherAcaraCart && (int) $existingOtherAcaraCart->layanan_katering_id !== (int) $service->id) {
+            $errorMessage = 'Anda masih memiliki pesanan Acara yang belum di-checkout. Selesaikan checkout pesanan tersebut terlebih dahulu sebelum memesan layanan Acara lainnya.';
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -499,7 +499,7 @@ class KeranjangController extends Controller
                     'is_conflict' => true,
                 ], 422);
             }
-            return back()->with('event_conflict_error', $errorMessage);
+            return back()->with('acara_conflict_error', $errorMessage);
         }
 
         $minPortion = $service->min_portion;
@@ -574,7 +574,7 @@ class KeranjangController extends Controller
     }
 
     /**
-     * Update daily keranjang item (tidak berubah).
+     * Update harian keranjang item (tidak berubah).
      */
     public function update(Request $request, Keranjang $keranjang)
     {
@@ -583,9 +583,9 @@ class KeranjangController extends Controller
 
         if ($keranjang->cart_group_id) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => 'Item paket event tidak dapat diubah secara individual.'], 400);
+                return response()->json(['success' => false, 'message' => 'Item paket acara tidak dapat diubah secara individual.'], 400);
             }
-            return back()->with('error', 'Item paket event tidak dapat diubah secara individual.');
+            return back()->with('error', 'Item paket acara tidak dapat diubah secara individual.');
         }
 
         $validated = $request->validate([
@@ -628,17 +628,17 @@ class KeranjangController extends Controller
         // Pastikan keranjang milik user yang login
         abort_if($keranjang->user_id !== auth()->id(), 403, 'Akses ditolak.');
 
-        // Jika event item, hapus seluruh group
+        // Jika acara item, hapus seluruh group
         if ($keranjang->cart_group_id) {
             auth()->user()->keranjang()->where('cart_group_id', $keranjang->cart_group_id)->delete();
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Pesanan event berhasil dihapus dari keranjang.',
+                    'message' => 'Pesanan acara berhasil dihapus dari keranjang.',
                     'cart_count' => $this->getCartCount(auth()->user()),
                 ]);
             }
-            return redirect()->route('pelanggan.keranjang', ['tab' => 'acara'])->with('success', 'Pesanan event berhasil dihapus dari keranjang.');
+            return redirect()->route('pelanggan.keranjang', ['tab' => 'acara'])->with('success', 'Pesanan acara berhasil dihapus dari keranjang.');
         }
 
         $keranjang->delete();
@@ -676,10 +676,10 @@ class KeranjangController extends Controller
             $controller->store($req);
             Keranjang::cleanupInvalidAndExpiredItems(auth()->id());
             return redirect()->route('pelanggan.keranjang', ['tab' => 'harian'])->with('success', 'Produk dan opsi berhasil ditambahkan ke keranjang!');
-        } elseif ($pending['type'] === 'event_group') {
-            $controller->storeEventGroup($req);
+        } elseif ($pending['type'] === 'acara_group') {
+            $controller->storeGrupAcara($req);
             Keranjang::cleanupInvalidAndExpiredItems(auth()->id());
-            return redirect()->route('pelanggan.keranjang', ['tab' => 'acara'])->with('success', 'Pesanan event berhasil ditambahkan ke keranjang!');
+            return redirect()->route('pelanggan.keranjang', ['tab' => 'acara'])->with('success', 'Pesanan acara berhasil ditambahkan ke keranjang!');
         }
 
         return null;

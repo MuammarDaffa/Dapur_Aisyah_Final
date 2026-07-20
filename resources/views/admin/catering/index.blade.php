@@ -14,13 +14,7 @@
                     </a>
                 </div>
             </div>
-            <div class="card-body border-bottom">
-                <div class="btn-group" role="group">
-                    <a href="{{ route('admin.catering.index') }}" class="btn {{ !request('type') ? 'btn-primary' : 'btn-outline-primary' }}">Semua</a>
-                    <a href="{{ route('admin.catering.index', ['type' => 'harian']) }}" class="btn {{ request('type') === 'harian' ? 'btn-primary' : 'btn-outline-primary' }}"><i class="fa-solid fa-calendar-day"></i> Daily</a>
-                    <a href="{{ route('admin.catering.index', ['type' => 'acara']) }}" class="btn {{ request('type') === 'acara' ? 'btn-primary' : 'btn-outline-primary' }}"><i class="fa-solid fa-glass-cheers"></i> Event</a>
-                </div>
-            </div>
+
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover table-striped mb-0">
@@ -43,10 +37,10 @@
                                     @endif
                                 </td>
                                 <td class="align-middle text-center">
-                                    @if($c->isDaily())
-                                        <span class="badge text-bg-info"><i class="fa-solid fa-calendar-day"></i> Daily</span>
-                                    @elseif($c->isEvent())
-                                        <span class="badge text-bg-purple" style="background-color: #6f42c1; color: white;"><i class="fa-solid fa-glass-cheers"></i> Event</span>
+                                    @if($c->isHarian())
+                                        <span class="badge text-bg-info"><i class="fa-solid fa-calendar-day"></i> Harian</span>
+                                    @elseif($c->isAcara())
+                                        <span class="badge text-bg-purple" style="background-color: #6f42c1; color: white;"><i class="fa-solid fa-glass-cheers"></i> Acara</span>
                                     @else
                                         <span class="badge text-bg-secondary">-</span>
                                     @endif

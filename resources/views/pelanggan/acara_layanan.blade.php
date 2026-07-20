@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Layanan Event - ' . $service->name)
+@section('title', 'Layanan Acara - ' . $service->name)
 @section('content')
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
@@ -30,7 +30,7 @@
             {{-- Daftar Paket (Setiap paket berdiri sendiri di level yang sama) --}}
             @if($service->hasFeature('packages') && $pakets->isNotEmpty())
                 @foreach($pakets as $pkg)
-                    <a href="{{ route('pelanggan.event.package', [$service->id, $pkg->id]) }}" 
+                    <a href="{{ route('pelanggan.acara.package', [$service->id, $pkg->id]) }}" 
                        class="group bg-white rounded-2xl border border border-secondary hover:border border-primary shadow-sm hover:shadow d-flex d-flex-column overflow-d-none">
                         
                         {{-- Cover / Top Area --}}
