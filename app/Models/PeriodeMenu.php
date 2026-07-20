@@ -8,15 +8,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Model MenuPeriod merepresentasikan periode jadwal untuk layanan Katering Harian.
- * Berfungsi mengelompokkan menu-menu harian (MenuPeriodItem) ke dalam rentang tanggal tertentu.
+ * Model PeriodeMenu merepresentasikan periode jadwal untuk layanan Katering Harian.
+ * Berfungsi mengelompokkan menu-menu harian (ItemPeriodeMenu) ke dalam rentang tanggal tertentu.
  */
-class MenuPeriod extends Model
+class PeriodeMenu extends Model
 {
+    protected $table = 'periode_menu';
+
     use HasFactory;
 
     protected $fillable = [
-        'catering_service_id', 'start_date', 'end_date', 'is_active',
+        'layanan_katering_id', 'start_date', 'end_date', 'is_active',
     ];
 
     protected function casts(): array
@@ -52,13 +54,13 @@ class MenuPeriod extends Model
 
     // === Relationships ===
 
-    public function cateringService(): BelongsTo
+    public function layananKatering(): BelongsTo
     {
-        return $this->belongsTo(CateringService::class);
+        return $this->belongsTo(LayananKatering::class);
     }
 
     public function items(): HasMany
     {
-        return $this->hasMany(MenuPeriodItem::class)->orderBy('menu_date');
+        return $this->hasMany(ItemPeriodeMenu::class)->orderBy('menu_date');
     }
 }

@@ -20,21 +20,21 @@
                     <div class="d-flex flex-column gap-3">
                         <div class="mb-3">
             <label class="form-label fw-bold">Tanggal Pengiriman</label>
-                            <input type="hidden" name="order_date" value="{{ $orderDate }}">
+                            <input type="hidden" name="tanggal_pesanan" value="{{ $orderDate }}">
                             <p class="fs-6 fw-medium text-secondary bg-primary text-white p-3 rounded border border border-primary">Pengiriman mengikuti jadwal yang tertera pada menu yang dipilih.</p>
                         </div>
                         <div class="mb-3">
             <label class="form-label fw-bold">Metode Pengambilan *</label>
-                            <select name="pickup_method" id="pickup_method" required class="form-select w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary" onchange="toggleDelivery()">
-                                <option value="pickup" {{ old('pickup_method') == 'pickup' ? 'selected' : '' }}>Ambil di Tempat (Pick Up)</option>
-                                <option value="delivery" {{ old('pickup_method') == 'delivery' ? 'selected' : '' }}>Delivery (Antar ke Alamat)</option>
+                            <select name="metode_pengambilan" id="metode_pengambilan" required class="form-select w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary" onchange="toggleDelivery()">
+                                <option value="pickup" {{ old('metode_pengambilan') == 'pickup' ? 'selected' : '' }}>Ambil di Tempat (Pick Up)</option>
+                                <option value="delivery" {{ old('metode_pengambilan') == 'delivery' ? 'selected' : '' }}>Delivery (Antar ke Alamat)</option>
                             </select>
                         </div>
-                        <div id="delivery-fields" class="{{ old('pickup_method') == 'delivery' ? '' : 'd-none' }} d-flex flex-column gap-3">
-                                <select name="district_id" id="district_id" class="form-select d-none">
+                        <div id="delivery-fields" class="{{ old('metode_pengambilan') == 'delivery' ? '' : 'd-none' }} d-flex flex-column gap-3">
+                                <select name="kecamatan_id" id="kecamatan_id" class="form-select d-none">
                                     <option value="">-- Pilih dari peta di bawah --</option>
-                                    @foreach($districts as $district)
-                                        <option value="{{ $district->id }}" data-lat="{{ $district->latitude ?? '' }}" data-lng="{{ $district->longitude ?? '' }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
+                                    @foreach($kecamatan as $kecamatan)
+                                        <option value="{{ $kecamatan->id }}" data-lat="{{ $kecamatan->latitude ?? '' }}" data-lng="{{ $kecamatan->longitude ?? '' }}" {{ old('kecamatan_id') == $kecamatan->id ? 'selected' : '' }}>{{ $kecamatan->name }}</option>
                                     @endforeach
                                 </select>
                             
@@ -57,7 +57,7 @@
                                     <svg style="width: 16px; height: 16px;" class="d-inline-block text-danger me-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                                     Anda wajib menandai lokasi pengiriman di peta.
                                 </p>
-                                @error('district_id')
+                                @error('kecamatan_id')
                                     <p class="fs-6 text-danger mt-2 fw-medium">
                                         <svg style="width: 16px; height: 16px;" class="d-inline-block text-danger me-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                                         Anda harus menandai lokasi pengiriman di peta dengan benar.
@@ -74,14 +74,14 @@
                             <!-- detail field -->
                             <!-- <div class="mb-3">
             <label class="form-label fw-bold">Detail Patokan/Blok/No. Rumah (Opsional)</label>
-                                <textarea name="address_detail" id="address_detail_input" rows="2" class="form-control w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateCheckout()">{{ old('address_detail') }}</textarea>
+                                <textarea name="detail_alamat" id="address_detail_input" rows="2" class="form-control w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary @error('detail_alamat') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateCheckout()">{{ old('detail_alamat') }}</textarea>
                                 <p id="address_error" class="fs-6 text-danger mt-1 d-none"></p>
-                                @error('address_detail') <p class="fs-6 text-danger mt-1">{{ $message }}</p> @enderror
+                                @error('detail_alamat') <p class="fs-6 text-danger mt-1">{{ $message }}</p> @enderror
                             </div> -->
                         </div>
                         <div class="mb-3">
             <label class="form-label fw-bold">Catatan (Opsional)</label>
-                            <textarea name="notes" rows="2" class="form-control w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary" placeholder="Catatan tambahan...">{{ old('notes') }}</textarea>
+                            <textarea name="catatan" rows="2" class="form-control w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary" placeholder="Catatan tambahan...">{{ old('catatan') }}</textarea>
                         </div>
                         <div class="mb-3">
             <label class="form-label fw-bold">Pembayaran</label>
@@ -89,13 +89,13 @@
                                 <p class="fs-6 text-info fw-medium">Transfer Bank</p>
                                 <!-- <p class="small text-info">Semua pembayaran dilakukan melalui Midtrans Payment Gateway.</p> -->
                             </div>
-                            <input type="hidden" name="payment_method" value="transfer">
+                            <input type="hidden" name="metode_pembayaran" value="transfer">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Order Summary -->
+            <!-- Pesanan Summary -->
             <div>
                 <div class="card shadow-sm mb-4 p-4">
                     <h3 class="fw-bold text-secondary mb-4">Ringkasan Pesanan</h3>
@@ -108,39 +108,39 @@
 
                             @if($isEvent)
                                 {{-- Event group summary --}}
-                                @if($pkgItem && $pkgItem->cateringPackage)
+                                @if($pkgItem && $pkgItem->paketKatering)
                                 <div class="py-3">
                                     <p class="fw-medium text-secondary d-flex align-items-center">
                                         <svg style="width: 16px; height: 16px;" class="text-primary me-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                                        <span>{{ $pkgItem->cateringPackage->name }}</span>
+                                        <span>{{ $pkgItem->paketKatering->name }}</span>
                                     </p>
-                                    <p class="small text-primary fw-medium">Rp {{ number_format($pkgItem->cateringPackage->price, 0, ',', '.') }}</p>
+                                    <p class="small text-primary fw-medium">Rp {{ number_format($pkgItem->paketKatering->harga, 0, ',', '.') }}</p>
                                 </div>
                                 @endif
-                                @foreach($groupItems->where('item_type', '!=', 'package') as $cart)
+                                @foreach($groupItems->where('item_type', '!=', 'package') as $keranjang)
                                 <div class="py-2 d-flex justify-content-between fs-6">
                                     <div>
-                                        <p class="text-secondary">{{ $cart->customOption->name ?? 'Item' }}</p>
-                                        <p class="small text-secondary">× {{ $cart->quantity }}
-                                            @if($cart->item_type === 'package_item')
+                                        <p class="text-secondary">{{ $keranjang->opsiKustom->name ?? 'Item' }}</p>
+                                        <p class="small text-secondary">× {{ $keranjang->jumlah }}
+                                            @if($keranjang->item_type === 'package_item')
                                                 <span class="text-success">(termasuk)</span>
                                             @endif
                                         </p>
                                     </div>
-                                    <p class="fw-medium {{ $cart->item_type === 'package_item' ? 'text-success' : 'text-secondary' }}">
-                                        {{ $cart->item_type === 'package_item' ? 'Rp 0' : 'Rp ' . number_format($cart->subtotal, 0, ',', '.') }}
+                                    <p class="fw-medium {{ $keranjang->item_type === 'package_item' ? 'text-success' : 'text-secondary' }}">
+                                        {{ $keranjang->item_type === 'package_item' ? 'Rp 0' : 'Rp ' . number_format($keranjang->subtotal, 0, ',', '.') }}
                                     </p>
                                 </div>
                                 @endforeach
                             @else
                                 {{-- Regular items --}}
-                                @foreach($groupItems as $cart)
+                                @foreach($groupItems as $keranjang)
                                 <div class="py-3 d-flex justify-content-between fs-6">
                                     <div>
-                                        <p class="fw-medium text-secondary">{{ $cart->product->name ?? ($cart->customOption->name ?? 'Item') }}</p>
-                                        <p class="small text-secondary">× {{ $cart->quantity }}</p>
+                                        <p class="fw-medium text-secondary">{{ $keranjang->produk->name ?? ($keranjang->opsiKustom->name ?? 'Item') }}</p>
+                                        <p class="small text-secondary">× {{ $keranjang->jumlah }}</p>
                                     </div>
-                                    <p class="fw-medium text-secondary">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</p>
+                                    <p class="fw-medium text-secondary">Rp {{ number_format($keranjang->subtotal, 0, ',', '.') }}</p>
                                 </div>
                                 @endforeach
                             @endif
@@ -232,19 +232,19 @@ function checkLocationRealtime(lat, lng, districtId = '', districtName = '', add
     const msgEl = document.getElementById('location-validation-msg');
     if (!msgEl) return;
 
-    fetch(`/api/validate-location?latitude=${lat}&longitude=${lng}&district_id=${districtId}&district_name=${encodeURIComponent(districtName)}&address=${encodeURIComponent(address)}`)
+    fetch(`/api/validate-location?latitude=${lat}&longitude=${lng}&kecamatan_id=${districtId}&district_name=${encodeURIComponent(districtName)}&address=${encodeURIComponent(address)}`)
         .then(res => res.json())
         .then(data => {
             if (data && data.is_in_pontianak) {
                 isLocationValid = true;
                 msgEl.textContent = 'Lokasi berada di wilayah Pontianak.';
                 msgEl.className = 'text-sm font-medium mt-2 text-green-600 block';
-                if (data.district_id) {
-                    const select = document.getElementById('district_id');
+                if (data.kecamatan_id) {
+                    const select = document.getElementById('kecamatan_id');
                     for (let i = 0; i < select.options.length; i++) {
-                        if (select.options[i].value == data.district_id) {
+                        if (select.options[i].value == data.kecamatan_id) {
                             select.selectedIndex = i;
-                            loadShippingCost(data.district_id);
+                            loadShippingCost(data.kecamatan_id);
                             break;
                         }
                     }
@@ -253,7 +253,7 @@ function checkLocationRealtime(lat, lng, districtId = '', districtName = '', add
                 isLocationValid = false;
                 msgEl.textContent = 'Lokasi berada di luar wilayah Pontianak.';
                 msgEl.className = 'text-sm font-medium mt-2 text-red-600 block';
-                document.getElementById('district_id').value = '';
+                document.getElementById('kecamatan_id').value = '';
                 loadShippingCost('');
             }
             validateCheckout();
@@ -293,7 +293,7 @@ function reverseGeocode(lat, lng) {
                     districtName = 'Kecamatan ' + districtName;
                 }
 
-                const select = document.getElementById('district_id');
+                const select = document.getElementById('kecamatan_id');
                 let matchFound = false;
                 for (let i = 0; i < select.options.length; i++) {
                     if (select.options[i].text.toLowerCase() === districtName.toLowerCase()) {
@@ -316,7 +316,7 @@ function reverseGeocode(lat, lng) {
 
 // === Validate Form ===
 function validateCheckout() {
-    const method = document.getElementById('pickup_method').value;
+    const method = document.getElementById('metode_pengambilan').value;
     const btn = document.getElementById('submit-btn');
     
     if (method === 'delivery') {
@@ -339,7 +339,7 @@ function validateCheckout() {
 
 // === Toggle Delivery ===
 function toggleDelivery() {
-    const method = document.getElementById('pickup_method').value;
+    const method = document.getElementById('metode_pengambilan').value;
     document.getElementById('delivery-fields').classList.toggle('hidden', method !== 'delivery');
     if (method !== 'delivery') {
         document.getElementById('shipping-display').textContent = 'Gratis';
@@ -378,14 +378,14 @@ function loadShippingCost(districtId) {
 
 // Init map jika delivery sudah dipilih (misal old value)
 document.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('pickup_method').value === 'delivery') {
+    if (document.getElementById('metode_pengambilan').value === 'delivery') {
         setTimeout(initMap, 200);
     }
     validateCheckout();
 });
 
 let currentSnapToken = @json($existingOrder?->midtrans_snap_token ?? null);
-let currentRedirectUrl = @json($existingOrder ? route('customer.orders.show', $existingOrder) : null);
+let currentRedirectUrl = @json($existingOrder ? route('customer.pesanan.show', $existingOrder) : null);
 
 document.getElementById('checkout-form').addEventListener('submit', async function(e) {
     e.preventDefault();

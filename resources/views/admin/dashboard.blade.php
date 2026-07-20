@@ -47,7 +47,7 @@
                 <div class="small-box-icon">
                     <i class="fa-solid fa-shopping-bag"></i>
                 </div>
-                <a href="{{ route('admin.orders') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                <a href="{{ route('admin.pesanan') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
                     Lihat pesanan <i class="fa-solid fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -63,7 +63,7 @@
                 <div class="small-box-icon">
                     <i class="fa-solid fa-spinner"></i>
                 </div>
-                <a href="{{ route('admin.orders') }}?status=processing" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
+                <a href="{{ route('admin.pesanan') }}?status=processing" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
                     Kelola pesanan <i class="fa-solid fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -71,14 +71,14 @@
     </div>
     <!-- /.row -->
 
-    <!-- Recent Orders Row -->
+    <!-- Recent Pesanan Row -->
     <div class="row mt-4">
         <div class="col-12">
             <div class="card card-outline card-primary">
                 <div class="card-header">
                     <h3 class="card-title">Pesanan Terbaru</h3>
                     <div class="card-tools">
-                        <a href="{{ route('admin.orders') }}" class="btn btn-sm btn-primary">Lihat Semua</a>
+                        <a href="{{ route('admin.pesanan') }}" class="btn btn-sm btn-primary">Lihat Semua</a>
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -94,18 +94,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($recentOrders->take(5) as $order)
+                                @forelse($recentOrders->take(5) as $pesanan)
                                     <tr>
-                                        <td class="align-middle fw-bold">{{ $order->order_number }}</td>
-                                        <td class="align-middle">{{ $order->user->name ?? '-' }}</td>
-                                        <td class="align-middle">{{ $order->created_at->format('d/m/Y H:i') }}</td>
+                                        <td class="align-middle fw-bold">{{ $pesanan->nomor_pesanan }}</td>
+                                        <td class="align-middle">{{ $pesanan->user->name ?? '-' }}</td>
+                                        <td class="align-middle">{{ $pesanan->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="align-middle">
-                                            <span class="badge {{ match($order->status) { 'pending_payment' => 'text-bg-warning', 'processing' => 'text-bg-info', 'on_delivery' => 'text-bg-primary', 'completed' => 'text-bg-success', 'cancelled' => 'text-bg-danger', default => 'text-bg-secondary' } }}">
-                                                {{ $order->status_label }}
+                                            <span class="badge {{ match($pesanan->status) { 'menunggu_pembayaran' => 'text-bg-warning', 'diproses' => 'text-bg-info', 'dikirim' => 'text-bg-primary', 'selesai' => 'text-bg-success', 'dibatalkan' => 'text-bg-danger', default => 'text-bg-secondary' } }}">
+                                                {{ $pesanan->status_label }}
                                             </span>
                                         </td>
                                         <td class="align-middle">
-                                            <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-default"><i class="fa-solid fa-eye"></i> Detail</a>
+                                            <a href="{{ route('admin.pesanan.show', $pesanan) }}" class="btn btn-sm btn-default"><i class="fa-solid fa-eye"></i> Detail</a>
                                         </td>
                                     </tr>
                                 @empty

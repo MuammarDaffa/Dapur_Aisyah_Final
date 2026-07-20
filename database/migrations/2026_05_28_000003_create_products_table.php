@@ -8,13 +8,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
+        Schema::create('produk', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('catering_service_id')->constrained('catering_services')->cascadeOnDelete();
+            $table->foreignId('layanan_katering_id')->constrained('layanan_katering')->cascadeOnDelete();
             $table->string('name', 150);
             $table->string('slug', 170)->unique();
-            $table->text('description')->nullable();
-            $table->decimal('price', 12, 2);
+            $table->text('deskripsi')->nullable();
+            $table->decimal('harga', 12, 2);
             $table->string('image', 255)->nullable();
             $table->boolean('is_best_seller')->default(false);
             $table->json('available_days')->nullable(); // ['senin','selasa',...]
@@ -25,6 +25,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('produk');
     }
 };

@@ -16,35 +16,35 @@ class CheckoutRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_date' => 'nullable|date',
-            'pickup_method' => 'required|in:pickup,delivery',
-            'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
-            'village_id' => 'nullable|exists:villages,id',
-            'address_detail' => 'nullable|string|max:255',
+            'tanggal_pesanan' => 'nullable|date',
+            'metode_pengambilan' => 'required|in:pickup,delivery',
+            'kecamatan_id' => 'required_if:metode_pengambilan,delivery|nullable|exists:kecamatan,id',
+            'desa_id' => 'nullable|exists:desa,id',
+            'detail_alamat' => 'nullable|string|max:255',
             'osm_address' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
-            'serving_type' => 'nullable|string|max:50',
-            'portion' => 'nullable|integer|min:1',
-            'payment_method' => 'required|in:transfer',
-            'notes' => 'nullable|string|max:500',
+            'tipe_penyajian' => 'nullable|string|max:50',
+            'porsi' => 'nullable|integer|min:1',
+            'metode_pembayaran' => 'required|in:transfer',
+            'catatan' => 'nullable|string|max:500',
         ];
     }
 
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            if ($this->input('pickup_method') === 'delivery') {
+            if ($this->input('metode_pengambilan') === 'delivery') {
                 $validation = \App\Services\LocationService::validateLocation(
                     $this->input('latitude'),
                     $this->input('longitude'),
-                    $this->input('district_id'),
+                    $this->input('kecamatan_id'),
                     null,
                     $this->input('osm_address')
                 );
 
                 if (!$validation['is_in_pontianak']) {
-                    $validator->errors()->add('district_id', $validation['message'] ?? 'Lokasi berada di luar wilayah Pontianak.');
+                    $validator->errors()->add('kecamatan_id', $validation['message'] ?? 'Lokasi berada di luar wilayah Pontianak.');
                 }
             }
         });
@@ -53,19 +53,19 @@ class CheckoutRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'order_date.required' => 'Tanggal pemesanan wajib diisi.',
-            'order_date.after_or_equal' => 'Tanggal pemesanan tidak boleh di masa lalu.',
-            'pickup_method.required' => 'Metode pengambilan wajib dipilih.',
-            'pickup_method.in' => 'Metode pengambilan harus pickup atau delivery.',
-            'district_id.required_if' => 'Kecamatan wajib dipilih untuk pengiriman.',
-            'district_id.exists' => 'Kecamatan tidak valid.',
-            'village_id.exists' => 'Kelurahan tidak valid.',
-            'address_detail.max' => 'Alamat detail maksimal 255 karakter.',
-            'portion.integer' => 'Jumlah porsi harus berupa angka.',
-            'portion.min' => 'Jumlah porsi minimal 1.',
-            'payment_method.required' => 'Metode pembayaran wajib dipilih.',
-            'payment_method.in' => 'Metode pembayaran harus transfer (Midtrans).',
-            'notes.max' => 'Catatan maksimal 500 karakter.',
+            'tanggal_pesanan.required' => 'Tanggal pemesanan wajib diisi.',
+            'tanggal_pesanan.after_or_equal' => 'Tanggal pemesanan tidak boleh di masa lalu.',
+            'metode_pengambilan.required' => 'Metode pengambilan wajib dipilih.',
+            'metode_pengambilan.in' => 'Metode pengambilan harus pickup atau delivery.',
+            'kecamatan_id.required_if' => 'Kecamatan wajib dipilih untuk pengiriman.',
+            'kecamatan_id.exists' => 'Kecamatan tidak valid.',
+            'desa_id.exists' => 'Kelurahan tidak valid.',
+            'detail_alamat.max' => 'Alamat detail maksimal 255 karakter.',
+            'porsi.integer' => 'Jumlah porsi harus berupa angka.',
+            'porsi.min' => 'Jumlah porsi minimal 1.',
+            'metode_pembayaran.required' => 'Metode pembayaran wajib dipilih.',
+            'metode_pembayaran.in' => 'Metode pembayaran harus transfer (Midtrans).',
+            'catatan.max' => 'Catatan maksimal 500 karakter.',
         ];
     }
 }

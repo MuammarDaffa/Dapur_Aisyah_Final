@@ -10,7 +10,7 @@
             <span>Kembali ke Layanan</span>
         </a>
         <h2 class="fs-3 sm:fs-2 fw-bold text-secondary mt-2">Layanan {{ $service->name }}</h2>
-        <!-- <p class="text-secondary mt-1">{{ $service->description }}</p> -->
+        <!-- <p class="text-secondary mt-1">{{ $service->deskripsi }}</p> -->
     </div>
 
     <!-- {{-- Subtitle --}}
@@ -54,8 +54,8 @@
                             <div>
                                 <span class="d-inline-block px-2.5 py-0.5 bg-primary text-white text-primary fw-bold text-[11px] rounded mb-2">Paket Katering</span>
                                 <h3 class="fs-4 fw-bold text-secondary mb-2 group-hover:text-primary">{{ $pkg->name }}</h3>
-                                @if($pkg->description)
-                                    <p class="fs-6 text-secondary mb-4 line-clamp-3 leading-relaxed">{{ $pkg->description }}</p>
+                                @if($pkg->deskripsi)
+                                    <p class="fs-6 text-secondary mb-4 line-clamp-3 leading-relaxed">{{ $pkg->deskripsi }}</p>
                                 @endif
                             </div>
 

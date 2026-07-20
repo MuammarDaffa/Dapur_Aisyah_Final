@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('catering_services', function (Blueprint $table) {
-            $table->json('available_features')->nullable()->after('service_area');
+        Schema::table('layanan_katering', function (Blueprint $table) {
+            $table->json('fitur_tersedia')->nullable()->after('service_area');
         });
     }
 
     public function down(): void
     {
-        Schema::table('catering_services', function (Blueprint $table) {
-            $table->dropColumn('available_features');
+        Schema::table('layanan_katering', function (Blueprint $table) {
+            $table->dropColumn('fitur_tersedia');
         });
     }
 };

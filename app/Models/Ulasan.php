@@ -6,20 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Model Review menyimpan ulasan atau testimoni pelanggan terhadap pesanannya.
+ * Model Ulasan menyimpan ulasan atau testimoni pelanggan terhadap pesanannya.
  * Ulasan ini dapat ditampilkan di halaman beranda sebagai bentuk kredibilitas layanan.
  */
-class Review extends Model
+class Ulasan extends Model
 {
-    protected $fillable = ['user_id', 'order_id', 'comment'];
+    protected $table = 'ulasan';
+
+    protected $fillable = ['user_id', 'pesanan_id', 'comment'];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function order(): BelongsTo
+    public function pesanan(): BelongsTo
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Pesanan::class);
     }
 }

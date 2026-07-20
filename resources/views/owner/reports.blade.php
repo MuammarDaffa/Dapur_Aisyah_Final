@@ -18,7 +18,7 @@
                 <select name="period"
                         class="form-select w-100 border border-secondary rounded shadow-sm fs-6">
                     <option value="">Semua Periode</option>
-                    <option value="daily" {{ request('period') == 'daily' ? 'selected' : '' }}>Hari Ini</option>
+                    <option value="harian" {{ request('period') == 'harian' ? 'selected' : '' }}>Hari Ini</option>
                     <option value="monthly" {{ request('period') == 'monthly' ? 'selected' : '' }}>Bulan Ini</option>
                     <option value="yearly" {{ request('period') == 'yearly' ? 'selected' : '' }}>Tahun Ini</option>
                 </select>

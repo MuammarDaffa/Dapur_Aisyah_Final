@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ReviewRequest;
-use App\Models\Review;
+use App\Models\Ulasan;
 
 class ReviewController extends Controller
 {
@@ -12,9 +12,9 @@ class ReviewController extends Controller
     {
         $validated = $request->validated();
 
-        Review::create([
+        Ulasan::create([
             'user_id' => auth()->id(),
-            'order_id' => $validated['order_id'],
+            'pesanan_id' => $validated['pesanan_id'],
             'comment' => $validated['comment'],
         ]);
 

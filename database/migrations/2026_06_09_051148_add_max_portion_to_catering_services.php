@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('catering_services', function (Blueprint $table) {
-            $table->integer('max_portion')->nullable()->after('min_portion');
+        Schema::table('layanan_katering', function (Blueprint $table) {
+            $table->integer('maksimal_porsi')->nullable()->after('min_portion');
         });
     }
 
     public function down(): void
     {
-        Schema::table('catering_services', function (Blueprint $table) {
-            $table->dropColumn('max_portion');
+        Schema::table('layanan_katering', function (Blueprint $table) {
+            $table->dropColumn('maksimal_porsi');
         });
     }
 };

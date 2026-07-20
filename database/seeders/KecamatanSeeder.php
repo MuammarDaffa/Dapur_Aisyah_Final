@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\District;
-use App\Models\Village;
+use App\Models\Kecamatan;
+use App\Models\Desa;
 use Illuminate\Database\Seeder;
 
-class DistrictSeeder extends Seeder
+class KecamatanSeeder extends Seeder
 {
     public function run(): void
     {
@@ -32,12 +32,12 @@ class DistrictSeeder extends Seeder
             ],
         ];
 
-        foreach ($data as $districtName => $villages) {
-            $district = District::updateOrCreate(['name' => $districtName]);
+        foreach ($data as $districtName => $desa) {
+            $kecamatan = Kecamatan::updateOrCreate(['name' => $districtName]);
 
-            foreach ($villages as $villageName) {
-                Village::updateOrCreate(
-                    ['district_id' => $district->id, 'name' => $villageName]
+            foreach ($desa as $villageName) {
+                Desa::updateOrCreate(
+                    ['kecamatan_id' => $kecamatan->id, 'name' => $villageName]
                 );
             }
         }

@@ -8,21 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('menu_period_items', function (Blueprint $table) {
+        Schema::create('item_periode_menu', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('menu_period_id')->constrained('menu_periods')->cascadeOnDelete();
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+            $table->foreignId('periode_menu_id')->constrained('periode_menu')->cascadeOnDelete();
+            $table->foreignId('produk_id')->constrained('produk')->cascadeOnDelete();
             $table->date('menu_date');
             $table->timestamps();
 
             // 1 tanggal = 1 produk per periode
-            $table->unique(['menu_period_id', 'menu_date'], 'period_date_unique');
+            $table->unique(['periode_menu_id', 'menu_date'], 'period_date_unique');
             $table->index('menu_date');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('menu_period_items');
+        Schema::dropIfExists('item_periode_menu');
     }
 };

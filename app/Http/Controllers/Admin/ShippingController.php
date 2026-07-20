@@ -3,50 +3,50 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\District;
-use App\Models\ShippingCost;
+use App\Models\Kecamatan;
+use App\Models\OngkosKirim;
 use Illuminate\Http\Request;
 
 class ShippingController extends Controller
 {
     public function index()
     {
-        $shippingCosts = ShippingCost::with('district')->get();
-        $districts = District::all();
-        return view('admin.shipping.index', compact('shippingCosts', 'districts'));
+        $ongkosKirim = OngkosKirim::with('kecamatan')->get();
+        $kecamatan = Kecamatan::all();
+        return view('admin.shipping.index', compact('ongkosKirim', 'kecamatan'));
     }
 
     public function create()
     {
-        $districts = District::all();
-        return view('admin.shipping.create', compact('districts'));
+        $kecamatan = Kecamatan::all();
+        return view('admin.shipping.create', compact('kecamatan'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'district_id' => 'required|exists:districts,id|unique:shipping_costs,district_id',
+            'kecamatan_id' => 'required|exists:kecamatan,id|unique:ongkos_kirim,kecamatan_id',
             'cost' => 'required|numeric|min:0|max:1000000000',
-            'notes' => 'nullable|string|max:255',
+            'catatan' => 'nullable|string|max:255',
         ], [
             'cost.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
-        ShippingCost::create($validated);
+        OngkosKirim::create($validated);
         return redirect()->route('admin.shipping.index')->with('success', 'Ongkos kirim berhasil ditambahkan.');
     }
 
-    public function edit(ShippingCost $shipping)
+    public function edit(OngkosKirim $shipping)
     {
-        $districts = District::all();
-        return view('admin.shipping.edit', compact('shipping', 'districts'));
+        $kecamatan = Kecamatan::all();
+        return view('admin.shipping.edit', compact('shipping', 'kecamatan'));
     }
 
-    public function update(Request $request, ShippingCost $shipping)
+    public function update(Request $request, OngkosKirim $shipping)
     {
         $validated = $request->validate([
-            'district_id' => 'required|exists:districts,id',
+            'kecamatan_id' => 'required|exists:kecamatan,id',
             'cost' => 'required|numeric|min:0|max:1000000000',
-            'notes' => 'nullable|string|max:255',
+            'catatan' => 'nullable|string|max:255',
         ], [
             'cost.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
@@ -57,7 +57,7 @@ class ShippingController extends Controller
         return redirect()->route('admin.shipping.index')->with('success', 'Ongkos kirim berhasil diperbarui.');
     }
 
-    public function destroy(ShippingCost $shipping)
+    public function destroy(OngkosKirim $shipping)
     {
         $shipping->delete();
         return redirect()->route('admin.shipping.index')->with('success', 'Ongkos kirim berhasil dihapus.');

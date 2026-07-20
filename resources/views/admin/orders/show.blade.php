@@ -3,58 +3,58 @@
 @section('content')
 <div class="row mb-3">
     <div class="col-12">
-        <a href="{{ route('admin.orders') }}" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
+        <a href="{{ route('admin.pesanan') }}" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
     </div>
 </div>
 
 <div class="row">
     <div class="col-lg-8">
-        <!-- Invoice Layout -->
+        <!-- Tagihan Layout -->
         <div class="card card-outline card-primary">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="card-title fw-bold">Invoice: {{ $order->order_number }}</h3>
+                <h3 class="card-title fw-bold">Tagihan: {{ $pesanan->nomor_pesanan }}</h3>
                 <div class="ms-auto">
-                    <span class="badge {{ match($order->status) { 'processing'=>'text-bg-info','on_delivery'=>'text-bg-primary','completed'=>'text-bg-success','cancelled'=>'text-bg-danger',default=>'text-bg-secondary' } }}">
-                        {{ $order->status_label }}
+                    <span class="badge {{ match($pesanan->status) { 'diproses'=>'text-bg-info','dikirim'=>'text-bg-primary','selesai'=>'text-bg-success','dibatalkan'=>'text-bg-danger',default=>'text-bg-secondary' } }}">
+                        {{ $pesanan->status_label }}
                     </span>
                 </div>
             </div>
             <div class="card-body">
-                <div class="row invoice-info mb-4">
-                    <div class="col-sm-4 invoice-col">
+                <div class="row tagihan-info mb-4">
+                    <div class="col-sm-4 tagihan-col">
                         Pelanggan
                         <address>
-                            <strong>{{ $order->user->name }}</strong><br>
-                            Telepon: {{ $order->user->phone }}<br>
-                            Email: {{ $order->user->email }}
+                            <strong>{{ $pesanan->user->name }}</strong><br>
+                            Telepon: {{ $pesanan->user->phone }}<br>
+                            Email: {{ $pesanan->user->email }}
                         </address>
                     </div>
-                    <div class="col-sm-4 invoice-col">
+                    <div class="col-sm-4 tagihan-col">
                         Detail Pesanan
                         <address>
-                            <strong>{{ $order->cateringService->name ?? '-' }}</strong><br>
-                            Tanggal: {{ $order->order_date->format('d M Y') }}<br>
-                            Metode: {{ ucfirst($order->pickup_method) }}
+                            <strong>{{ $pesanan->layananKatering->name ?? '-' }}</strong><br>
+                            Tanggal: {{ $pesanan->tanggal_pesanan->format('d M Y') }}<br>
+                            Metode: {{ ucfirst($pesanan->metode_pengambilan) }}
                         </address>
                     </div>
-                    @if($order->pickup_method === 'delivery')
-                    <div class="col-sm-4 invoice-col">
+                    @if($pesanan->metode_pengambilan === 'delivery')
+                    <div class="col-sm-4 tagihan-col">
                         Alamat Pengiriman
                         <address>
-                            <strong>{{ $order->district->name ?? '' }}, {{ $order->village->name ?? '' }}</strong><br>
-                            {{ $order->address_detail }}<br>
-                            @if($order->latitude && $order->longitude)
-                                Koordinat: {{ $order->latitude }}, {{ $order->longitude }}
+                            <strong>{{ $pesanan->kecamatan->name ?? '' }}, {{ $pesanan->desa->name ?? '' }}</strong><br>
+                            {{ $pesanan->detail_alamat }}<br>
+                            @if($pesanan->latitude && $pesanan->longitude)
+                                Koordinat: {{ $pesanan->latitude }}, {{ $pesanan->longitude }}
                             @endif
                         </address>
                     </div>
                     @endif
                 </div>
 
-                @if($order->cancellation_reason)
+                @if($pesanan->alasan_pembatalan)
                 <div class="callout callout-danger mb-4">
                     <h5><i class="fa-solid fa-ban text-danger"></i> Alasan Pembatalan:</h5>
-                    <p>{{ $order->cancellation_reason }}</p>
+                    <p>{{ $pesanan->alasan_pembatalan }}</p>
                 </div>
                 @endif
 
@@ -69,8 +69,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if($order->cateringService?->isDaily())
-                                @foreach($order->items as $item)
+                            @if($pesanan->layananKatering?->isDaily())
+                                @foreach($pesanan->items as $item)
                                 <tr>
                                     <td class="align-middle fw-medium">{{ $item->formatted_menu_name }}</td>
                                     <td class="align-middle">
@@ -85,11 +85,11 @@
                                 @endforeach
                             @else
                                 @php
-                                    $packageItems = $order->items->filter(fn($i) => str_starts_with($i->item_name, 'Paket: '));
-                                    $menuItems = $order->items->filter(fn($i) => str_starts_with($i->item_name, 'Menu: '));
-                                    $extraItems = $order->items->filter(fn($i) => str_starts_with($i->item_name, 'Extra: '));
-                                    $servingItem = $order->items->firstWhere(fn($i) => str_starts_with($i->item_name, 'Penyajian: '));
-                                    $servingName = $order->serving_type ?? ($servingItem ? preg_replace('/^Penyajian:\s*/i', '', $servingItem->item_name) : null);
+                                    $packageItems = $pesanan->items->filter(fn($i) => str_starts_with($i->item_name, 'Paket: '));
+                                    $menuItems = $pesanan->items->filter(fn($i) => str_starts_with($i->item_name, 'Menu: '));
+                                    $extraItems = $pesanan->items->filter(fn($i) => str_starts_with($i->item_name, 'Extra: '));
+                                    $servingItem = $pesanan->items->firstWhere(fn($i) => str_starts_with($i->item_name, 'Penyajian: '));
+                                    $servingName = $pesanan->tipe_penyajian ?? ($servingItem ? preg_replace('/^Penyajian:\s*/i', '', $servingItem->item_name) : null);
 
                                     $pkgMenus = $menuItems->where('unit_price', 0);
                                     $pkgExtras = $extraItems->where('unit_price', 0);
@@ -100,20 +100,20 @@
                                 @if($packageItems->isNotEmpty())
                                     @foreach($packageItems as $pIdx => $pkg)
                                     @php
-                                        $customPortion = $customMenus->isNotEmpty() ? $customMenus->sum('quantity') : ($customExtras->first()->quantity ?? 0);
+                                        $customPortion = $customMenus->isNotEmpty() ? $customMenus->sum('jumlah') : ($customExtras->first()->jumlah ?? 0);
                                         if ($pkgMenus->isNotEmpty()) {
-                                            $pkgPortion = $pkgMenus->first()->quantity;
-                                        } elseif ($customMenus->isNotEmpty() && $order->portion > $customPortion) {
-                                            $pkgPortion = $order->portion - $customPortion;
+                                            $pkgPortion = $pkgMenus->first()->jumlah;
+                                        } elseif ($customMenus->isNotEmpty() && $pesanan->porsi > $customPortion) {
+                                            $pkgPortion = $pesanan->porsi - $customPortion;
                                         } else {
-                                            $pkgPortion = $order->portion ?: ($pkg->quantity * ($order->package->total_portions ?? 1));
+                                            $pkgPortion = $pesanan->porsi ?: ($pkg->jumlah * ($pesanan->package->total_portions ?? 1));
                                         }
-                                        $pkgBenefits = $order->package?->benefits ? array_values(array_filter($order->package->benefits, fn($b) => !empty(trim($b)))) : [];
+                                        $pkgBenefits = $pesanan->package?->benefits ? array_values(array_filter($pesanan->package->benefits, fn($b) => !empty(trim($b)))) : [];
                                         $allPkgPelengkap = array_merge($pkgBenefits, $pkgExtras->map(fn($e) => $e->formatted_menu_name)->toArray());
                                     @endphp
                                     <tr>
                                         <td class="align-middle">
-                                            <span class="fw-bold">{{ $pkg->formatted_menu_name }} ({{ $pkg->quantity }})</span>
+                                            <span class="fw-bold">{{ $pkg->formatted_menu_name }} ({{ $pkg->jumlah }})</span>
                                         </td>
                                         <td class="align-middle">
                                             <ul class="list-unstyled mb-0 small text-muted">
@@ -132,8 +132,8 @@
                                     @php
                                         $displayCustomMenus = $packageItems->isNotEmpty() ? $customMenus : $menuItems;
                                         $displayCustomExtras = $packageItems->isNotEmpty() ? $customExtras : $extraItems;
-                                        $customPortion = $displayCustomMenus->isNotEmpty() ? $displayCustomMenus->sum('quantity') : ($displayCustomExtras->first()->quantity ?? ($packageItems->isEmpty() ? $order->portion : 0));
-                                        $customTotal = $packageItems->isNotEmpty() ? ($displayCustomMenus->sum('subtotal') + $displayCustomExtras->sum('subtotal')) : $order->subtotal;
+                                        $customPortion = $displayCustomMenus->isNotEmpty() ? $displayCustomMenus->sum('jumlah') : ($displayCustomExtras->first()->jumlah ?? ($packageItems->isEmpty() ? $pesanan->porsi : 0));
+                                        $customTotal = $packageItems->isNotEmpty() ? ($displayCustomMenus->sum('subtotal') + $displayCustomExtras->sum('subtotal')) : $pesanan->subtotal;
                                     @endphp
                                     @if($displayCustomMenus->isNotEmpty() || $displayCustomExtras->isNotEmpty() || $packageItems->isEmpty())
                                     <tr>
@@ -142,8 +142,8 @@
                                             <ul class="list-unstyled mb-0 small text-muted">
                                                 <li><strong>Porsi:</strong> {{ $customPortion }}</li>
                                                 @if($servingName)<li><strong>Penyajian:</strong> {{ $servingName }}</li>@endif
-                                                @if($displayCustomMenus->isNotEmpty())<li><strong>Menu:</strong> {{ $displayCustomMenus->map(fn($cm) => $cm->formatted_menu_name . ' (' . $cm->quantity . ')')->join(', ') }}</li>@endif
-                                                <li><strong>Pelengkap:</strong> {{ $displayCustomExtras->isNotEmpty() ? $displayCustomExtras->map(fn($e) => ($e->customOption?->name ?? $e->formatted_menu_name) . ' (' . $e->quantity . ')')->join(', ') : '-' }}</li>
+                                                @if($displayCustomMenus->isNotEmpty())<li><strong>Menu:</strong> {{ $displayCustomMenus->map(fn($cm) => $cm->formatted_menu_name . ' (' . $cm->jumlah . ')')->join(', ') }}</li>@endif
+                                                <li><strong>Pelengkap:</strong> {{ $displayCustomExtras->isNotEmpty() ? $displayCustomExtras->map(fn($e) => ($e->opsiKustom?->name ?? $e->formatted_menu_name) . ' (' . $e->jumlah . ')')->join(', ') : '-' }}</li>
                                             </ul>
                                         </td>
                                         <td class="align-middle text-end fw-bold">Rp {{ number_format($customTotal, 0, ',', '.') }}</td>
@@ -166,42 +166,42 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
                     <span class="text-muted">Subtotal</span>
-                    <span>Rp {{ number_format($order->subtotal,0,',','.') }}</span>
+                    <span>Rp {{ number_format($pesanan->subtotal,0,',','.') }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
                     <span class="text-muted">Ongkos Kirim</span>
-                    <span>Rp {{ number_format($order->shipping_cost,0,',','.') }}</span>
+                    <span>Rp {{ number_format($pesanan->ongkos_kirim,0,',','.') }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-3">
                     <strong class="fs-5">Total</strong>
-                    <strong class="fs-5 text-success">Rp {{ number_format($order->total,0,',','.') }}</strong>
+                    <strong class="fs-5 text-success">Rp {{ number_format($pesanan->total,0,',','.') }}</strong>
                 </div>
                 <p class="small text-muted mb-1">Metode: Transfer (Midtrans)</p>
-                <p class="small text-muted mb-1">Status: {{ $order->payment_status }}</p>
+                <p class="small text-muted mb-1">Status: {{ $pesanan->status_pembayaran }}</p>
                 
-                @if($order->refund_status && $order->refund_status !== 'none')
-                    <div class="alert alert-{{ $order->refund_status === 'pending' ? 'warning' : 'success' }} py-2 mt-3 mb-0">
-                        <i class="fa-solid fa-{{ $order->refund_status === 'pending' ? 'clock' : 'check' }}"></i>
-                        Refund: {{ $order->refund_status === 'pending' ? 'Menunggu Refund' : 'Sudah Direfund' }}
+                @if($pesanan->refund_status && $pesanan->refund_status !== 'none')
+                    <div class="alert alert-{{ $pesanan->refund_status === 'pending' ? 'warning' : 'success' }} py-2 mt-3 mb-0">
+                        <i class="fa-solid fa-{{ $pesanan->refund_status === 'pending' ? 'clock' : 'check' }}"></i>
+                        Refund: {{ $pesanan->refund_status === 'pending' ? 'Menunggu Refund' : 'Sudah Direfund' }}
                     </div>
                 @endif
             </div>
         </div>
 
-        @if(!in_array($order->status, ['completed','cancelled']))
+        @if(!in_array($pesanan->status, ['selesai','dibatalkan']))
         <div class="card card-outline card-warning">
             <div class="card-header">
                 <h3 class="card-title">Aksi Pesanan</h3>
             </div>
             <div class="card-body">
                 {{-- Form Update Status --}}
-                <form id="statusForm" action="{{ route('admin.orders.status', $order) }}" method="POST">
+                <form id="statusForm" action="{{ route('admin.pesanan.status', $pesanan) }}" method="POST">
                     @csrf @method('PUT')
                     <div class="form-group mb-3">
                         <label>Update Status</label>
                         <select name="status" class="form-select">
-                            @foreach(['processing'=>'Diproses','on_delivery'=>'Dikirim','completed'=>'Selesai'] as $k=>$v)
-                            <option value="{{ $k }}" {{ $order->status==$k?'selected':'' }}>{{ $v }}</option>
+                            @foreach(['diproses'=>'Diproses','dikirim'=>'Dikirim','selesai'=>'Selesai'] as $k=>$v)
+                            <option value="{{ $k }}" {{ $pesanan->status==$k?'selected':'' }}>{{ $v }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -209,9 +209,9 @@
                 </form>
 
                 {{-- Tombol Batalkan --}}
-                <form id="cancelForm" action="{{ route('admin.orders.cancel', $order) }}" method="POST">
+                <form id="cancelForm" action="{{ route('admin.pesanan.cancel', $pesanan) }}" method="POST">
                     @csrf @method('PUT')
-                    <input type="hidden" name="cancellation_reason" id="cancelReasonInput">
+                    <input type="hidden" name="alasan_pembatalan" id="cancelReasonInput">
                     <button type="button" onclick="confirmCancel()" class="btn btn-outline-danger w-100">
                         <i class="fa-solid fa-times"></i> Batalkan Pesanan
                     </button>

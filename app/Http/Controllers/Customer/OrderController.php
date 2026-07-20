@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
+use App\Models\Pesanan;
 use App\Services\NotificationService;
 use App\Services\OrderService;
 use App\Services\PaymentService;
@@ -13,51 +13,51 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = auth()->user()->orders()->with('cateringService')->latest();
+        $query = auth()->user()->pesanan()->with('layananKatering')->latest();
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        $orders = $query->paginate(10);
+        $pesanan = $query->paginate(10);
 
-        return view('customer.orders.index', compact('orders'));
+        return view('customer.pesanan.index', compact('pesanan'));
     }
 
-    public function show(Order $order)
+    public function show(Pesanan $pesanan)
     {
-        // Pastikan order milik user yang login
-        abort_unless($order->user_id === auth()->id(), 403);
+        // Pastikan pesanan milik user yang login
+        abort_unless($pesanan->user_id === auth()->id(), 403);
 
-        $order->load(['items', 'cateringService', 'invoice', 'review', 'district', 'village']);
+        $pesanan->load(['items', 'layananKatering', 'tagihan', 'ulasan', 'kecamatan', 'desa']);
 
         // Sync dengan Midtrans jika masih pending/unpaid (berguna untuk testing local tanpa webhook)
-        if ($order->payment_status === 'unpaid' && $order->midtrans_snap_token) {
-            PaymentService::checkAndSyncStatus($order);
+        if ($pesanan->status_pembayaran === 'belum_dibayar' && $pesanan->midtrans_snap_token) {
+            PaymentService::checkAndSyncStatus($pesanan);
             // Refresh model setelah sync
-            $order->refresh();
+            $pesanan->refresh();
         }
 
-        return view('customer.orders.show', compact('order'));
+        return view('customer.pesanan.show', compact('pesanan'));
     }
 
-    public function cancel(Request $request, Order $order)
+    public function cancel(Request $request, Pesanan $pesanan)
     {
-        abort_unless($order->user_id === auth()->id(), 403);
+        abort_unless($pesanan->user_id === auth()->id(), 403);
 
         $validated = $request->validate([
-            'cancellation_reason' => 'required|string|max:500',
+            'alasan_pembatalan' => 'required|string|max:500',
         ]);
 
         // Validasi pembatalan menggunakan OrderService
         try {
-            OrderService::validateCancellation($order);
+            OrderService::validateCancellation($pesanan);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->with('error', $e->validator->errors()->first());
         }
 
         // Gunakan OrderService untuk update status agar logika refund_status berjalan
-        OrderService::updateStatus($order, 'cancelled', $validated['cancellation_reason']);
+        OrderService::updateStatus($pesanan, 'dibatalkan', $validated['alasan_pembatalan']);
 
         return back()->with('success', 'Pesanan berhasil dibatalkan.');
     }

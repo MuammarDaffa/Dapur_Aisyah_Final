@@ -30,14 +30,14 @@
         <p class="text-secondary">Pilih menu sesuka Anda sesuai kebutuhan acara.</p>
     </div>
 
-    <form id="customForm" action="{{ route('customer.event.cart.store') }}" method="POST" onkeydown="return event.key != 'Enter';">
+    <form id="customForm" action="{{ route('customer.event.keranjang.store') }}" method="POST" onkeydown="return event.key != 'Enter';">
         @csrf
-        <input type="hidden" name="catering_service_id" value="{{ $service->id }}">
+        <input type="hidden" name="layanan_katering_id" value="{{ $service->id }}">
 
         @php
-            $menus = $customOptions->where('type', 'menu')->values();
-            $extras = $customOptions->where('type', 'extra')->values();
-            $servings = $customOptions->where('type', 'serving_type')->values();
+            $menus = $opsiKustom->where('type', 'menu')->values();
+            $extras = $opsiKustom->where('type', 'extra')->values();
+            $servings = $opsiKustom->where('type', 'tipe_penyajian')->values();
         @endphp
 
         <div class="space-y-6">
@@ -50,7 +50,7 @@
                             {{-- Baris 1: Checkbox + Nama Menu (kiri) & Kontrol Jumlah (kanan) --}}
                             <div class="d-flex align-items-center justify-content-between g-3">
                                 <div class="d-flex align-items-center g-3 d-flex-1 min-w-0">
-                                    <input type="checkbox" id="custom_menu_{{ $idx }}" data-id="{{ $menu->id }}" data-price="{{ $menu->price }}"
+                                    <input type="checkbox" id="custom_menu_{{ $idx }}" data-id="{{ $menu->id }}" data-harga="{{ $menu->harga }}"
                                         class="w-4 h-4 rounded border border-secondary text-primary custom-menu-cb shrink-0 cursor-pointer" onchange="toggleCustomMenu({{ $idx }})">
                                     <label for="custom_menu_{{ $idx }}" class="fs-6 sm:text-base fw-bold text-secondary cursor-pointer truncate">{{ $menu->name }}</label>
                                 </div>
@@ -64,7 +64,7 @@
 
                             {{-- Baris 2: Harga Menu --}}
                             <div class="ps-7 mt-1">
-                                <span class="small sm:fs-6 fw-bold text-primary">Rp {{ number_format($menu->price, 0, ',', '.') }} / porsi</span>
+                                <span class="small sm:fs-6 fw-bold text-primary">Rp {{ number_format($menu->harga, 0, ',', '.') }} / porsi</span>
                             </div>
 
                             {{-- Baris 3 & Selanjutnya: Link Lihat Detail & Daftar Isi/Menu --}}
@@ -87,8 +87,8 @@
                 </div>
 
                 {{-- Porsi Indicator --}}
-                <div class="mt-4 p-4 rounded border border border-secondary bg-light d-flex align-items-center justify-content-between" id="custom-portion-indicator">
-                    <span class="text-base fw-bold text-secondary">Total Porsi: <span id="custom-total-portions">0</span> / {{ $service->max_portion }}</span>
+                <div class="mt-4 p-4 rounded border border border-secondary bg-light d-flex align-items-center justify-content-between" id="custom-porsi-indicator">
+                    <span class="text-base fw-bold text-secondary">Total Porsi: <span id="custom-total-portions">0</span> / {{ $service->maksimal_porsi }}</span>
                 </div>
             </div>
 
@@ -100,11 +100,11 @@
                         @foreach($extras as $idx => $extra)
                             <div class="py-3 px-2 d-flex align-items-center justify-content-between g-3 hover:bg-primary text-white/50 rounded">
                                 <label for="custom_extra_{{ $idx }}" class="d-flex align-items-center g-3 cursor-pointer d-flex-1 min-w-0">
-                                    <input type="checkbox" id="custom_extra_{{ $idx }}" data-id="{{ $extra->id }}" data-price="{{ $extra->price }}"
+                                    <input type="checkbox" id="custom_extra_{{ $idx }}" data-id="{{ $extra->id }}" data-harga="{{ $extra->harga }}"
                                         class="w-4 h-4 rounded border border-secondary text-primary custom-extra-cb shrink-0 cursor-pointer" onchange="recalcCustom()">
                                     <span class="fs-6 fw-medium text-secondary truncate">{{ $extra->name }}</span>
                                 </label>
-                                <span class="fs-6 fw-bold text-primary flex-shrink-0">+Rp {{ number_format($extra->price, 0, ',', '.') }}</span>
+                                <span class="fs-6 fw-bold text-primary flex-shrink-0">+Rp {{ number_format($extra->harga, 0, ',', '.') }}</span>
                             </div>
                         @endforeach
                     </div>
@@ -139,7 +139,7 @@
                     </div>
                     <div class="pt-2 border-t border border-primary d-flex justify-content-between align-items-center">
                         <span class="fw-bold text-secondary">Total Harga</span>
-                        <span id="custom-total-price" class="fs-3 fw-bold text-primary">Rp 0</span>
+                        <span id="custom-total-harga" class="fs-3 fw-bold text-primary">Rp 0</span>
                     </div>
                 </div>
                 <button type="submit" id="custom-submit-btn" disabled
@@ -154,7 +154,7 @@
 @push('scripts')
 <script>
     const CUSTOM_MIN_PORTIONS = {{ $service->min_portion }};
-    const CUSTOM_MAX_PORTIONS = {{ $service->max_portion }};
+    const CUSTOM_MAX_PORTIONS = {{ $service->maksimal_porsi }};
 
     function formatRupiah(value) {
         return 'Rp ' + Number(value).toLocaleString('id-ID');
@@ -240,7 +240,7 @@
         let subtotalExtra = 0;
 
         document.querySelectorAll('.custom-menu-cb:checked').forEach(cb => {
-            const price = parseFloat(cb.dataset.price);
+            const harga = parseFloat(cb.dataset.harga);
             const idx = cb.id.split('_').pop();
             const inputEl = document.getElementById('custom_menu_input_' + idx);
             let qty = parseInt(inputEl.value) || 0;
@@ -255,18 +255,18 @@
             }
             
             totalPortions += qty;
-            subtotalMenu += price * qty;
+            subtotalMenu += harga * qty;
         });
 
         document.querySelectorAll('.custom-extra-cb:checked').forEach(cb => {
-            const price = parseFloat(cb.dataset.price) || 0;
-            subtotalExtra += price * totalPortions;
+            const harga = parseFloat(cb.dataset.harga) || 0;
+            subtotalExtra += harga * totalPortions;
         });
 
         document.getElementById('custom-total-portions').textContent = totalPortions;
         document.getElementById('custom-subtotal-menu').textContent = formatRupiah(subtotalMenu);
         document.getElementById('custom-subtotal-extra').textContent = formatRupiah(subtotalExtra);
-        document.getElementById('custom-total-price').textContent = formatRupiah(subtotalMenu + subtotalExtra);
+        document.getElementById('custom-total-harga').textContent = formatRupiah(subtotalMenu + subtotalExtra);
 
         const isMaxReached = totalPortions >= CUSTOM_MAX_PORTIONS;
         document.querySelectorAll('.custom-menu-plus-btn').forEach(btn => {
@@ -301,8 +301,8 @@
             const idx = cb.id.split('_').pop();
             const qty = parseInt(document.getElementById('custom_menu_input_' + idx).value) || 0;
             if (qty > 0) {
-                appendHidden(form, `items[${formIdx}][custom_option_id]`, id);
-                appendHidden(form, `items[${formIdx}][quantity]`, qty);
+                appendHidden(form, `items[${formIdx}][opsi_kustom_id]`, id);
+                appendHidden(form, `items[${formIdx}][jumlah]`, qty);
                 appendHidden(form, `items[${formIdx}][item_type]`, 'custom_menu');
                 formIdx++;
             }
@@ -311,8 +311,8 @@
         document.querySelectorAll('.custom-extra-cb:checked').forEach(cb => {
             const id = cb.dataset.id;
             if (menuPortions > 0) {
-                appendHidden(form, `items[${formIdx}][custom_option_id]`, id);
-                appendHidden(form, `items[${formIdx}][quantity]`, menuPortions);
+                appendHidden(form, `items[${formIdx}][opsi_kustom_id]`, id);
+                appendHidden(form, `items[${formIdx}][jumlah]`, menuPortions);
                 appendHidden(form, `items[${formIdx}][item_type]`, 'addition');
                 formIdx++;
             }

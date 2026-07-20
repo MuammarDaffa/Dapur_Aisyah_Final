@@ -24,10 +24,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($shippingCosts as $s)
+                            @forelse($ongkosKirim as $s)
                             <tr>
-                                <td class="align-middle">{{ $s->district->name ?? '-' }}</td>
-                                <td class="align-middle">{{ $s->village->name ?? '-' }}</td>
+                                <td class="align-middle">{{ $s->kecamatan->name ?? '-' }}</td>
+                                <td class="align-middle">{{ $s->desa->name ?? '-' }}</td>
                                 <td class="align-middle text-end text-success fw-bold">{{ number_format($s->cost, 0, ',', '.') }}</td>
                                 <td class="align-middle text-center">
                                     <div class="btn-group">

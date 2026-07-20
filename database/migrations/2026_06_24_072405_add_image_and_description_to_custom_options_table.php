@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('custom_options', function (Blueprint $table) {
+        Schema::table('opsi_kustom', function (Blueprint $table) {
             $table->string('image')->nullable()->after('name');
-            $table->text('description')->nullable()->after('image');
+            $table->text('deskripsi')->nullable()->after('image');
         });
     }
 
@@ -22,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('custom_options', function (Blueprint $table) {
-            $table->dropColumn(['image', 'description']);
+        Schema::table('opsi_kustom', function (Blueprint $table) {
+            $table->dropColumn(['image', 'deskripsi']);
         });
     }
 };

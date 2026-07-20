@@ -16,7 +16,7 @@
                         <label class="form-label fw-bold">Periode</label>
                         <select name="period" class="form-select">
                             <option value="">Semua Periode</option>
-                            <option value="daily" {{ request('period') == 'daily' ? 'selected' : '' }}>Hari Ini</option>
+                            <option value="harian" {{ request('period') == 'harian' ? 'selected' : '' }}>Hari Ini</option>
                             <option value="monthly" {{ request('period') == 'monthly' ? 'selected' : '' }}>Bulan Ini</option>
                             <option value="yearly" {{ request('period') == 'yearly' ? 'selected' : '' }}>Tahun Ini</option>
                         </select>
@@ -25,9 +25,9 @@
                         <label class="form-label fw-bold">Status</label>
                         <select name="status" class="form-select">
                             <option value="">Semua Status</option>
-                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
-                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
-                            <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Diproses</option>
+                            <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                            <option value="dibatalkan" {{ request('status') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+                            <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        {{-- Orders Table --}}
+        {{-- Pesanan Table --}}
         <div class="card card-outline card-info">
             <div class="card-header">
                 <h3 class="card-title">Daftar Pesanan</h3>
@@ -52,7 +52,7 @@
                     <table class="table table-hover table-striped mb-0">
                         <thead>
                             <tr>
-                                <th>Nomor Order</th>
+                                <th>Nomor Pesanan</th>
                                 <th>Pelanggan</th>
                                 <th>Layanan</th>
                                 <th>Total</th>
@@ -61,18 +61,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($orders as $order)
+                            @forelse($pesanan as $pesanan)
                                 <tr>
-                                    <td class="align-middle fw-medium">{{ $order->order_number }}</td>
-                                    <td class="align-middle">{{ $order->user->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $order->cateringService->name ?? '-' }}</td>
-                                    <td class="align-middle fw-bold text-success">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+                                    <td class="align-middle fw-medium">{{ $pesanan->nomor_pesanan }}</td>
+                                    <td class="align-middle">{{ $pesanan->user->name ?? '-' }}</td>
+                                    <td class="align-middle">{{ $pesanan->layananKatering->name ?? '-' }}</td>
+                                    <td class="align-middle fw-bold text-success">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
                                     <td class="align-middle text-center">
-                                        <span class="badge {{ match($order->status) { 'pending_payment' => 'text-bg-warning', 'processing' => 'text-bg-info', 'on_delivery' => 'text-bg-primary', 'completed' => 'text-bg-success', 'cancelled' => 'text-bg-danger', default => 'text-bg-secondary' } }}">
-                                            {{ $order->status_label }}
+                                        <span class="badge {{ match($pesanan->status) { 'menunggu_pembayaran' => 'text-bg-warning', 'diproses' => 'text-bg-info', 'dikirim' => 'text-bg-primary', 'selesai' => 'text-bg-success', 'dibatalkan' => 'text-bg-danger', default => 'text-bg-secondary' } }}">
+                                            {{ $pesanan->status_label }}
                                         </span>
                                     </td>
-                                    <td class="align-middle">{{ $order->created_at->format('d M Y') }}</td>
+                                    <td class="align-middle">{{ $pesanan->created_at->format('d M Y') }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -86,9 +86,9 @@
                     </table>
                 </div>
             </div>
-            @if($orders->hasPages())
+            @if($pesanan->hasPages())
                 <div class="card-footer">
-                    {{ $orders->withQueryString()->links('pagination::bootstrap-5') }}
+                    {{ $pesanan->withQueryString()->links('pagination::bootstrap-5') }}
                 </div>
             @endif
         </div>

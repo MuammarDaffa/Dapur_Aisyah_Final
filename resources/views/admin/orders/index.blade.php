@@ -5,22 +5,22 @@
     <div class="col-12">
         <div class="card card-outline card-primary mb-4">
             <div class="card-body p-3">
-                <form action="{{ route('admin.orders') }}" method="GET" class="row gx-2 gy-2 align-items-center">
+                <form action="{{ route('admin.pesanan') }}" method="GET" class="row gx-2 gy-2 align-items-center">
                     <div class="col-md-3">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari order/nama..." class="form-control">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pesanan/nama..." class="form-control">
                     </div>
                     <div class="col-md-2">
                         <select name="status" class="form-select">
                             <option value="">Semua Status</option>
-                            @foreach(['processing'=>'Diproses','on_delivery'=>'Dikirim','completed'=>'Selesai','cancelled'=>'Dibatalkan'] as $k=>$v)
+                            @foreach(['diproses'=>'Diproses','dikirim'=>'Dikirim','selesai'=>'Selesai','dibatalkan'=>'Dibatalkan'] as $k=>$v)
                                 <option value="{{ $k }}" {{ request('status')==$k?'selected':'' }}>{{ $v }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
                         <select name="date_type" class="form-select">
-                            <option value="order_date" {{ request('date_type') == 'order_date' ? 'selected' : '' }}>Tgl Pengiriman</option>
-                            <option value="created_at" {{ request('date_type') == 'created_at' ? 'selected' : '' }}>Tgl Order</option>
+                            <option value="tanggal_pesanan" {{ request('date_type') == 'tanggal_pesanan' ? 'selected' : '' }}>Tgl Pengiriman</option>
+                            <option value="created_at" {{ request('date_type') == 'created_at' ? 'selected' : '' }}>Tgl Pesanan</option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -42,36 +42,36 @@
                     <table class="table table-hover table-striped mb-0 text-nowrap">
                         <thead>
                             <tr>
-                                <th>Order</th>
+                                <th>Pesanan</th>
                                 <th>Pelanggan</th>
                                 <th>Layanan</th>
                                 <th>Total</th>
                                 <th>Status</th>
-                                <th>Tgl Order</th>
+                                <th>Tgl Pesanan</th>
                                 <th>Tgl Pengiriman</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($orders as $order)
+                            @forelse($pesanan as $pesanan)
                                 <tr>
-                                    <td class="align-middle fw-medium">{{ $order->order_number }}</td>
-                                    <td class="align-middle">{{ $order->user->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $order->cateringService->name ?? '-' }}</td>
-                                    <td class="align-middle fw-bold text-success">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+                                    <td class="align-middle fw-medium">{{ $pesanan->nomor_pesanan }}</td>
+                                    <td class="align-middle">{{ $pesanan->user->name ?? '-' }}</td>
+                                    <td class="align-middle">{{ $pesanan->layananKatering->name ?? '-' }}</td>
+                                    <td class="align-middle fw-bold text-success">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
                                     <td class="align-middle">
-                                        <span class="badge {{ match($order->status) { 'processing'=>'text-bg-info','on_delivery'=>'text-bg-primary','completed'=>'text-bg-success','cancelled'=>'text-bg-danger', default=>'text-bg-secondary' } }}">
-                                            {{ $order->status_label }}
+                                        <span class="badge {{ match($pesanan->status) { 'diproses'=>'text-bg-info','dikirim'=>'text-bg-primary','selesai'=>'text-bg-success','dibatalkan'=>'text-bg-danger', default=>'text-bg-secondary' } }}">
+                                            {{ $pesanan->status_label }}
                                         </span>
                                     </td>
-                                    <td class="align-middle text-muted">{{ $order->created_at->format('d/m/Y') }}</td>
-                                    <td class="align-middle fw-medium text-primary">{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') }}</td>
+                                    <td class="align-middle text-muted">{{ $pesanan->created_at->format('d/m/Y') }}</td>
+                                    <td class="align-middle fw-medium text-primary">{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->format('d/m/Y') }}</td>
                                     <td class="align-middle text-center">
                                         <div class="btn-group">
-                                            <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-info text-white" title="Lihat Detail Pesanan">
+                                            <a href="{{ route('admin.pesanan.show', $pesanan) }}" class="btn btn-sm btn-info text-white" title="Lihat Detail Pesanan">
                                                 <i class="fa-solid fa-eye"></i>
                                             </a>
-                                            <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus pesanan ini?');">
+                                            <form action="{{ route('admin.pesanan.destroy', $pesanan) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus pesanan ini?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger" title="Hapus Pesanan">
@@ -88,9 +88,9 @@
                     </table>
                 </div>
             </div>
-            @if($orders->hasPages())
+            @if($pesanan->hasPages())
             <div class="card-footer">
-                {{ $orders->withQueryString()->links('pagination::bootstrap-5') }}
+                {{ $pesanan->withQueryString()->links('pagination::bootstrap-5') }}
             </div>
             @endif
         </div>

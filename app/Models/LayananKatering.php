@@ -8,18 +8,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 /**
- * Model CateringService merepresentasikan jenis layanan utama (Katering Harian, Prasmanan, dll).
+ * Model LayananKatering merepresentasikan jenis layanan utama (Katering Harian, Prasmanan, dll).
  * Model ini menjadi pusat konfigurasi untuk harga dasar, batas porsi, dan fitur layanan.
  */
-class CateringService extends Model
+class LayananKatering extends Model
 {
+    protected $table = 'layanan_katering';
+
     use HasFactory;
 
     protected $fillable = [
-        'name', 'slug', 'description', 'serving_types', 'min_portion',
-        'max_portion', 'base_price', 'order_terms', 'schedule_notes',
+        'name', 'slug', 'deskripsi', 'serving_types', 'min_portion',
+        'maksimal_porsi', 'base_price', 'order_terms', 'schedule_notes',
         'minimal_order_days',
-        'service_area', 'available_features', 'is_active', 'image',
+        'service_area', 'fitur_tersedia', 'is_active', 'image',
     ];
 
     protected function casts(): array
@@ -27,7 +29,7 @@ class CateringService extends Model
         return [
             'serving_types' => 'array',
             'service_area' => 'array',
-            'available_features' => 'array',
+            'fitur_tersedia' => 'array',
             'base_price' => 'decimal:2',
             'is_active' => 'boolean',
         ];
@@ -55,8 +57,8 @@ class CateringService extends Model
          */
     public function hasFeature(string $feature): bool
     {
-        return is_array($this->available_features)
-            && in_array($feature, $this->available_features);
+        return is_array($this->fitur_tersedia)
+            && in_array($feature, $this->fitur_tersedia);
     }
 
     /**
@@ -84,14 +86,14 @@ class CateringService extends Model
 
     public function scopeDaily($query)
     {
-        return $query->whereJsonContains('available_features', 'daily_menu');
+        return $query->whereJsonContains('fitur_tersedia', 'daily_menu');
     }
 
     public function scopeEvent($query)
     {
         return $query->where(function ($q) {
-            $q->whereJsonContains('available_features', 'packages')
-              ->orWhereJsonContains('available_features', 'full_custom');
+            $q->whereJsonContains('fitur_tersedia', 'packages')
+              ->orWhereJsonContains('fitur_tersedia', 'full_custom');
         });
     }
 
@@ -109,25 +111,25 @@ class CateringService extends Model
 
     // === Relationships ===
 
-    public function products(): HasMany
+    public function produk(): HasMany
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Produk::class);
     }
 
-    public function menuPeriods(): HasMany
+    public function periodeMenu(): HasMany
     {
-        return $this->hasMany(MenuPeriod::class);
+        return $this->hasMany(PeriodeMenu::class);
     }
 
 
     public function packages(): HasMany
     {
-        return $this->hasMany(CateringPackage::class);
+        return $this->hasMany(PaketKatering::class);
     }
 
-    public function customOptions(): HasMany
+    public function opsiKustom(): HasMany
     {
-        return $this->hasMany(CustomOption::class);
+        return $this->hasMany(OpsiKustom::class);
     }
 
     /**
@@ -135,11 +137,11 @@ class CateringService extends Model
      */
     public function extras(): HasMany
     {
-        return $this->hasMany(CustomOption::class)->where('type', 'extra');
+        return $this->hasMany(OpsiKustom::class)->where('type', 'extra');
     }
 
-    public function orders(): HasMany
+    public function pesanan(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Pesanan::class);
     }
 }

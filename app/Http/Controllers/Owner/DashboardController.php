@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use App\Models\Product;
-use App\Models\Review;
+use App\Models\Pesanan;
+use App\Models\Produk;
+use App\Models\Ulasan;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,25 +17,25 @@ class DashboardController extends Controller
         $today = Carbon::today();
 
         $stats = [
-            'daily_revenue' => Order::completed()->whereDate('created_at', $today)->sum('total'),
-            'weekly_revenue' => Order::completed()->where('created_at', '>=', $today->copy()->subDays(7))->sum('total'),
-            'monthly_revenue' => Order::completed()->whereMonth('created_at', $today->month)->whereYear('created_at', $today->year)->sum('total'),
-            'total_orders' => Order::count(),
+            'daily_revenue' => Pesanan::completed()->whereDate('created_at', $today)->sum('total'),
+            'weekly_revenue' => Pesanan::completed()->where('created_at', '>=', $today->copy()->subDays(7))->sum('total'),
+            'monthly_revenue' => Pesanan::completed()->whereMonth('created_at', $today->month)->whereYear('created_at', $today->year)->sum('total'),
+            'total_orders' => Pesanan::count(),
             'total_customers' => User::where('role', 'customer')->count(),
         ];
 
         // Status pesanan untuk pie chart
-        $orderStatuses = Order::selectRaw('status, COUNT(*) as count')
+        $orderStatuses = Pesanan::selectRaw('status, COUNT(*) as count')
             ->groupBy('status')
             ->pluck('count', 'status')
             ->toArray();
 
-        $bestSellers = Product::withCount('orderItems')
+        $bestSellers = Produk::withCount('detailPesanan')
             ->orderByDesc('order_items_count')
             ->take(10)
             ->get();
 
-        $recentReviews = Review::with(['user', 'order.cateringService'])
+        $recentReviews = Ulasan::with(['user', 'pesanan.layananKatering'])
             ->latest()
             ->take(10)
             ->get();
@@ -45,8 +45,8 @@ class DashboardController extends Controller
 
     public function bestSellers()
     {
-        $bestSellers = Product::withCount('orderItems')
-            ->with('cateringService')
+        $bestSellers = Produk::withCount('detailPesanan')
+            ->with('layananKatering')
             ->orderByDesc('order_items_count')
             ->paginate(20);
 
@@ -56,7 +56,7 @@ class DashboardController extends Controller
     public function customers()
     {
         $customers = User::where('role', 'customer')
-            ->withCount('orders')
+            ->withCount('pesanan')
             ->orderByDesc('orders_count')
             ->take(10)
             ->get();
@@ -64,22 +64,22 @@ class DashboardController extends Controller
         return view('owner.customers', compact('customers'));
     }
 
-    public function reviews()
+    public function ulasan()
     {
-        $reviews = Review::with(['user', 'order.cateringService'])
+        $ulasan = Ulasan::with(['user', 'pesanan.layananKatering'])
             ->latest()
             ->paginate(20);
 
-        return view('owner.reviews', compact('reviews'));
+        return view('owner.ulasan', compact('ulasan'));
     }
 
     public function reports(Request $request)
     {
-        $query = Order::completed();
+        $query = Pesanan::completed();
 
         if ($request->filled('period')) {
             switch ($request->period) {
-                case 'daily':
+                case 'harian':
                     $query->whereDate('created_at', today());
                     break;
                 case 'monthly':

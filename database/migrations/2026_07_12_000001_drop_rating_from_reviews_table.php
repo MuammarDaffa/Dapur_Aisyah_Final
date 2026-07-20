@@ -8,8 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('reviews', function (Blueprint $table) {
-            if (Schema::hasColumn('reviews', 'rating')) {
+        Schema::table('ulasan', function (Blueprint $table) {
+            if (Schema::hasColumn('ulasan', 'rating')) {
                 $table->dropColumn('rating');
             }
         });
@@ -17,8 +17,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('reviews', function (Blueprint $table) {
-            if (!Schema::hasColumn('reviews', 'rating')) {
+        Schema::table('ulasan', function (Blueprint $table) {
+            if (!Schema::hasColumn('ulasan', 'rating')) {
                 $table->tinyInteger('rating')->default(5);
             }
         });

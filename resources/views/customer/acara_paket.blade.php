@@ -35,8 +35,8 @@
                     </div>
                 </div>
 
-                @if($package->description)
-                    <p class="text-secondary leading-relaxed fs-6 sm:text-base mt-4">{{ $package->description }}</p>
+                @if($package->deskripsi)
+                    <p class="text-secondary leading-relaxed fs-6 sm:text-base mt-4">{{ $package->deskripsi }}</p>
                 @endif
             </div>
 
@@ -110,9 +110,9 @@
             <hr class="border border-secondary my-8">
 
             {{-- Section: Catatan & Tombol Masukkan Keranjang --}}
-            <form action="{{ route('customer.event.cart.store') }}" method="POST">
+            <form action="{{ route('customer.event.keranjang.store') }}" method="POST">
                 @csrf
-                <input type="hidden" name="catering_service_id" value="{{ $service->id }}">
+                <input type="hidden" name="layanan_katering_id" value="{{ $service->id }}">
                 <input type="hidden" name="catering_package_id" value="{{ $package->id }}">
                 @if($serving)
                     <input type="hidden" name="serving_type_id" value="{{ $serving->id }}">
@@ -120,7 +120,7 @@
 
                 <div class="mb-8">
                     <h3 class="text-base fw-bold text-secondary uppercase tracking-wider mb-3">Catatan Pesanan</h3>
-                    <textarea name="notes" rows="3" class="form-control w-100 px-4 py-3 rounded border border border-secondary focus:border border-primary fs-6 sm:text-base" placeholder="Contoh: Tolong jangan terlalu pedas, pengiriman tepat waktu...">{{ old('notes') }}</textarea>
+                    <textarea name="catatan" rows="3" class="form-control w-100 px-4 py-3 rounded border border border-secondary focus:border border-primary fs-6 sm:text-base" placeholder="Contoh: Tolong jangan terlalu pedas, pengiriman tepat waktu...">{{ old('catatan') }}</textarea>
                 </div>
 
                 <div class="d-flex d-flex-column sm:d-flex-row align-items-center justify-content-between g-3 pt-6 border-t border border-secondary">

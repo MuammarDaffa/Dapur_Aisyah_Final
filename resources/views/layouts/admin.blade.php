@@ -67,10 +67,10 @@
                         @php
                             $menuItems = [
                                 ['route' => 'admin.dashboard', 'label' => 'Dashboard', 'icon' => 'fa-solid fa-tachometer-alt'],
-                                ['route' => 'admin.orders', 'label' => 'Pesanan', 'icon' => 'fa-solid fa-shopping-cart'],
+                                ['route' => 'admin.pesanan', 'label' => 'Pesanan', 'icon' => 'fa-solid fa-shopping-keranjang'],
                                 ['route' => 'admin.catering.index', 'label' => 'Katering', 'icon' => 'fa-solid fa-utensils'],
                                 ['route' => 'admin.customers', 'label' => 'Pelanggan', 'icon' => 'fa-solid fa-users'],
-                                ['route' => 'admin.reviews', 'label' => 'Ulasan', 'icon' => 'fa-solid fa-star'],
+                                ['route' => 'admin.ulasan', 'label' => 'Ulasan', 'icon' => 'fa-solid fa-star'],
                                 ['route' => 'admin.shipping.index', 'label' => 'Ongkos Kirim', 'icon' => 'fa-solid fa-truck'],
                                 ['route' => 'admin.reports', 'label' => 'Laporan', 'icon' => 'fa-solid fa-chart-line'],
                             ];

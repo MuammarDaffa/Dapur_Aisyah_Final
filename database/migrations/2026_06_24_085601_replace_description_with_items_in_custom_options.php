@@ -13,19 +13,19 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Add `items` column
-        Schema::table('custom_options', function (Blueprint $table) {
+        Schema::table('opsi_kustom', function (Blueprint $table) {
             $table->json('items')->nullable()->after('name');
         });
 
-        // 2. Migrate existing data: split description by newline, map to array, json encode
-        $options = DB::table('custom_options')
-            ->whereNotNull('description')
-            ->where('description', '!=', '')
+        // 2. Migrate existing data: split deskripsi by newline, map to array, json encode
+        $options = DB::table('opsi_kustom')
+            ->whereNotNull('deskripsi')
+            ->where('deskripsi', '!=', '')
             ->get();
 
         foreach ($options as $option) {
             // pecah string berdasarkan baris baru
-            $lines = explode("\n", $option->description);
+            $lines = explode("\n", $option->deskripsi);
             $items = [];
             foreach ($lines as $line) {
                 // hapus +, -, *, bullet, dan spasi
@@ -36,15 +36,15 @@ return new class extends Migration
             }
 
             if (!empty($items)) {
-                DB::table('custom_options')
+                DB::table('opsi_kustom')
                     ->where('id', $option->id)
                     ->update(['items' => json_encode($items)]);
             }
         }
 
-        // 3. Drop `description` column
-        Schema::table('custom_options', function (Blueprint $table) {
-            $table->dropColumn('description');
+        // 3. Drop `deskripsi` column
+        Schema::table('opsi_kustom', function (Blueprint $table) {
+            $table->dropColumn('deskripsi');
         });
     }
 
@@ -53,28 +53,28 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // 1. Add `description` back
-        Schema::table('custom_options', function (Blueprint $table) {
-            $table->text('description')->nullable()->after('image');
+        // 1. Add `deskripsi` back
+        Schema::table('opsi_kustom', function (Blueprint $table) {
+            $table->text('deskripsi')->nullable()->after('image');
         });
 
         // 2. Migrate data back
-        $options = DB::table('custom_options')
+        $options = DB::table('opsi_kustom')
             ->whereNotNull('items')
             ->get();
 
         foreach ($options as $option) {
             $items = json_decode($option->items, true);
             if (is_array($items) && !empty($items)) {
-                $description = implode("\n", array_map(fn($item) => "+ " . $item, $items));
-                DB::table('custom_options')
+                $deskripsi = implode("\n", array_map(fn($item) => "+ " . $item, $items));
+                DB::table('opsi_kustom')
                     ->where('id', $option->id)
-                    ->update(['description' => $description]);
+                    ->update(['deskripsi' => $deskripsi]);
             }
         }
 
         // 3. Drop `items`
-        Schema::table('custom_options', function (Blueprint $table) {
+        Schema::table('opsi_kustom', function (Blueprint $table) {
             $table->dropColumn('items');
         });
     }

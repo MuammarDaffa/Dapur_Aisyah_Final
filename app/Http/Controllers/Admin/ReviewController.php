@@ -3,22 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Review;
+use App\Models\Ulasan;
 
 class ReviewController extends Controller
 {
     public function index()
     {
-        $reviews = Review::with(['user', 'order.cateringService'])
+        $ulasan = Ulasan::with(['user', 'pesanan.layananKatering'])
             ->latest()
             ->paginate(15);
 
-        return view('admin.reviews.index', compact('reviews'));
+        return view('admin.ulasan.index', compact('ulasan'));
     }
 
-    public function destroy(Review $review)
+    public function destroy(Ulasan $ulasan)
     {
-        $review->delete();
+        $ulasan->delete();
         return back()->with('success', 'Ulasan berhasil dihapus.');
     }
 }

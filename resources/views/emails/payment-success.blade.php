@@ -37,11 +37,11 @@
             <div class="info-box">
                 <div class="info-row">
                     <span class="info-label">Nomor Pesanan</span>
-                    <span class="info-value">{{ $order->order_number }}</span>
+                    <span class="info-value">{{ $pesanan->nomor_pesanan }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Total Dibayar</span>
-                    <span class="info-value">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                    <span class="info-value">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Status</span>
@@ -50,7 +50,7 @@
             </div>
 
             <div style="text-align: center;">
-                <a href="{{ url('/dashboard/orders/' . $order->id) }}" class="btn">Lihat Pesanan</a>
+                <a href="{{ url('/dashboard/pesanan/' . $pesanan->id) }}" class="btn">Lihat Pesanan</a>
             </div>
 
             <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-top: 16px;">

@@ -12,8 +12,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Update data master districts (menambahkan "Kecamatan " di depannya jika belum ada)
-        DB::table('districts')
+        // Update data master kecamatan (menambahkan "Kecamatan " di depannya jika belum ada)
+        DB::table('kecamatan')
             ->where('name', 'NOT LIKE', 'Kecamatan %')
             ->update([
                 'name' => DB::raw("CONCAT('Kecamatan ', name)")
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::table('districts')
+        DB::table('kecamatan')
             ->where('name', 'LIKE', 'Kecamatan %')
             ->update([
                 'name' => DB::raw("REPLACE(name, 'Kecamatan ', '')")

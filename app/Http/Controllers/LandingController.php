@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CateringService;
-use App\Models\Review;
+use App\Models\LayananKatering;
+use App\Models\Ulasan;
 use Illuminate\Http\Request;
 
 class LandingController extends Controller
 {
     public function index()
     {
-        $services = CateringService::active()->get();
+        $services = LayananKatering::active()->get();
 
-        $reviews = Review::with('user', 'order.cateringService')
+        $ulasan = Ulasan::with('user', 'pesanan.layananKatering')
             ->latest()
             ->take(6)
             ->get();
 
-        return view('public.landing', compact('services', 'reviews'));
+        return view('public.landing', compact('services', 'ulasan'));
     }
 }

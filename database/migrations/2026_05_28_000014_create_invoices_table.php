@@ -8,10 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('invoices', function (Blueprint $table) {
+        Schema::create('tagihan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->unique()->constrained('orders')->cascadeOnDelete();
-            $table->string('invoice_number', 30)->unique();
+            $table->foreignId('pesanan_id')->unique()->constrained('pesanan')->cascadeOnDelete();
+            $table->string('nomor_tagihan', 30)->unique();
             $table->string('service_type', 50); // Snapshot jenis layanan
             $table->timestamp('issued_at')->useCurrent();
             $table->string('pdf_path', 255)->nullable();
@@ -21,6 +21,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('invoices');
+        Schema::dropIfExists('tagihan');
     }
 };

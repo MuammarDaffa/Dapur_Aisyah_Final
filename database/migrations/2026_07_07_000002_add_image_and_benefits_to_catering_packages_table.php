@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('catering_packages', function (Blueprint $table) {
+        Schema::table('paket_katering', function (Blueprint $table) {
             $table->string('image')->nullable()->after('name');
             $table->json('benefits')->nullable()->after('total_portions');
         });
 
-        Schema::table('carts', function (Blueprint $table) {
-            $table->text('notes')->nullable()->after('serving_type_id');
+        Schema::table('keranjang', function (Blueprint $table) {
+            $table->text('catatan')->nullable()->after('serving_type_id');
         });
     }
 
@@ -26,12 +26,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('catering_packages', function (Blueprint $table) {
+        Schema::table('paket_katering', function (Blueprint $table) {
             $table->dropColumn(['image', 'benefits']);
         });
 
-        Schema::table('carts', function (Blueprint $table) {
-            $table->dropColumn('notes');
+        Schema::table('keranjang', function (Blueprint $table) {
+            $table->dropColumn('catatan');
         });
     }
 };

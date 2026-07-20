@@ -15,16 +15,16 @@
 
     {{-- Tab Navigation --}}
     <div class="d-flex border-b border border-secondary mb-6">
-        <button type="button" onclick="switchTab('daily')" id="tab-daily"
-            class="px-6 py-3 fs-6 fw-bold border-b-2 d-flex align-items-center {{ $activeTab === 'daily' ? 'border border-primary text-primary' : 'border-transparent text-secondary hover:text-secondary' }}">
+        <button type="button" onclick="switchTab('harian')" id="tab-daily"
+            class="px-6 py-3 fs-6 fw-bold border-b-2 d-flex align-items-center {{ $activeTab === 'harian' ? 'border border-primary text-primary' : 'border-transparent text-secondary hover:text-secondary' }}">
             <svg style="width: 16px; height: 16px;" class="me-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
             <span>Daily</span>
             @if($dailyGroups->isNotEmpty())
                 <span class="ms-1 px-2 py-0.5 bg-primary text-white text-primary rounded-pill small fw-bold">{{ $dailyGroups->flatten()->count() }}</span>
             @endif
         </button>
-        <button type="button" onclick="switchTab('event')" id="tab-event"
-            class="px-6 py-3 fs-6 fw-bold border-b-2 d-flex align-items-center {{ $activeTab === 'event' ? 'border border-primary text-primary' : 'border-transparent text-secondary hover:text-secondary' }}">
+        <button type="button" onclick="switchTab('acara')" id="tab-event"
+            class="px-6 py-3 fs-6 fw-bold border-b-2 d-flex align-items-center {{ $activeTab === 'acara' ? 'border border-primary text-primary' : 'border-transparent text-secondary hover:text-secondary' }}">
             <svg style="width: 16px; height: 16px;" class="me-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
             <span>Event</span>
             @if($totalEventBadge > 0)
@@ -36,36 +36,36 @@
     {{-- =============================== --}}
     {{-- TAB DAILY --}}
     {{-- =============================== --}}
-    <div id="content-daily" style="{{ $activeTab !== 'daily' ? 'display:none' : '' }}">
+    <div id="content-daily" style="{{ $activeTab !== 'harian' ? 'display:none' : '' }}">
         @if($dailyGroups->isEmpty())
             <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border border-secondary">
                 <!-- <div style="width: 64px; height: 64px;" class="mx-auto mb-4 text-secondary d-flex align-items-center justify-content-center">
                     <svg style="width: 48px; height: 48px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 </div> -->
                 <p class="text-secondary fw-medium mb-4">Belum ada pesanan</p>
-                <!-- <a href="{{ route('customer.products') }}" class="d-inline-d-flex align-items-center px-6 py-3 bg-primary text-white text-white fw-medium rounded-pill hover:bg-primary text-white">
+                <!-- <a href="{{ route('customer.produk') }}" class="d-inline-d-flex align-items-center px-6 py-3 bg-primary text-white text-white fw-medium rounded-pill hover:bg-primary text-white">
                     <span>Lihat Menu</span>
                     <svg style="width: 16px; height: 16px;" class="ms-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </a> -->
             </div>
         @else
             <div class="bg-white rounded shadow-sm border border border-primary p-6 space-y-6">
-                @foreach($dailyGroups->flatten() as $cart)
+                @foreach($dailyGroups->flatten() as $keranjang)
                 @php
-                    $basePrice = $cart->product ? (float) $cart->product->price : ($cart->customOption ? (float) $cart->customOption->price : 0);
+                    $basePrice = $keranjang->produk ? (float) $keranjang->produk->harga : ($keranjang->opsiKustom ? (float) $keranjang->opsiKustom->harga : 0);
                     $extrasList = collect();
                     $extrasPrice = 0;
-                    if (!empty($cart->extras)) {
-                        $extraIds = array_column($cart->extras, 'id');
-                        $options = \App\Models\CustomOption::whereIn('id', $extraIds)->get()->keyBy('id');
-                        foreach ($cart->extras as $extraData) {
+                    if (!empty($keranjang->extras)) {
+                        $extraIds = array_column($keranjang->extras, 'id');
+                        $options = \App\Models\OpsiKustom::whereIn('id', $extraIds)->get()->keyBy('id');
+                        foreach ($keranjang->extras as $extraData) {
                             if ($opt = $options->get($extraData['id'])) {
-                                $exPrice = (float) $opt->price * $extraData['qty'];
+                                $exPrice = (float) $opt->harga * $extraData['qty'];
                                 $extrasPrice += $exPrice;
                                 $extrasList->push((object)[
                                     'name' => $opt->name,
                                     'qty' => $extraData['qty'],
-                                    'price' => $exPrice,
+                                    'harga' => $exPrice,
                                 ]);
                             }
                         }
@@ -73,8 +73,8 @@
                 @endphp
                 <div class="d-flex items-start space-x-4 {{ !$loop->last ? 'border-b border border-secondary pb-6' : '' }}">
                     <div style="width: 64px; height: 64px;" class="bg-primary text-white rounded d-flex align-items-center justify-content-center fs-2 d-flex-flex-shrink-0">
-                        @if($cart->product && $cart->product->image)
-                            <img src="{{ Storage::url($cart->product->image) }}" alt="{{ $cart->product->name }}" class="w-100 h-100 object-cover rounded">
+                        @if($keranjang->produk && $keranjang->produk->image)
+                            <img src="{{ Storage::url($keranjang->produk->image) }}" alt="{{ $keranjang->produk->name }}" class="w-100 h-100 object-cover rounded">
                         @else
                             <svg style="width: 32px; height: 32px;" class="text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         @endif
@@ -82,10 +82,10 @@
                     <div class="d-flex-1 w-100">
                         <div class="d-flex sm:items-start justify-content-between d-flex-column sm:d-flex-row g-3">
                             <div>
-                                <h4 class="fw-bold text-secondary fs-5">{{ $cart->product->name ?? ($cart->customOption->name ?? 'Item') }}</h4>
-                                <p class="fs-6 fw-medium text-secondary">{{ $cart->quantity }} Porsi</p>
+                                <h4 class="fw-bold text-secondary fs-5">{{ $keranjang->produk->name ?? ($keranjang->opsiKustom->name ?? 'Item') }}</h4>
+                                <p class="fs-6 fw-medium text-secondary">{{ $keranjang->jumlah }} Porsi</p>
                             </div>
-                            <p class="fs-5 fw-bold text-secondary">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</p>
+                            <p class="fs-5 fw-bold text-secondary">Rp {{ number_format($keranjang->subtotal, 0, ',', '.') }}</p>
                         </div>
                         
                         @if($extrasList->isNotEmpty())
@@ -96,8 +96,8 @@
                         @endif
 
                         <div class="d-flex align-items-center justify-content-end mt-4 space-x-3">
-                            <button type="button" onclick="openDailyEditModal({{ $cart->id }})" class="px-4 py-2 bg-primary text-white text-primary fs-6 fw-bold rounded hover:bg-primary text-white">Ubah Pesanan</button>
-                            <form action="{{ route('customer.cart.destroy', $cart) }}" method="POST" class="d-inline">
+                            <button type="button" onclick="openDailyEditModal({{ $keranjang->id }})" class="px-4 py-2 bg-primary text-white text-primary fs-6 fw-bold rounded hover:bg-primary text-white">Ubah Pesanan</button>
+                            <form action="{{ route('customer.keranjang.destroy', $keranjang) }}" method="POST" class="d-inline">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-outline-danger btn btn-danger px-4 py-2 bg-danger text-white text-danger fs-6 fw-bold rounded hover:bg-danger text-white">
                                     Hapus
@@ -127,7 +127,7 @@
     {{-- =============================== --}}
     {{-- TAB EVENT --}}
     {{-- =============================== --}}
-    <div id="content-event" style="{{ $activeTab !== 'event' ? 'display:none' : '' }}">
+    <div id="content-event" style="{{ $activeTab !== 'acara' ? 'display:none' : '' }}">
         @if($eventGroups->isEmpty())
             <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border border-secondary">
                 <!-- <div style="width: 64px; height: 64px;" class="bg-light text-primary rounded-pill d-flex align-items-center justify-content-center mx-auto mb-4">
@@ -152,13 +152,13 @@
                 @foreach($packageGroups as $groupId => $groupItems)
                 @php
                     $packageItem = $groupItems->firstWhere('item_type', 'package');
-                    $service = $groupItems->first()->cateringService;
+                    $service = $groupItems->first()->layananKatering;
                     $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
                 @endphp
                 <div class="py-6 first:pt-4 last:pb-4 d-flex d-flex-column sm:d-flex-row sm:align-items-center justify-content-between g-3" id="event-card-{{ $groupId }}">
                     <div class="d-flex-1 min-w-0 space-y-1">
                         <div class="d-flex d-flex-wrap align-items-center gap-x-2 gap-y-1">
-                            <span class="fw-bold text-secondary text-base sm:fs-5">{{ $packageItem->cateringPackage->name ?? 'Paket' }} ({{ $packageItem->quantity }})</span>
+                            <span class="fw-bold text-secondary text-base sm:fs-5">{{ $packageItem->paketKatering->name ?? 'Paket' }} ({{ $packageItem->jumlah }})</span>
                             <span class="text-secondary fw-medium">·</span>
                             <span class="fs-6 text-secondary fw-medium">{{ $service->name ?? 'Layanan Event' }}</span>
                         </div>
@@ -183,7 +183,7 @@
                 @php
                     $customHeader = $groupItems->firstWhere('item_type', 'custom_header');
                     $menuItems = $groupItems->where('item_type', 'custom_menu');
-                    $service = $groupItems->first()->cateringService;
+                    $service = $groupItems->first()->layananKatering;
                     $groupSubtotal = $groupItems->sum(fn($c) => $c->subtotal);
                 @endphp
                 <div class="py-6 first:pt-4 last:pb-4 d-flex d-flex-column sm:d-flex-row sm:align-items-center justify-content-between g-3" id="event-card-{{ $groupId }}">
@@ -240,18 +240,18 @@
 {{-- =============================== --}}
 @php
     $allDailyCartsJson = $dailyGroups->flatten()->keyBy('id')->map(function($c) {
-        $basePrice = $c->product ? (float) $c->product->price : ($c->customOption ? (float) $c->customOption->price : 0);
-        $name = $c->product->name ?? ($c->customOption->name ?? 'Item');
-        $serviceId = $c->product->catering_service_id ?? ($c->customOption->catering_service_id ?? null);
+        $basePrice = $c->produk ? (float) $c->produk->harga : ($c->opsiKustom ? (float) $c->opsiKustom->harga : 0);
+        $name = $c->produk->name ?? ($c->opsiKustom->name ?? 'Item');
+        $serviceId = $c->produk->layanan_katering_id ?? ($c->opsiKustom->layanan_katering_id ?? null);
         return [
             'id' => $c->id,
             'name' => $name,
-            'price' => $basePrice,
-            'quantity' => $c->quantity,
+            'harga' => $basePrice,
+            'jumlah' => $c->jumlah,
             'service_id' => $serviceId,
-            'product_id' => $c->product_id,
+            'produk_id' => $c->produk_id,
             'extras' => $c->extras ?? [],
-            'update_url' => route('customer.cart.update', $c->id),
+            'update_url' => route('customer.keranjang.update', $c->id),
         ];
     });
 @endphp
@@ -278,7 +278,7 @@
                     <label class="form-label fw-bold">Jumlah Porsi *</label>
                     <div class="d-flex align-items-center g-3">
                         <button type="button" onclick="changeDailyQty(-1)" style="height: 40px;" class="w-10 rounded bg-light hover:bg-light d-flex align-items-center justify-content-center text-secondary fw-bold fs-5">−</button>
-                        <input type="text" inputmode="none" readonly tabindex="-1" name="quantity" id="dailyModalQty" value="1" class="form-control w-20 text-center px-3 py-2 rounded border border border-secondary fw-bold text-secondary focus: cursor-default select-none">
+                        <input type="text" inputmode="none" readonly tabindex="-1" name="jumlah" id="dailyModalQty" value="1" class="form-control w-20 text-center px-3 py-2 rounded border border border-secondary fw-bold text-secondary focus: cursor-default select-none">
                         <button type="button" onclick="changeDailyQty(1)" style="height: 40px;" class="w-10 rounded bg-light hover:bg-light d-flex align-items-center justify-content-center text-secondary fw-bold fs-5">+</button>
                     </div>
                 </div>
@@ -310,33 +310,33 @@
     foreach($eventGroups as $gId => $gItems) {
         $pkgItem = $gItems->firstWhere('item_type', 'package');
         $customHeader = $gItems->firstWhere('item_type', 'custom_header');
-        $setsQty = $customHeader ? (int) $customHeader->quantity : ($pkgItem ? (int) $pkgItem->quantity : 1);
+        $setsQty = $customHeader ? (int) $customHeader->jumlah : ($pkgItem ? (int) $pkgItem->jumlah : 1);
         if ($setsQty <= 0) $setsQty = 1;
 
         $eventGroupsJson[$gId] = [
             'group_id' => $gId,
-            'service_name' => $gItems->first()->cateringService->name ?? 'Layanan Event',
-            'package_name' => $pkgItem?->cateringPackage?->name,
-            'package_quantity' => $pkgItem ? (int) $pkgItem->quantity : 1,
-            'package_portions_per_unit' => $pkgItem?->cateringPackage?->total_portions ?? 0,
-            'package_price' => (float) ($pkgItem?->cateringPackage?->price ?? 0),
+            'service_name' => $gItems->first()->layananKatering->name ?? 'Layanan Event',
+            'package_name' => $pkgItem?->paketKatering?->name,
+            'package_quantity' => $pkgItem ? (int) $pkgItem->jumlah : 1,
+            'package_portions_per_unit' => $pkgItem?->paketKatering?->total_portions ?? 0,
+            'package_price' => (float) ($pkgItem?->paketKatering?->harga ?? 0),
             'sets_quantity' => $setsQty,
             'serving_name' => $gItems->first()->servingType?->name,
-            'notes' => $customHeader?->notes ?? ($pkgItem?->notes ?? ($gItems->first()->notes ?? '')),
+            'catatan' => $customHeader?->catatan ?? ($pkgItem?->catatan ?? ($gItems->first()->catatan ?? '')),
             'subtotal' => $gItems->sum(fn($c) => $c->subtotal),
-            'catering_service_id' => $gItems->first()->catering_service_id,
+            'layanan_katering_id' => $gItems->first()->layanan_katering_id,
             'catering_package_id' => $pkgItem?->catering_package_id,
             'serving_type_id' => $customHeader?->serving_type_id ?? ($pkgItem?->serving_type_id ?? ($gItems->first()->serving_type_id ?? null)),
             'is_package' => $pkgItem !== null,
-            'min_portion' => $gItems->first()->cateringService->min_portion ?? 1,
-            'max_portion' => $gItems->first()->cateringService->max_portion ?? 1000,
-            'update_url' => route('customer.event.cart.update', $gId),
+            'min_portion' => $gItems->first()->layananKatering->min_portion ?? 1,
+            'maksimal_porsi' => $gItems->first()->layananKatering->maksimal_porsi ?? 1000,
+            'update_url' => route('customer.event.keranjang.update', $gId),
             'items' => $gItems->filter(fn($c) => in_array($c->item_type, ['package_item', 'custom_menu', 'addition']))->map(fn($c) => [
-                'custom_option_id' => $c->custom_option_id,
-                'quantity' => $c->quantity,
+                'opsi_kustom_id' => $c->opsi_kustom_id,
+                'jumlah' => $c->jumlah,
                 'item_type' => $c->item_type,
-                'name' => $c->customOption->name ?? 'Item',
-                'price' => (float) ($c->customOption->price ?? 0),
+                'name' => $c->opsiKustom->name ?? 'Item',
+                'harga' => (float) ($c->opsiKustom->harga ?? 0),
                 'subtotal' => (float) ($c->subtotal ?? 0),
             ])->values()->toArray(),
         ];
@@ -409,7 +409,7 @@
             </style>
             <form id="editEventForm" action="" method="POST">
                 @csrf @method('PUT')
-                <input type="hidden" name="catering_service_id" id="editEventServiceId">
+                <input type="hidden" name="layanan_katering_id" id="editEventServiceId">
                 <input type="hidden" name="catering_package_id" id="editEventPackageId">
 
                 {{-- Info Header --}}
@@ -489,19 +489,19 @@
     // TAB SWITCHING
     // =======================
     function switchTab(tab) {
-        document.getElementById('content-daily').style.display = tab === 'daily' ? '' : 'none';
-        document.getElementById('content-event').style.display = tab === 'event' ? '' : 'none';
+        document.getElementById('content-daily').style.display = tab === 'harian' ? '' : 'none';
+        document.getElementById('content-event').style.display = tab === 'acara' ? '' : 'none';
 
         const tabDaily = document.getElementById('tab-daily');
         const tabEvent = document.getElementById('tab-event');
-        tabDaily.classList.toggle('border-orange-500', tab === 'daily');
-        tabDaily.classList.toggle('text-orange-600', tab === 'daily');
-        tabDaily.classList.toggle('border-transparent', tab !== 'daily');
-        tabDaily.classList.toggle('text-gray-500', tab !== 'daily');
-        tabEvent.classList.toggle('border-orange-500', tab === 'event');
-        tabEvent.classList.toggle('text-orange-600', tab === 'event');
-        tabEvent.classList.toggle('border-transparent', tab !== 'event');
-        tabEvent.classList.toggle('text-gray-500', tab !== 'event');
+        tabDaily.classList.toggle('border-orange-500', tab === 'harian');
+        tabDaily.classList.toggle('text-orange-600', tab === 'harian');
+        tabDaily.classList.toggle('border-transparent', tab !== 'harian');
+        tabDaily.classList.toggle('text-gray-500', tab !== 'harian');
+        tabEvent.classList.toggle('border-orange-500', tab === 'acara');
+        tabEvent.classList.toggle('text-orange-600', tab === 'acara');
+        tabEvent.classList.toggle('border-transparent', tab !== 'acara');
+        tabEvent.classList.toggle('text-gray-500', tab !== 'acara');
     }
 
     // =======================
@@ -521,16 +521,16 @@
 
         document.getElementById('dailyEditForm').action = currentDailyCart.update_url;
         document.getElementById('dailyModalProductName').textContent = currentDailyCart.name;
-        document.getElementById('dailyModalProductPrice').textContent = formatRupiah(currentDailyCart.price);
-        document.getElementById('dailyModalQty').value = currentDailyCart.quantity;
+        document.getElementById('dailyModalProductPrice').textContent = formatRupiah(currentDailyCart.harga);
+        document.getElementById('dailyModalQty').value = currentDailyCart.jumlah;
 
         document.getElementById('dailyModalExtrasList').innerHTML = '';
         document.getElementById('dailyModalExtrasContainer').classList.add('hidden');
         document.getElementById('dailyModalExtrasLoading').classList.remove('hidden');
 
         let extrasUrl = `/api/service/${currentDailyCart.service_id}/custom-options`;
-        if (currentDailyCart.product_id) {
-            extrasUrl = `/api/product/${currentDailyCart.product_id}/extras`;
+        if (currentDailyCart.produk_id) {
+            extrasUrl = `/api/produk/${currentDailyCart.produk_id}/extras`;
         }
 
         fetch(extrasUrl)
@@ -551,11 +551,11 @@
                         html += `
                             <div class="d-flex align-items-center justify-content-between py-2.5 px-2 border-b border border-secondary last:border-b-0 hover:bg-primary text-white/50 rounded g-3">
                                 <label class="d-flex align-items-center g-3.5 cursor-pointer d-flex-1 min-w-0">
-                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-price="${extra.price}" id="daily_extra_cb_${extra.id}" onchange="toggleDailyExtra(${extra.id})" style="width: 16px; height: 16px;" class="rounded border border-secondary text-primary daily-extra-checkbox flex-shrink-0" ${isChecked}>
+                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-harga="${extra.harga}" id="daily_extra_cb_${extra.id}" onchange="toggleDailyExtra(${extra.id})" style="width: 16px; height: 16px;" class="rounded border border-secondary text-primary daily-extra-checkbox flex-shrink-0" ${isChecked}>
                                     <span class="fs-6 fw-medium text-secondary truncate">${extra.name}</span>
                                 </label>
                                 <div class="d-flex align-items-center g-3.5 flex-shrink-0">
-                                    <span class="fs-6 fw-bold text-primary flex-shrink-0">+${formatRupiah(extra.price)}</span>
+                                    <span class="fs-6 fw-bold text-primary flex-shrink-0">+${formatRupiah(extra.harga)}</span>
                                     <div id="daily_extra_qty_container_${extra.id}" class="${containerClasses} align-items-center g-3">
                                         <button type="button" onclick="changeDailyExtraQty(${extra.id}, -1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0">−</button>
                                         <input type="text" inputmode="none" readonly tabindex="-1" name="extras[${extra.id}][qty]" id="daily_extra_qty_${extra.id}" value="${extraInCart ? (extraQty || 1) : 0}" class="form-control w-12 text-center py-1 rounded border border border-secondary small fw-bold text-secondary focus: cursor-default select-none bg-light flex-shrink-0" ${disabledState}>
@@ -640,11 +640,11 @@
     function updateDailyModalTotal() {
         if (!currentDailyCart) return;
         const qty = parseInt(document.getElementById('dailyModalQty').value) || 1;
-        let total = currentDailyCart.price * qty;
+        let total = currentDailyCart.harga * qty;
         document.querySelectorAll('.daily-extra-checkbox:checked').forEach(cb => {
             const extraId = cb.value;
             const extraQty = parseInt(document.getElementById('daily_extra_qty_' + extraId).value) || 0;
-            total += parseFloat(cb.getAttribute('data-price')) * extraQty;
+            total += parseFloat(cb.getAttribute('data-harga')) * extraQty;
         });
         document.getElementById('dailyModalTotal').textContent = formatRupiah(total);
     }
@@ -666,10 +666,10 @@
         if (!group || group.is_package) return;
 
         document.getElementById('editEventForm').action = group.update_url;
-        document.getElementById('editEventServiceId').value = group.catering_service_id;
+        document.getElementById('editEventServiceId').value = group.layanan_katering_id;
         document.getElementById('editEventPackageId').value = group.catering_package_id || '';
 
-        fetch(`/api/service/${group.catering_service_id}/custom-options`)
+        fetch(`/api/service/${group.layanan_katering_id}/custom-options`)
             .then(res => res.json())
             .then(options => {
                 editServiceOptions = options;
@@ -683,14 +683,14 @@
         if (group.is_package) return;
         const menus = options.filter(o => o.type === 'menu');
         const extras = options.filter(o => o.type === 'extra');
-        const servings = options.filter(o => o.type === 'serving_type');
+        const servings = options.filter(o => o.type === 'tipe_penyajian');
 
         document.getElementById('editEventTitle').textContent = 'Custom Menu';
         document.getElementById('editEventType').textContent = group.service_name || 'Layanan Event';
         let menuHtml = '';
         menus.forEach((menu, idx) => {
-            const existingItem = group.items.find(i => i.custom_option_id == menu.id && i.item_type === 'custom_menu');
-            const qty = existingItem ? existingItem.quantity : 0;
+            const existingItem = group.items.find(i => i.opsi_kustom_id == menu.id && i.item_type === 'custom_menu');
+            const qty = existingItem ? existingItem.jumlah : 0;
             const checked = qty > 0 ? 'checked' : '';
             const opacityClass = qty > 0 ? '' : 'opacity-0 pointer-events-none';
 
@@ -706,19 +706,19 @@
             <div class="py-3.5 px-2 hover:bg-primary text-white/50 rounded">
                 <div class="d-flex align-items-center justify-content-between g-3">
                     <div class="d-flex align-items-center g-3 d-flex-1 min-w-0">
-                        <input type="checkbox" id="edit_menu_cb_${idx}" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}"
+                        <input type="checkbox" id="edit_menu_cb_${idx}" data-idx="${idx}" data-id="${menu.id}" data-harga="${menu.harga}"
                             style="width: 16px; height: 16px;" class="rounded border border-secondary text-primary edit-menu-checkbox flex-shrink-0 cursor-pointer" ${checked} onchange="toggleEditMenu(${idx}, ${menu.id})">
                         <label for="edit_menu_cb_${idx}" class="fs-6 sm:text-base fw-bold text-secondary cursor-pointer truncate">${menu.name}</label>
                     </div>
                     <div class="d-flex align-items-center g-3.5 transition-opacity flex-shrink-0 ${opacityClass}" id="edit_menu_qty_container_${idx}">
                         <button type="button" onclick="changeEditEventQty(${idx}, -1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0">−</button>
                         <input type="number" id="edit_event_qty_${idx}" value="${qty}" min="1"
-                            class="form-control w-14 text-center py-1 border border border-secondary rounded small sm:fs-6 fw-bold text-secondary bg-white flex-shrink-0 focus: focus:border border-primary -1 desktop-no-spinner edit-event-qty" data-idx="${idx}" data-id="${menu.id}" data-price="${menu.price}" data-type="custom_menu" oninput="validateEditEventInput(${idx})" onchange="validateEditEventInputBlur(${idx})">
+                            class="form-control w-14 text-center py-1 border border border-secondary rounded small sm:fs-6 fw-bold text-secondary bg-white flex-shrink-0 focus: focus:border border-primary -1 desktop-no-spinner edit-event-qty" data-idx="${idx}" data-id="${menu.id}" data-harga="${menu.harga}" data-type="custom_menu" oninput="validateEditEventInput(${idx})" onchange="validateEditEventInputBlur(${idx})">
                         <button type="button" onclick="changeEditEventQty(${idx}, 1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0 edit-menu-plus-btn">+</button>
                     </div>
                 </div>
                 <div class="ps-7 mt-1">
-                    <span class="small sm:fs-6 fw-bold text-primary">Rp ${Number(menu.price).toLocaleString('id-ID')} / porsi</span>
+                    <span class="small sm:fs-6 fw-bold text-primary">Rp ${Number(menu.harga).toLocaleString('id-ID')} / porsi</span>
                 </div>
                 ${detailBtn ? `<div class="ps-7 mt-1.5">${detailBtn}</div>` : ''}
                 ${detailDiv}
@@ -732,20 +732,20 @@
             let extraHtml = '';
             extras.forEach((extra, i) => {
                 const eIdx = extraStartIdx + i;
-                const existingExtra = group.items.find(item => item.custom_option_id == extra.id && item.item_type === 'addition');
-                const eQty = existingExtra ? existingExtra.quantity : 0;
+                const existingExtra = group.items.find(item => item.opsi_kustom_id == extra.id && item.item_type === 'addition');
+                const eQty = existingExtra ? existingExtra.jumlah : 0;
                 const eChecked = eQty > 0 ? 'checked' : '';
 
                 extraHtml += `
                 <div class="py-3 px-2 d-flex align-items-center justify-content-between g-3 hover:bg-primary text-white/50 rounded">
                     <label for="edit_extra_cb_${eIdx}" class="d-flex align-items-center g-3 cursor-pointer d-flex-1 min-w-0">
-                        <input type="checkbox" id="edit_extra_cb_${eIdx}" data-idx="${eIdx}" data-id="${extra.id}" data-price="${extra.price}"
+                        <input type="checkbox" id="edit_extra_cb_${eIdx}" data-idx="${eIdx}" data-id="${extra.id}" data-harga="${extra.harga}"
                             style="width: 16px; height: 16px;" class="rounded border border-secondary text-primary edit-extra-checkbox flex-shrink-0 cursor-pointer" ${eChecked} onchange="toggleEditExtra(${eIdx}, ${extra.id})">
                         <span class="fs-6 fw-medium text-secondary truncate">${extra.name}</span>
                     </label>
-                    <span class="fs-6 fw-bold text-primary flex-shrink-0">+Rp ${Number(extra.price).toLocaleString('id-ID')}</span>
+                    <span class="fs-6 fw-bold text-primary flex-shrink-0">+Rp ${Number(extra.harga).toLocaleString('id-ID')}</span>
                     <input type="hidden" id="edit_event_qty_${eIdx}" value="${eQty}"
-                        class="edit-event-qty" data-idx="${eIdx}" data-id="${extra.id}" data-price="${extra.price}" data-type="addition">
+                        class="edit-event-qty" data-idx="${eIdx}" data-id="${extra.id}" data-harga="${extra.harga}" data-type="addition">
                 </div>`;
             });
             document.getElementById('editEventExtrasList').innerHTML = extraHtml;
@@ -899,7 +899,7 @@
 
         let totalPrice = 0;
         let totalPortions = 0;
-        const maxPortion = group.max_portion || 1000;
+        const maxPortion = group.maksimal_porsi || 1000;
 
             // 1. Hitung totalPorsi dan harga menu terlebih dahulu dari custom_menu yang terpilih
             document.querySelectorAll('.edit-event-qty').forEach(input => {
@@ -911,7 +911,7 @@
                 if (menuCb && !menuCb.checked) return;
 
                 let qty = parseInt(input.value) || 0;
-                const price = parseFloat(input.dataset.price) || 0;
+                const harga = parseFloat(input.dataset.harga) || 0;
                 if (qty < 1 && input.value !== '') {
                     qty = 1;
                     input.value = '1';
@@ -922,7 +922,7 @@
                     input.value = qty;
                 }
                 totalPortions += qty;
-                totalPrice += price * qty;
+                totalPrice += harga * qty;
             });
 
             // 2. Hitung harga extra mengikuti Total Porsi menu hasil penjumlahan
@@ -934,9 +934,9 @@
                 const extraCb = document.getElementById('edit_extra_cb_' + idx);
                 if (extraCb && !extraCb.checked) return;
 
-                const price = parseFloat(input.dataset.price) || 0;
+                const harga = parseFloat(input.dataset.harga) || 0;
                 input.value = totalPortions;
-                totalPrice += price * totalPortions;
+                totalPrice += harga * totalPortions;
             });
 
             document.getElementById('editEventTotal').textContent = formatRupiah(totalPrice);
@@ -987,8 +987,8 @@
             const inputEl = document.getElementById('edit_event_qty_' + idx);
             const qty = parseInt(inputEl ? inputEl.value : 0) || 0;
             if (qty > 0 && id) {
-                appendEditEventHidden(form, `items[${formIdx}][custom_option_id]`, id);
-                appendEditEventHidden(form, `items[${formIdx}][quantity]`, qty);
+                appendEditEventHidden(form, `items[${formIdx}][opsi_kustom_id]`, id);
+                appendEditEventHidden(form, `items[${formIdx}][jumlah]`, qty);
                 appendEditEventHidden(form, `items[${formIdx}][item_type]`, 'custom_menu');
                 formIdx++;
             }
@@ -997,8 +997,8 @@
         document.querySelectorAll('.edit-extra-checkbox:checked').forEach(cb => {
             const id = cb.dataset.id;
             if (totalPortions > 0 && id) {
-                appendEditEventHidden(form, `items[${formIdx}][custom_option_id]`, id);
-                appendEditEventHidden(form, `items[${formIdx}][quantity]`, totalPortions);
+                appendEditEventHidden(form, `items[${formIdx}][opsi_kustom_id]`, id);
+                appendEditEventHidden(form, `items[${formIdx}][jumlah]`, totalPortions);
                 appendEditEventHidden(form, `items[${formIdx}][item_type]`, 'addition');
                 formIdx++;
             }
@@ -1106,7 +1106,7 @@
             <div class="py-2.5 d-flex align-items-center justify-content-between fs-6">
                 <div>
                     <span class="fw-medium text-secondary">${i.name}</span>
-                    <span class="text-secondary small ms-1">× ${i.quantity}</span>
+                    <span class="text-secondary small ms-1">× ${i.jumlah}</span>
                     ${badge}
                 </div>
                 <span class="fw-medium text-secondary">${priceStr}</span>
@@ -1121,9 +1121,9 @@
             document.getElementById('detailModalServingSection').classList.add('hidden');
         }
         
-        if (group.notes) {
+        if (group.catatan) {
             document.getElementById('detailModalNotesSection').classList.remove('hidden');
-            document.getElementById('detailModalNotes').textContent = group.notes;
+            document.getElementById('detailModalNotes').textContent = group.catatan;
         } else {
             document.getElementById('detailModalNotesSection').classList.add('hidden');
         }
@@ -1153,7 +1153,7 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`/dashboard/cart/${cartId}`, {
+                fetch(`/dashboard/keranjang/${cartId}`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',

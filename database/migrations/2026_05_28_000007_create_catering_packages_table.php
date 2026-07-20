@@ -8,12 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('catering_packages', function (Blueprint $table) {
+        Schema::create('paket_katering', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('catering_service_id')->constrained('catering_services')->cascadeOnDelete();
+            $table->foreignId('layanan_katering_id')->constrained('layanan_katering')->cascadeOnDelete();
             $table->string('name', 100);
-            $table->text('description')->nullable();
-            $table->decimal('price', 12, 2);
+            $table->text('deskripsi')->nullable();
+            $table->decimal('harga', 12, 2);
             $table->boolean('is_custom')->default(false); // 0=paket tetap, 1=custom
             $table->boolean('is_active')->default(true);
             $table->timestamps();
@@ -22,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('catering_packages');
+        Schema::dropIfExists('paket_katering');
     }
 };

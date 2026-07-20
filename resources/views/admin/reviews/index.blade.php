@@ -21,9 +21,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($reviews as $r)
+                            @forelse($ulasan as $r)
                             <tr>
-                                <td class="align-middle"><a href="{{ route('admin.orders.show', $r->order) }}" class="text-decoration-none fw-bold">{{ $r->order->order_number }}</a></td>
+                                <td class="align-middle"><a href="{{ route('admin.pesanan.show', $r->pesanan) }}" class="text-decoration-none fw-bold">{{ $r->pesanan->nomor_pesanan }}</a></td>
                                 <td class="align-middle">{{ $r->user->name ?? '-' }}</td>
                                 <td class="align-middle">
                                     <div class="text-warning">
@@ -39,7 +39,7 @@
                                 <td class="align-middle text-wrap">{{ $r->comment }}</td>
                                 <td class="align-middle text-muted">{{ $r->created_at->format('d M Y') }}</td>
                                 <td class="align-middle text-center">
-                                    <form action="{{ route('admin.reviews.destroy', $r) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Hapus ulasan ini?');">
+                                    <form action="{{ route('admin.ulasan.destroy', $r) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Hapus ulasan ini?');">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Hapus</button>
                                     </form>
@@ -54,9 +54,9 @@
                     </table>
                 </div>
             </div>
-            @if($reviews->hasPages())
+            @if($ulasan->hasPages())
             <div class="card-footer">
-                {{ $reviews->links('pagination::bootstrap-5') }}
+                {{ $ulasan->links('pagination::bootstrap-5') }}
             </div>
             @endif
         </div>

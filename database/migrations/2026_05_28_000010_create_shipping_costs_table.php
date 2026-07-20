@@ -8,17 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('shipping_costs', function (Blueprint $table) {
+        Schema::create('ongkos_kirim', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('district_id')->nullable()->constrained('districts')->nullOnDelete();
+            $table->foreignId('kecamatan_id')->nullable()->constrained('kecamatan')->nullOnDelete();
             $table->decimal('cost', 10, 2)->default(20000);
-            $table->string('notes', 255)->nullable();
+            $table->string('catatan', 255)->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('shipping_costs');
+        Schema::dropIfExists('ongkos_kirim');
     }
 };

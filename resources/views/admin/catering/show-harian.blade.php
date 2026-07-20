@@ -29,8 +29,8 @@
                                     {{ $catering->is_active ? 'Aktif' : 'Nonaktif' }}
                                 </span>
                             </div>
-                            @if($catering->description)
-                            <p class="text-muted mb-0">{{ $catering->description }}</p>
+                            @if($catering->deskripsi)
+                            <p class="text-muted mb-0">{{ $catering->deskripsi }}</p>
                             @endif
                         </div>
                     </div>
@@ -50,7 +50,7 @@
                     <div class="col-sm-6 col-md-3">
                         <div class="p-3 bg-light rounded">
                             <span class="d-block small text-muted text-uppercase">Total Produk</span>
-                            <strong class="fs-5 text-dark">{{ $catering->products()->count() }}</strong>
+                            <strong class="fs-5 text-dark">{{ $catering->produk()->count() }}</strong>
                         </div>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title fw-bold">Daftar Produk</h3>
                 <div class="ms-auto">
-                    <a href="{{ route('admin.products.create') }}?catering_service_id={{ $catering->id }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Tambah Produk</a>
+                    <a href="{{ route('admin.produk.create') }}?layanan_katering_id={{ $catering->id }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Tambah Produk</a>
                 </div>
             </div>
             <div class="card-body p-0">
@@ -141,7 +141,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($products as $p)
+                            @forelse($produk as $p)
                             <tr>
                                 <td class="align-middle">
                                     <div class="d-flex align-items-center">
@@ -163,10 +163,10 @@
                                 </td>
                                 <td class="align-middle text-center">
                                     <div class="btn-group">
-                                        <a href="{{ route('admin.products.edit', $p) }}" class="btn btn-sm btn-info text-white"><i class="fa-solid fa-edit"></i> Edit</a>
-                                        <form id="form-delete-product-{{ $p->id }}" action="{{ route('admin.products.destroy', $p) }}" method="POST" class="d-inline">
+                                        <a href="{{ route('admin.produk.edit', $p) }}" class="btn btn-sm btn-info text-white"><i class="fa-solid fa-edit"></i> Edit</a>
+                                        <form id="form-delete-produk-{{ $p->id }}" action="{{ route('admin.produk.destroy', $p) }}" method="POST" class="d-inline">
                                             @csrf @method('DELETE')
-                                            <button type="button" onclick="confirmDelete('form-delete-product-{{ $p->id }}', 'Hapus produk ini?')" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                            <button type="button" onclick="confirmDelete('form-delete-produk-{{ $p->id }}', 'Hapus produk ini?')" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Hapus</button>
                                         </form>
                                     </div>
                                 </td>
@@ -180,8 +180,8 @@
                     </table>
                 </div>
             </div>
-            @if($products->hasPages())
-            <div class="card-footer">{{ $products->links('pagination::bootstrap-5') }}</div>
+            @if($produk->hasPages())
+            <div class="card-footer">{{ $produk->links('pagination::bootstrap-5') }}</div>
             @endif
         </div>
     </div>
@@ -214,7 +214,7 @@
                             @forelse($extras as $extra)
                             <tr>
                                 <td class="align-middle fw-medium">{{ $extra->name }}</td>
-                                <td class="align-middle text-center fw-bold text-success">Rp {{ number_format($extra->price, 0, ',', '.') }}</td>
+                                <td class="align-middle text-center fw-bold text-success">Rp {{ number_format($extra->harga, 0, ',', '.') }}</td>
                                 <td class="align-middle text-center">
                                     <span class="badge {{ $extra->is_active ? 'text-bg-success' : 'text-bg-secondary' }}">
                                         {{ $extra->is_active ? 'Aktif' : 'Nonaktif' }}
@@ -222,7 +222,7 @@
                                 </td>
                                 <td class="align-middle text-center">
                                     <div class="btn-group">
-                                        <button type="button" onclick="openEditExtraModal({{ $extra->id }}, '{{ $extra->name }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }})" class="btn btn-sm btn-info text-white"><i class="fa-solid fa-edit"></i> Edit</button>
+                                        <button type="button" onclick="openEditExtraModal({{ $extra->id }}, '{{ $extra->name }}', {{ $extra->harga }}, {{ $extra->is_active ? 'true' : 'false' }})" class="btn btn-sm btn-info text-white"><i class="fa-solid fa-edit"></i> Edit</button>
                                         <form id="form-delete-extra-{{ $extra->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="d-inline">
                                             @csrf @method('DELETE')
                                             <button type="button" onclick="confirmDelete('form-delete-extra-{{ $extra->id }}', 'Hapus extra ini?')" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Hapus</button>
@@ -261,7 +261,7 @@
               </div>
               <div class="mb-3">
                   <label class="form-label fw-bold">Harga (Rp) <span class="text-danger">*</span></label>
-                  <input type="text" name="price" value="0" class="form-control rupiah-input">
+                  <input type="text" name="harga" value="0" class="form-control rupiah-input">
               </div>
               <div class="form-check">
                   <input type="checkbox" name="is_active" value="1" checked class="form-check-input" id="checkActiveAdd">
@@ -294,7 +294,7 @@
               </div>
               <div class="mb-3">
                   <label class="form-label fw-bold">Harga (Rp) <span class="text-danger">*</span></label>
-                  <input type="text" name="price" id="editExtraPrice" value="0" class="form-control rupiah-input">
+                  <input type="text" name="harga" id="editExtraPrice" value="0" class="form-control rupiah-input">
               </div>
               <div class="form-check">
                   <input type="checkbox" name="is_active" value="1" id="editExtraActive" class="form-check-input">
@@ -316,14 +316,14 @@
         return [
             'id' => $p->id,
             'name' => $p->name,
-            'price_label' => 'Rp ' . number_format($p->price, 0, ',', '.')
+            'price_label' => 'Rp ' . number_format($p->harga, 0, ',', '.')
         ];
     })->values()->all();
 
     $scheduleItems = $currentSchedule && $currentSchedule->items ? $currentSchedule->items->map(function($i) {
         return [
             'menu_date' => $i->menu_date->format('Y-m-d'),
-            'product_id' => $i->product_id,
+            'produk_id' => $i->produk_id,
             'status' => $i->status ?? 'tersedia',
         ];
     })->all() : [];
@@ -338,9 +338,9 @@ document.addEventListener('DOMContentLoaded', function() {
     editExtraModal = new bootstrap.Modal(document.getElementById('editExtraModal'));
 });
 
-function openEditExtraModal(id, name, price, isActive) {
+function openEditExtraModal(id, name, harga, isActive) {
     document.getElementById('editExtraName').value = name;
-    document.getElementById('editExtraPrice').value = formatRupiah(price);
+    document.getElementById('editExtraPrice').value = formatRupiah(harga);
     document.getElementById('editExtraActive').checked = isActive;
     document.getElementById('editExtraForm').action = `/admin/catering/${cateringId}/options/${id}`;
     if(editExtraModal) editExtraModal.show();
@@ -348,7 +348,7 @@ function openEditExtraModal(id, name, price, isActive) {
 
 // === Jadwal Menu Mingguan Script ===
 document.addEventListener('DOMContentLoaded', function() {
-    const products = {!! json_encode($productsJson) !!};
+    const produk = {!! json_encode($productsJson) !!};
     const oldItems = {!! json_encode($oldItemsJson) !!};
 
     const inputStart = document.getElementById('input_start_date');
@@ -394,13 +394,13 @@ document.addEventListener('DOMContentLoaded', function() {
         datesList.forEach((dateStr, index) => {
             const dateInfo = formatIndonesianDate(dateStr);
             const mappingItem = existingMapping[dateStr] || {};
-            const selectedProductId = typeof mappingItem === 'object' ? (mappingItem.product_id || '') : mappingItem;
+            const selectedProductId = typeof mappingItem === 'object' ? (mappingItem.produk_id || '') : mappingItem;
             const selectedStatus = typeof mappingItem === 'object' ? (mappingItem.status || 'tersedia') : 'tersedia';
 
             const tr = document.createElement('tr');
 
             let optionsHtml = `<option value="">-- Pilih Menu untuk ${dateInfo.dayName} --</option>`;
-            products.forEach(p => {
+            produk.forEach(p => {
                 const isSelected = String(p.id) === String(selectedProductId) ? 'selected' : '';
                 optionsHtml += `<option value="${p.id}" ${isSelected}>${p.name} (${p.price_label})</option>`;
             });
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </span>
                 </td>
                 <td class="align-middle">
-                    <select name="items[${index}][product_id]" required class="form-select">
+                    <select name="items[${index}][produk_id]" required class="form-select">
                         ${optionsHtml}
                     </select>
                 </td>
@@ -471,14 +471,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const currentMapping = {};
-            const existingSelects = tbody.querySelectorAll('select[name^="items"][name$="[product_id]"]');
+            const existingSelects = tbody.querySelectorAll('select[name^="items"][name$="[produk_id]"]');
             const existingStatusSelects = tbody.querySelectorAll('select[name^="items"][name$="[status]"]');
             const existingInputs = tbody.querySelectorAll('input[type="hidden"][name^="items"][name$="[menu_date]"]');
             
             existingInputs.forEach((inp, idx) => {
                 if (existingSelects[idx]) {
                     currentMapping[inp.value] = {
-                        product_id: existingSelects[idx].value,
+                        produk_id: existingSelects[idx].value,
                         status: existingStatusSelects[idx] ? existingStatusSelects[idx].value : 'tersedia'
                     };
                 }
@@ -487,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
             oldItems.forEach(item => {
                 if (!currentMapping[item.menu_date]) {
                     currentMapping[item.menu_date] = {
-                        product_id: item.product_id,
+                        produk_id: item.produk_id,
                         status: item.status || 'tersedia'
                     };
                 }
@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
         oldItems.forEach(item => {
             datesList.push(item.menu_date);
             initialMapping[item.menu_date] = {
-                product_id: item.product_id,
+                produk_id: item.produk_id,
                 status: item.status || 'tersedia'
             };
         });

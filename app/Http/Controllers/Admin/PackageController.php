@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CateringPackage;
-use App\Models\CateringService;
-use App\Models\CustomOption;
+use App\Models\PaketKatering;
+use App\Models\LayananKatering;
+use App\Models\OpsiKustom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,33 +13,33 @@ class PackageController extends Controller
 {
     public function index(Request $request)
     {
-        $query = CateringPackage::with('cateringService');
+        $query = PaketKatering::with('layananKatering');
 
         if ($request->filled('service')) {
-            $query->where('catering_service_id', $request->service);
+            $query->where('layanan_katering_id', $request->service);
         }
 
         $packages = $query->latest()->paginate(15);
 
         // Hanya layanan yang punya fitur packages atau full_custom
-        $services = CateringService::active()->event()->get();
+        $services = LayananKatering::active()->event()->get();
 
         return redirect()->route('admin.dashboard')->with('error', 'Silakan akses paket dari menu layanan katering.');
     }
 
     public function create()
     {
-        $services = CateringService::active()->event()->get();
+        $services = LayananKatering::active()->event()->get();
         return view('admin.packages.create', compact('services'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'catering_service_id' => 'required|exists:catering_services,id',
+            'layanan_katering_id' => 'required|exists:layanan_katering,id',
             'name' => 'required|string|max:100',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0|max:1000000000',
+            'deskripsi' => 'nullable|string',
+            'harga' => 'required|numeric|min:0|max:1000000000',
             'total_portions' => 'required|integer|min:1',
             'image' => 'nullable|image|max:2048',
             'benefits' => 'nullable|array',
@@ -48,12 +48,12 @@ class PackageController extends Controller
             'is_custom' => 'boolean',
             'is_active' => 'boolean',
             'menu_ids' => 'nullable|array',
-            'menu_ids.*' => 'exists:custom_options,id',
-            'serving_type_id' => 'nullable|exists:custom_options,id',
+            'menu_ids.*' => 'exists:opsi_kustom,id',
+            'serving_type_id' => 'nullable|exists:opsi_kustom,id',
             'extra_ids' => 'nullable|array',
-            'extra_ids.*' => 'exists:custom_options,id',
+            'extra_ids.*' => 'exists:opsi_kustom,id',
         ], [
-            'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
+            'harga.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         $validated['is_custom'] = $request->boolean('is_custom');
@@ -64,7 +64,7 @@ class PackageController extends Controller
             $validated['image'] = $request->file('image')->store('packages', 'public');
         }
 
-        $package = CateringPackage::create($validated);
+        $package = PaketKatering::create($validated);
 
         // Sync pivot custom options
         $syncIds = collect();
@@ -78,26 +78,26 @@ class PackageController extends Controller
             $syncIds = $syncIds->merge($request->input('extra_ids'));
         }
 
-        // Simpan tanpa quantity tambahan, gunakan default database
-        $package->customOptions()->sync($syncIds->toArray());
+        // Simpan tanpa jumlah tambahan, gunakan default database
+        $package->opsiKustom()->sync($syncIds->toArray());
 
-        return redirect()->route('admin.catering.show', $validated['catering_service_id'])->with('success', 'Paket berhasil ditambahkan.');
+        return redirect()->route('admin.catering.show', $validated['layanan_katering_id'])->with('success', 'Paket berhasil ditambahkan.');
     }
 
-    public function edit(CateringPackage $package)
+    public function edit(PaketKatering $package)
     {
-        $services = CateringService::active()->event()->get();
-        $package->load('customOptions');
+        $services = LayananKatering::active()->event()->get();
+        $package->load('opsiKustom');
         return view('admin.packages.edit', compact('package', 'services'));
     }
 
-    public function update(Request $request, CateringPackage $package)
+    public function update(Request $request, PaketKatering $package)
     {
         $validated = $request->validate([
-            'catering_service_id' => 'required|exists:catering_services,id',
+            'layanan_katering_id' => 'required|exists:layanan_katering,id',
             'name' => 'required|string|max:100',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0|max:1000000000',
+            'deskripsi' => 'nullable|string',
+            'harga' => 'required|numeric|min:0|max:1000000000',
             'total_portions' => 'required|integer|min:1',
             'image' => 'nullable|image|max:2048',
             'benefits' => 'nullable|array',
@@ -106,12 +106,12 @@ class PackageController extends Controller
             'is_custom' => 'boolean',
             'is_active' => 'boolean',
             'menu_ids' => 'nullable|array',
-            'menu_ids.*' => 'exists:custom_options,id',
-            'serving_type_id' => 'nullable|exists:custom_options,id',
+            'menu_ids.*' => 'exists:opsi_kustom,id',
+            'serving_type_id' => 'nullable|exists:opsi_kustom,id',
             'extra_ids' => 'nullable|array',
-            'extra_ids.*' => 'exists:custom_options,id',
+            'extra_ids.*' => 'exists:opsi_kustom,id',
         ], [
-            'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
+            'harga.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         $validated['is_custom'] = $request->boolean('is_custom');
@@ -139,22 +139,22 @@ class PackageController extends Controller
             $syncIds = $syncIds->merge($request->input('extra_ids'));
         }
 
-        $syncResult = $package->customOptions()->sync($syncIds->toArray());
+        $syncResult = $package->opsiKustom()->sync($syncIds->toArray());
         $wasSyncChanged = !empty($syncResult['attached']) || !empty($syncResult['detached']) || !empty($syncResult['updated']);
 
         if (!$package->wasChanged() && !$wasSyncChanged) {
-            return redirect()->route('admin.catering.show', $package->catering_service_id);
+            return redirect()->route('admin.catering.show', $package->layanan_katering_id);
         }
 
-        return redirect()->route('admin.catering.show', $package->catering_service_id)->with('success', 'Paket berhasil diperbarui.');
+        return redirect()->route('admin.catering.show', $package->layanan_katering_id)->with('success', 'Paket berhasil diperbarui.');
     }
 
-    public function destroy(CateringPackage $package)
+    public function destroy(PaketKatering $package)
     {
         if ($package->image && Storage::disk('public')->exists($package->image)) {
             Storage::disk('public')->delete($package->image);
         }
-        $serviceId = $package->catering_service_id;
+        $serviceId = $package->layanan_katering_id;
         $package->delete();
         return redirect()->route('admin.catering.show', $serviceId)->with('success', 'Paket berhasil dihapus.');
     }

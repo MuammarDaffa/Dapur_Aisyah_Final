@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
+use App\Models\Pesanan;
 use App\Services\NotificationService;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
@@ -22,10 +22,10 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Invalid signature'], 403);
         }
 
-        $order = Order::where('order_number', $notification['order_id'])->first();
+        $pesanan = Pesanan::where('nomor_pesanan', $notification['pesanan_id'])->first();
 
-        if (!$order) {
-            return response()->json(['message' => 'Order not found'], 404);
+        if (!$pesanan) {
+            return response()->json(['message' => 'Pesanan not found'], 404);
         }
 
         $transactionStatus = $notification['transaction_status'];
@@ -33,23 +33,23 @@ class PaymentController extends Controller
 
         if ($transactionStatus === 'capture' || $transactionStatus === 'settlement') {
             if ($fraudStatus === 'accept' || $fraudStatus === null) {
-                $order->update([
-                    'payment_status' => 'paid',
-                    'status' => 'processing',
+                $pesanan->update([
+                    'status_pembayaran' => 'sudah_dibayar',
+                    'status' => 'diproses',
                     'midtrans_transaction_id' => $notification['transaction_id'] ?? null,
                 ]);
 
                 // Kirim notifikasi pembayaran berhasil
-                NotificationService::notifyPaymentSuccess($order);
+                NotificationService::notifyPaymentSuccess($pesanan);
             }
         } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
-            $order->update([
-                'payment_status' => 'failed',
+            $pesanan->update([
+                'status_pembayaran' => 'gagal',
                 'midtrans_transaction_id' => $notification['transaction_id'] ?? null,
             ]);
         } elseif ($transactionStatus === 'pending') {
-            $order->update([
-                'payment_status' => 'unpaid',
+            $pesanan->update([
+                'status_pembayaran' => 'belum_dibayar',
                 'midtrans_transaction_id' => $notification['transaction_id'] ?? null,
             ]);
         }

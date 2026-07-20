@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\CustomOption;
-use App\Models\CateringService;
+use App\Models\OpsiKustom;
+use App\Models\LayananKatering;
 
-class DailyExtraSeeder extends Seeder
+class EkstraHarianSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,7 +14,7 @@ class DailyExtraSeeder extends Seeder
     public function run(): void
     {
         // Cari layanan Catering Daily
-        $dailyService = CateringService::whereJsonContains('available_features', 'daily_menu')->first();
+        $dailyService = LayananKatering::whereJsonContains('fitur_tersedia', 'daily_menu')->first();
 
         if (!$dailyService) {
             $this->command->warn("Layanan Catering Daily tidak ditemukan. Seeder dibatalkan.");
@@ -44,14 +44,14 @@ class DailyExtraSeeder extends Seeder
         ];
 
         foreach ($extras as $extraName) {
-            CustomOption::firstOrCreate(
+            OpsiKustom::firstOrCreate(
                 [
-                    'catering_service_id' => $dailyService->id,
+                    'layanan_katering_id' => $dailyService->id,
                     'type' => 'extra',
                     'name' => $extraName,
                 ],
                 [
-                    'price' => 2000,
+                    'harga' => 2000,
                     'min_qty' => 1,
                     'is_active' => true,
                 ]

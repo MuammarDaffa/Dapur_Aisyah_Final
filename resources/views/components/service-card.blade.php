@@ -31,7 +31,7 @@
             {{ $service->name }}
         </h3>
 
-        <p class="fs-6 text-secondary line-clamp-2">{{ $service->description }}</p>
+        <p class="fs-6 text-secondary line-clamp-2">{{ $service->deskripsi }}</p>
 
         {{-- Serving Types --}}
         @if($service->serving_types)

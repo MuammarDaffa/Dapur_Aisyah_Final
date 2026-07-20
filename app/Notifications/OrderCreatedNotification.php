@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
-use App\Models\Order;
+use App\Models\Pesanan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -15,7 +15,7 @@ class OrderCreatedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     public function __construct(
-        protected Order $order
+        protected Pesanan $pesanan
     ) {}
 
     public function via(object $notifiable): array
@@ -26,13 +26,13 @@ class OrderCreatedNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Pesanan Berhasil Dibuat — ' . $this->order->order_number)
+            ->subject('Pesanan Berhasil Dibuat — ' . $this->pesanan->nomor_pesanan)
             ->greeting('Halo, ' . $notifiable->name . '!')
             ->line('Pesanan Anda telah berhasil dibuat.')
-            ->line('**Nomor Pesanan:** ' . $this->order->order_number)
-            ->line('**Total:** Rp ' . number_format($this->order->total, 0, ',', '.'))
-            ->line('**Status:** ' . $this->order->status_label)
-            ->action('Lihat Pesanan', url('/dashboard/orders/' . $this->order->id))
+            ->line('**Nomor Pesanan:** ' . $this->pesanan->nomor_pesanan)
+            ->line('**Total:** Rp ' . number_format($this->pesanan->total, 0, ',', '.'))
+            ->line('**Status:** ' . $this->pesanan->status_label)
+            ->action('Lihat Pesanan', url('/dashboard/pesanan/' . $this->pesanan->id))
             ->line('Terima kasih telah memesan di Dapur Aisyah!');
     }
 
@@ -40,10 +40,10 @@ class OrderCreatedNotification extends Notification implements ShouldQueue
     {
         return [
             'type' => 'order_created',
-            'order_id' => $this->order->id,
-            'order_number' => $this->order->order_number,
-            'total' => $this->order->total,
-            'message' => 'Pesanan #' . $this->order->order_number . ' berhasil dibuat dan sedang diproses.',
+            'pesanan_id' => $this->pesanan->id,
+            'nomor_pesanan' => $this->pesanan->nomor_pesanan,
+            'total' => $this->pesanan->total,
+            'message' => 'Pesanan #' . $this->pesanan->nomor_pesanan . ' berhasil dibuat dan sedang diproses.',
         ];
     }
 }

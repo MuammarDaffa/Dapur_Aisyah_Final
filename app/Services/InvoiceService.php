@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Invoice;
-use App\Models\Order;
+use App\Models\Tagihan;
+use App\Models\Pesanan;
 use Carbon\Carbon;
 
 class InvoiceService
 {
     /**
-     * Generate nomor invoice unik.
+     * Generate nomor tagihan unik.
      * Format: INV-YYYYMMDD-XXXX
      */
     public static function generateInvoiceNumber(): string
     {
         $date = Carbon::now()->format('Ymd');
-        $lastInvoice = Invoice::where('invoice_number', 'like', "INV-{$date}-%")
-            ->orderByDesc('invoice_number')
+        $lastInvoice = Tagihan::where('nomor_tagihan', 'like', "INV-{$date}-%")
+            ->orderByDesc('nomor_tagihan')
             ->first();
 
         if ($lastInvoice) {
-            $lastNumber = (int) substr($lastInvoice->invoice_number, -4);
+            $lastNumber = (int) substr($lastInvoice->nomor_tagihan, -4);
             $newNumber = str_pad((string) ($lastNumber + 1), 4, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '0001';
@@ -32,14 +32,14 @@ class InvoiceService
     }
 
     /**
-     * Buat invoice otomatis saat order dibuat.
+     * Buat tagihan otomatis saat pesanan dibuat.
      */
-    public static function createInvoice(Order $order): Invoice
+    public static function createInvoice(Pesanan $pesanan): Tagihan
     {
-        return Invoice::create([
-            'order_id' => $order->id,
-            'invoice_number' => self::generateInvoiceNumber(),
-            'service_type' => $order->cateringService->name ?? 'Katering',
+        return Tagihan::create([
+            'pesanan_id' => $pesanan->id,
+            'nomor_tagihan' => self::generateInvoiceNumber(),
+            'service_type' => $pesanan->layananKatering->name ?? 'Katering',
             'issued_at' => now(),
         ]);
     }

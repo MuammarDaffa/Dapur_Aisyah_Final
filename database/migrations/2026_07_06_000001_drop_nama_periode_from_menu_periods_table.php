@@ -8,8 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasColumn('menu_periods', 'nama_periode')) {
-            Schema::table('menu_periods', function (Blueprint $table) {
+        if (Schema::hasColumn('periode_menu', 'nama_periode')) {
+            Schema::table('periode_menu', function (Blueprint $table) {
                 $table->dropColumn('nama_periode');
             });
         }
@@ -17,8 +17,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (!Schema::hasColumn('menu_periods', 'nama_periode')) {
-            Schema::table('menu_periods', function (Blueprint $table) {
+        if (!Schema::hasColumn('periode_menu', 'nama_periode')) {
+            Schema::table('periode_menu', function (Blueprint $table) {
                 $table->string('nama_periode', 150)->nullable();
             });
         }

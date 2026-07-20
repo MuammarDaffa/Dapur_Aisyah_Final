@@ -6,16 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Model OrderItem merepresentasikan satuan item/menu dalam sebuah pesanan.
+ * Model DetailPesanan merepresentasikan satuan item/menu dalam sebuah pesanan.
  * Menyimpan nama final item (termasuk kustomisasi) serta harga dan subtotal per item.
  */
-class OrderItem extends Model
+class DetailPesanan extends Model
 {
+    protected $table = 'detail_pesanan';
+
     public $timestamps = false;
 
     protected $fillable = [
-        'order_id', 'product_id', 'custom_option_id',
-        'item_name', 'quantity', 'unit_price', 'subtotal',
+        'pesanan_id', 'produk_id', 'opsi_kustom_id',
+        'item_name', 'jumlah', 'unit_price', 'subtotal',
     ];
 
     protected function casts(): array
@@ -26,19 +28,19 @@ class OrderItem extends Model
         ];
     }
 
-    public function order(): BelongsTo
+    public function pesanan(): BelongsTo
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Pesanan::class);
     }
 
-    public function product(): BelongsTo
+    public function produk(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Produk::class);
     }
 
-    public function customOption(): BelongsTo
+    public function opsiKustom(): BelongsTo
     {
-        return $this->belongsTo(CustomOption::class);
+        return $this->belongsTo(OpsiKustom::class);
     }
 
     /**

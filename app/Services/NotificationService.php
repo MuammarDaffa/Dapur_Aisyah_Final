@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Order;
+use App\Models\Pesanan;
 use App\Notifications\OrderCreatedNotification;
 use App\Notifications\OrderStatusChangedNotification;
 use App\Notifications\PaymentSuccessNotification;
@@ -15,13 +15,13 @@ class NotificationService
     /**
      * Kirim notifikasi saat pesanan dibuat.
      */
-    public static function notifyOrderCreated(Order $order): void
+    public static function notifyOrderCreated(Pesanan $pesanan): void
     {
         try {
-            $order->user->notify(new OrderCreatedNotification($order));
+            $pesanan->user->notify(new OrderCreatedNotification($pesanan));
         } catch (\Exception $e) {
             Log::error('Gagal mengirim notifikasi pesanan dibuat: ' . $e->getMessage(), [
-                'order_id' => $order->id,
+                'pesanan_id' => $pesanan->id,
             ]);
         }
     }
@@ -29,13 +29,13 @@ class NotificationService
     /**
      * Kirim notifikasi saat pembayaran berhasil.
      */
-    public static function notifyPaymentSuccess(Order $order): void
+    public static function notifyPaymentSuccess(Pesanan $pesanan): void
     {
         try {
-            $order->user->notify(new PaymentSuccessNotification($order));
+            $pesanan->user->notify(new PaymentSuccessNotification($pesanan));
         } catch (\Exception $e) {
             Log::error('Gagal mengirim notifikasi pembayaran berhasil: ' . $e->getMessage(), [
-                'order_id' => $order->id,
+                'pesanan_id' => $pesanan->id,
             ]);
         }
     }
@@ -43,14 +43,14 @@ class NotificationService
     /**
      * Kirim notifikasi saat status pesanan berubah.
      */
-    public static function notifyStatusChanged(Order $order): void
+    public static function notifyStatusChanged(Pesanan $pesanan): void
     {
         try {
-            $order->user->notify(new OrderStatusChangedNotification($order));
+            $pesanan->user->notify(new OrderStatusChangedNotification($pesanan));
         } catch (\Exception $e) {
             Log::error('Gagal mengirim notifikasi status berubah: ' . $e->getMessage(), [
-                'order_id' => $order->id,
-                'status' => $order->status,
+                'pesanan_id' => $pesanan->id,
+                'status' => $pesanan->status,
             ]);
         }
     }

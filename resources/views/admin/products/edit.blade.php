@@ -5,8 +5,8 @@
     <div class="col-md-8">
         <div class="mb-3">
             @php
-                $backServiceId = $product->catering_service_id;
-                $backService = $backServiceId ? \App\Models\CateringService::find($backServiceId) : null;
+                $backServiceId = $produk->layanan_katering_id;
+                $backService = $backServiceId ? \App\Models\LayananKatering::find($backServiceId) : null;
             @endphp
             @if($backService)
                 <a href="{{ route('admin.catering.show', $backService->id) }}" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Kembali ke detail katering: {{ $backService->name }}</a>
@@ -15,10 +15,10 @@
             @endif
         </div>
 
-        <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.produk.update', $produk) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <input type="hidden" name="catering_service_id" value="{{ $backServiceId }}">
+            <input type="hidden" name="layanan_katering_id" value="{{ $backServiceId }}">
             
             <div class="card card-outline card-primary">
                 <div class="card-header">
@@ -27,38 +27,38 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nama Produk <span class="text-danger">*</span></label>
-                        <input type="text" name="name" required value="{{ old('name', $product->name) }}" class="form-control" placeholder="Nama Produk">
+                        <input type="text" name="name" required value="{{ old('name', $produk->name) }}" class="form-control" placeholder="Nama Produk">
                         @error('name')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">Deskripsi</label>
-                        <textarea name="description" rows="3" class="form-control" placeholder="Deskripsi opsional">{{ old('description', $product->description) }}</textarea>
+                        <textarea name="deskripsi" rows="3" class="form-control" placeholder="Deskripsi opsional">{{ old('deskripsi', $produk->deskripsi) }}</textarea>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Harga (Rp) <span class="text-danger">*</span></label>
-                        <input type="text" name="price" required value="{{ old('price', number_format($product->price, 0, '', '')) }}" class="form-control rupiah-input">
+                        <input type="text" name="harga" required value="{{ old('harga', number_format($produk->harga, 0, '', '')) }}" class="form-control rupiah-input">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Gambar</label>
                         <input type="file" name="image" accept="image/*" class="form-control" id="image-input">
-                        <div id="imagePreviewContainer" class="mt-3 {{ $product->image ? '' : 'd-none' }}">
+                        <div id="imagePreviewContainer" class="mt-3 {{ $produk->image ? '' : 'd-none' }}">
                             <p class="small text-muted fw-medium mb-1">Preview Gambar:</p>
                             <div class="border rounded bg-light p-1" style="display: inline-block;">
-                                <img id="imagePreview" src="{{ $product->image ? Storage::url($product->image) : '' }}" alt="Preview Gambar" style="height: 112px; object-fit: cover;">
+                                <img id="imagePreview" src="{{ $produk->image ? Storage::url($produk->image) : '' }}" alt="Preview Gambar" style="height: 112px; object-fit: cover;">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }} id="isActiveCheck">
+                        <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ old('is_active', $produk->is_active) ? 'checked' : '' }} id="isActiveCheck">
                         <label class="form-check-label fw-bold" for="isActiveCheck">Aktif</label>
                     </div>
 
                     @if(isset($extras) && $extras->count() > 0)
-                    @php $selectedExtras = {{ old('extras', $product->customOptions->pluck('id')->toArray()) }}; @endphp
+                    @php $selectedExtras = {{ old('extras', $produk->opsiKustom->pluck('id')->toArray()) }}; @endphp
                     <div class="mb-3">
                         <label class="form-label fw-bold">Extra Tambahan (Opsional)</label>
                         <div class="border rounded p-3 bg-light">

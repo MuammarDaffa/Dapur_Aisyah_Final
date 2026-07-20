@@ -8,29 +8,31 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
- * Model Order merepresentasikan keseluruhan transaksi pesanan dari pelanggan.
+ * Model Pesanan merepresentasikan keseluruhan transaksi pesanan dari pelanggan.
  * Menampung informasi tujuan pengiriman, ringkasan harga (subtotal & ongkir),
  * status transaksi (dari Midtrans), dan metode pembayaran.
  */
-class Order extends Model
+class Pesanan extends Model
 {
+    protected $table = 'pesanan';
+
     protected $fillable = [
-        'order_number', 'user_id', 'catering_service_id', 'package_id',
-        'order_date', 'event_start_time', 'pickup_method', 'district_id', 'village_id',
-        'address_detail', 'latitude', 'longitude', 'serving_type', 'portion', 'subtotal',
-        'shipping_cost', 'total', 'payment_method', 'payment_status', 'refund_status',
+        'nomor_pesanan', 'user_id', 'layanan_katering_id', 'paket_katering_id',
+        'tanggal_pesanan', 'event_start_time', 'metode_pengambilan', 'kecamatan_id', 'desa_id',
+        'detail_alamat', 'latitude', 'longitude', 'tipe_penyajian', 'porsi', 'subtotal',
+        'ongkos_kirim', 'total', 'metode_pembayaran', 'status_pembayaran', 'refund_status',
         'midtrans_snap_token', 'midtrans_transaction_id', 'status',
-        'cancellation_reason', 'cancelled_at', 'notes',
+        'alasan_pembatalan', 'dibatalkan_pada', 'catatan',
     ];
 
     protected function casts(): array
     {
         return [
-            'order_date' => 'date',
+            'tanggal_pesanan' => 'date',
             'subtotal' => 'decimal:2',
-            'shipping_cost' => 'decimal:2',
+            'ongkos_kirim' => 'decimal:2',
             'total' => 'decimal:2',
-            'cancelled_at' => 'datetime',
+            'dibatalkan_pada' => 'datetime',
         ];
     }
 
@@ -43,11 +45,11 @@ class Order extends Model
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
-            'pending_payment' => 'Menunggu Pembayaran',
-            'processing' => 'Diproses',
-            'on_delivery' => 'Sedang Dikirim',
-            'completed' => 'Selesai',
-            'cancelled' => 'Dibatalkan',
+            'menunggu_pembayaran' => 'Menunggu Pembayaran',
+            'diproses' => 'Diproses',
+            'dikirim' => 'Sedang Dikirim',
+            'selesai' => 'Selesai',
+            'dibatalkan' => 'Dibatalkan',
             default => $this->status,
         };
     }
@@ -55,11 +57,11 @@ class Order extends Model
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
-            'pending_payment' => 'yellow',
-            'processing' => 'blue',
-            'on_delivery' => 'purple',
-            'completed' => 'green',
-            'cancelled' => 'red',
+            'menunggu_pembayaran' => 'yellow',
+            'diproses' => 'blue',
+            'dikirim' => 'purple',
+            'selesai' => 'green',
+            'dibatalkan' => 'red',
             default => 'gray',
         };
     }
@@ -73,10 +75,10 @@ class Order extends Model
 
     public function scopeCompleted($query)
     {
-        return $query->where('status', 'completed');
+        return $query->where('status', 'selesai');
     }
 
-    // === Order Number Generation ===
+    // === Pesanan Number Generation ===
 
     /**
          * Membuat nomor pesanan unik dengan memanggil Service khusus pemesanan.
@@ -95,39 +97,39 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function cateringService(): BelongsTo
+    public function layananKatering(): BelongsTo
     {
-        return $this->belongsTo(CateringService::class);
+        return $this->belongsTo(LayananKatering::class);
     }
 
     public function package(): BelongsTo
     {
-        return $this->belongsTo(CateringPackage::class, 'package_id');
+        return $this->belongsTo(PaketKatering::class, 'paket_katering_id');
     }
 
-    public function district(): BelongsTo
+    public function kecamatan(): BelongsTo
     {
-        return $this->belongsTo(District::class);
+        return $this->belongsTo(Kecamatan::class);
     }
 
-    public function village(): BelongsTo
+    public function desa(): BelongsTo
     {
-        return $this->belongsTo(Village::class);
+        return $this->belongsTo(Desa::class);
     }
 
     public function items(): HasMany
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(DetailPesanan::class);
     }
 
 
-    public function invoice(): HasOne
+    public function tagihan(): HasOne
     {
-        return $this->hasOne(Invoice::class);
+        return $this->hasOne(Tagihan::class);
     }
 
-    public function review(): HasOne
+    public function ulasan(): HasOne
     {
-        return $this->hasOne(Review::class);
+        return $this->hasOne(Ulasan::class);
     }
 }

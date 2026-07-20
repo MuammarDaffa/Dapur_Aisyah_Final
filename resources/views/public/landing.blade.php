@@ -176,7 +176,7 @@
                     @php
                         $serviceUrl = $service->isEvent()
                             ? route('customer.event.service', $service)
-                            : route('customer.products', ['service' => $service->id]);
+                            : route('customer.produk', ['service' => $service->id]);
                     @endphp
                     <a href="{{ $serviceUrl }}" class="group position-relative bg-white rounded-2xl border border border-secondary hover:-translate-y-1 d-flex d-flex-column h-100 overflow-hidden">
                         @if($service->image)
@@ -186,7 +186,7 @@
                                 <h3 class="position-absolute bottom-0 start-0 p-3 fs-4 fw-bold text-white mb-0">{{ $service->name }}</h3>
                             </div>
                             <div class="p-6 d-flex-1 d-flex d-flex-column justify-content-between">
-                                <p class="fs-6 text-secondary mb-6 line-clamp-3 leading-relaxed d-flex-1">{{ $service->description }}</p>
+                                <p class="fs-6 text-secondary mb-6 line-clamp-3 leading-relaxed d-flex-1">{{ $service->deskripsi }}</p>
                                 <div class="d-flex align-items-center justify-content-between pt-4 border-t border border-secondary mt-auto">
                                     <span class="fs-5 fw-bold text-primary">
                                         Mulai Rp {{ number_format($service->base_price, 0, ',', '.') }}
@@ -211,7 +211,7 @@
                                         @endif
                                     </div>
                                     <h3 class="fs-4 fw-bold text-secondary mb-3">{{ $service->name }}</h3>
-                                    <p class="fs-6 text-secondary mb-6 line-clamp-3 leading-relaxed">{{ $service->description }}</p>
+                                    <p class="fs-6 text-secondary mb-6 line-clamp-3 leading-relaxed">{{ $service->deskripsi }}</p>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between pt-4 border-t border border-primary/60 mt-auto">
                                     <span class="fs-5 fw-bold text-primary">
@@ -259,7 +259,7 @@
     </section>
 
     <!-- Testimonials -->
-    @if($reviews->count() > 0)
+    @if($ulasan->count() > 0)
     <section id="testimonials" class="py-5 bg-white section-item">
         <div class="container">
             <div class="text-center mb-5">
@@ -267,20 +267,20 @@
                 <p class="text-secondary fs-5">Ulasan dari pelanggan setia kami</p>
             </div>
             <div class="row justify-content-center g-4">
-                @foreach($reviews as $review)
+                @foreach($ulasan as $ulasan)
                     <div class="col-md-6 col-lg-4">
                         <div class="card h-100 border-primary shadow-sm">
                             <div class="card-body p-4">
                                 <div class="d-flex align-items-center mb-3">
                                     <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0 bg-primary" style="width: 48px; height: 48px;">
-                                        {{ strtoupper(substr($review->user->name ?? 'U', 0, 1)) }}
+                                        {{ strtoupper(substr($ulasan->user->name ?? 'U', 0, 1)) }}
                                     </div>
                                     <div class="ms-3">
-                                        <h5 class="fw-bold text-dark mb-0 fs-6">{{ $review->user->name ?? 'Pelanggan' }}</h5>
-                                        <small class="text-primary fw-medium">{{ $review->order->cateringService->name ?? 'Pelanggan Setia' }}</small>
+                                        <h5 class="fw-bold text-dark mb-0 fs-6">{{ $ulasan->user->name ?? 'Pelanggan' }}</h5>
+                                        <small class="text-primary fw-medium">{{ $ulasan->pesanan->layananKatering->name ?? 'Pelanggan Setia' }}</small>
                                     </div>
                                 </div>
-                                <p class="card-text text-secondary mb-0" style="font-style: italic;">"{{ $review->comment ?? 'Pelayanan sangat memuaskan!' }}"</p>
+                                <p class="card-text text-secondary mb-0" style="font-style: italic;">"{{ $ulasan->comment ?? 'Pelayanan sangat memuaskan!' }}"</p>
                             </div>
                         </div>
                     </div>
@@ -296,7 +296,7 @@
             <h2 class="fs-2 md:fs-1 fw-bold text-white mb-4">Siap Memesan Katering?</h2>
             <p class="text-primary fs-5 mb-8">Pesan sekarang dan nikmati kemudahan layanan katering online kami.</p>
             @auth
-                <a href="{{ route('customer.products') }}" class="d-inline-block px-10 py-4 bg-white text-primary fw-bold rounded-pill shadow-lg hover:shadow-2xl">
+                <a href="{{ route('customer.produk') }}" class="d-inline-block px-10 py-4 bg-white text-primary fw-bold rounded-pill shadow-lg hover:shadow-2xl">
                     Lihat Menu & Pesan →
                 </a>
             @else

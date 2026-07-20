@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
-use App\Models\Order;
+use App\Models\Pesanan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -17,32 +17,32 @@ class OrderStatusChangedMail extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public function __construct(
-        public Order $order
+        public Pesanan $pesanan
     ) {}
 
     public function envelope(): Envelope
     {
         $statusLabels = [
-            'processing' => 'Diproses',
-            'on_delivery' => 'Sedang Dikirim',
-            'completed' => 'Selesai',
-            'cancelled' => 'Dibatalkan',
+            'diproses' => 'Diproses',
+            'dikirim' => 'Sedang Dikirim',
+            'selesai' => 'Selesai',
+            'dibatalkan' => 'Dibatalkan',
         ];
 
-        $statusLabel = $statusLabels[$this->order->status] ?? $this->order->status;
+        $statusLabel = $statusLabels[$this->pesanan->status] ?? $this->pesanan->status;
 
         return new Envelope(
-            subject: "Update Pesanan {$this->order->order_number} — {$statusLabel}",
+            subject: "Update Pesanan {$this->pesanan->nomor_pesanan} — {$statusLabel}",
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'emails.order-status-changed',
+            view: 'emails.pesanan-status-changed',
             with: [
-                'order' => $this->order,
-                'user' => $this->order->user,
+                'pesanan' => $this->pesanan,
+                'user' => $this->pesanan->user,
             ],
         );
     }

@@ -8,15 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Model MenuPeriodItem merepresentasikan satu produk/menu yang dijadwalkan pada hari tertentu.
+ * Model ItemPeriodeMenu merepresentasikan satu produk/menu yang dijadwalkan pada hari tertentu.
  * Digunakan dalam fitur Katering Harian untuk mengontrol ketersediaan menu per tanggal.
  */
-class MenuPeriodItem extends Model
+class ItemPeriodeMenu extends Model
 {
+    protected $table = 'item_periode_menu';
+
     use HasFactory;
 
     protected $fillable = [
-        'menu_period_id', 'product_id', 'menu_date', 'status',
+        'periode_menu_id', 'produk_id', 'menu_date', 'status',
     ];
 
     protected function casts(): array
@@ -60,7 +62,7 @@ class MenuPeriodItem extends Model
      */
     public function isAvailable(): bool
     {
-        return ($this->status ?? 'tersedia') === 'tersedia' && ($this->product?->is_active ?? true);
+        return ($this->status ?? 'tersedia') === 'tersedia' && ($this->produk?->is_active ?? true);
     }
 
     /**
@@ -90,13 +92,13 @@ class MenuPeriodItem extends Model
 
     // === Relationships ===
 
-    public function menuPeriod(): BelongsTo
+    public function periodeMenu(): BelongsTo
     {
-        return $this->belongsTo(MenuPeriod::class);
+        return $this->belongsTo(PeriodeMenu::class);
     }
 
-    public function product(): BelongsTo
+    public function produk(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Produk::class);
     }
 }

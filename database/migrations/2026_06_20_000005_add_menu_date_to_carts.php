@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('carts', function (Blueprint $table) {
+        Schema::table('keranjang', function (Blueprint $table) {
             $table->date('menu_date')->nullable()->after('extras');
         });
     }
 
     public function down(): void
     {
-        Schema::table('carts', function (Blueprint $table) {
+        Schema::table('keranjang', function (Blueprint $table) {
             $table->dropColumn('menu_date');
         });
     }

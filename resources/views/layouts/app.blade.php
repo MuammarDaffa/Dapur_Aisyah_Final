@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="Dapur Aisyah - Platform pemesanan katering online terpercaya di Pontianak">
+    <meta name="deskripsi" content="Dapur Aisyah - Platform pemesanan katering online terpercaya di Pontianak">
 
     <title>{{ config('app.name', 'Dapur Aisyah') }} — @yield('title', 'Katering Online')</title>
 
@@ -59,9 +59,9 @@
             <!-- Auth Links -->
             <ul class="navbar-nav">
                 @if(auth()->check() && (!auth()->user()->isCustomer() || auth()->user()->hasVerifiedEmail()))
-                    <!-- Cart -->
+                    <!-- Keranjang -->
                     <li class="nav-item me-3">
-                        <a href="{{ route('customer.cart') }}" class="nav-link position-relative text-dark {{ request()->routeIs('customer.cart') ? 'active fw-bold' : '' }}">
+                        <a href="{{ route('customer.keranjang') }}" class="nav-link position-relative text-dark {{ request()->routeIs('customer.keranjang') ? 'active fw-bold' : '' }}">
                             Keranjang
                             @php $cartCount = auth()->user()->cartItemsCount(); @endphp
                             @if($cartCount > 0)
@@ -73,12 +73,12 @@
                     </li>
                     <!-- Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('customer.profile.edit', 'customer.orders') ? 'active fw-bold' : '' }}" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('customer.profile.edit', 'customer.pesanan') ? 'active fw-bold' : '' }}" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {{ auth()->user()->name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item {{ request()->routeIs('customer.profile.edit') ? 'active' : '' }}" href="{{ route('customer.profile.edit') }}">Profil Saya</a></li>
-                            <li><a class="dropdown-item {{ request()->routeIs('customer.orders') ? 'active' : '' }}" href="{{ route('customer.orders') }}">Pesanan Saya</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('customer.pesanan') ? 'active' : '' }}" href="{{ route('customer.pesanan') }}">Pesanan Saya</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop" class="m-0">
@@ -250,7 +250,7 @@
                             <li class="mb-2"><a href="#hero" class="text-light text-decoration-none" data-target="hero">Beranda</a></li>
                             <li class="mb-2"><a href="#services" class="text-light text-decoration-none" data-target="services">Layanan</a></li>
                             <li class="mb-2"><a href="#about" class="text-light text-decoration-none" data-target="about">Tentang</a></li>
-                            @if(isset($reviews) && $reviews->count() > 0)
+                            @if(isset($ulasan) && $ulasan->count() > 0)
                             <li class="mb-2"><a href="#testimonials" class="text-light text-decoration-none" data-target="testimonials">Testimoni</a></li>
                             @endif
                         @else
@@ -313,9 +313,9 @@
     }
 
     window.updateCartBadges = function(count) {
-        const desktopBadge = document.getElementById('desktop-cart-badge');
-        const mobileBadge = document.getElementById('mobile-cart-badge');
-        const hamburgerBadge = document.getElementById('hamburger-cart-badge');
+        const desktopBadge = document.getElementById('desktop-keranjang-badge');
+        const mobileBadge = document.getElementById('mobile-keranjang-badge');
+        const hamburgerBadge = document.getElementById('hamburger-keranjang-badge');
         [desktopBadge, mobileBadge, hamburgerBadge].forEach(badge => {
             if (!badge) return;
             const num = parseInt(count);
@@ -330,7 +330,7 @@
     };
 
     window.refreshCartBadges = function() {
-        fetch('{{ route("customer.cart.count") }}', {
+        fetch('{{ route("customer.keranjang.count") }}', {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'

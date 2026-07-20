@@ -38,25 +38,25 @@
 
             @php
                 $statusLabels = [
-                    'processing' => 'Diproses',
-                    'on_delivery' => 'Sedang Dikirim',
-                    'completed' => 'Selesai',
-                    'cancelled' => 'Dibatalkan',
+                    'diproses' => 'Diproses',
+                    'dikirim' => 'Sedang Dikirim',
+                    'selesai' => 'Selesai',
+                    'dibatalkan' => 'Dibatalkan',
                 ];
                 $statusMessages = [
-                    'processing' => 'Pesanan Anda sedang diproses oleh dapur kami.',
-                    'on_delivery' => 'Pesanan Anda sedang dalam perjalanan ke lokasi Anda.',
-                    'completed' => 'Pesanan Anda telah selesai. Terima kasih telah memesan!',
-                    'cancelled' => 'Pesanan Anda telah dibatalkan.',
+                    'diproses' => 'Pesanan Anda sedang diproses oleh dapur kami.',
+                    'dikirim' => 'Pesanan Anda sedang dalam perjalanan ke lokasi Anda.',
+                    'selesai' => 'Pesanan Anda telah selesai. Terima kasih telah memesan!',
+                    'dibatalkan' => 'Pesanan Anda telah dibatalkan.',
                 ];
-                $statusLabel = $statusLabels[$order->status] ?? $order->status;
-                $statusMessage = $statusMessages[$order->status] ?? 'Status pesanan Anda telah diperbarui.';
+                $statusLabel = $statusLabels[$pesanan->status] ?? $pesanan->status;
+                $statusMessage = $statusMessages[$pesanan->status] ?? 'Status pesanan Anda telah diperbarui.';
             @endphp
 
             <p style="color: #4b5563; line-height: 1.6;">{{ $statusMessage }}</p>
 
             <div style="text-align: center; margin: 20px 0;">
-                <span class="status-badge status-{{ $order->status }}">
+                <span class="status-badge status-{{ $pesanan->status }}">
                     {{ $statusLabel }}
                 </span>
             </div>
@@ -64,19 +64,19 @@
             <div class="info-box">
                 <div class="info-row">
                     <span class="info-label">Nomor Pesanan</span>
-                    <span class="info-value">{{ $order->order_number }}</span>
+                    <span class="info-value">{{ $pesanan->nomor_pesanan }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Total</span>
-                    <span class="info-value">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                    <span class="info-value">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</span>
                 </div>
             </div>
 
             <div style="text-align: center;">
-                <a href="{{ url('/dashboard/orders/' . $order->id) }}" class="btn">Lihat Detail Pesanan</a>
+                <a href="{{ url('/dashboard/pesanan/' . $pesanan->id) }}" class="btn">Lihat Detail Pesanan</a>
             </div>
 
-            @if($order->status === 'completed')
+            @if($pesanan->status === 'selesai')
                 <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-top: 16px; text-align: center;">
                     ⭐ Jangan lupa berikan ulasan untuk pesanan Anda!
                 </p>

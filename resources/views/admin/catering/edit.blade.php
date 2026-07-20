@@ -25,7 +25,7 @@
                     {{-- Deskripsi --}}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Deskripsi <span class="text-danger">*</span></label>
-                        <textarea name="description" rows="3" required class="form-control" placeholder="Deskripsi singkat katering...">{{ old('description', $service->description) }}</textarea>
+                        <textarea name="deskripsi" rows="3" required class="form-control" placeholder="Deskripsi singkat katering...">{{ old('deskripsi', $service->deskripsi) }}</textarea>
                     </div>
 
                     {{-- Tipe Katering --}}
@@ -34,7 +34,7 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="w-100 cursor-pointer">
-                                    <input type="radio" name="catering_type" value="daily" {{ old('catering_type', $service->isDaily() ? 'daily' : 'event') === 'daily' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
+                                    <input type="radio" name="catering_type" value="harian" {{ old('catering_type', $service->isDaily() ? 'harian' : 'acara') === 'harian' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
                                     <div class="card mb-0 h-100 border type-selector">
                                         <div class="card-body d-flex align-items-center">
                                             <i class="fa-solid fa-calendar-day fa-2x text-info me-3"></i>
@@ -48,7 +48,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="w-100 cursor-pointer">
-                                    <input type="radio" name="catering_type" value="event" {{ old('catering_type', $service->isEvent() ? 'event' : '') === 'event' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
+                                    <input type="radio" name="catering_type" value="acara" {{ old('catering_type', $service->isEvent() ? 'acara' : '') === 'acara' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
                                     <div class="card mb-0 h-100 border type-selector">
                                         <div class="card-body d-flex align-items-center">
                                             <i class="fa-solid fa-glass-cheers fa-2x text-purple me-3" style="color: #6f42c1;"></i>
@@ -76,7 +76,7 @@
                         </div>
                         <div id="max_portion_wrapper" class="col-md-4">
                             <label class="form-label fw-bold">Max. Porsi</label>
-                            <input type="number" name="max_portion" value="{{ old('max_portion', $service->max_portion) }}" placeholder="Tidak dibatasi" class="form-control">
+                            <input type="number" name="maksimal_porsi" value="{{ old('maksimal_porsi', $service->maksimal_porsi) }}" placeholder="Tidak dibatasi" class="form-control">
                         </div>
                     </div>
 
@@ -146,7 +146,7 @@
 <script>
 function toggleCateringTypeFields() {
     const typeRadio = document.querySelector('input[name="catering_type"]:checked');
-    const isDaily = typeRadio && typeRadio.value === 'daily';
+    const isDaily = typeRadio && typeRadio.value === 'harian';
 
     const minWrapper = document.getElementById('min_portion_wrapper');
     const maxWrapper = document.getElementById('max_portion_wrapper');

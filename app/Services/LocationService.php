@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\District;
+use App\Models\Kecamatan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -16,7 +16,7 @@ class LocationService
      * @param int|string|null $districtId
      * @param string|null $districtName
      * @param string|null $address
-     * @return array{is_in_pontianak: bool, message: string, district_id: int|null, district_name: string|null}
+     * @return array{is_in_pontianak: bool, message: string, kecamatan_id: int|null, district_name: string|null}
      */
     public static function validateLocation($latitude = null, $longitude = null, $districtId = null, $districtName = null, $address = null): array
     {
@@ -29,21 +29,21 @@ class LocationService
                 return [
                     'is_in_pontianak' => false,
                     'message' => 'Lokasi berada di luar wilayah Pontianak.',
-                    'district_id' => null,
+                    'kecamatan_id' => null,
                     'district_name' => $districtName
                 ];
             }
         }
 
-        // 2. Cek jika district_id valid di database (seluruh district di tabel districts adalah kecamatan Kota Pontianak)
+        // 2. Cek jika kecamatan_id valid di database (seluruh kecamatan di tabel kecamatan adalah kecamatan Kota Pontianak)
         if (!empty($districtId)) {
-            $district = District::find($districtId);
-            if ($district && self::isDistrictInPontianak($district->name)) {
+            $kecamatan = Kecamatan::find($districtId);
+            if ($kecamatan && self::isDistrictInPontianak($kecamatan->name)) {
                 return [
                     'is_in_pontianak' => true,
                     'message' => 'Lokasi berada di wilayah Pontianak.',
-                    'district_id' => $district->id,
-                    'district_name' => $district->name
+                    'kecamatan_id' => $kecamatan->id,
+                    'district_name' => $kecamatan->name
                 ];
             }
         }
@@ -64,20 +64,20 @@ class LocationService
                     return [
                         'is_in_pontianak' => false,
                         'message' => 'Lokasi berada di luar wilayah Pontianak.',
-                        'district_id' => null,
+                        'kecamatan_id' => null,
                         'district_name' => $districtName
                     ];
                 }
             }
 
             // Cek apakah match dengan salah satu dari 6 kecamatan Kota Pontianak di database
-            $pontianakDistricts = District::all();
+            $pontianakDistricts = Kecamatan::all();
             foreach ($pontianakDistricts as $dist) {
                 if (str_contains($checkText, strtolower($dist->name))) {
                     return [
                         'is_in_pontianak' => true,
                         'message' => 'Lokasi berada di wilayah Pontianak.',
-                        'district_id' => $dist->id,
+                        'kecamatan_id' => $dist->id,
                         'district_name' => $dist->name
                     ];
                 }
@@ -88,7 +88,7 @@ class LocationService
                 return [
                     'is_in_pontianak' => true,
                     'message' => 'Lokasi berada di wilayah Pontianak.',
-                    'district_id' => null,
+                    'kecamatan_id' => null,
                     'district_name' => $districtName
                 ];
             }
@@ -98,7 +98,7 @@ class LocationService
                 return [
                     'is_in_pontianak' => false,
                     'message' => 'Lokasi berada di luar wilayah Pontianak.',
-                    'district_id' => null,
+                    'kecamatan_id' => null,
                     'district_name' => $districtName
                 ];
             }
@@ -116,7 +116,7 @@ class LocationService
             return [
                 'is_in_pontianak' => $inTightBounds,
                 'message' => $inTightBounds ? 'Lokasi berada di wilayah Pontianak.' : 'Lokasi berada di luar wilayah Pontianak.',
-                'district_id' => null,
+                'kecamatan_id' => null,
                 'district_name' => null
             ];
         }
@@ -124,7 +124,7 @@ class LocationService
         return [
             'is_in_pontianak' => false,
             'message' => 'Lokasi berada di luar wilayah Pontianak.',
-            'district_id' => null,
+            'kecamatan_id' => null,
             'district_name' => null
         ];
     }
@@ -168,19 +168,19 @@ class LocationService
                         return [
                             'is_in_pontianak' => false,
                             'message' => 'Lokasi berada di luar wilayah Pontianak.',
-                            'district_id' => null,
+                            'kecamatan_id' => null,
                             'district_name' => $cityDistrict ?: $city
                         ];
                     }
 
-                    // Match dengan DB districts
-                    $pontianakDistricts = District::all();
+                    // Match dengan DB kecamatan
+                    $pontianakDistricts = Kecamatan::all();
                     foreach ($pontianakDistricts as $dist) {
                         if (str_contains($fullText, strtolower($dist->name))) {
                             return [
                                 'is_in_pontianak' => true,
                                 'message' => 'Lokasi berada di wilayah Pontianak.',
-                                'district_id' => $dist->id,
+                                'kecamatan_id' => $dist->id,
                                 'district_name' => $dist->name
                             ];
                         }
@@ -190,7 +190,7 @@ class LocationService
                         return [
                             'is_in_pontianak' => true,
                             'message' => 'Lokasi berada di wilayah Pontianak.',
-                            'district_id' => null,
+                            'kecamatan_id' => null,
                             'district_name' => $cityDistrict ?: $city
                         ];
                     }
@@ -198,7 +198,7 @@ class LocationService
                     return [
                         'is_in_pontianak' => false,
                         'message' => 'Lokasi berada di luar wilayah Pontianak.',
-                        'district_id' => null,
+                        'kecamatan_id' => null,
                         'district_name' => $cityDistrict ?: $city
                     ];
                 }

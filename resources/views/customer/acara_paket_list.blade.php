@@ -42,8 +42,8 @@
                     <div class="p-6 d-flex-1 d-flex d-flex-column justify-content-between">
                         <div>
                             <h3 class="fs-4 fw-bold text-secondary mb-2 group-hover:text-primary">{{ $pkg->name }}</h3>
-                            @if($pkg->description)
-                                <p class="fs-6 text-secondary mb-4 line-clamp-3 leading-relaxed">{{ $pkg->description }}</p>
+                            @if($pkg->deskripsi)
+                                <p class="fs-6 text-secondary mb-4 line-clamp-3 leading-relaxed">{{ $pkg->deskripsi }}</p>
                             @endif
                         </div>
 

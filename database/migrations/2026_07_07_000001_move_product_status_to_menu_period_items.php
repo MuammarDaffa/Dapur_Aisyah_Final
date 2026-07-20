@@ -12,26 +12,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 1. Tambahkan kolom status ke menu_period_items
-        if (!Schema::hasColumn('menu_period_items', 'status')) {
-            Schema::table('menu_period_items', function (Blueprint $table) {
+        // 1. Tambahkan kolom status ke item_periode_menu
+        if (!Schema::hasColumn('item_periode_menu', 'status')) {
+            Schema::table('item_periode_menu', function (Blueprint $table) {
                 $table->string('status', 20)->default('tersedia')->after('menu_date');
             });
         }
 
-        // 2. Migrasi data: salin status dari tabel products ke menu_period_items
-        if (Schema::hasColumn('products', 'status')) {
-            $products = DB::table('products')->get(['id', 'status']);
-            foreach ($products as $product) {
-                if ($product->status) {
-                    DB::table('menu_period_items')
-                        ->where('product_id', $product->id)
-                        ->update(['status' => $product->status]);
+        // 2. Migrasi data: salin status dari tabel produk ke item_periode_menu
+        if (Schema::hasColumn('produk', 'status')) {
+            $produk = DB::table('produk')->get(['id', 'status']);
+            foreach ($produk as $produk) {
+                if ($produk->status) {
+                    DB::table('item_periode_menu')
+                        ->where('produk_id', $produk->id)
+                        ->update(['status' => $produk->status]);
                 }
             }
 
-            // 3. Hapus kolom status dari tabel products untuk menghindari duplikasi sumber data
-            Schema::table('products', function (Blueprint $table) {
+            // 3. Hapus kolom status dari tabel produk untuk menghindari duplikasi sumber data
+            Schema::table('produk', function (Blueprint $table) {
                 $table->dropColumn('status');
             });
         }
@@ -42,16 +42,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Kembalikan kolom status ke tabel products
-        if (!Schema::hasColumn('products', 'status')) {
-            Schema::table('products', function (Blueprint $table) {
+        // Kembalikan kolom status ke tabel produk
+        if (!Schema::hasColumn('produk', 'status')) {
+            Schema::table('produk', function (Blueprint $table) {
                 $table->string('status', 20)->default('tersedia')->after('is_active');
             });
         }
 
-        // Hapus kolom status dari menu_period_items
-        if (Schema::hasColumn('menu_period_items', 'status')) {
-            Schema::table('menu_period_items', function (Blueprint $table) {
+        // Hapus kolom status dari item_periode_menu
+        if (Schema::hasColumn('item_periode_menu', 'status')) {
+            Schema::table('item_periode_menu', function (Blueprint $table) {
                 $table->dropColumn('status');
             });
         }

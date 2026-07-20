@@ -9,23 +9,23 @@ return new class extends Migration
     public function up(): void
     {
         // Task 11: Tambah status ketersediaan produk
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('produk', function (Blueprint $table) {
             $table->enum('status', ['tersedia', 'habis'])->default('tersedia')->after('is_active');
         });
 
-        // Task 10: Tambah jam mulai acara pada orders
-        Schema::table('orders', function (Blueprint $table) {
-            $table->time('event_start_time')->nullable()->after('order_date');
+        // Task 10: Tambah jam mulai acara pada pesanan
+        Schema::table('pesanan', function (Blueprint $table) {
+            $table->time('event_start_time')->nullable()->after('tanggal_pesanan');
         });
     }
 
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('produk', function (Blueprint $table) {
             $table->dropColumn('status');
         });
 
-        Schema::table('orders', function (Blueprint $table) {
+        Schema::table('pesanan', function (Blueprint $table) {
             $table->dropColumn('event_start_time');
         });
     }

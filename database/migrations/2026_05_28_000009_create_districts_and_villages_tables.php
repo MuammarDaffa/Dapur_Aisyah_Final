@@ -8,21 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('districts', function (Blueprint $table) {
+        Schema::create('kecamatan', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
         });
 
-        Schema::create('villages', function (Blueprint $table) {
+        Schema::create('desa', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('district_id')->constrained('districts')->cascadeOnDelete();
+            $table->foreignId('kecamatan_id')->constrained('kecamatan')->cascadeOnDelete();
             $table->string('name', 100);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('villages');
-        Schema::dropIfExists('districts');
+        Schema::dropIfExists('desa');
+        Schema::dropIfExists('kecamatan');
     }
 };

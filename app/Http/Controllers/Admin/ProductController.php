@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CateringService;
-use App\Models\Product;
+use App\Models\LayananKatering;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -12,110 +12,110 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('cateringService');
+        $query = Produk::with('layananKatering');
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
         if ($request->filled('service')) {
-            $query->where('catering_service_id', $request->service);
+            $query->where('layanan_katering_id', $request->service);
         }
 
-        $products = $query->latest()->paginate(15);
-        $services = CateringService::all();
+        $produk = $query->latest()->paginate(15);
+        $services = LayananKatering::all();
 
-        return view('admin.products.index', compact('products', 'services'));
+        return view('admin.produk.index', compact('produk', 'services'));
     }
 
     public function create(Request $request)
     {
-        $services = CateringService::active()->get();
+        $services = LayananKatering::active()->get();
         $extras = [];
-        if ($request->has('catering_service_id')) {
-            $extras = \App\Models\CustomOption::where('catering_service_id', $request->catering_service_id)
+        if ($request->has('layanan_katering_id')) {
+            $extras = \App\Models\OpsiKustom::where('layanan_katering_id', $request->layanan_katering_id)
                         ->where('type', 'extra')->active()->get();
         }
-        return view('admin.products.create', compact('services', 'extras'));
+        return view('admin.produk.create', compact('services', 'extras'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'catering_service_id' => 'required|exists:catering_services,id',
+            'layanan_katering_id' => 'required|exists:layanan_katering,id',
             'name' => 'required|string|max:150',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0|max:1000000000',
+            'deskripsi' => 'nullable|string',
+            'harga' => 'required|numeric|min:0|max:1000000000',
             'image' => 'nullable|image|max:2048',
             'is_active' => 'boolean',
             'extras' => 'nullable|array',
-            'extras.*' => 'exists:custom_options,id',
+            'extras.*' => 'exists:opsi_kustom,id',
         ], [
-            'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
+            'harga.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $validated['image'] = $request->file('image')->store('produk', 'public');
         }
 
-        $product = Product::create($validated);
+        $produk = Produk::create($validated);
 
         if ($request->has('extras')) {
-            $product->extras()->sync($request->extras);
+            $produk->extras()->sync($request->extras);
         }
 
-        return redirect()->route('admin.catering.show', $validated['catering_service_id'])
+        return redirect()->route('admin.catering.show', $validated['layanan_katering_id'])
             ->with('success', 'Produk berhasil ditambahkan.');
     }
 
-    public function edit(Product $product)
+    public function edit(Produk $produk)
     {
-        $services = CateringService::active()->get();
-        $extras = \App\Models\CustomOption::where('catering_service_id', $product->catering_service_id)
+        $services = LayananKatering::active()->get();
+        $extras = \App\Models\OpsiKustom::where('layanan_katering_id', $produk->layanan_katering_id)
                         ->where('type', 'extra')->active()->get();
-        return view('admin.products.edit', compact('product', 'services', 'extras'));
+        return view('admin.produk.edit', compact('produk', 'services', 'extras'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Produk $produk)
     {
         $validated = $request->validate([
-            'catering_service_id' => 'required|exists:catering_services,id',
+            'layanan_katering_id' => 'required|exists:layanan_katering,id',
             'name' => 'required|string|max:150',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0|max:1000000000',
+            'deskripsi' => 'nullable|string',
+            'harga' => 'required|numeric|min:0|max:1000000000',
             'image' => 'nullable|image|max:2048',
             'is_active' => 'boolean',
             'extras' => 'nullable|array',
-            'extras.*' => 'exists:custom_options,id',
+            'extras.*' => 'exists:opsi_kustom,id',
         ], [
-            'price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
+            'harga.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $validated['image'] = $request->file('image')->store('produk', 'public');
         }
 
-        $product->update($validated);
+        $produk->update($validated);
         
-        $syncResult = $product->extras()->sync($request->extras ?? []);
+        $syncResult = $produk->extras()->sync($request->extras ?? []);
         $wasSyncChanged = !empty($syncResult['attached']) || !empty($syncResult['detached']) || !empty($syncResult['updated']);
 
-        if (!$product->wasChanged() && !$wasSyncChanged) {
-            return redirect()->route('admin.catering.show', $product->catering_service_id);
+        if (!$produk->wasChanged() && !$wasSyncChanged) {
+            return redirect()->route('admin.catering.show', $produk->layanan_katering_id);
         }
 
-        return redirect()->route('admin.catering.show', $product->catering_service_id)
+        return redirect()->route('admin.catering.show', $produk->layanan_katering_id)
             ->with('success', 'Produk berhasil diperbarui.');
     }
 
-    public function destroy(Product $product)
+    public function destroy(Produk $produk)
     {
-        $cateringId = $product->catering_service_id;
-        $product->delete();
+        $cateringId = $produk->layanan_katering_id;
+        $produk->delete();
         return redirect()->route('admin.catering.show', $cateringId)
             ->with('success', 'Produk berhasil dihapus.');
     }

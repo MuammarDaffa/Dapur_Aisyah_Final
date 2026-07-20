@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Order;
-use App\Models\CateringService;
+use App\Models\Pesanan;
+use App\Models\LayananKatering;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 
@@ -18,11 +18,11 @@ class OrderService
     public static function generateOrderNumber(): string
     {
         $date = Carbon::now()->format('Ymd');
-        $lastOrder = Order::where('order_number', 'like', "ORD-{$date}-%")
+        $lastOrder = Pesanan::where('nomor_pesanan', 'like', "ORD-{$date}-%")
             ->orderByDesc('id')
             ->first();
 
-        if ($lastOrder && preg_match('/ORD-\d{8}-(\d{4})/', $lastOrder->order_number, $matches)) {
+        if ($lastOrder && preg_match('/ORD-\d{8}-(\d{4})/', $lastOrder->nomor_pesanan, $matches)) {
             $lastNumber = (int) $matches[1];
             $newNumber = str_pad((string) ($lastNumber + 1), 4, '0', STR_PAD_LEFT);
         } else {
@@ -46,7 +46,7 @@ class OrderService
     /**
      * Validasi tanggal pemesanan berdasarkan cutoff layanan.
      *
-     * Menggunakan minimal_order_days dari CateringService.
+     * Menggunakan minimal_order_days dari LayananKatering.
      * Berlaku untuk semua jenis layanan (Daily, Event, dll).
      *
      * @throws ValidationException
@@ -57,7 +57,7 @@ class OrderService
             return;
         }
 
-        $service = CateringService::find($cateringServiceId);
+        $service = LayananKatering::find($cateringServiceId);
         if (!$service) {
             return;
         }
@@ -69,7 +69,7 @@ class OrderService
             $today = Carbon::now('Asia/Jakarta')->startOfDay();
             if ($orderDateCarbon->lt($today)) {
                 throw ValidationException::withMessages([
-                    'order_date' => "Pesanan katering harian tidak dapat dilakukan untuk tanggal yang sudah lewat.",
+                    'tanggal_pesanan' => "Pesanan katering harian tidak dapat dilakukan untuk tanggal yang sudah lewat.",
                 ]);
             }
             return;
@@ -90,7 +90,7 @@ class OrderService
         // Cek minimal hari
         if ($daysUntil < $minDays) {
             throw ValidationException::withMessages([
-                'order_date' => "Pesanan untuk layanan {$service->name} harus dilakukan minimal {$minDays} hari sebelum tanggal acara.",
+                'tanggal_pesanan' => "Pesanan untuk layanan {$service->name} harus dilakukan minimal {$minDays} hari sebelum tanggal acara.",
             ]);
         }
     }
@@ -100,21 +100,21 @@ class OrderService
      *
      * @throws ValidationException
      */
-    public static function validateCancellation(Order $order): void
+    public static function validateCancellation(Pesanan $pesanan): void
     {
         // Pesanan yang sudah dikirim atau selesai tidak bisa dibatalkan
-        if (in_array($order->status, ['on_delivery', 'completed', 'cancelled'])) {
+        if (in_array($pesanan->status, ['dikirim', 'selesai', 'dibatalkan'])) {
             throw ValidationException::withMessages([
-                'status' => 'Pesanan dengan status "' . $order->status . '" tidak dapat dibatalkan.',
+                'status' => 'Pesanan dengan status "' . $pesanan->status . '" tidak dapat dibatalkan.',
             ]);
         }
 
         // Validasi batas waktu pembatalan menggunakan cutoff dari layanan (hanya untuk Event, bukan Daily)
-        if ($order->cateringService) {
-            $service = $order->cateringService;
+        if ($pesanan->layananKatering) {
+            $service = $pesanan->layananKatering;
             
             if (!$service->isDaily() && !is_null($service->minimal_order_days)) {
-                $orderDate = Carbon::parse($order->order_date);
+                $orderDate = Carbon::parse($pesanan->tanggal_pesanan);
                 $now = Carbon::now();
                 $minDays = $service->minimal_order_days ?? 0;
 
@@ -132,29 +132,29 @@ class OrderService
     /**
      * Update status pesanan.
      */
-    public static function updateStatus(Order $order, string $newStatus, ?string $cancellationReason = null): Order
+    public static function updateStatus(Pesanan $pesanan, string $newStatus, ?string $cancellationReason = null): Pesanan
     {
         $data = ['status' => $newStatus];
 
-        if ($newStatus === 'completed') {
-            $data['payment_status'] = 'paid';
+        if ($newStatus === 'selesai') {
+            $data['status_pembayaran'] = 'sudah_dibayar';
         }
 
-        if ($newStatus === 'cancelled') {
-            $data['cancelled_at'] = now();
-            $data['cancellation_reason'] = $cancellationReason;
+        if ($newStatus === 'dibatalkan') {
+            $data['dibatalkan_pada'] = now();
+            $data['alasan_pembatalan'] = $cancellationReason;
 
             // Jika pesanan sudah dibayar, set refund_status = 'pending'
-            if ($order->payment_status === 'paid') {
+            if ($pesanan->status_pembayaran === 'sudah_dibayar') {
                 $data['refund_status'] = 'pending';
             }
         }
 
-        $order->update($data);
+        $pesanan->update($data);
 
         // Kirim notifikasi
-        NotificationService::notifyStatusChanged($order);
+        NotificationService::notifyStatusChanged($pesanan);
 
-        return $order->fresh();
+        return $pesanan->fresh();
     }
 }

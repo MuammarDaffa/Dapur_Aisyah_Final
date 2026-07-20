@@ -8,20 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('order_items', function (Blueprint $table) {
+        Schema::create('detail_pesanan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
-            $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
-            $table->foreignId('custom_option_id')->nullable()->constrained('custom_options')->nullOnDelete();
-            $table->string('item_name', 150); // Snapshot nama saat order
-            $table->integer('quantity')->default(1);
-            $table->decimal('unit_price', 12, 2); // Snapshot harga saat order
+            $table->foreignId('pesanan_id')->constrained('pesanan')->cascadeOnDelete();
+            $table->foreignId('produk_id')->nullable()->constrained('produk')->nullOnDelete();
+            $table->foreignId('opsi_kustom_id')->nullable()->constrained('opsi_kustom')->nullOnDelete();
+            $table->string('item_name', 150); // Snapshot nama saat pesanan
+            $table->integer('jumlah')->default(1);
+            $table->decimal('unit_price', 12, 2); // Snapshot harga saat pesanan
             $table->decimal('subtotal', 12, 2);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('order_items');
+        Schema::dropIfExists('detail_pesanan');
     }
 };

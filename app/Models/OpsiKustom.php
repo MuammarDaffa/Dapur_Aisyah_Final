@@ -7,19 +7,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * Model CustomOption menyimpan data kustomisasi atau opsi fleksibel dalam pemesanan.
+ * Model OpsiKustom menyimpan data kustomisasi atau opsi fleksibel dalam pemesanan.
  * Ini bisa berupa tipe penyajian, dekorasi, atau ekstra lauk yang dapat dipilih oleh pelanggan.
  */
-class CustomOption extends Model
+class OpsiKustom extends Model
 {
+    protected $table = 'opsi_kustom';
+
     protected $fillable = [
-        'catering_service_id', 'type', 'name', 'price', 'min_qty', 'is_active', 'image', 'items',
+        'layanan_katering_id', 'type', 'name', 'harga', 'min_qty', 'is_active', 'image', 'items',
     ];
 
     protected function casts(): array
     {
         return [
-            'price' => 'decimal:2',
+            'harga' => 'decimal:2',
             'min_qty' => 'integer',
             'is_active' => 'boolean',
             'items' => 'array',
@@ -38,9 +40,9 @@ class CustomOption extends Model
 
     // === Relationships ===
 
-    public function cateringService(): BelongsTo
+    public function layananKatering(): BelongsTo
     {
-        return $this->belongsTo(CateringService::class);
+        return $this->belongsTo(LayananKatering::class);
     }
 
     /**
@@ -48,8 +50,8 @@ class CustomOption extends Model
      */
     public function packages(): BelongsToMany
     {
-        return $this->belongsToMany(CateringPackage::class, 'catering_package_custom_option')
-                    ->withPivot('quantity');
+        return $this->belongsToMany(PaketKatering::class, 'catering_package_custom_option')
+                    ->withPivot('jumlah');
     }
 
     /**
@@ -57,6 +59,6 @@ class CustomOption extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
-        return 'Rp ' . number_format($this->price, 0, ',', '.');
+        return 'Rp ' . number_format($this->harga, 0, ',', '.');
     }
 }

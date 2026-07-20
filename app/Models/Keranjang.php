@@ -6,15 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Model Cart merepresentasikan item keranjang belanja pelanggan sebelum checkout.
+ * Model Keranjang merepresentasikan item keranjang belanja pelanggan sebelum checkout.
  * Bertanggung jawab menyimpan data produk, paket, atau kustomisasi yang dipilih beserta kuantitasnya.
  */
-class Cart extends Model
+class Keranjang extends Model
 {
+    protected $table = 'keranjang';
+
     protected $fillable = [
-        'user_id', 'catering_service_id', 'cart_group_id', 'product_id',
-        'custom_option_id', 'catering_package_id', 'extras',
-        'quantity', 'item_type', 'serving_type_id', 'menu_date', 'notes',
+        'user_id', 'layanan_katering_id', 'cart_group_id', 'produk_id',
+        'opsi_kustom_id', 'catering_package_id', 'extras',
+        'jumlah', 'item_type', 'serving_type_id', 'menu_date', 'catatan',
     ];
 
     protected $casts = [
@@ -29,35 +31,35 @@ class Cart extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function product(): BelongsTo
+    public function produk(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Produk::class);
     }
 
-    public function customOption(): BelongsTo
+    public function opsiKustom(): BelongsTo
     {
-        return $this->belongsTo(CustomOption::class);
+        return $this->belongsTo(OpsiKustom::class);
     }
 
-    public function cateringPackage(): BelongsTo
+    public function paketKatering(): BelongsTo
     {
-        return $this->belongsTo(CateringPackage::class);
+        return $this->belongsTo(PaketKatering::class);
     }
 
-    public function cateringService(): BelongsTo
+    public function layananKatering(): BelongsTo
     {
-        return $this->belongsTo(CateringService::class);
+        return $this->belongsTo(LayananKatering::class);
     }
 
     public function servingType(): BelongsTo
     {
-        return $this->belongsTo(CustomOption::class, 'serving_type_id');
+        return $this->belongsTo(OpsiKustom::class, 'serving_type_id');
     }
 
     // === Helpers ===
 
     /**
-     * Cek apakah item ini adalah bagian dari event order.
+     * Cek apakah item ini adalah bagian dari event pesanan.
      */
     /**
          * Mengecek apakah item keranjang ini merupakan pesanan Event (Prasmanan/Kotakan).
@@ -109,29 +111,29 @@ class Cart extends Model
             return 0;
         }
 
-        // Item tipe package → harga paket dikali quantity
-        if ($this->item_type === 'package' && $this->cateringPackage) {
-            return (float) $this->cateringPackage->price * $this->quantity;
+        // Item tipe package → harga paket dikali jumlah
+        if ($this->item_type === 'package' && $this->paketKatering) {
+            return (float) $this->paketKatering->harga * $this->jumlah;
         }
 
         // Item produk harian / tambahan event
-        $basePrice = $this->product
-            ? (float) $this->product->price
-            : ($this->customOption ? (float) $this->customOption->price : 0);
+        $basePrice = $this->produk
+            ? (float) $this->produk->harga
+            : ($this->opsiKustom ? (float) $this->opsiKustom->harga : 0);
 
         $extrasPrice = 0;
         if (!empty($this->extras)) {
             $extraIds = array_column($this->extras, 'id');
-            $extras = \App\Models\CustomOption::whereIn('id', $extraIds)->get()->keyBy('id');
+            $extras = \App\Models\OpsiKustom::whereIn('id', $extraIds)->get()->keyBy('id');
             
             foreach ($this->extras as $extraData) {
                 if ($extra = $extras->get($extraData['id'])) {
-                    $extrasPrice += ((float) $extra->price * $extraData['qty']);
+                    $extrasPrice += ((float) $extra->harga * $extraData['qty']);
                 }
             }
         }
 
-        return ($basePrice * $this->quantity) + $extrasPrice;
+        return ($basePrice * $this->jumlah) + $extrasPrice;
     }
 
     /**
@@ -161,14 +163,14 @@ class Cart extends Model
         $today = \Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d');
 
         // Pre-fetch lookup maps (bulk queries untuk menghindari loop query)
-        $productIds = $userCarts->pluck('product_id')->filter()->unique();
+        $productIds = $userCarts->pluck('produk_id')->filter()->unique();
         $activeProducts = $productIds->isNotEmpty()
-            ? \App\Models\Product::whereIn('id', $productIds)->where('is_active', true)->pluck('id')->flip()
+            ? \App\Models\Produk::whereIn('id', $productIds)->where('is_active', true)->pluck('id')->flip()
             : collect();
 
         $optionIds = collect();
         foreach ($userCarts as $c) {
-            if ($c->custom_option_id) $optionIds->push($c->custom_option_id);
+            if ($c->opsi_kustom_id) $optionIds->push($c->opsi_kustom_id);
             if ($c->serving_type_id) $optionIds->push($c->serving_type_id);
             if (!empty($c->extras) && is_array($c->extras)) {
                 foreach ($c->extras as $extra) {
@@ -178,24 +180,24 @@ class Cart extends Model
         }
         $optionIds = $optionIds->unique();
         $existingOptions = $optionIds->isNotEmpty()
-            ? \App\Models\CustomOption::whereIn('id', $optionIds)->pluck('id')->flip()
+            ? \App\Models\OpsiKustom::whereIn('id', $optionIds)->pluck('id')->flip()
             : collect();
 
         $packageIds = $userCarts->pluck('catering_package_id')->filter()->unique();
         $activePackages = $packageIds->isNotEmpty()
-            ? \App\Models\CateringPackage::whereIn('id', $packageIds)->where('is_active', true)->pluck('id')->flip()
+            ? \App\Models\PaketKatering::whereIn('id', $packageIds)->where('is_active', true)->pluck('id')->flip()
             : collect();
 
-        // Lookup MenuPeriodItem untuk Katering Harian
-        $dailyCartsWithDate = $userCarts->whereNull('cart_group_id')->whereNotNull('product_id')->whereNotNull('menu_date');
+        // Lookup ItemPeriodeMenu untuk Katering Harian
+        $dailyCartsWithDate = $userCarts->whereNull('cart_group_id')->whereNotNull('produk_id')->whereNotNull('menu_date');
         $menuPeriodMap = collect();
         if ($dailyCartsWithDate->isNotEmpty()) {
-            $pIds = $dailyCartsWithDate->pluck('product_id')->unique();
+            $pIds = $dailyCartsWithDate->pluck('produk_id')->unique();
             $dates = $dailyCartsWithDate->pluck('menu_date')->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))->unique();
-            $mpItems = \App\Models\MenuPeriodItem::whereIn('product_id', $pIds)->whereIn('menu_date', $dates)->get();
+            $mpItems = \App\Models\ItemPeriodeMenu::whereIn('produk_id', $pIds)->whereIn('menu_date', $dates)->get();
             foreach ($mpItems as $mpi) {
                 $dateStr = \Carbon\Carbon::parse($mpi->menu_date)->format('Y-m-d');
-                $menuPeriodMap->put("{$mpi->product_id}_{$dateStr}", $mpi);
+                $menuPeriodMap->put("{$mpi->produk_id}_{$dateStr}", $mpi);
             }
         }
 
@@ -205,26 +207,26 @@ class Cart extends Model
         $unavailableGroupIds = [];
 
         // 1. Cek Katering Harian (cart_group_id IS NULL)
-        foreach ($userCarts->whereNull('cart_group_id') as $cart) {
+        foreach ($userCarts->whereNull('cart_group_id') as $keranjang) {
             // Cek jadwal lewat (kadaluwarsa)
-            if ($cart->menu_date) {
-                $dateStr = \Carbon\Carbon::parse($cart->menu_date)->format('Y-m-d');
+            if ($keranjang->menu_date) {
+                $dateStr = \Carbon\Carbon::parse($keranjang->menu_date)->format('Y-m-d');
                 if ($dateStr < $today) {
-                    $expiredIds[] = $cart->id;
+                    $expiredIds[] = $keranjang->id;
                     continue;
                 }
             }
 
             // Cek produk deleted/inactive atau null (Jika produk menu)
-            if (!$cart->product_id || !isset($activeProducts[$cart->product_id])) {
-                $unavailableDailyIds[] = $cart->id;
+            if (!$keranjang->produk_id || !isset($activeProducts[$keranjang->produk_id])) {
+                $unavailableDailyIds[] = $keranjang->id;
                 continue;
             }
 
             // Cek apakah ada komponen extra yang dihapus admin
             $hasDeletedExtra = false;
-            if (!empty($cart->extras) && is_array($cart->extras)) {
-                foreach ($cart->extras as $extra) {
+            if (!empty($keranjang->extras) && is_array($keranjang->extras)) {
+                foreach ($keranjang->extras as $extra) {
                     if (!empty($extra['id']) && !isset($existingOptions[$extra['id']])) {
                         $hasDeletedExtra = true;
                         break;
@@ -232,21 +234,21 @@ class Cart extends Model
                 }
             }
             if ($hasDeletedExtra) {
-                $unavailableDailyIds[] = $cart->id;
+                $unavailableDailyIds[] = $keranjang->id;
                 continue;
             }
 
-            // Cek MenuPeriodItem (ketersediaan/habis di jadwal)
-            if ($cart->menu_date) {
-                $dateStr = \Carbon\Carbon::parse($cart->menu_date)->format('Y-m-d');
-                $mpi = $menuPeriodMap->get("{$cart->product_id}_{$dateStr}");
+            // Cek ItemPeriodeMenu (ketersediaan/habis di jadwal)
+            if ($keranjang->menu_date) {
+                $dateStr = \Carbon\Carbon::parse($keranjang->menu_date)->format('Y-m-d');
+                $mpi = $menuPeriodMap->get("{$keranjang->produk_id}_{$dateStr}");
                 if (!$mpi) {
                     // Menu sudah tidak ada di jadwal periode aktif
-                    $unavailableDailyIds[] = $cart->id;
+                    $unavailableDailyIds[] = $keranjang->id;
                     continue;
                 } elseif ($mpi->isOutOfStock()) {
                     // Status menu diubah menjadi Habis
-                    $habisDailyIds[] = $cart->id;
+                    $habisDailyIds[] = $keranjang->id;
                     continue;
                 }
             }
@@ -266,7 +268,7 @@ class Cart extends Model
                 // Cek apakah ada menu dalam paket yang dihapus
                 $packageItems = $groupItems->where('item_type', 'package_item');
                 foreach ($packageItems as $pi) {
-                    if (!$pi->custom_option_id || !isset($existingOptions[$pi->custom_option_id])) {
+                    if (!$pi->opsi_kustom_id || !isset($existingOptions[$pi->opsi_kustom_id])) {
                         $unavailableGroupIds[] = $groupId;
                         break;
                     }
@@ -287,7 +289,7 @@ class Cart extends Model
                 foreach ($groupItems as $item) {
                     if (in_array($item->item_type, ['custom_menu', 'addition'])) {
                         if ($item->item_type === 'custom_menu') $hasCustomMenu = true;
-                        if (!$item->custom_option_id || !isset($existingOptions[$item->custom_option_id])) {
+                        if (!$item->opsi_kustom_id || !isset($existingOptions[$item->opsi_kustom_id])) {
                             $groupBroken = true;
                             break;
                         }

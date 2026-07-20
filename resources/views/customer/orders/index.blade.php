@@ -9,32 +9,32 @@
 
     <!-- Status Filter -->
     <div class="d-flex d-flex-wrap g-3 mb-6">
-        <a href="{{ route('customer.orders') }}" class="px-4 py-2 rounded-pill fs-6 fw-medium {{ !request('status') ? 'bg-primary text-white text-white' : 'bg-light text-secondary hover:bg-light' }}">Semua</a>
-        @foreach(['processing' => 'Diproses', 'on_delivery' => 'Dikirim', 'completed' => 'Selesai', 'cancelled' => 'Dibatalkan'] as $key => $label)
-            <a href="{{ route('customer.orders', ['status' => $key]) }}" class="px-4 py-2 rounded-pill fs-6 fw-medium {{ request('status') == $key ? 'bg-primary text-white text-white' : 'bg-light text-secondary hover:bg-light' }}">{{ $label }}</a>
+        <a href="{{ route('customer.pesanan') }}" class="px-4 py-2 rounded-pill fs-6 fw-medium {{ !request('status') ? 'bg-primary text-white text-white' : 'bg-light text-secondary hover:bg-light' }}">Semua</a>
+        @foreach(['diproses' => 'Diproses', 'dikirim' => 'Dikirim', 'selesai' => 'Selesai', 'dibatalkan' => 'Dibatalkan'] as $key => $label)
+            <a href="{{ route('customer.pesanan', ['status' => $key]) }}" class="px-4 py-2 rounded-pill fs-6 fw-medium {{ request('status') == $key ? 'bg-primary text-white text-white' : 'bg-light text-secondary hover:bg-light' }}">{{ $label }}</a>
         @endforeach
     </div>
 
     <div class="d-flex flex-column gap-3">
-        @forelse($orders as $order)
-            <a href="{{ route('customer.orders.show', $order) }}" class="d-block bg-white rounded p-5 shadow-sm border border border-secondary hover:shadow-md transition-shadow">
+        @forelse($pesanan as $pesanan)
+            <a href="{{ route('customer.pesanan.show', $pesanan) }}" class="d-block bg-white rounded p-5 shadow-sm border border border-secondary hover:shadow-md transition-shadow">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="d-flex align-items-center space-x-3">
                         <div style="height: 40px;" class="w-10 bg-primary text-white text-primary rounded d-flex align-items-center justify-content-center flex-shrink-0">
                             <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         </div>
                         <div>
-                            <p class="fw-bold text-secondary">{{ $order->order_number }}</p>
-                            <p class="small text-secondary">{{ $order->cateringService->name ?? 'Katering' }} · {{ $order->created_at->format('d M Y, H:i') }}</p>
+                            <p class="fw-bold text-secondary">{{ $pesanan->nomor_pesanan }}</p>
+                            <p class="small text-secondary">{{ $pesanan->layananKatering->name ?? 'Katering' }} · {{ $pesanan->created_at->format('d M Y, H:i') }}</p>
                         </div>
                     </div>
-                    <span class="small px-3 py-1 rounded-pill fw-medium {{ match($order->status) { 'processing' => 'bg-info text-white text-info', 'on_delivery' => 'bg-purple-100 text-purple-700', 'completed' => 'bg-success text-white text-success', 'cancelled' => 'bg-danger text-white text-danger', default => 'bg-light text-secondary' } }}">
-                        {{ $order->status_label }}
+                    <span class="small px-3 py-1 rounded-pill fw-medium {{ match($pesanan->status) { 'diproses' => 'bg-info text-white text-info', 'dikirim' => 'bg-purple-100 text-purple-700', 'selesai' => 'bg-success text-white text-success', 'dibatalkan' => 'bg-danger text-white text-danger', default => 'bg-light text-secondary' } }}">
+                        {{ $pesanan->status_label }}
                     </span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center fs-6">
-                    <span class="text-secondary">Tanggal: {{ $order->order_date->format('d M Y') }} · {{ ucfirst($order->pickup_method) }}</span>
-                    <span class="fw-bold text-primary">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                    <span class="text-secondary">Tanggal: {{ $pesanan->tanggal_pesanan->format('d M Y') }} · {{ ucfirst($pesanan->metode_pengambilan) }}</span>
+                    <span class="fw-bold text-primary">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</span>
                 </div>
             </a>
         @empty
@@ -46,6 +46,6 @@
             </div>
         @endforelse
     </div>
-    <div class="mt-6">{{ $orders->withQueryString()->links() }}</div>
+    <div class="mt-6">{{ $pesanan->withQueryString()->links() }}</div>
 </div>
 @endsection

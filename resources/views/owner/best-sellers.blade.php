@@ -15,14 +15,14 @@
         </div>
     </div>
 
-    {{-- Product Grid --}}
+    {{-- Produk Grid --}}
     <div class="row row-cols-1 sm:row-cols-2 lg:row-cols-4 g-3">
-        @forelse($bestSellers as $index => $product)
+        @forelse($bestSellers as $index => $produk)
             <div class="bg-white rounded shadow-md overflow-hidden border border border-secondary hover:-translate-y-1">
                 {{-- Image --}}
                 <div class="position-relative h-44 overflow-hidden">
-                    @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                    @if($produk->image)
+                        <img src="{{ asset('storage/' . $produk->image) }}" alt="{{ $produk->name }}"
                              class="w-100 h-100 object-cover">
                     @else
                         <div class="w-100 h-100 d-flex align-items-center justify-content-center">
@@ -38,19 +38,19 @@
 
                 {{-- Content --}}
                 <div class="p-4 d-flex flex-column gap-2">
-                    <h3 class="fw-bold text-secondary truncate">{{ $product->name }}</h3>
+                    <h3 class="fw-bold text-secondary truncate">{{ $produk->name }}</h3>
 
-                    @if($product->cateringService)
-                        <p class="small text-secondary">{{ $product->cateringService->name }}</p>
+                    @if($produk->layananKatering)
+                        <p class="small text-secondary">{{ $produk->layananKatering->name }}</p>
                     @endif
 
                     <div class="d-flex align-items-center justify-content-between pt-2 border-t border border-secondary">
                         <span class="fw-bold text-success">
-                            Rp {{ number_format($product->price, 0, ',', '.') }}
+                            Rp {{ number_format($produk->harga, 0, ',', '.') }}
                         </span>
                         <div class="d-flex align-items-center g-3 bg-teal-50 text-teal-700 px-2.5 py-1 rounded-pill small fw-bold">
                             <span>📦</span>
-                            <span>{{ $product->order_items_count }} terjual</span>
+                            <span>{{ $produk->order_items_count }} terjual</span>
                         </div>
                     </div>
                 </div>

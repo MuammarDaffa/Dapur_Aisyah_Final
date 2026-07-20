@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('carts', function (Blueprint $table) {
-            $table->json('extras')->nullable()->after('custom_option_id');
+        Schema::table('keranjang', function (Blueprint $table) {
+            $table->json('extras')->nullable()->after('opsi_kustom_id');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('carts', function (Blueprint $table) {
+        Schema::table('keranjang', function (Blueprint $table) {
             $table->dropColumn('extras');
         });
     }

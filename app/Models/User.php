@@ -67,19 +67,19 @@ class User extends Authenticatable implements MustVerifyEmail
 
     // === Relationships ===
 
-    public function orders(): HasMany
+    public function pesanan(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Pesanan::class);
     }
 
-    public function reviews(): HasMany
+    public function ulasan(): HasMany
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(Ulasan::class);
     }
 
-    public function carts(): HasMany
+    public function keranjang(): HasMany
     {
-        return $this->hasMany(Cart::class);
+        return $this->hasMany(Keranjang::class);
     }
 
     /**
@@ -97,8 +97,8 @@ class User extends Authenticatable implements MustVerifyEmail
          */
     public function cartItemsCount(): int
     {
-        $dailyCount = $this->carts()->whereNull('cart_group_id')->count();
-        $eventCount = $this->carts()->whereNotNull('cart_group_id')->distinct()->count('cart_group_id');
+        $dailyCount = $this->keranjang()->whereNull('cart_group_id')->count();
+        $eventCount = $this->keranjang()->whereNotNull('cart_group_id')->distinct()->count('cart_group_id');
         return $dailyCount + $eventCount;
     }
 }

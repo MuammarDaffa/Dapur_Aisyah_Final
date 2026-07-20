@@ -17,8 +17,8 @@
             <div class="card-body border-bottom">
                 <div class="btn-group" role="group">
                     <a href="{{ route('admin.catering.index') }}" class="btn {{ !request('type') ? 'btn-primary' : 'btn-outline-primary' }}">Semua</a>
-                    <a href="{{ route('admin.catering.index', ['type' => 'daily']) }}" class="btn {{ request('type') === 'daily' ? 'btn-primary' : 'btn-outline-primary' }}"><i class="fa-solid fa-calendar-day"></i> Daily</a>
-                    <a href="{{ route('admin.catering.index', ['type' => 'event']) }}" class="btn {{ request('type') === 'event' ? 'btn-primary' : 'btn-outline-primary' }}"><i class="fa-solid fa-glass-cheers"></i> Event</a>
+                    <a href="{{ route('admin.catering.index', ['type' => 'harian']) }}" class="btn {{ request('type') === 'harian' ? 'btn-primary' : 'btn-outline-primary' }}"><i class="fa-solid fa-calendar-day"></i> Daily</a>
+                    <a href="{{ route('admin.catering.index', ['type' => 'acara']) }}" class="btn {{ request('type') === 'acara' ? 'btn-primary' : 'btn-outline-primary' }}"><i class="fa-solid fa-glass-cheers"></i> Event</a>
                 </div>
             </div>
             <div class="card-body p-0">
@@ -38,8 +38,8 @@
                             <tr>
                                 <td class="align-middle">
                                     <span class="fw-bold">{{ $c->name }}</span>
-                                    @if($c->description)
-                                    <br><small class="text-muted">{{ Str::limit($c->description, 60) }}</small>
+                                    @if($c->deskripsi)
+                                    <br><small class="text-muted">{{ Str::limit($c->deskripsi, 60) }}</small>
                                     @endif
                                 </td>
                                 <td class="align-middle text-center">

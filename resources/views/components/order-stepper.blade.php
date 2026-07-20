@@ -2,12 +2,12 @@
 
 @php
     $steps = [
-        'processing'      => ['label' => 'Diproses',           'icon' => '1'],
-        'on_delivery'     => ['label' => 'Sedang Dikirim',     'icon' => '2'],
-        'completed'       => ['label' => 'Selesai',            'icon' => '3'],
+        'diproses'      => ['label' => 'Diproses',           'icon' => '1'],
+        'dikirim'     => ['label' => 'Sedang Dikirim',     'icon' => '2'],
+        'selesai'       => ['label' => 'Selesai',            'icon' => '3'],
     ];
 
-    $isCancelled = $currentStatus === 'cancelled';
+    $isCancelled = $currentStatus === 'dibatalkan';
     $statusKeys = array_keys($steps);
     $currentIndex = array_search($currentStatus, $statusKeys);
     if ($currentIndex === false) $currentIndex = -1;

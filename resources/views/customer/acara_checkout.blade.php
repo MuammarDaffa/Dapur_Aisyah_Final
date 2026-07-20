@@ -7,7 +7,7 @@
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-6">
-        <a href="{{ route('customer.cart', ['tab' => 'event']) }}" class="d-inline-d-flex align-items-center fs-6 text-primary hover:text-primary">
+        <a href="{{ route('customer.keranjang', ['tab' => 'acara']) }}" class="d-inline-d-flex align-items-center fs-6 text-primary hover:text-primary">
             <svg style="width: 16px; height: 16px;" class="me-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             <span>Kembali ke Keranjang</span>
         </a>
@@ -29,9 +29,9 @@
                                 $minDate = \Carbon\Carbon::now('Asia/Jakarta')->startOfDay()->addDays($minDays)->format('Y-m-d');
                             @endphp
                             <label class="form-label fw-bold">Tanggal Acara * (Minimal H-{{ $minDays }})</label>
-                            <input type="date" lang="id-ID" name="order_date" required min="{{ $minDate }}" value="{{ old('order_date') }}"
-                                class="w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary -2 @error('order_date') border-red-400 @enderror">
-                            @error('order_date') <p class="text-danger small mt-1">{{ $message }}</p> @enderror
+                            <input type="date" lang="id-ID" name="tanggal_pesanan" required min="{{ $minDate }}" value="{{ old('tanggal_pesanan') }}"
+                                class="w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary -2 @error('tanggal_pesanan') border-red-400 @enderror">
+                            @error('tanggal_pesanan') <p class="text-danger small mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </div>
@@ -44,12 +44,12 @@
             <label class="form-label fw-bold">Metode Pengiriman *</label>
                             <div class="row row-cols-1 sm:row-cols-2 g-3">
                                 <label class="position-relative d-flex d-flex-column p-4 border-2 border border-secondary rounded cursor-pointer hover:border border-primary [&:has(input:checked)]:border border-primary [&:has(input:checked)]:bg-primary text-white">
-                                    <input type="radio" name="pickup_method" value="delivery" checked class="position-absolute text-primary" onchange="toggleEventAddress(true)">
+                                    <input type="radio" name="metode_pengambilan" value="delivery" checked class="position-absolute text-primary" onchange="toggleEventAddress(true)">
                                     <span class="fw-bold text-secondary mb-1">Diantar (Delivery)</span>
                                     <span class="fs-6 text-secondary">Pesanan akan diantar ke lokasi acara Anda.</span>
                                 </label>
                                 <label class="position-relative d-flex d-flex-column p-4 border-2 border border-secondary rounded cursor-pointer hover:border border-primary [&:has(input:checked)]:border border-primary [&:has(input:checked)]:bg-primary text-white">
-                                    <input type="radio" name="pickup_method" value="pickup" class="position-absolute text-primary" onchange="toggleEventAddress(false)">
+                                    <input type="radio" name="metode_pengambilan" value="pickup" class="position-absolute text-primary" onchange="toggleEventAddress(false)">
                                     <span class="fw-bold text-secondary mb-1">Ambil Sendiri (Pickup)</span>
                                     <span class="fs-6 text-secondary">Ambil pesanan langsung di dapur kami.</span>
                                 </label>
@@ -70,17 +70,17 @@
                                 </div>
                                 <span id="geocode-status" class="d-none"></span>
                                 <p id="map_error" class="fs-6 text-danger mt-2 fw-medium d-none">Anda wajib menandai lokasi pengiriman di peta.</p>
-                                @error('district_id')
+                                @error('kecamatan_id')
                                     <p class="fs-6 text-danger mt-2 fw-medium">Anda harus menandai lokasi pengiriman di peta dengan benar.</p>
                                 @enderror
                             </div>
 
                             <!-- Detail Alamat -->
                             <div class="d-flex flex-column gap-3">
-                                <select name="district_id" id="district_id" class="form-select d-none">
+                                <select name="kecamatan_id" id="kecamatan_id" class="form-select d-none">
                                     <option value="">-- Pilih dari peta di bawah --</option>
-                                    @foreach($districts as $district)
-                                        <option value="{{ $district->id }}" data-lat="{{ $district->latitude ?? '' }}" data-lng="{{ $district->longitude ?? '' }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
+                                    @foreach($kecamatan as $kecamatan)
+                                        <option value="{{ $kecamatan->id }}" data-lat="{{ $kecamatan->latitude ?? '' }}" data-lng="{{ $kecamatan->longitude ?? '' }}" {{ old('kecamatan_id') == $kecamatan->id ? 'selected' : '' }}>{{ $kecamatan->name }}</option>
                                     @endforeach
                                 </select>
                                 
@@ -94,9 +94,9 @@
 
                                 <!-- <div class="mb-3">
             <label class="form-label fw-bold">Detail Patokan/Blok/No. Rumah (Opsional)</label>
-                                    <textarea name="address_detail" id="address_detail_input" rows="3" class="form-control w-100 px-4 py-3 rounded border border border-secondary focus:border border-primary -2 @error('address_detail') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateEventCheckout()">{{ old('address_detail') }}</textarea>
+                                    <textarea name="detail_alamat" id="address_detail_input" rows="3" class="form-control w-100 px-4 py-3 rounded border border border-secondary focus:border border-primary -2 @error('detail_alamat') border-red-400 @enderror" placeholder="Contoh: Rumah cat putih pagar hitam, dekat masjid..." oninput="validateEventCheckout()">{{ old('detail_alamat') }}</textarea>
                                     <p id="address_error" class="fs-6 text-danger mt-1 d-none"></p>
-                                    @error('address_detail') <p class="text-danger small mt-1">{{ $message }}</p> @enderror
+                                    @error('detail_alamat') <p class="text-danger small mt-1">{{ $message }}</p> @enderror
                                 </div> -->
                             </div>
                         </div>
@@ -109,7 +109,7 @@
                     <div class="d-flex flex-column gap-3">
                         <div class="mb-3">
             <label class="form-label fw-bold">Catatan Tambahan</label>
-                            <textarea name="notes" rows="2" class="form-control w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary" placeholder="Catatan untuk pesanan event ini...">{{ old('notes') }}</textarea>
+                            <textarea name="catatan" rows="2" class="form-control w-100 px-4 py-2 rounded border border border-secondary focus:border border-primary" placeholder="Catatan untuk pesanan event ini...">{{ old('catatan') }}</textarea>
                         </div>
                         <div class="mb-3">
             <label class="form-label fw-bold">Metode Pembayaran *</label>
@@ -117,13 +117,13 @@
                                 <p class="fs-6 text-info fw-medium">Transfer Bank (Midtrans)</p>
                                 <p class="small text-info">Semua pembayaran dilakukan melalui Midtrans Payment Gateway.</p>
                             </div>
-                            <input type="hidden" name="payment_method" value="transfer">
+                            <input type="hidden" name="metode_pembayaran" value="transfer">
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Order Summary --}}
+            {{-- Pesanan Summary --}}
             <div>
                 <div class="card shadow-sm mb-4 p-4">
                     <h3 class="fw-bold text-secondary mb-4">Ringkasan Pesanan</h3>
@@ -135,42 +135,42 @@
                             $gPkg = $gItems->firstWhere('item_type', 'package');
                             $gMenus = $gItems->whereIn('item_type', ['package_item', 'custom_menu']);
                             $gAdditions = $gItems->where('item_type', 'addition');
-                            $gService = $gItems->first()->cateringService;
+                            $gService = $gItems->first()->layananKatering;
                             $gServing = $gItems->first()->servingType;
                         @endphp
                         <div class="bg-light p-3 rounded border border border-secondary">
                             <div class="pb-2 mb-2 border-b border border-secondary">
                                 <p class="fw-bold text-secondary fs-6">{{ $gService->name ?? '-' }}</p>
-                                @if($gPkg && $gPkg->cateringPackage)
-                                    <p class="small text-primary fw-bold mt-0.5">Paket: {{ $gPkg->cateringPackage->name }}</p>
+                                @if($gPkg && $gPkg->paketKatering)
+                                    <p class="small text-primary fw-bold mt-0.5">Paket: {{ $gPkg->paketKatering->name }}</p>
                                 @else
                                     <p class="small text-info fw-bold mt-0.5">Custom Menu</p>
                                 @endif
                             </div>
 
                             <div class="divide-y divide-gray-200/60 space-y-1">
-                                @foreach($gMenus as $cart)
+                                @foreach($gMenus as $keranjang)
                                 <div class="pt-1 d-flex justify-content-between small">
                                     <div>
-                                        <span class="text-secondary fw-medium">{{ $cart->customOption->name ?? 'Item' }}</span>
-                                        <span class="text-secondary ms-1">× {{ $cart->quantity }}</span>
-                                        @if($cart->item_type === 'package_item')
+                                        <span class="text-secondary fw-medium">{{ $keranjang->opsiKustom->name ?? 'Item' }}</span>
+                                        <span class="text-secondary ms-1">× {{ $keranjang->jumlah }}</span>
+                                        @if($keranjang->item_type === 'package_item')
                                             <span class="text-success fw-medium">(termasuk)</span>
                                         @endif
                                     </div>
-                                    <span class="fw-bold {{ $cart->item_type === 'package_item' ? 'text-success' : 'text-secondary' }}">
-                                        {{ $cart->item_type === 'package_item' ? 'Rp 0' : 'Rp ' . number_format($cart->subtotal, 0, ',', '.') }}
+                                    <span class="fw-bold {{ $keranjang->item_type === 'package_item' ? 'text-success' : 'text-secondary' }}">
+                                        {{ $keranjang->item_type === 'package_item' ? 'Rp 0' : 'Rp ' . number_format($keranjang->subtotal, 0, ',', '.') }}
                                     </span>
                                 </div>
                                 @endforeach
 
-                                @foreach($gAdditions as $cart)
+                                @foreach($gAdditions as $keranjang)
                                 <div class="pt-1 d-flex justify-content-between small">
                                     <div>
-                                        <span class="text-secondary fw-medium">{{ $cart->customOption->name ?? 'Extra' }}</span>
-                                        <span class="text-secondary ms-1">× {{ $cart->quantity }}</span>
+                                        <span class="text-secondary fw-medium">{{ $keranjang->opsiKustom->name ?? 'Extra' }}</span>
+                                        <span class="text-secondary ms-1">× {{ $keranjang->jumlah }}</span>
                                     </div>
-                                    <span class="fw-bold text-secondary">Rp {{ number_format($cart->subtotal, 0, ',', '.') }}</span>
+                                    <span class="fw-bold text-secondary">Rp {{ number_format($keranjang->subtotal, 0, ',', '.') }}</span>
                                 </div>
                                 @endforeach
                             </div>
@@ -274,17 +274,17 @@
         const msgEl = document.getElementById('location-validation-msg');
         if (!msgEl) return;
 
-        fetch(`/api/validate-location?latitude=${lat}&longitude=${lng}&district_id=${districtId}&district_name=${encodeURIComponent(districtName)}&address=${encodeURIComponent(address)}`)
+        fetch(`/api/validate-location?latitude=${lat}&longitude=${lng}&kecamatan_id=${districtId}&district_name=${encodeURIComponent(districtName)}&address=${encodeURIComponent(address)}`)
             .then(res => res.json())
             .then(data => {
                 if (data && data.is_in_pontianak) {
                     isLocationValid = true;
                     msgEl.textContent = 'Lokasi berada di wilayah Pontianak.';
                     msgEl.className = 'text-sm font-medium mt-2 text-green-600 block';
-                    if (data.district_id) {
-                        const select = document.getElementById('district_id');
+                    if (data.kecamatan_id) {
+                        const select = document.getElementById('kecamatan_id');
                         for (let i = 0; i < select.options.length; i++) {
-                            if (select.options[i].value == data.district_id) {
+                            if (select.options[i].value == data.kecamatan_id) {
                                 select.selectedIndex = i;
                                 loadEventShippingCost();
                                 break;
@@ -295,7 +295,7 @@
                     isLocationValid = false;
                     msgEl.textContent = 'Lokasi berada di luar wilayah Pontianak.';
                     msgEl.className = 'text-sm font-medium mt-2 text-red-600 block';
-                    document.getElementById('district_id').value = '';
+                    document.getElementById('kecamatan_id').value = '';
                     loadEventShippingCost();
                 }
                 validateEventCheckout();
@@ -335,7 +335,7 @@
                         districtName = 'Kecamatan ' + districtName;
                     }
 
-                    const select = document.getElementById('district_id');
+                    const select = document.getElementById('kecamatan_id');
                     let matchFound = false;
                     for (let i = 0; i < select.options.length; i++) {
                         if (select.options[i].text.toLowerCase() === districtName.toLowerCase()) {
@@ -357,7 +357,7 @@
     }
 
     function validateEventCheckout() {
-        const method = document.querySelector('input[name="pickup_method"]:checked')?.value;
+        const method = document.querySelector('input[name="metode_pengambilan"]:checked')?.value;
         const btn = document.getElementById('event-submit-btn');
         
         if (method === 'delivery') {
@@ -400,8 +400,8 @@
     }
 
     function loadEventShippingCost() {
-        const districtId = document.getElementById('district_id').value;
-        const pickupMethod = document.querySelector('input[name="pickup_method"]:checked')?.value;
+        const districtId = document.getElementById('kecamatan_id').value;
+        const pickupMethod = document.querySelector('input[name="metode_pengambilan"]:checked')?.value;
 
         if (districtId && pickupMethod === 'delivery') {
             fetch(`/api/shipping-cost/${districtId}`)
@@ -430,7 +430,7 @@
     });
 
     let currentSnapToken = @json($existingOrder?->midtrans_snap_token ?? null);
-    let currentRedirectUrl = @json($existingOrder ? route('customer.orders.show', $existingOrder) : null);
+    let currentRedirectUrl = @json($existingOrder ? route('customer.pesanan.show', $existingOrder) : null);
 
     document.getElementById('event-checkout-form').addEventListener('submit', async function(e) {
         e.preventDefault();

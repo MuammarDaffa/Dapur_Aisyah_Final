@@ -5,8 +5,8 @@
     <div class="col-md-8">
         <div class="mb-3">
             @php
-                $backServiceId = request('catering_service_id');
-                $backService = $backServiceId ? \App\Models\CateringService::find($backServiceId) : null;
+                $backServiceId = request('layanan_katering_id');
+                $backService = $backServiceId ? \App\Models\LayananKatering::find($backServiceId) : null;
             @endphp
             @if($backService)
                 <a href="{{ route('admin.catering.show', $backService->id) }}" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Kembali ke detail katering: {{ $backService->name }}</a>
@@ -18,7 +18,7 @@
         <form action="{{ route('admin.packages.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
-            <input type="hidden" name="catering_service_id" value="{{ $backServiceId }}">
+            <input type="hidden" name="layanan_katering_id" value="{{ $backServiceId }}">
             
             <div class="card card-outline card-primary">
                 <div class="card-header">
@@ -33,12 +33,12 @@
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">Deskripsi</label>
-                        <textarea name="description" rows="3" class="form-control" placeholder="Deskripsi opsional">{{ old('description') }}</textarea>
+                        <textarea name="deskripsi" rows="3" class="form-control" placeholder="Deskripsi opsional">{{ old('deskripsi') }}</textarea>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Harga (Rp) <span class="text-danger">*</span></label>
-                        <input type="text" name="price" required value="{{ old('price') }}" class="form-control rupiah-input">
+                        <input type="text" name="harga" required value="{{ old('harga') }}" class="form-control rupiah-input">
                     </div>
 
                     <div class="mb-3">

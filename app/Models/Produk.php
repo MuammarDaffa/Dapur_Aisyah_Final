@@ -9,31 +9,33 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 /**
- * Model Product merepresentasikan menu individual (makanan/minuman) yang ditawarkan.
+ * Model Produk merepresentasikan menu individual (makanan/minuman) yang ditawarkan.
  * Model ini menjadi entitas utama dalam fitur pemesanan Katering Harian.
  */
-class Product extends Model
+class Produk extends Model
 {
+    protected $table = 'produk';
+
     use HasFactory;
 
     protected $fillable = [
-        'catering_service_id', 'name', 'slug', 'description', 'price',
+        'layanan_katering_id', 'name', 'slug', 'deskripsi', 'harga',
         'image', 'is_active',
     ];
 
     protected function casts(): array
     {
         return [
-            'price' => 'decimal:2',
+            'harga' => 'decimal:2',
             'is_active' => 'boolean',
         ];
     }
 
     protected static function booted(): void
     {
-        static::creating(function ($product) {
-            if (empty($product->slug)) {
-                $product->slug = Str::slug($product->name);
+        static::creating(function ($produk) {
+            if (empty($produk->slug)) {
+                $produk->slug = Str::slug($produk->name);
             }
         });
     }
@@ -61,7 +63,7 @@ class Product extends Model
     }
 
     /**
-     * Cek apakah produk habis (status habis sekarang diatur per tanggal pada MenuPeriodItem).
+     * Cek apakah produk habis (status habis sekarang diatur per tanggal pada ItemPeriodeMenu).
      */
     public function isOutOfStock(): bool
     {
@@ -70,30 +72,30 @@ class Product extends Model
 
     // === Relationships ===
 
-    public function cateringService(): BelongsTo
+    public function layananKatering(): BelongsTo
     {
-        return $this->belongsTo(CateringService::class);
+        return $this->belongsTo(LayananKatering::class);
     }
 
 
     public function extras(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(CustomOption::class, 'custom_option_product');
+        return $this->belongsToMany(OpsiKustom::class, 'custom_option_product');
     }
 
-    public function menuPeriodItems(): HasMany
+    public function itemPeriodeMenu(): HasMany
     {
-        return $this->hasMany(\App\Models\MenuPeriodItem::class);
+        return $this->hasMany(\App\Models\ItemPeriodeMenu::class);
     }
 
-    public function orderItems(): HasMany
+    public function detailPesanan(): HasMany
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(DetailPesanan::class);
     }
 
     // Mendapatkan harga yang terformat
     public function getFormattedPriceAttribute(): string
     {
-        return 'Rp ' . number_format($this->price, 0, ',', '.');
+        return 'Rp ' . number_format($this->harga, 0, ',', '.');
     }
 }

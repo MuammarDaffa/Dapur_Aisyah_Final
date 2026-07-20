@@ -8,21 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('menu_periods', function (Blueprint $table) {
+        Schema::create('periode_menu', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('catering_service_id')->constrained('catering_services')->cascadeOnDelete();
+            $table->foreignId('layanan_katering_id')->constrained('layanan_katering')->cascadeOnDelete();
             $table->date('start_date');
             $table->date('end_date');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
             $table->index(['start_date', 'end_date']);
-            $table->index('catering_service_id');
+            $table->index('layanan_katering_id');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('menu_periods');
+        Schema::dropIfExists('periode_menu');
     }
 };

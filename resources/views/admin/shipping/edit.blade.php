@@ -17,23 +17,23 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Kecamatan <span class="text-danger">*</span></label>
-                        <select name="district_id" id="district_id" class="form-select" required>
+                        <select name="kecamatan_id" id="kecamatan_id" class="form-select" required>
                             <option value="">Pilih Kecamatan...</option>
-                            @foreach($districts as $district)
-                                <option value="{{ $district->id }}" {{ $shipping->district_id == $district->id ? 'selected' : '' }}>
-                                    {{ $district->name }}
+                            @foreach($kecamatan as $kecamatan)
+                                <option value="{{ $kecamatan->id }}" {{ $shipping->kecamatan_id == $kecamatan->id ? 'selected' : '' }}>
+                                    {{ $kecamatan->name }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('district_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        @error('kecamatan_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Kelurahan <span class="text-danger">*</span></label>
-                        <select name="village_id" id="village_id" class="form-select" required>
+                        <select name="desa_id" id="desa_id" class="form-select" required>
                             <option value="">Pilih Kelurahan...</option>
                         </select>
-                        @error('village_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        @error('desa_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
                     <div class="mb-3">
@@ -53,22 +53,22 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const districtSelect = document.getElementById('district_id');
-        const villageSelect = document.getElementById('village_id');
-        const oldVillageId = '{{ $shipping->village_id }}';
+        const districtSelect = document.getElementById('kecamatan_id');
+        const villageSelect = document.getElementById('desa_id');
+        const oldVillageId = '{{ $shipping->desa_id }}';
 
         function loadVillages(districtId, selectedVillageId = null) {
             villageSelect.innerHTML = '<option value="">Memuat...</option>';
             villageSelect.disabled = true;
 
             if (districtId) {
-                fetch(`/api/districts/${districtId}/villages`)
+                fetch(`/api/kecamatan/${districtId}/desa`)
                     .then(response => response.json())
                     .then(data => {
                         villageSelect.innerHTML = '<option value="">Pilih Kelurahan...</option>';
-                        data.forEach(village => {
-                            const selected = selectedVillageId == village.id ? 'selected' : '';
-                            villageSelect.innerHTML += `<option value="${village.id}" ${selected}>${village.name}</option>`;
+                        data.forEach(desa => {
+                            const selected = selectedVillageId == desa.id ? 'selected' : '';
+                            villageSelect.innerHTML += `<option value="${desa.id}" ${selected}>${desa.name}</option>`;
                         });
                         villageSelect.disabled = false;
                     })

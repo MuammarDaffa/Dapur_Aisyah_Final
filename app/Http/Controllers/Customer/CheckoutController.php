@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CheckoutRequest;
-use App\Models\District;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\ShippingCost;
+use App\Models\Kecamatan;
+use App\Models\Pesanan;
+use App\Models\DetailPesanan;
+use App\Models\OngkosKirim;
 use App\Services\InvoiceService;
 use App\Services\NotificationService;
 use App\Services\OrderService;
@@ -24,43 +24,43 @@ class CheckoutController extends Controller
     {
         $user = auth()->user();
         if ($user) {
-            \App\Models\Cart::cleanupInvalidAndExpiredItems($user->id);
+            \App\Models\Keranjang::cleanupInvalidAndExpiredItems($user->id);
         }
-        $cartsQuery = $user->carts()
+        $cartsQuery = $user->keranjang()
             ->whereNull('cart_group_id') // Hanya daily
-            ->with(['product.cateringService', 'customOption', 'cateringPackage']);
+            ->with(['produk.layananKatering', 'opsiKustom', 'paketKatering']);
             
-        $carts = $cartsQuery->get();
+        $keranjang = $cartsQuery->get();
 
-        $existingOrder = Order::where('user_id', $user->id)
-            ->where('status', 'pending_payment')
-            ->where('payment_status', 'unpaid')
+        $existingOrder = Pesanan::where('user_id', $user->id)
+            ->where('status', 'menunggu_pembayaran')
+            ->where('status_pembayaran', 'belum_dibayar')
             ->latest()
             ->first();
 
-        if ($carts->isEmpty() && !$existingOrder) {
-            return redirect()->route('customer.cart')
+        if ($keranjang->isEmpty() && !$existingOrder) {
+            return redirect()->route('customer.keranjang')
                 ->with('error', 'Keranjang harian kosong atau tanggal tidak valid.');
         }
 
         // Group (untuk daily, setiap item = 1 group)
-        $groupedCarts = $carts->groupBy(function ($cart) {
-            return 'ungrouped_' . $cart->id;
+        $groupedCarts = $keranjang->groupBy(function ($keranjang) {
+            return 'ungrouped_' . $keranjang->id;
         });
 
-        $districts = District::with('villages')->get();
-        $subtotal = $carts->sum(fn ($cart) => $cart->subtotal);
-        if ($carts->isEmpty() && $existingOrder) {
+        $kecamatan = Kecamatan::with('desa')->get();
+        $subtotal = $keranjang->sum(fn ($keranjang) => $keranjang->subtotal);
+        if ($keranjang->isEmpty() && $existingOrder) {
             $subtotal = (float) $existingOrder->total;
         }
         
-        $orderDate = $carts->min('menu_date') ? $carts->min('menu_date')->format('Y-m-d') : ($existingOrder ? $existingOrder->order_date->format('Y-m-d') : date('Y-m-d'));
+        $orderDate = $keranjang->min('menu_date') ? $keranjang->min('menu_date')->format('Y-m-d') : ($existingOrder ? $existingOrder->tanggal_pesanan->format('Y-m-d') : date('Y-m-d'));
         
         // Pass cutoff data if available
-        $firstCart = $carts->first();
-        $service = $firstCart && $firstCart->product ? $firstCart->product->cateringService : ($firstCart && $firstCart->customOption ? $firstCart->customOption->cateringService : null);
+        $firstCart = $keranjang->first();
+        $service = $firstCart && $firstCart->produk ? $firstCart->produk->layananKatering : ($firstCart && $firstCart->opsiKustom ? $firstCart->opsiKustom->layananKatering : null);
 
-        return view('customer.checkout', compact('carts', 'groupedCarts', 'districts', 'subtotal', 'user', 'orderDate', 'service', 'existingOrder'));
+        return view('customer.checkout', compact('keranjang', 'groupedCarts', 'kecamatan', 'subtotal', 'user', 'orderDate', 'service', 'existingOrder'));
     }
 
     /**
@@ -70,18 +70,18 @@ class CheckoutController extends Controller
     {
         $user = auth()->user();
         if ($user) {
-            \App\Models\Cart::cleanupInvalidAndExpiredItems($user->id);
+            \App\Models\Keranjang::cleanupInvalidAndExpiredItems($user->id);
         }
-        $cartsQuery = $user->carts()
+        $cartsQuery = $user->keranjang()
             ->whereNull('cart_group_id') // Hanya daily
-            ->with(['product.cateringService', 'customOption', 'cateringPackage']);
+            ->with(['produk.layananKatering', 'opsiKustom', 'paketKatering']);
             
-        $carts = $cartsQuery->get();
+        $keranjang = $cartsQuery->get();
 
-        if ($carts->isEmpty()) {
-            $existingOrder = Order::where('user_id', $user->id)
-                ->where('status', 'pending_payment')
-                ->where('payment_status', 'unpaid')
+        if ($keranjang->isEmpty()) {
+            $existingOrder = Pesanan::where('user_id', $user->id)
+                ->where('status', 'menunggu_pembayaran')
+                ->where('status_pembayaran', 'belum_dibayar')
                 ->latest()
                 ->first();
 
@@ -91,19 +91,19 @@ class CheckoutController extends Controller
                         $snapToken = PaymentService::createSnapToken($existingOrder);
                         $existingOrder->update(['midtrans_snap_token' => $snapToken]);
                     } catch (\Exception $e) {
-                        \Log::error('Midtrans Snap Token Error on existingOrder (#' . $existingOrder->order_number . '): ' . $e->getMessage(), [
-                            'order_id' => $existingOrder->id,
+                        \Log::error('Midtrans Snap Token Error on existingOrder (#' . $existingOrder->nomor_pesanan . '): ' . $e->getMessage(), [
+                            'pesanan_id' => $existingOrder->id,
                             'exception' => $e
                         ]);
                         if ($request->expectsJson() || $request->ajax()) {
                             return response()->json([
                                 'success' => false,
-                                'message' => 'Pesanan sudah ada (#' . $existingOrder->order_number . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
-                                'order_id' => $existingOrder->id,
-                                'order_number' => $existingOrder->order_number,
+                                'message' => 'Pesanan sudah ada (#' . $existingOrder->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
+                                'pesanan_id' => $existingOrder->id,
+                                'nomor_pesanan' => $existingOrder->nomor_pesanan,
                             ], 500);
                         }
-                        return redirect()->route('customer.orders.show', $existingOrder)
+                        return redirect()->route('customer.pesanan.show', $existingOrder)
                             ->with('error', 'Pesanan sudah ada, namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage());
                     }
                 }
@@ -111,14 +111,14 @@ class CheckoutController extends Controller
                 if ($request->expectsJson() || $request->ajax()) {
                     return response()->json([
                         'success' => true,
-                        'order_id' => $existingOrder->id,
-                        'order_number' => $existingOrder->order_number,
+                        'pesanan_id' => $existingOrder->id,
+                        'nomor_pesanan' => $existingOrder->nomor_pesanan,
                         'snap_token' => $existingOrder->midtrans_snap_token,
-                        'redirect_url' => route('customer.orders.show', $existingOrder),
+                        'redirect_url' => route('customer.pesanan.show', $existingOrder),
                     ]);
                 }
 
-                return redirect()->route('customer.orders.show', $existingOrder);
+                return redirect()->route('customer.pesanan.show', $existingOrder);
             }
 
             if ($request->expectsJson() || $request->ajax()) {
@@ -129,7 +129,7 @@ class CheckoutController extends Controller
 
         $validated = app(\App\Http\Requests\CheckoutRequest::class)->validated();
         
-        $finalAddressDetail = $validated['address_detail'] ?? null;
+        $finalAddressDetail = $validated['detail_alamat'] ?? null;
         if (!empty($validated['osm_address']) && $finalAddressDetail) {
             $finalAddressDetail = $validated['osm_address'] . "\nDetail Patokan: " . $finalAddressDetail;
         } else if (!empty($validated['osm_address'])) {
@@ -137,62 +137,62 @@ class CheckoutController extends Controller
         }
 
         // Tentukan catering service dan package
-        $firstCart = $carts->first();
+        $firstCart = $keranjang->first();
         $cateringServiceId = null;
         $packageId = null;
 
-        if ($firstCart->product) {
-            $cateringServiceId = $firstCart->product->catering_service_id;
-        } elseif ($firstCart->customOption) {
-            $cateringServiceId = $firstCart->customOption->catering_service_id;
+        if ($firstCart->produk) {
+            $cateringServiceId = $firstCart->produk->layanan_katering_id;
+        } elseif ($firstCart->opsiKustom) {
+            $cateringServiceId = $firstCart->opsiKustom->layanan_katering_id;
         }
 
         // Cek apakah ada paket dalam keranjang
-        $packageCart = $carts->firstWhere('item_type', 'package');
-        if ($packageCart && $packageCart->cateringPackage) {
+        $packageCart = $keranjang->firstWhere('item_type', 'package');
+        if ($packageCart && $packageCart->paketKatering) {
             $packageId = $packageCart->catering_package_id;
-            $cateringServiceId = $packageCart->cateringPackage->catering_service_id;
+            $cateringServiceId = $packageCart->paketKatering->layanan_katering_id;
         }
 
         // Validasi tanggal pemesanan berdasarkan jenis layanan
-        OrderService::validateOrderDate($validated['order_date'], $cateringServiceId);
+        OrderService::validateOrderDate($validated['tanggal_pesanan'], $cateringServiceId);
 
-        $order = DB::transaction(function () use ($validated, $user, $carts, $cateringServiceId, $packageId, $finalAddressDetail) {
+        $pesanan = DB::transaction(function () use ($validated, $user, $keranjang, $cateringServiceId, $packageId, $finalAddressDetail) {
             // Hitung biaya
-            $subtotal = $carts->sum(fn ($cart) => $cart->subtotal);
-            $shippingCost = $validated['pickup_method'] === 'delivery'
-                ? ShippingCost::getCostByDistrict($validated['district_id'])
+            $subtotal = $keranjang->sum(fn ($keranjang) => $keranjang->subtotal);
+            $ongkosKirim = $validated['metode_pengambilan'] === 'delivery'
+                ? OngkosKirim::getCostByDistrict($validated['kecamatan_id'])
                 : 0;
-            $total = $subtotal + $shippingCost;
+            $total = $subtotal + $ongkosKirim;
 
-            // Buat order
-            $order = Order::create([
-                'order_number' => OrderService::generateOrderNumber(),
+            // Buat pesanan
+            $pesanan = Pesanan::create([
+                'nomor_pesanan' => OrderService::generateOrderNumber(),
                 'user_id' => $user->id,
-                'catering_service_id' => $cateringServiceId,
-                'package_id' => $packageId,
-                'order_date' => $carts->min('menu_date') ? $carts->min('menu_date')->format('Y-m-d') : date('Y-m-d'),
-                'pickup_method' => $validated['pickup_method'],
-                'district_id' => $validated['district_id'] ?? null,
-                'village_id' => $validated['village_id'] ?? null,
-                'address_detail' => $finalAddressDetail,
+                'layanan_katering_id' => $cateringServiceId,
+                'paket_katering_id' => $packageId,
+                'tanggal_pesanan' => $keranjang->min('menu_date') ? $keranjang->min('menu_date')->format('Y-m-d') : date('Y-m-d'),
+                'metode_pengambilan' => $validated['metode_pengambilan'],
+                'kecamatan_id' => $validated['kecamatan_id'] ?? null,
+                'desa_id' => $validated['desa_id'] ?? null,
+                'detail_alamat' => $finalAddressDetail,
                 'latitude' => $validated['latitude'] ?? null,
                 'longitude' => $validated['longitude'] ?? null,
-                'serving_type' => $validated['serving_type'] ?? null,
-                'portion' => $validated['portion'] ?? null,
+                'tipe_penyajian' => $validated['tipe_penyajian'] ?? null,
+                'porsi' => $validated['porsi'] ?? null,
                 'subtotal' => $subtotal,
-                'shipping_cost' => $shippingCost,
+                'ongkos_kirim' => $ongkosKirim,
                 'total' => $total,
-                'payment_method' => 'transfer',
-                'payment_status' => 'unpaid',
-                'status' => 'pending_payment',
-                'notes' => $validated['notes'] ?? null,
+                'metode_pembayaran' => 'transfer',
+                'status_pembayaran' => 'belum_dibayar',
+                'status' => 'menunggu_pembayaran',
+                'catatan' => $validated['catatan'] ?? null,
             ]);
 
-            // Buat order items
-            foreach ($carts as $cart) {
+            // Buat pesanan items
+            foreach ($keranjang as $keranjang) {
                 // Skip package entry (hanya marker, bukan item fisik)
-                if ($cart->item_type === 'package') {
+                if ($keranjang->item_type === 'package') {
                     continue;
                 }
 
@@ -200,25 +200,25 @@ class CheckoutController extends Controller
                 $unitPrice = 0;
                 $itemName = 'Item';
 
-                if ($cart->product) {
-                    $unitPrice = (float) $cart->product->price;
-                    $itemName = $cart->product->name;
-                } elseif ($cart->customOption) {
-                    // Package items & extras → price 0 (sudah termasuk harga paket)
-                    $unitPrice = in_array($cart->item_type, ['package_item', 'package_extra'])
+                if ($keranjang->produk) {
+                    $unitPrice = (float) $keranjang->produk->harga;
+                    $itemName = $keranjang->produk->name;
+                } elseif ($keranjang->opsiKustom) {
+                    // Package items & extras → harga 0 (sudah termasuk harga paket)
+                    $unitPrice = in_array($keranjang->item_type, ['package_item', 'package_extra'])
                         ? 0
-                        : (float) $cart->customOption->price;
-                    $itemName = $cart->customOption->name;
+                        : (float) $keranjang->opsiKustom->harga;
+                    $itemName = $keranjang->opsiKustom->name;
                 }
 
                 $extrasPrice = 0;
-                if (!empty($cart->extras)) {
-                    $extraIds = array_column($cart->extras, 'id');
-                    $options = \App\Models\CustomOption::whereIn('id', $extraIds)->get()->keyBy('id');
+                if (!empty($keranjang->extras)) {
+                    $extraIds = array_column($keranjang->extras, 'id');
+                    $options = \App\Models\OpsiKustom::whereIn('id', $extraIds)->get()->keyBy('id');
                     $extraNames = [];
-                    foreach ($cart->extras as $extraData) {
+                    foreach ($keranjang->extras as $extraData) {
                         if ($opt = $options->get($extraData['id'])) {
-                            $exPrice = (float) $opt->price * $extraData['qty'];
+                            $exPrice = (float) $opt->harga * $extraData['qty'];
                             $extrasPrice += $exPrice;
                             $extraNames[] = $opt->name . ' ' . $extraData['qty'] . 'x (+Rp' . number_format($exPrice, 0, ',', '.') . ')';
                         }
@@ -229,69 +229,69 @@ class CheckoutController extends Controller
                 }
                 
                 // Append menu date specifically for daily items since they are checked out together
-                if ($cart->menu_date) {
-                    $itemName .= " [Kirim: " . $cart->menu_date->format('d M Y') . "]";
+                if ($keranjang->menu_date) {
+                    $itemName .= " [Kirim: " . $keranjang->menu_date->format('d M Y') . "]";
                 }
 
-                $itemSubtotal = ($unitPrice * $cart->quantity) + $extrasPrice;
+                $itemSubtotal = ($unitPrice * $keranjang->jumlah) + $extrasPrice;
 
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $cart->product_id,
-                    'custom_option_id' => $cart->custom_option_id,
+                DetailPesanan::create([
+                    'pesanan_id' => $pesanan->id,
+                    'produk_id' => $keranjang->produk_id,
+                    'opsi_kustom_id' => $keranjang->opsi_kustom_id,
                     'item_name' => $itemName,
-                    'quantity' => $cart->quantity,
+                    'jumlah' => $keranjang->jumlah,
                     'unit_price' => $unitPrice,
                     'subtotal' => $itemSubtotal,
                 ]);
             }
 
-            // Buat invoice
-            InvoiceService::createInvoice($order);
+            // Buat tagihan
+            InvoiceService::createInvoice($pesanan);
 
             // Hapus semua keranjang daily yang sudah dicheckout
-            $user->carts()->whereNull('cart_group_id')->delete();
+            $user->keranjang()->whereNull('cart_group_id')->delete();
 
-            return $order;
+            return $pesanan;
         });
 
         // 2. Pesanan sudah berhasil disimpan dan di-commit di database. Minta Snap Token ke Midtrans.
         try {
-            $snapToken = PaymentService::createSnapToken($order);
-            $order->update(['midtrans_snap_token' => $snapToken]);
+            $snapToken = PaymentService::createSnapToken($pesanan);
+            $pesanan->update(['midtrans_snap_token' => $snapToken]);
         } catch (\Exception $e) {
-            \Log::error('Midtrans Snap Token Error on store (Order #' . $order->order_number . '): ' . $e->getMessage(), [
-                'order_id' => $order->id,
+            \Log::error('Midtrans Snap Token Error on store (Pesanan #' . $pesanan->nomor_pesanan . '): ' . $e->getMessage(), [
+                'pesanan_id' => $pesanan->id,
                 'exception' => $e
             ]);
             
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Pesanan berhasil disimpan (#' . $order->order_number . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
-                    'order_id' => $order->id,
-                    'order_number' => $order->order_number,
+                    'message' => 'Pesanan berhasil disimpan (#' . $pesanan->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
+                    'pesanan_id' => $pesanan->id,
+                    'nomor_pesanan' => $pesanan->nomor_pesanan,
                 ], 500);
             }
 
-            return redirect()->route('customer.orders.show', $order)
-                ->with('error', 'Pesanan berhasil disimpan (#' . $order->order_number . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage());
+            return redirect()->route('customer.pesanan.show', $pesanan)
+                ->with('error', 'Pesanan berhasil disimpan (#' . $pesanan->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage());
         }
 
         // Kirim notifikasi pesanan dibuat
-        NotificationService::notifyOrderCreated($order);
+        NotificationService::notifyOrderCreated($pesanan);
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'order_id' => $order->id,
-                'order_number' => $order->order_number,
-                'snap_token' => $order->midtrans_snap_token,
-                'redirect_url' => route('customer.orders.show', $order),
+                'pesanan_id' => $pesanan->id,
+                'nomor_pesanan' => $pesanan->nomor_pesanan,
+                'snap_token' => $pesanan->midtrans_snap_token,
+                'redirect_url' => route('customer.pesanan.show', $pesanan),
             ]);
         }
 
-        return redirect()->route('customer.orders.show', $order)
+        return redirect()->route('customer.pesanan.show', $pesanan)
             ->with('success', 'Pesanan berhasil dibuat!');
     }
 
@@ -302,28 +302,28 @@ class CheckoutController extends Controller
     {
         $user = auth()->user();
         if ($user) {
-            \App\Models\Cart::cleanupInvalidAndExpiredItems($user->id);
+            \App\Models\Keranjang::cleanupInvalidAndExpiredItems($user->id);
         }
         if ($groupId === 'all') {
-            $groupItems = $user->carts()
+            $groupItems = $user->keranjang()
                 ->whereNotNull('cart_group_id')
-                ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
+                ->with(['opsiKustom', 'paketKatering', 'layananKatering', 'servingType'])
                 ->get();
         } else {
-            $groupItems = $user->carts()
+            $groupItems = $user->keranjang()
                 ->where('cart_group_id', $groupId)
-                ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
+                ->with(['opsiKustom', 'paketKatering', 'layananKatering', 'servingType'])
                 ->get();
         }
 
-        $existingOrder = Order::where('user_id', $user->id)
-            ->where('status', 'pending_payment')
-            ->where('payment_status', 'unpaid')
+        $existingOrder = Pesanan::where('user_id', $user->id)
+            ->where('status', 'menunggu_pembayaran')
+            ->where('status_pembayaran', 'belum_dibayar')
             ->latest()
             ->first();
 
         if ($groupItems->isEmpty() && !$existingOrder) {
-            return redirect()->route('customer.cart', ['tab' => 'event'])
+            return redirect()->route('customer.keranjang', ['tab' => 'acara'])
                 ->with('error', 'Pesanan event tidak ditemukan.');
         }
 
@@ -331,9 +331,9 @@ class CheckoutController extends Controller
         $packageItem = $groupItems->firstWhere('item_type', 'package');
         $menuItems = $groupItems->whereIn('item_type', ['package_item', 'custom_menu']);
         $additionItems = $groupItems->where('item_type', 'addition');
-        $service = $groupItems->first()?->cateringService;
+        $service = $groupItems->first()?->layananKatering;
         $servingType = $groupItems->first()?->servingType;
-        $minDays = $service?->minimal_order_days ?? ($groupItems->max(fn ($item) => $item->cateringService?->minimal_order_days) ?? 1);
+        $minDays = $service?->minimal_order_days ?? ($groupItems->max(fn ($item) => $item->layananKatering?->minimal_order_days) ?? 1);
 
         // Hitung subtotal
         $subtotal = $groupItems->sum(fn ($c) => $c->subtotal);
@@ -341,11 +341,11 @@ class CheckoutController extends Controller
             $subtotal = (float) $existingOrder->total;
         }
 
-        $districts = District::with('villages')->get();
+        $kecamatan = Kecamatan::with('desa')->get();
 
-        return view('customer.event_checkout', compact(
+        return view('customer.acara_checkout', compact(
             'groupId', 'groupItems', 'eventGroups', 'packageItem', 'menuItems',
-            'additionItems', 'service', 'servingType', 'subtotal', 'districts', 'minDays', 'existingOrder'
+            'additionItems', 'service', 'servingType', 'subtotal', 'kecamatan', 'minDays', 'existingOrder'
         ));
     }
 
@@ -356,24 +356,24 @@ class CheckoutController extends Controller
     {
         $user = auth()->user();
         if ($user) {
-            \App\Models\Cart::cleanupInvalidAndExpiredItems($user->id);
+            \App\Models\Keranjang::cleanupInvalidAndExpiredItems($user->id);
         }
         if ($groupId === 'all') {
-            $groupItems = $user->carts()
+            $groupItems = $user->keranjang()
                 ->whereNotNull('cart_group_id')
-                ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
+                ->with(['opsiKustom', 'paketKatering', 'layananKatering', 'servingType'])
                 ->get();
         } else {
-            $groupItems = $user->carts()
+            $groupItems = $user->keranjang()
                 ->where('cart_group_id', $groupId)
-                ->with(['customOption', 'cateringPackage', 'cateringService', 'servingType'])
+                ->with(['opsiKustom', 'paketKatering', 'layananKatering', 'servingType'])
                 ->get();
         }
 
         if ($groupItems->isEmpty()) {
-            $existingOrder = Order::where('user_id', $user->id)
-                ->where('status', 'pending_payment')
-                ->where('payment_status', 'unpaid')
+            $existingOrder = Pesanan::where('user_id', $user->id)
+                ->where('status', 'menunggu_pembayaran')
+                ->where('status_pembayaran', 'belum_dibayar')
                 ->latest()
                 ->first();
 
@@ -383,19 +383,19 @@ class CheckoutController extends Controller
                         $snapToken = PaymentService::createSnapToken($existingOrder);
                         $existingOrder->update(['midtrans_snap_token' => $snapToken]);
                     } catch (\Exception $e) {
-                        \Log::error('Midtrans Snap Token Error on existingEventOrder (#' . $existingOrder->order_number . '): ' . $e->getMessage(), [
-                            'order_id' => $existingOrder->id,
+                        \Log::error('Midtrans Snap Token Error on existingEventOrder (#' . $existingOrder->nomor_pesanan . '): ' . $e->getMessage(), [
+                            'pesanan_id' => $existingOrder->id,
                             'exception' => $e
                         ]);
                         if ($request->expectsJson() || $request->ajax()) {
                             return response()->json([
                                 'success' => false,
-                                'message' => 'Pesanan event sudah ada (#' . $existingOrder->order_number . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
-                                'order_id' => $existingOrder->id,
-                                'order_number' => $existingOrder->order_number,
+                                'message' => 'Pesanan event sudah ada (#' . $existingOrder->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
+                                'pesanan_id' => $existingOrder->id,
+                                'nomor_pesanan' => $existingOrder->nomor_pesanan,
                             ], 500);
                         }
-                        return redirect()->route('customer.orders.show', $existingOrder)
+                        return redirect()->route('customer.pesanan.show', $existingOrder)
                             ->with('error', 'Pesanan event sudah ada, namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage());
                     }
                 }
@@ -403,14 +403,14 @@ class CheckoutController extends Controller
                 if ($request->expectsJson() || $request->ajax()) {
                     return response()->json([
                         'success' => true,
-                        'order_id' => $existingOrder->id,
-                        'order_number' => $existingOrder->order_number,
+                        'pesanan_id' => $existingOrder->id,
+                        'nomor_pesanan' => $existingOrder->nomor_pesanan,
                         'snap_token' => $existingOrder->midtrans_snap_token,
-                        'redirect_url' => route('customer.orders.show', $existingOrder),
+                        'redirect_url' => route('customer.pesanan.show', $existingOrder),
                     ]);
                 }
 
-                return redirect()->route('customer.orders.show', $existingOrder);
+                return redirect()->route('customer.pesanan.show', $existingOrder);
             }
 
             if ($request->expectsJson() || $request->ajax()) {
@@ -420,23 +420,23 @@ class CheckoutController extends Controller
         }
 
         $validated = $request->validate([
-            'order_date' => 'required|date|after:today',
-            'pickup_method' => 'required|in:delivery,pickup',
-            'district_id' => 'required_if:pickup_method,delivery|nullable|exists:districts,id',
-            'village_id' => 'nullable|exists:villages,id',
-            'address_detail' => 'nullable|string',
+            'tanggal_pesanan' => 'required|date|after:today',
+            'metode_pengambilan' => 'required|in:delivery,pickup',
+            'kecamatan_id' => 'required_if:metode_pengambilan,delivery|nullable|exists:kecamatan,id',
+            'desa_id' => 'nullable|exists:desa,id',
+            'detail_alamat' => 'nullable|string',
             'osm_address' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
-            'payment_method' => 'required|in:transfer',
-            'notes' => 'nullable|string',
+            'metode_pembayaran' => 'required|in:transfer',
+            'catatan' => 'nullable|string',
         ]);
 
-        if ($validated['pickup_method'] === 'delivery') {
+        if ($validated['metode_pengambilan'] === 'delivery') {
             $locValidation = \App\Services\LocationService::validateLocation(
                 $validated['latitude'] ?? null,
                 $validated['longitude'] ?? null,
-                $validated['district_id'] ?? null,
+                $validated['kecamatan_id'] ?? null,
                 null,
                 $validated['osm_address'] ?? null
             );
@@ -452,7 +452,7 @@ class CheckoutController extends Controller
             }
         }
 
-        $finalAddressDetail = $validated['address_detail'] ?? null;
+        $finalAddressDetail = $validated['detail_alamat'] ?? null;
         if (!empty($validated['osm_address']) && $finalAddressDetail) {
             $finalAddressDetail = $validated['osm_address'] . "\nDetail Patokan: " . $finalAddressDetail;
         } else if (!empty($validated['osm_address'])) {
@@ -460,185 +460,185 @@ class CheckoutController extends Controller
         }
 
         // Tentukan catering service dan package
-        $cateringServiceId = $groupItems->first()->catering_service_id;
+        $cateringServiceId = $groupItems->first()->layanan_katering_id;
         $packageItem = $groupItems->firstWhere('item_type', 'package');
         $packageId = $packageItem?->catering_package_id;
 
         // Validasi H-3
-        OrderService::validateOrderDate($validated['order_date'], $cateringServiceId);
+        OrderService::validateOrderDate($validated['tanggal_pesanan'], $cateringServiceId);
 
         // Hitung total porsi & validasi batas maksimal custom menu
         $menuItems = $groupItems->whereIn('item_type', ['package_item', 'custom_menu']);
         $totalPortions = 0;
         foreach ($groupItems->groupBy('cart_group_id') as $gId => $gItems) {
             $pkg = $gItems->firstWhere('item_type', 'package');
-            if ($pkg && $pkg->cateringPackage) {
-                $totalPortions += $pkg->cateringPackage->total_portions * $pkg->quantity;
+            if ($pkg && $pkg->paketKatering) {
+                $totalPortions += $pkg->paketKatering->total_portions * $pkg->jumlah;
             } else {
-                $totalPortions += $gItems->whereIn('item_type', ['package_item', 'custom_menu'])->sum('quantity');
+                $totalPortions += $gItems->whereIn('item_type', ['package_item', 'custom_menu'])->sum('jumlah');
             }
         }
 
         $customMenuItems = $groupItems->where('item_type', 'custom_menu');
         if ($customMenuItems->isNotEmpty()) {
-            $service = $groupItems->first()->cateringService;
-            $customPortions = $customMenuItems->sum('quantity');
-            if ($service && $service->max_portion && $customPortions > $service->max_portion) {
+            $service = $groupItems->first()->layananKatering;
+            $customPortions = $customMenuItems->sum('jumlah');
+            if ($service && $service->maksimal_porsi && $customPortions > $service->maksimal_porsi) {
                 if ($request->expectsJson() || $request->ajax()) {
                     return response()->json([
                         'success' => false,
-                        'message' => "Total porsi melebihi batas maksimal ({$service->max_portion} porsi)."
+                        'message' => "Total porsi melebihi batas maksimal ({$service->maksimal_porsi} porsi)."
                     ], 422);
                 }
-                return back()->with('error', "Total porsi melebihi batas maksimal ({$service->max_portion} porsi).");
+                return back()->with('error', "Total porsi melebihi batas maksimal ({$service->maksimal_porsi} porsi).");
             }
         }
 
         // Hitung penyajian
         $servingType = $groupItems->first()->servingType;
 
-        $order = DB::transaction(function () use ($request, $validated, $user, $groupItems, $groupId, $cateringServiceId, $packageId, $packageItem, $totalPortions, $servingType, $finalAddressDetail) {
+        $pesanan = DB::transaction(function () use ($request, $validated, $user, $groupItems, $groupId, $cateringServiceId, $packageId, $packageItem, $totalPortions, $servingType, $finalAddressDetail) {
             // Hitung subtotal
             $subtotal = $groupItems->sum(fn ($c) => $c->subtotal);
-            $shippingCost = $validated['pickup_method'] === 'delivery'
-                ? ShippingCost::getCostByDistrict($validated['district_id'])
+            $ongkosKirim = $validated['metode_pengambilan'] === 'delivery'
+                ? OngkosKirim::getCostByDistrict($validated['kecamatan_id'])
                 : 0;
-            $total = $subtotal + $shippingCost;
+            $total = $subtotal + $ongkosKirim;
 
-            // Buat order
-            $order = Order::create([
-                'order_number' => OrderService::generateOrderNumber(),
+            // Buat pesanan
+            $pesanan = Pesanan::create([
+                'nomor_pesanan' => OrderService::generateOrderNumber(),
                 'user_id' => $user->id,
-                'catering_service_id' => $cateringServiceId,
-                'package_id' => $packageId,
-                'order_date' => $validated['order_date'],
-                'pickup_method' => $validated['pickup_method'],
-                'district_id' => $validated['district_id'] ?? null,
-                'village_id' => $validated['village_id'] ?? null,
-                'address_detail' => $finalAddressDetail,
+                'layanan_katering_id' => $cateringServiceId,
+                'paket_katering_id' => $packageId,
+                'tanggal_pesanan' => $validated['tanggal_pesanan'],
+                'metode_pengambilan' => $validated['metode_pengambilan'],
+                'kecamatan_id' => $validated['kecamatan_id'] ?? null,
+                'desa_id' => $validated['desa_id'] ?? null,
+                'detail_alamat' => $finalAddressDetail,
                 'latitude' => $validated['latitude'] ?? null,
                 'longitude' => $validated['longitude'] ?? null,
-                'serving_type' => $servingType?->name,
-                'portion' => $totalPortions,
+                'tipe_penyajian' => $servingType?->name,
+                'porsi' => $totalPortions,
                 'subtotal' => $subtotal,
-                'shipping_cost' => $shippingCost,
+                'ongkos_kirim' => $ongkosKirim,
                 'total' => $total,
-                'payment_method' => 'transfer',
-                'payment_status' => 'unpaid',
-                'status' => 'pending_payment',
-                'notes' => $validated['notes'] ?? null,
+                'metode_pembayaran' => 'transfer',
+                'status_pembayaran' => 'belum_dibayar',
+                'status' => 'menunggu_pembayaran',
+                'catatan' => $validated['catatan'] ?? null,
             ]);
 
-            // Buat OrderItems
-            foreach ($groupItems as $cart) {
+            // Buat DetailPesanan
+            foreach ($groupItems as $keranjang) {
                 // Skip package marker / custom_header marker
-                if ($cart->item_type === 'package' || $cart->item_type === 'custom_header') {
-                    if ($cart->item_type === 'package') {
-                        // Simpan sebagai OrderItem paket header
-                        OrderItem::create([
-                            'order_id' => $order->id,
-                            'item_name' => 'Paket: ' . ($cart->cateringPackage?->name ?? 'Paket'),
-                            'quantity' => $cart->quantity,
-                            'unit_price' => (float) ($cart->cateringPackage?->price ?? 0),
-                            'subtotal' => (float) ($cart->cateringPackage?->price ?? 0) * $cart->quantity,
+                if ($keranjang->item_type === 'package' || $keranjang->item_type === 'custom_header') {
+                    if ($keranjang->item_type === 'package') {
+                        // Simpan sebagai DetailPesanan paket header
+                        DetailPesanan::create([
+                            'pesanan_id' => $pesanan->id,
+                            'item_name' => 'Paket: ' . ($keranjang->paketKatering?->name ?? 'Paket'),
+                            'jumlah' => $keranjang->jumlah,
+                            'unit_price' => (float) ($keranjang->paketKatering?->harga ?? 0),
+                            'subtotal' => (float) ($keranjang->paketKatering?->harga ?? 0) * $keranjang->jumlah,
                         ]);
                     }
                     continue;
                 }
 
                 $unitPrice = 0;
-                $itemName = $cart->customOption?->name ?? 'Item';
+                $itemName = $keranjang->opsiKustom?->name ?? 'Item';
 
-                if ($cart->item_type === 'package_item') {
+                if ($keranjang->item_type === 'package_item') {
                     // Termasuk dalam paket, harga 0
                     $unitPrice = 0;
                     $itemName = 'Menu: ' . $itemName;
-                } elseif ($cart->item_type === 'package_extra') {
+                } elseif ($keranjang->item_type === 'package_extra') {
                     // Termasuk dalam paket, harga 0
                     $unitPrice = 0;
                     $itemName = 'Extra: ' . $itemName;
-                } elseif ($cart->item_type === 'custom_menu') {
-                    $unitPrice = (float) ($cart->customOption?->price ?? 0);
+                } elseif ($keranjang->item_type === 'custom_menu') {
+                    $unitPrice = (float) ($keranjang->opsiKustom?->harga ?? 0);
                     $itemName = 'Menu: ' . $itemName;
-                } elseif ($cart->item_type === 'addition') {
-                    $unitPrice = (float) ($cart->customOption?->price ?? 0);
+                } elseif ($keranjang->item_type === 'addition') {
+                    $unitPrice = (float) ($keranjang->opsiKustom?->harga ?? 0);
                     $itemName = 'Extra: ' . $itemName;
                 }
 
-                $itemSubtotal = $unitPrice * $cart->quantity;
+                $itemSubtotal = $unitPrice * $keranjang->jumlah;
 
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'custom_option_id' => $cart->custom_option_id,
+                DetailPesanan::create([
+                    'pesanan_id' => $pesanan->id,
+                    'opsi_kustom_id' => $keranjang->opsi_kustom_id,
                     'item_name' => $itemName,
-                    'quantity' => $cart->quantity,
+                    'jumlah' => $keranjang->jumlah,
                     'unit_price' => $unitPrice,
                     'subtotal' => $itemSubtotal,
                 ]);
             }
 
-            // Simpan penyajian sebagai OrderItem
+            // Simpan penyajian sebagai DetailPesanan
             if ($servingType) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'custom_option_id' => $servingType->id,
+                DetailPesanan::create([
+                    'pesanan_id' => $pesanan->id,
+                    'opsi_kustom_id' => $servingType->id,
                     'item_name' => 'Penyajian: ' . $servingType->name,
-                    'quantity' => $totalPortions,
+                    'jumlah' => $totalPortions,
                     'unit_price' => 0,
                     'subtotal' => 0,
                 ]);
             }
 
-            // Buat invoice
-            InvoiceService::createInvoice($order);
+            // Buat tagihan
+            InvoiceService::createInvoice($pesanan);
 
-            // Hapus cart group setelah order dibuat
+            // Hapus keranjang group setelah pesanan dibuat
             if ($groupId === 'all') {
-                $user->carts()->whereNotNull('cart_group_id')->delete();
+                $user->keranjang()->whereNotNull('cart_group_id')->delete();
             } else {
-                $user->carts()->where('cart_group_id', $groupId)->delete();
+                $user->keranjang()->where('cart_group_id', $groupId)->delete();
             }
 
-            return $order;
+            return $pesanan;
         });
 
         // 2. Pesanan sudah berhasil disimpan dan di-commit di database. Minta Snap Token ke Midtrans.
         try {
-            $snapToken = PaymentService::createSnapToken($order);
-            $order->update(['midtrans_snap_token' => $snapToken]);
+            $snapToken = PaymentService::createSnapToken($pesanan);
+            $pesanan->update(['midtrans_snap_token' => $snapToken]);
         } catch (\Exception $e) {
-            \Log::error('Midtrans Snap Token Error on checkoutEventGroup (Order #' . $order->order_number . '): ' . $e->getMessage(), [
-                'order_id' => $order->id,
+            \Log::error('Midtrans Snap Token Error on checkoutEventGroup (Pesanan #' . $pesanan->nomor_pesanan . '): ' . $e->getMessage(), [
+                'pesanan_id' => $pesanan->id,
                 'exception' => $e
             ]);
             
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Pesanan event berhasil disimpan (#' . $order->order_number . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
-                    'order_id' => $order->id,
-                    'order_number' => $order->order_number,
+                    'message' => 'Pesanan event berhasil disimpan (#' . $pesanan->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage(),
+                    'pesanan_id' => $pesanan->id,
+                    'nomor_pesanan' => $pesanan->nomor_pesanan,
                 ], 500);
             }
 
-            return redirect()->route('customer.orders.show', $order)
-                ->with('error', 'Pesanan event berhasil disimpan (#' . $order->order_number . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage());
+            return redirect()->route('customer.pesanan.show', $pesanan)
+                ->with('error', 'Pesanan event berhasil disimpan (#' . $pesanan->nomor_pesanan . '), namun gagal membuat token pembayaran Midtrans: ' . $e->getMessage());
         }
 
         // Kirim notifikasi
-        NotificationService::notifyOrderCreated($order);
+        NotificationService::notifyOrderCreated($pesanan);
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'order_id' => $order->id,
-                'order_number' => $order->order_number,
-                'snap_token' => $order->midtrans_snap_token,
-                'redirect_url' => route('customer.orders.show', $order),
+                'pesanan_id' => $pesanan->id,
+                'nomor_pesanan' => $pesanan->nomor_pesanan,
+                'snap_token' => $pesanan->midtrans_snap_token,
+                'redirect_url' => route('customer.pesanan.show', $pesanan),
             ]);
         }
 
-        return redirect()->route('customer.orders.show', $order)
+        return redirect()->route('customer.pesanan.show', $pesanan)
             ->with('success', 'Pesanan event berhasil dibuat! Silakan lakukan pembayaran.');
     }
 }

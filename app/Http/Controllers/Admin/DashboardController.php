@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use App\Models\Product;
+use App\Models\Pesanan;
+use App\Models\Produk;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -15,19 +15,19 @@ class DashboardController extends Controller
         $today = Carbon::today();
 
         $stats = [
-            'daily_sales' => Order::completed()->whereDate('created_at', $today)->sum('total'),
-            'weekly_sales' => Order::completed()->where('created_at', '>=', $today->copy()->subDays(7))->sum('total'),
-            'monthly_sales' => Order::completed()->whereMonth('created_at', $today->month)->whereYear('created_at', $today->year)->sum('total'),
-            'total_orders' => Order::count(),
-            'processing_orders' => Order::where('status', 'processing')->count(),
+            'daily_sales' => Pesanan::completed()->whereDate('created_at', $today)->sum('total'),
+            'weekly_sales' => Pesanan::completed()->where('created_at', '>=', $today->copy()->subDays(7))->sum('total'),
+            'monthly_sales' => Pesanan::completed()->whereMonth('created_at', $today->month)->whereYear('created_at', $today->year)->sum('total'),
+            'total_orders' => Pesanan::count(),
+            'processing_orders' => Pesanan::where('status', 'diproses')->count(),
         ];
 
-        $bestSellers = Product::withCount('orderItems')
+        $bestSellers = Produk::withCount('detailPesanan')
             ->orderByDesc('order_items_count')
             ->take(5)
             ->get();
 
-        $recentOrders = Order::with(['user', 'cateringService'])
+        $recentOrders = Pesanan::with(['user', 'layananKatering'])
             ->latest()
             ->take(10)
             ->get();

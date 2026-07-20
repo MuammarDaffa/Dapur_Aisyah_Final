@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * Model CateringPackage merepresentasikan paket bundling yang ditawarkan (misal: Paket Hemat, Paket Premium).
- * Paket ini memiliki relasi dengan CustomOption untuk menentukan isi paket seperti menu, dekorasi, dll.
+ * Model PaketKatering merepresentasikan paket bundling yang ditawarkan (misal: Paket Hemat, Paket Premium).
+ * Paket ini memiliki relasi dengan OpsiKustom untuk menentukan isi paket seperti menu, dekorasi, dll.
  */
-class CateringPackage extends Model
+class PaketKatering extends Model
 {
+    protected $table = 'paket_katering';
+
     protected $fillable = [
-        'catering_service_id', 'name', 'image', 'description', 'price',
+        'layanan_katering_id', 'name', 'image', 'deskripsi', 'harga',
         'total_portions', 'benefits',
         'is_custom', 'is_active',
     ];
@@ -21,7 +23,7 @@ class CateringPackage extends Model
     protected function casts(): array
     {
         return [
-            'price' => 'decimal:2',
+            'harga' => 'decimal:2',
             'total_portions' => 'integer',
             'benefits' => 'array',
             'is_custom' => 'boolean',
@@ -36,19 +38,19 @@ class CateringPackage extends Model
 
     // === Relationships ===
 
-    public function cateringService(): BelongsTo
+    public function layananKatering(): BelongsTo
     {
-        return $this->belongsTo(CateringService::class);
+        return $this->belongsTo(LayananKatering::class);
     }
 
     /**
      * Custom options yang termasuk dalam paket ini.
-     * Pivot menyimpan quantity (porsi default per item).
+     * Pivot menyimpan jumlah (porsi default per item).
      */
-    public function customOptions(): BelongsToMany
+    public function opsiKustom(): BelongsToMany
     {
-        return $this->belongsToMany(CustomOption::class, 'catering_package_custom_option')
-                    ->withPivot('quantity');
+        return $this->belongsToMany(OpsiKustom::class, 'catering_package_custom_option')
+                    ->withPivot('jumlah');
     }
 
     // === Helpers ===
@@ -62,7 +64,7 @@ class CateringPackage extends Model
          */
     public function getIncludedMenus()
     {
-        return $this->customOptions()->where('type', 'menu')->get();
+        return $this->opsiKustom()->where('type', 'menu')->get();
     }
 
     /**
@@ -74,22 +76,22 @@ class CateringPackage extends Model
          */
     public function getIncludedDecorations()
     {
-        return $this->customOptions()->where('type', 'decoration')->get();
+        return $this->opsiKustom()->where('type', 'decoration')->get();
     }
 
     /**
      * Mendapatkan penyajian yang termasuk dalam paket.
      */
     /**
-         * Mengambil daftar opsi bertipe 'serving_type' (tipe penyajian) yang tersedia untuk paket ini.
+         * Mengambil daftar opsi bertipe 'tipe_penyajian' (tipe penyajian) yang tersedia untuk paket ini.
          * Jika tidak ada batasan khusus di paket, akan mengembalikan semua tipe penyajian yang aktif.
          * @return \Illuminate\Database\Eloquent\Collection
          */
     public function getIncludedServingTypes()
     {
-        $included = $this->customOptions()->where('type', 'serving_type')->get();
+        $included = $this->opsiKustom()->where('type', 'tipe_penyajian')->get();
         if ($included->isEmpty()) {
-            return \App\Models\CustomOption::where('type', 'serving_type')->where('is_active', true)->get();
+            return \App\Models\OpsiKustom::where('type', 'tipe_penyajian')->where('is_active', true)->get();
         }
         return $included;
     }
@@ -99,7 +101,7 @@ class CateringPackage extends Model
      */
     public function getIncludedExtras()
     {
-        return $this->customOptions()->where('type', 'extra')->get();
+        return $this->opsiKustom()->where('type', 'extra')->get();
     }
 
     /**
@@ -107,6 +109,6 @@ class CateringPackage extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
-        return 'Rp ' . number_format($this->price, 0, ',', '.');
+        return 'Rp ' . number_format($this->harga, 0, ',', '.');
     }
 }

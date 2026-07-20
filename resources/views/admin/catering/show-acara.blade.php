@@ -29,8 +29,8 @@
                                     {{ $catering->is_active ? 'Aktif' : 'Nonaktif' }}
                                 </span>
                             </div>
-                            @if($catering->description)
-                            <p class="text-muted mb-0">{{ $catering->description }}</p>
+                            @if($catering->deskripsi)
+                            <p class="text-muted mb-0">{{ $catering->deskripsi }}</p>
                             @endif
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                     <div class="col-sm-6 col-md-3 mb-2 mb-md-0">
                         <div class="p-3 bg-light rounded">
                             <span class="d-block small text-muted text-uppercase">Max. Porsi</span>
-                            <strong class="fs-5 text-dark">{{ $catering->max_portion ?? '∞' }}</strong>
+                            <strong class="fs-5 text-dark">{{ $catering->maksimal_porsi ?? '∞' }}</strong>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-3">
@@ -98,7 +98,7 @@
                             @forelse($menus as $menu)
                             <tr>
                                 <td class="align-middle fw-medium">{{ $menu->name }}</td>
-                                <td class="align-middle text-center fw-bold text-success">Rp {{ number_format($menu->price, 0, ',', '.') }}</td>
+                                <td class="align-middle text-center fw-bold text-success">Rp {{ number_format($menu->harga, 0, ',', '.') }}</td>
                                 <td class="align-middle text-center">
                                     <span class="badge {{ $menu->is_active ? 'text-bg-success' : 'text-bg-secondary' }}">
                                         {{ $menu->is_active ? 'Tersedia' : 'Habis' }}
@@ -106,7 +106,7 @@
                                 </td>
                                 <td class="align-middle text-center">
                                     <div class="btn-group">
-                                        <button type="button" data-items="{{ json_encode($menu->items ?? []) }}" onclick="openEditModal({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->price }}, {{ $menu->is_active ? 'true' : 'false' }}, 'menu', this)" class="btn btn-sm btn-info text-white"><i class="fa-solid fa-edit"></i> Edit</button>
+                                        <button type="button" data-items="{{ json_encode($menu->items ?? []) }}" onclick="openEditModal({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->harga }}, {{ $menu->is_active ? 'true' : 'false' }}, 'menu', this)" class="btn btn-sm btn-info text-white"><i class="fa-solid fa-edit"></i> Edit</button>
                                         <form id="form-delete-menu-{{ $menu->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $menu]) }}" method="POST" class="d-inline">
                                             @csrf @method('DELETE')
                                             <button type="button" onclick="confirmDelete('form-delete-menu-{{ $menu->id }}', 'Hapus menu ini?')" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Hapus</button>
@@ -154,7 +154,7 @@
                             @forelse($extras as $extra)
                             <tr>
                                 <td class="align-middle fw-medium">{{ $extra->name }}</td>
-                                <td class="align-middle text-center fw-bold text-success">Rp {{ number_format($extra->price, 0, ',', '.') }}</td>
+                                <td class="align-middle text-center fw-bold text-success">Rp {{ number_format($extra->harga, 0, ',', '.') }}</td>
                                 <td class="align-middle text-center">
                                     <span class="badge {{ $extra->is_active ? 'text-bg-success' : 'text-bg-secondary' }}">
                                         {{ $extra->is_active ? 'Aktif' : 'Nonaktif' }}
@@ -162,7 +162,7 @@
                                 </td>
                                 <td class="align-middle text-center">
                                     <div class="btn-group">
-                                        <button type="button" data-items="{{ json_encode($extra->items ?? []) }}" onclick="openEditModal({{ $extra->id }}, '{{ addslashes($extra->name) }}', {{ $extra->price }}, {{ $extra->is_active ? 'true' : 'false' }}, 'extra', this)" class="btn btn-sm btn-info text-white"><i class="fa-solid fa-edit"></i> Edit</button>
+                                        <button type="button" data-items="{{ json_encode($extra->items ?? []) }}" onclick="openEditModal({{ $extra->id }}, '{{ addslashes($extra->name) }}', {{ $extra->harga }}, {{ $extra->is_active ? 'true' : 'false' }}, 'extra', this)" class="btn btn-sm btn-info text-white"><i class="fa-solid fa-edit"></i> Edit</button>
                                         <form id="form-delete-extra-{{ $extra->id }}" action="{{ route('admin.catering.options.destroy', [$catering, $extra]) }}" method="POST" class="d-inline">
                                             @csrf @method('DELETE')
                                             <button type="button" onclick="confirmDelete('form-delete-extra-{{ $extra->id }}', 'Hapus extra ini?')" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Hapus</button>
@@ -190,7 +190,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title fw-bold"><i class="fa-solid fa-box text-primary"></i> Daftar Paket</h3>
                 <div class="ms-auto">
-                    <a href="{{ route('admin.packages.create') }}?catering_service_id={{ $catering->id }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('admin.packages.create') }}?layanan_katering_id={{ $catering->id }}" class="btn btn-primary btn-sm">
                         <i class="fa-solid fa-plus"></i> Tambah Paket
                     </a>
                 </div>
@@ -218,8 +218,8 @@
                                         @endif
                                         <div>
                                             <span class="fw-bold d-block">{{ $pkg->name }}</span>
-                                            @if($pkg->description)
-                                            <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;">{{ $pkg->description }}</small>
+                                            @if($pkg->deskripsi)
+                                            <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;">{{ $pkg->deskripsi }}</small>
                                             @endif
                                         </div>
                                     </div>
@@ -228,7 +228,7 @@
                                     <span class="fw-bold">{{ $pkg->total_portions }}</span> <small class="text-muted">porsi</small>
                                 </td>
                                 <td class="align-middle text-center fw-bold text-success">
-                                    Rp {{ number_format($pkg->price, 0, ',', '.') }}
+                                    Rp {{ number_format($pkg->harga, 0, ',', '.') }}
                                 </td>
                                 <td class="align-middle text-center">
                                     @php
@@ -311,7 +311,7 @@
               </div>
               <div id="addPriceField" class="mb-3">
                   <label class="form-label fw-bold">Harga (Rp) <span class="text-danger">*</span></label>
-                  <input type="text" name="price" id="addPrice" value="0" class="form-control rupiah-input">
+                  <input type="text" name="harga" id="addPrice" value="0" class="form-control rupiah-input">
               </div>
               <div class="form-check">
                   <input type="checkbox" name="is_active" value="1" checked class="form-check-input" id="checkActiveAddOpt">
@@ -356,7 +356,7 @@
               </div>
               <div id="editPriceField" class="mb-3">
                   <label class="form-label fw-bold">Harga (Rp) <span class="text-danger">*</span></label>
-                  <input type="text" name="price" id="editPrice" value="0" class="form-control rupiah-input">
+                  <input type="text" name="harga" id="editPrice" value="0" class="form-control rupiah-input">
               </div>
               <div class="form-check">
                   <input type="checkbox" name="is_active" value="1" id="editActive" class="form-check-input">
@@ -404,7 +404,7 @@ function openOptionModal(type) {
     if(addModal) addModal.show();
 }
 
-function openEditModal(optionId, name, price, isActive, type, btnElement) {
+function openEditModal(optionId, name, harga, isActive, type, btnElement) {
     document.getElementById('editName').value = name;
     
     if (type === 'menu') {
@@ -431,7 +431,7 @@ function openEditModal(optionId, name, price, isActive, type, btnElement) {
     }
     
     document.getElementById('editPriceField').style.display = 'block';
-    document.getElementById('editPrice').value = formatRupiah(price);
+    document.getElementById('editPrice').value = formatRupiah(harga);
     
     document.getElementById('editActive').checked = isActive;
     document.getElementById('editOptionForm').action = `/admin/catering/${cateringId}/options/${optionId}`;

@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Model ShippingCost menyimpan konfigurasi biaya pengiriman (ongkir).
- * Biaya ini dikelompokkan berdasarkan wilayah Kecamatan (District) tujuan pengiriman.
+ * Model OngkosKirim menyimpan konfigurasi biaya pengiriman (ongkir).
+ * Biaya ini dikelompokkan berdasarkan wilayah Kecamatan (Kecamatan) tujuan pengiriman.
  */
-class ShippingCost extends Model
+class OngkosKirim extends Model
 {
-    protected $fillable = ['district_id', 'cost', 'notes'];
+    protected $table = 'ongkos_kirim';
+
+    protected $fillable = ['kecamatan_id', 'cost', 'catatan'];
 
     protected function casts(): array
     {
@@ -20,9 +22,9 @@ class ShippingCost extends Model
         ];
     }
 
-    public function district(): BelongsTo
+    public function kecamatan(): BelongsTo
     {
-        return $this->belongsTo(District::class);
+        return $this->belongsTo(Kecamatan::class);
     }
 
     /**
@@ -41,7 +43,7 @@ class ShippingCost extends Model
             return 0;
         }
 
-        $shipping = static::where('district_id', $districtId)->first();
+        $shipping = static::where('kecamatan_id', $districtId)->first();
         return $shipping ? (float) $shipping->cost : 20000;
     }
 }

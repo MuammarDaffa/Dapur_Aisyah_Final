@@ -8,11 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('catering_services', function (Blueprint $table) {
+        Schema::create('layanan_katering', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
             $table->string('slug', 120)->unique();
-            $table->text('description');
+            $table->text('deskripsi');
             $table->json('serving_types')->nullable(); // ['lunchbox','prasmanan','plated']
             $table->integer('min_portion')->default(1);
             $table->decimal('base_price', 12, 2)->default(0);
@@ -27,6 +27,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('catering_services');
+        Schema::dropIfExists('layanan_katering');
     }
 };
