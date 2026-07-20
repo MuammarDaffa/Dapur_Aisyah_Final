@@ -175,8 +175,8 @@
                 @forelse($services as $service)
                     @php
                         $serviceUrl = $service->isEvent()
-                            ? route('customer.event.service', $service)
-                            : route('customer.produk', ['service' => $service->id]);
+                            ? route('pelanggan.event.service', $service)
+                            : route('pelanggan.produk', ['service' => $service->id]);
                     @endphp
                     <a href="{{ $serviceUrl }}" class="group position-relative bg-white rounded-2xl border border border-secondary hover:-translate-y-1 d-flex d-flex-column h-100 overflow-hidden">
                         @if($service->image)
@@ -296,7 +296,7 @@
             <h2 class="fs-2 md:fs-1 fw-bold text-white mb-4">Siap Memesan Katering?</h2>
             <p class="text-primary fs-5 mb-8">Pesan sekarang dan nikmati kemudahan layanan katering online kami.</p>
             @auth
-                <a href="{{ route('customer.produk') }}" class="d-inline-block px-10 py-4 bg-white text-primary fw-bold rounded-pill shadow-lg hover:shadow-2xl">
+                <a href="{{ route('pelanggan.produk') }}" class="d-inline-block px-10 py-4 bg-white text-primary fw-bold rounded-pill shadow-lg hover:shadow-2xl">
                     Lihat Menu & Pesan →
                 </a>
             @else

@@ -15,7 +15,7 @@ class VerifyEmailController extends Controller
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
-            if ($redirect = \App\Http\Controllers\Customer\CartController::restorePendingCart($request)) {
+            if ($redirect = \App\Http\Controllers\Pelanggan\KeranjangController::restorePendingCart($request)) {
                 return $redirect;
             }
             return redirect()->intended(route($request->user()->getDashboardRouteName(), absolute: false).'?verified=1');
@@ -25,7 +25,7 @@ class VerifyEmailController extends Controller
             event(new Verified($request->user()));
         }
 
-        if ($redirect = \App\Http\Controllers\Customer\CartController::restorePendingCart($request)) {
+        if ($redirect = \App\Http\Controllers\Pelanggan\KeranjangController::restorePendingCart($request)) {
             return $redirect;
         }
 

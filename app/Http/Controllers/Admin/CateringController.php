@@ -112,7 +112,7 @@ class CateringController extends Controller
         }
 
         if ($catering->isEvent()) {
-            $packages = $catering->packages()->with('opsiKustom')->latest()->paginate(10);
+            $pakets = $catering->packages()->with('opsiKustom')->latest()->paginate(10);
             $menus = $catering->opsiKustom()->where('type', 'menu')->get();
             $servings = \App\Models\OpsiKustom::where('type', 'tipe_penyajian')->get();
             $extras = $catering->opsiKustom()->where('type', 'extra')->get();

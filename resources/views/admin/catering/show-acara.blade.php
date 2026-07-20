@@ -190,7 +190,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title fw-bold"><i class="fa-solid fa-box text-primary"></i> Daftar Paket</h3>
                 <div class="ms-auto">
-                    <a href="{{ route('admin.packages.create') }}?layanan_katering_id={{ $catering->id }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('admin.paket_katering.create') }}?layanan_katering_id={{ $catering->id }}" class="btn btn-primary btn-sm">
                         <i class="fa-solid fa-plus"></i> Tambah Paket
                     </a>
                 </div>
@@ -209,7 +209,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($packages as $pkg)
+                            @forelse($pakets as $pkg)
                             <tr>
                                 <td class="align-middle">
                                     <div class="d-flex align-items-center">
@@ -258,8 +258,8 @@
                                 </td>
                                 <td class="align-middle text-center">
                                     <div class="btn-group">
-                                        <a href="{{ route('admin.packages.edit', $pkg) }}" class="btn btn-sm btn-info text-white"><i class="fa-solid fa-edit"></i> Edit</a>
-                                        <form id="form-delete-package-{{ $pkg->id }}" action="{{ route('admin.packages.destroy', $pkg) }}" method="POST" class="d-inline">
+                                        <a href="{{ route('admin.paket_katering.edit', $pkg) }}" class="btn btn-sm btn-info text-white"><i class="fa-solid fa-edit"></i> Edit</a>
+                                        <form id="form-delete-package-{{ $pkg->id }}" action="{{ route('admin.paket_katering.destroy', $pkg) }}" method="POST" class="d-inline">
                                             @csrf @method('DELETE')
                                             <button type="button" onclick="confirmDelete('form-delete-package-{{ $pkg->id }}', 'Hapus paket ini?')" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Hapus</button>
                                         </form>
@@ -275,8 +275,8 @@
                     </table>
                 </div>
             </div>
-            @if($packages->hasPages())
-            <div class="card-footer">{{ $packages->links('pagination::bootstrap-5') }}</div>
+            @if($pakets->hasPages())
+            <div class="card-footer">{{ $pakets->links('pagination::bootstrap-5') }}</div>
             @endif
         </div>
     </div>

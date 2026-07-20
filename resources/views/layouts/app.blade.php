@@ -61,7 +61,7 @@
                 @if(auth()->check() && (!auth()->user()->isCustomer() || auth()->user()->hasVerifiedEmail()))
                     <!-- Keranjang -->
                     <li class="nav-item me-3">
-                        <a href="{{ route('customer.keranjang') }}" class="nav-link position-relative text-dark {{ request()->routeIs('customer.keranjang') ? 'active fw-bold' : '' }}">
+                        <a href="{{ route('pelanggan.keranjang') }}" class="nav-link position-relative text-dark {{ request()->routeIs('pelanggan.keranjang') ? 'active fw-bold' : '' }}">
                             Keranjang
                             @php $cartCount = auth()->user()->cartItemsCount(); @endphp
                             @if($cartCount > 0)
@@ -73,12 +73,12 @@
                     </li>
                     <!-- Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('customer.profile.edit', 'customer.pesanan') ? 'active fw-bold' : '' }}" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('pelanggan.profile.edit', 'pelanggan.pesanan') ? 'active fw-bold' : '' }}" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {{ auth()->user()->name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item {{ request()->routeIs('customer.profile.edit') ? 'active' : '' }}" href="{{ route('customer.profile.edit') }}">Profil Saya</a></li>
-                            <li><a class="dropdown-item {{ request()->routeIs('customer.pesanan') ? 'active' : '' }}" href="{{ route('customer.pesanan') }}">Pesanan Saya</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('pelanggan.profile.edit') ? 'active' : '' }}" href="{{ route('pelanggan.profile.edit') }}">Profil Saya</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('pelanggan.pesanan') ? 'active' : '' }}" href="{{ route('pelanggan.pesanan') }}">Pesanan Saya</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop" class="m-0">
@@ -330,7 +330,7 @@
     };
 
     window.refreshCartBadges = function() {
-        fetch('{{ route("customer.keranjang.count") }}', {
+        fetch('{{ route("pelanggan.keranjang.count") }}', {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'

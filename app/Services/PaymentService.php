@@ -26,7 +26,7 @@ class PaymentService
                 'gross_amount' => (int) $pesanan->total,
             ],
             'customer_details' => [
-                'first_name' => substr($pesanan->user?->name ?? 'Customer', 0, 50),
+                'first_name' => substr($pesanan->user?->name ?? 'Pelanggan', 0, 50),
                 'email' => $pesanan->user?->email ?? 'customer@example.com',
                 'phone' => substr($pesanan->user?->phone ?? '081234567890', 0, 20),
             ],

@@ -19,12 +19,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($customers as $c)
+                            @forelse($pelanggans as $c)
                             <tr>
                                 <td class="align-middle fw-medium">{{ $c->name }}</td>
                                 <td class="align-middle">{{ $c->email }}</td>
                                 <td class="align-middle">
-                                    <span class="badge text-bg-info">{{ $c->orders_count }} Pesanan</span>
+                                    <span class="badge text-bg-info">{{ $c->pesanan_count }} Pesanan</span>
                                 </td>
                                 <td class="align-middle text-muted">{{ $c->created_at->format('d M Y') }}</td>
                             </tr>
@@ -37,9 +37,9 @@
                     </table>
                 </div>
             </div>
-            @if($customers->hasPages())
+            @if($pelanggans->hasPages())
             <div class="card-footer">
-                {{ $customers->links('pagination::bootstrap-5') }}
+                {{ $pelanggans->links('pagination::bootstrap-5') }}
             </div>
             @endif
         </div>

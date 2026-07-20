@@ -49,7 +49,7 @@
                 </p>
             </div>
 
-            <form action="{{ route('customer.keranjang.store') }}" method="POST" onsubmit="return window.submitQuickAddCart ? window.submitQuickAddCart(event, this) : true;">
+            <form action="{{ route('pelanggan.keranjang.store') }}" method="POST" onsubmit="return window.submitQuickAddCart ? window.submitQuickAddCart(event, this) : true;">
                 @csrf
                 <input type="hidden" name="produk_id" value="{{ $produk->id }}">
                 <input type="hidden" name="jumlah" value="1">

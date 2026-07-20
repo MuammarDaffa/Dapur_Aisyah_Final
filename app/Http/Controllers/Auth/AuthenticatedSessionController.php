@@ -37,7 +37,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         // Pulihkan pesanan tertunda jika ada di session (dari proses Masukkan ke Keranjang saat guest)
-        if ($redirect = \App\Http\Controllers\Customer\CartController::restorePendingCart($request)) {
+        if ($redirect = \App\Http\Controllers\Pelanggan\KeranjangController::restorePendingCart($request)) {
             return $redirect;
         }
 

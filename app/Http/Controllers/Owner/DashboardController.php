@@ -31,7 +31,7 @@ class DashboardController extends Controller
             ->toArray();
 
         $bestSellers = Produk::withCount('detailPesanan')
-            ->orderByDesc('order_items_count')
+            ->orderByDesc('detail_pesanan_count')
             ->take(10)
             ->get();
 
@@ -47,7 +47,7 @@ class DashboardController extends Controller
     {
         $bestSellers = Produk::withCount('detailPesanan')
             ->with('layananKatering')
-            ->orderByDesc('order_items_count')
+            ->orderByDesc('detail_pesanan_count')
             ->paginate(20);
 
         return view('owner.best-sellers', compact('bestSellers'));
@@ -55,13 +55,13 @@ class DashboardController extends Controller
 
     public function customers()
     {
-        $customers = User::where('role', 'customer')
+        $pelanggans = User::where('role', 'customer')
             ->withCount('pesanan')
-            ->orderByDesc('orders_count')
+            ->orderByDesc('pesanan_count')
             ->take(10)
             ->get();
 
-        return view('owner.customers', compact('customers'));
+        return view('owner.customers', compact('pelanggans'));
     }
 
     public function ulasan()

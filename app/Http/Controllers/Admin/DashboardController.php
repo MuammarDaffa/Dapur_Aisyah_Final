@@ -23,7 +23,7 @@ class DashboardController extends Controller
         ];
 
         $bestSellers = Produk::withCount('detailPesanan')
-            ->orderByDesc('order_items_count')
+            ->orderByDesc('detail_pesanan_count')
             ->take(5)
             ->get();
 

@@ -2,22 +2,22 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
-use App\Http\Controllers\Customer\DashboardController as CustomerDashboard;
+use App\Http\Controllers\Pelanggan\DashboardController as CustomerDashboard;
 use App\Http\Controllers\Admin\MenuPeriodController;
-use App\Http\Controllers\Customer\ProfileController;
-use App\Http\Controllers\Customer\CartController;
-use App\Http\Controllers\Customer\CheckoutController;
-use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
-use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
+use App\Http\Controllers\Pelanggan\ProfilController;
+use App\Http\Controllers\Pelanggan\KeranjangController;
+use App\Http\Controllers\Pelanggan\PembayaranController;
+use App\Http\Controllers\Pelanggan\PesananController as CustomerPesananController;
+use App\Http\Controllers\Pelanggan\UlasanController as CustomerUlasanController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
-use App\Http\Controllers\Admin\OrderController as AdminOrderController;
-use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\PesananController as AdminPesananController;
+use App\Http\Controllers\Admin\ProdukController as AdminProdukController;
 use App\Http\Controllers\Admin\CateringController;
-use App\Http\Controllers\Admin\PackageController;
-use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
-use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
-use App\Http\Controllers\Admin\ShippingController;
-use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\PaketKateringController;
+use App\Http\Controllers\Admin\PelangganController as AdminPelangganController;
+use App\Http\Controllers\Admin\UlasanController as AdminUlasanController;
+use App\Http\Controllers\Admin\OngkosKirimController;
+use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboard;
 use App\Http\Controllers\PaymentController;
 
@@ -58,10 +58,10 @@ Route::post('/session/clear-notification', function (\Illuminate\Http\Request $r
 
 /*
 |--------------------------------------------------------------------------
-| Customer Routes
+| Pelanggan Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware('unverified_customer_redirect')->prefix('dashboard')->name('customer.')->group(function () {
+Route::middleware('unverified_customer_redirect')->prefix('dashboard')->name('pelanggan.')->group(function () {
     // Produk (Menu Mingguan/Harian)
     Route::get('/produk', [CustomerDashboard::class, 'produk'])->name('produk');
 
@@ -71,42 +71,42 @@ Route::middleware('unverified_customer_redirect')->prefix('dashboard')->name('cu
     Route::get('/event/{service}/custom', [CustomerDashboard::class, 'eventCustom'])->name('event.custom');
 
     // Keranjang Count (untuk badge di navbar, mengembalikan 0 jika guest)
-    Route::get('/keranjang/count', [CartController::class, 'count'])->name('keranjang.count');
+    Route::get('/keranjang/count', [KeranjangController::class, 'count'])->name('keranjang.count');
 
     // Keranjang Store (masukkan ke keranjang - di-intercept dalam controller jika belum login)
-    Route::post('/keranjang', [CartController::class, 'store'])->name('keranjang.store');
-    Route::post('/event/keranjang', [CartController::class, 'storeEventGroup'])->name('event.keranjang.store');
+    Route::post('/keranjang', [KeranjangController::class, 'store'])->name('keranjang.store');
+    Route::post('/event/keranjang', [KeranjangController::class, 'storeEventGroup'])->name('event.keranjang.store');
 });
 
-Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('customer.')->group(function () {
+Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('pelanggan.')->group(function () {
     Route::get('/', [CustomerDashboard::class, 'index'])->name('dashboard');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile', [ProfilController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfilController::class, 'update'])->name('profile.update');
 
     // Event Keranjang Update & Destroy
-    Route::put('/event/keranjang/{groupId}', [CartController::class, 'updateEventGroup'])->name('event.keranjang.update');
+    Route::put('/event/keranjang/{groupId}', [KeranjangController::class, 'updateEventGroup'])->name('event.keranjang.update');
 
-    // Event Checkout (per group)
-    Route::get('/event/checkout/{groupId}', [CheckoutController::class, 'showEventCheckout'])->name('event.checkout.show');
-    Route::post('/event/checkout/{groupId}', [CheckoutController::class, 'checkoutEventGroup'])->name('event.checkout.store');
+    // Event Lanjut Ke Pembayaran (per group)
+    Route::get('/event/pembayaran/{groupId}', [PembayaranController::class, 'showEventCheckout'])->name('event.checkout.show');
+    Route::post('/event/pembayaran/{groupId}', [PembayaranController::class, 'checkoutEventGroup'])->name('event.checkout.store');
 
     // Keranjang Index & Item Operations (Daily)
-    Route::get('/keranjang', [CartController::class, 'index'])->name('keranjang');
-    Route::put('/keranjang/{keranjang}', [CartController::class, 'update'])->name('keranjang.update');
-    Route::delete('/keranjang/{keranjang}', [CartController::class, 'destroy'])->name('keranjang.destroy');
+    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang');
+    Route::put('/keranjang/{keranjang}', [KeranjangController::class, 'update'])->name('keranjang.update');
+    Route::delete('/keranjang/{keranjang}', [KeranjangController::class, 'destroy'])->name('keranjang.destroy');
 
-    // Checkout (Daily)
-    Route::get('/checkout/{menu_date?}', [CheckoutController::class, 'index'])->name('checkout');
-    Route::post('/checkout/{menu_date?}', [CheckoutController::class, 'store'])->name('checkout.store');
+    // Lanjut Ke Pembayaran (Daily)
+    Route::get('/pembayaran/{menu_date?}', [PembayaranController::class, 'index'])->name('checkout');
+    Route::post('/pembayaran/{menu_date?}', [PembayaranController::class, 'store'])->name('pembayaran.store');
 
     // Pesanan
-    Route::get('/pesanan', [CustomerOrderController::class, 'index'])->name('pesanan');
-    Route::get('/pesanan/{pesanan}', [CustomerOrderController::class, 'show'])->name('pesanan.show');
-    Route::put('/pesanan/{pesanan}/cancel', [CustomerOrderController::class, 'cancel'])->name('pesanan.cancel');
+    Route::get('/pesanan', [CustomerPesananController::class, 'index'])->name('pesanan');
+    Route::get('/pesanan/{pesanan}', [CustomerPesananController::class, 'show'])->name('pesanan.show');
+    Route::put('/pesanan/{pesanan}/cancel', [CustomerPesananController::class, 'cancel'])->name('pesanan.cancel');
 
     // Ulasan
-    Route::post('/ulasan', [CustomerReviewController::class, 'store'])->name('ulasan.store');
+    Route::post('/ulasan', [CustomerUlasanController::class, 'store'])->name('ulasan.store');
 });
 
 /*
@@ -118,11 +118,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
     // Pesanan
-    Route::get('/pesanan', [AdminOrderController::class, 'index'])->name('pesanan');
-    Route::get('/pesanan/{pesanan}', [AdminOrderController::class, 'show'])->name('pesanan.show');
-    Route::put('/pesanan/{pesanan}/status', [AdminOrderController::class, 'updateStatus'])->name('pesanan.status');
-    Route::put('/pesanan/{pesanan}/cancel', [AdminOrderController::class, 'cancel'])->name('pesanan.cancel');
-    Route::delete('/pesanan/{pesanan}', [AdminOrderController::class, 'destroy'])->name('pesanan.destroy');
+    Route::get('/pesanan', [AdminPesananController::class, 'index'])->name('pesanan');
+    Route::get('/pesanan/{pesanan}', [AdminPesananController::class, 'show'])->name('pesanan.show');
+    Route::put('/pesanan/{pesanan}/status', [AdminPesananController::class, 'updateStatus'])->name('pesanan.status');
+    Route::put('/pesanan/{pesanan}/cancel', [AdminPesananController::class, 'cancel'])->name('pesanan.cancel');
+    Route::delete('/pesanan/{pesanan}', [AdminPesananController::class, 'destroy'])->name('pesanan.destroy');
 
     // Katering (pusat manajemen layanan)
     Route::resource('catering', CateringController::class);
@@ -137,23 +137,23 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/catering/{catering}/menu-periods', [MenuPeriodController::class, 'store'])->name('menu-periods.store');
 
     // Produk (diakses dari detail katering, bukan standalone)
-    Route::resource('produk', AdminProductController::class)->except(['index', 'show']);
+    Route::resource('produk', AdminProdukController::class)->except(['index', 'show']);
 
-    // Packages (diakses dari detail katering, bukan standalone)
-    Route::resource('packages', PackageController::class)->except(['index', 'show']);
+    // Paket Katering (diakses dari detail katering, bukan standalone)
+    Route::resource('paket_katering', PaketKateringController::class)->except(['index', 'show']);
 
-    // Customers
-    Route::get('/customers', [AdminCustomerController::class, 'index'])->name('customers');
+    // Pelanggan
+    Route::get('/customers', [AdminPelangganController::class, 'index'])->name('customers');
 
     // Ulasan
-    Route::get('/ulasan', [AdminReviewController::class, 'index'])->name('ulasan');
-    Route::delete('/ulasan/{ulasan}', [AdminReviewController::class, 'destroy'])->name('ulasan.destroy');
+    Route::get('/ulasan', [AdminUlasanController::class, 'index'])->name('ulasan');
+    Route::delete('/ulasan/{ulasan}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
 
     // Shipping
-    Route::resource('shipping', ShippingController::class)->except(['show']);
+    Route::resource('ongkos_kirim', OngkosKirimController::class)->except(['show']);
 
-    // Reports
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports');
+    // Laporan
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('reports');
 });
 
 /*
@@ -166,7 +166,7 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::get('/best-sellers', [OwnerDashboard::class, 'bestSellers'])->name('best-sellers');
     Route::get('/customers', [OwnerDashboard::class, 'customers'])->name('customers');
     Route::get('/ulasan', [OwnerDashboard::class, 'ulasan'])->name('ulasan');
-    Route::get('/reports', [OwnerDashboard::class, 'reports'])->name('reports');
+    Route::get('/laporan', [OwnerDashboard::class, 'reports'])->name('reports');
 });
 
 /*
@@ -179,7 +179,7 @@ Route::middleware('auth')->group(function () {
         return $kecamatan->desa()->get(['id', 'name']);
     })->name('api.desa');
 
-    Route::get('/api/shipping-cost/{kecamatan}', function (\App\Models\Kecamatan $kecamatan) {
+    Route::get('/api/ongkos_kirim-cost/{kecamatan}', function (\App\Models\Kecamatan $kecamatan) {
         return response()->json(['cost' => \App\Models\OngkosKirim::getCostByDistrict($kecamatan->id)]);
     })->name('api.shipping-cost');
 
@@ -210,13 +210,13 @@ Route::middleware('auth')->group(function () {
     })->name('api.produk.extras');
 
     // API: Paket per layanan
-    Route::get('/api/service/{service}/packages', function (\App\Models\LayananKatering $service) {
+    Route::get('/api/service/{service}/paket_katering', function (\App\Models\LayananKatering $service) {
         return $service->packages()->where('is_active', true)->with('opsiKustom:id,type,name,harga')->get();
     })->name('api.service.packages');
 
     // API: Detail paket
-    Route::get('/api/package/{package}/details', function (\App\Models\PaketKatering $package) {
-        $package->load('opsiKustom:id,type,name,harga', 'layananKatering:id,name,min_portion,maksimal_porsi');
-        return response()->json($package);
+    Route::get('/api/package/{package}/details', function (\App\Models\PaketKatering $paket) {
+        $paket->load('opsiKustom:id,type,name,harga', 'layananKatering:id,name,min_portion,maksimal_porsi');
+        return response()->json($paket);
     })->name('api.package.details');
 });

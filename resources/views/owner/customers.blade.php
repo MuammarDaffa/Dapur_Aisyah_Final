@@ -12,7 +12,7 @@
         </div>
         <div class="text-white px-4 py-2 rounded fw-bold shadow d-flex align-items-center g-3">
             <span>👥</span>
-            <span>{{ $customers->count() }} Top Pelanggan</span>
+            <span>{{ $pelanggans->count() }} Top Pelanggan</span>
         </div>
     </div>
 
@@ -31,7 +31,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse($customers as $index => $customer)
+                    @forelse($pelanggans as $index => $pelanggan)
                         <tr class="/30">
                             <td class="px-6 py-4">
                                 @if($index < 3)
@@ -45,20 +45,20 @@
                             <td class="px-6 py-4">
                                 <div class="d-flex align-items-center g-3">
                                     <div style="height: 36px;" class="w-9 rounded-pill d-flex align-items-center justify-content-center text-white fs-6 fw-bold">
-                                        {{ strtoupper(substr($customer->name, 0, 1)) }}
+                                        {{ strtoupper(substr($pelanggan->name, 0, 1)) }}
                                     </div>
-                                    <span class="fw-medium text-secondary">{{ $customer->name }}</span>
+                                    <span class="fw-medium text-secondary">{{ $pelanggan->name }}</span>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-secondary">{{ $customer->email }}</td>
-                            <td class="px-6 py-4 text-secondary">{{ $customer->phone ?? '-' }}</td>
+                            <td class="px-6 py-4 text-secondary">{{ $pelanggan->email }}</td>
+                            <td class="px-6 py-4 text-secondary">{{ $pelanggan->phone ?? '-' }}</td>
                             <td class="px-6 py-4">
                                 <span class="d-inline-d-flex align-items-center g-3 bg-teal-50 text-teal-700 px-3 py-1 rounded-pill small fw-bold">
-                                    📦 {{ $customer->orders_count }} pesanan
+                                    📦 {{ $pelanggan->pesanan_count }} pesanan
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-secondary fs-6">
-                                {{ $customer->created_at->format('d M Y') }}
+                                {{ $pelanggan->created_at->format('d M Y') }}
                             </td>
                         </tr>
                     @empty
