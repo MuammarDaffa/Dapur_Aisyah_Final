@@ -357,13 +357,7 @@ class KeranjangController extends Controller
         // Hitung total porsi setelah penggabungan
         $totalCustomPortions = array_sum($menuMap);
 
-        if ($totalCustomPortions < $service->min_portion) {
-            return back()->with('error', "Total porsi minimal {$service->min_portion} porsi.");
-        }
 
-        if ($totalCustomPortions > $service->maksimal_porsi) {
-            return back()->with('error', "Total porsi melebihi batas maksimal ({$service->maksimal_porsi} porsi).");
-        }
 
         // Penyajian -> gunakan pilihan Penyajian yang terakhir dipilih pelanggan sehingga hanya ada satu Penyajian pada Custom Menu.
         $servingTypeId = !empty($validated['serving_type_id']) ? $validated['serving_type_id'] : ($existingCustomCarts->firstWhere('serving_type_id', '!=', null)?->serving_type_id ?? null);
@@ -502,7 +496,7 @@ class KeranjangController extends Controller
             return back()->with('acara_conflict_error', $errorMessage);
         }
 
-        $minPortion = $service->min_portion;
+
         $totalCustomPortions = 0;
 
         foreach ($validated['items'] as $item) {
@@ -511,19 +505,7 @@ class KeranjangController extends Controller
             }
         }
 
-        if ($totalCustomPortions < $minPortion) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => "Total porsi minimal {$minPortion} porsi."], 422);
-            }
-            return back()->with('error', "Total porsi minimal {$minPortion} porsi.");
-        }
 
-        if ($totalCustomPortions > $service->maksimal_porsi) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => "Total porsi melebihi batas maksimal ({$service->maksimal_porsi} porsi)."], 422);
-            }
-            return back()->with('error', "Total porsi melebihi batas maksimal ({$service->maksimal_porsi} porsi).");
-        }
 
         $setsQty = max(1, (int) ($validated['sets_quantity'] ?? 1));
         $servingTypeId = $validated['serving_type_id'] ?? null;

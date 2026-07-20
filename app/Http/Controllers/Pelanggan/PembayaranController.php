@@ -479,20 +479,7 @@ class PembayaranController extends Controller
             }
         }
 
-        $customMenuItems = $groupItems->where('item_type', 'custom_menu');
-        if ($customMenuItems->isNotEmpty()) {
-            $service = $groupItems->first()->layananKatering;
-            $customPortions = $customMenuItems->sum('jumlah');
-            if ($service && $service->maksimal_porsi && $customPortions > $service->maksimal_porsi) {
-                if ($request->expectsJson() || $request->ajax()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Total porsi melebihi batas maksimal ({$service->maksimal_porsi} porsi)."
-                    ], 422);
-                }
-                return back()->with('error', "Total porsi melebihi batas maksimal ({$service->maksimal_porsi} porsi).");
-            }
-        }
+
 
         // Hitung penyajian
         $servingType = $groupItems->first()->servingType;

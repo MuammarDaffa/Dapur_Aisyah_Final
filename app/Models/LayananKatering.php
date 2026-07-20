@@ -18,8 +18,7 @@ class LayananKatering extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'slug', 'deskripsi', 'serving_types', 'min_portion',
-        'maksimal_porsi', 'base_price', 'order_terms', 'schedule_notes',
+        'name', 'slug', 'serving_types',
         'minimal_order_days',
         'service_area', 'fitur_tersedia', 'is_active', 'image',
     ];
@@ -30,7 +29,6 @@ class LayananKatering extends Model
             'serving_types' => 'array',
             'service_area' => 'array',
             'fitur_tersedia' => 'array',
-            'base_price' => 'decimal:2',
             'is_active' => 'boolean',
         ];
     }
@@ -38,8 +36,17 @@ class LayananKatering extends Model
     protected static function booted(): void
     {
         static::creating(function ($service) {
-            if (empty($service->slug)) {
-                $service->slug = Str::slug($service->name);
+            if (empty($service->slug) && !empty($service->name)) {
+                $slug = Str::slug($service->name);
+                $originalSlug = $slug;
+                $count = 1;
+                
+                while (static::where('slug', $slug)->exists()) {
+                    $slug = $originalSlug . '-' . $count;
+                    $count++;
+                }
+                
+                $service->slug = $slug;
             }
         });
     }

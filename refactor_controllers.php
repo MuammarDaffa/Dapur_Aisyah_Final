@@ -1,68 +1,87 @@
 <?php
 
-function refactorFile($file, $replacements) {
-    if(!file_exists($file)) return;
-    $content = file_get_contents($file);
-    $content = str_replace(array_keys($replacements), array_values($replacements), $content);
-    file_put_contents($file, $content);
-    echo "Refactored $file\n";
-}
+$file = 'app/Http/Controllers/Admin/CateringController.php';
+$content = file_get_contents($file);
 
-// 1. CateringController
-refactorFile('app/Http/Controllers/Admin/CateringController.php', [
-    '$isDaily' => '$isHarian',
-    'isDaily()' => 'isHarian()',
-    'isEvent()' => 'isAcara()',
-]);
+// Replace store method
+$newStore = <<<PHP
+    public function store(Request \$request)
+    {
+        \$isHarian = \$request->input('catering_type') === 'harian';
+        \$validated = \$request->validate([
+            'name' => 'required|string|max:100',
+            'catering_type' => 'required|in:harian,acara',
+            'minimal_order_days' => \$isHarian ? 'nullable' : 'required|integer|min:0',
+            'is_active' => 'boolean',
+            'image' => 'nullable|image|max:2048',
+        ]);
 
-// 2. MenuPeriodController
-refactorFile('app/Http/Controllers/Admin/MenuPeriodController.php', [
-    'isDaily()' => 'isHarian()',
-]);
+        if (\$isHarian) {
+            \$validated['minimal_order_days'] = null;
+        }
 
-// 3. DashboardController (Pelanggan)
-refactorFile('app/Http/Controllers/Pelanggan/DashboardController.php', [
-    'LayananKatering::daily()' => 'LayananKatering::harian()',
-]);
+        // Set fitur_tersedia berdasarkan tipe
+        \$validated['fitur_tersedia'] = \$request->catering_type === 'harian'
+            ? ['menu_harian']
+            : ['paket', 'kustom_penuh'];
 
-// 4. KeranjangController (Pelanggan)
-refactorFile('app/Http/Controllers/Pelanggan/KeranjangController.php', [
-    '$dailyCarts' => '$keranjangHarian',
-    '$eventCarts' => '$keranjangAcara',
-    '$dailyGroups' => '$grupHarian',
-    '$eventGroups' => '$grupAcara',
-    'isDailyItem()' => 'isHarianItem()',
-    'isEventItem()' => 'isAcaraItem()',
-    'storeEventGroup' => 'storeGrupAcara',
-    'Pesanan event' => 'Pesanan acara',
-    'Katering Harian (Daily)' => 'Katering Harian',
-    'Event' => 'Acara',
-    'daily' => 'harian',
-    'event' => 'acara'
-]);
+        \$validated['slug'] = Str::slug(\$validated['name']);
+        \$validated['is_active'] = \$request->boolean('is_active');
 
-// 5. PembayaranController (Pelanggan)
-refactorFile('app/Http/Controllers/Pelanggan/PembayaranController.php', [
-    'isDailyItem()' => 'isHarianItem()',
-    'isEventItem()' => 'isAcaraItem()',
-    'showEventCheckout' => 'showAcaraCheckout',
-    'checkoutEventGroup' => 'checkoutGrupAcara',
-    '$eventGroups' => '$grupAcara',
-    'event order' => 'pesanan acara',
-    'Pesanan event' => 'Pesanan acara',
-    'daily items' => 'item harian',
-    'Hanya daily' => 'Hanya harian',
-    'daily checkout' => 'checkout harian',
-    'daily' => 'harian',
-    'event' => 'acara'
-]);
+        if (\$request->hasFile('image')) {
+            \$validated['image'] = \$request->file('image')->store('services', 'public');
+        }
 
-// 6. User Model
-refactorFile('app/Models/User.php', [
-    '$dailyCount' => '$jumlahHarian',
-    '$eventCount' => '$jumlahAcara',
-    'Katering Event' => 'Katering Acara',
-    'Event' => 'Acara',
-]);
+        unset(\$validated['catering_type']);
 
-echo "Done Controller Refactoring.";
+        LayananKatering::create(\$validated);
+
+        return redirect()->route('admin.catering.index')->with('success', 'Katering berhasil ditambahkan.');
+    }
+PHP;
+
+// Find store method
+$storeRegex = '/public function store\(Request \$request\).*?return redirect\(\)->route\(\'admin\.catering\.index\'\)->with\(\'success\', \'Katering berhasil ditambahkan\.\'\);\s*\}/s';
+$content = preg_replace($storeRegex, $newStore, $content);
+
+// Replace update method
+$newUpdate = <<<PHP
+    public function update(Request \$request, LayananKatering \$catering)
+    {
+        \$isHarian = \$catering->isHarian();
+        \$validated = \$request->validate([
+            'name' => 'required|string|max:100',
+            'minimal_order_days' => \$isHarian ? 'nullable' : 'required|integer|min:0',
+            'is_active' => 'boolean',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        if (\$isHarian) {
+            \$validated['minimal_order_days'] = null;
+        }
+
+        // Tipe katering tidak boleh diubah — pertahankan fitur_tersedia yang ada
+        \$validated['is_active'] = \$request->boolean('is_active');
+
+        if (\$request->hasFile('image')) {
+            if (\$catering->image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete(\$catering->image);
+            }
+            \$validated['image'] = \$request->file('image')->store('services', 'public');
+        }
+
+        \$catering->update(\$validated);
+
+        if (!\$catering->wasChanged()) {
+            return redirect()->route('admin.catering.index');
+        }
+
+        return redirect()->route('admin.catering.index')->with('success', 'Katering berhasil diperbarui.');
+    }
+PHP;
+
+$updateRegex = '/public function update\(Request \$request, LayananKatering \$catering\).*?return redirect\(\)->route\(\'admin\.catering\.index\'\)->with\(\'success\', \'Katering berhasil diperbarui\.\'\);\s*\}/s';
+$content = preg_replace($updateRegex, $newUpdate, $content);
+
+file_put_contents($file, $content);
+echo "Replaced CateringController methods.";

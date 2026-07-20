@@ -39,41 +39,26 @@ class CateringController extends Controller
     /**
      * Simpan katering baru.
      */
-    public function store(Request $request)
+        public function store(Request $request)
     {
         $isHarian = $request->input('catering_type') === 'harian';
         $validated = $request->validate([
             'name' => 'required|string|max:100',
-            'deskripsi' => 'required|string',
             'catering_type' => 'required|in:harian,acara',
-            'serving_types' => 'nullable|array',
-            'min_portion' => $isHarian ? 'nullable|integer|min:1' : 'required|integer|min:1',
-            'maksimal_porsi' => 'nullable|integer|min:1',
-            'base_price' => 'required|numeric|min:0|max:1000000000',
-            'order_terms' => 'nullable|string',
-            'schedule_notes' => 'nullable|string',
-            'minimal_order_days' => 'nullable|integer|min:0',
-            'service_area' => 'nullable|array',
+            'minimal_order_days' => $isHarian ? 'nullable' : 'required|integer|min:0',
             'is_active' => 'boolean',
             'image' => 'nullable|image|max:2048',
-        ], [
-            'base_price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         if ($isHarian) {
-            $validated['min_portion'] = $validated['min_portion'] ?? 1;
-            $validated['maksimal_porsi'] = null;
-            $validated['order_terms'] = null;
-            $validated['schedule_notes'] = null;
             $validated['minimal_order_days'] = null;
         }
 
         // Set fitur_tersedia berdasarkan tipe
         $validated['fitur_tersedia'] = $request->catering_type === 'harian'
-            ? ['daily_menu']
-            : ['packages', 'full_custom'];
+            ? ['menu_harian']
+            : ['paket', 'kustom_penuh'];
 
-        $validated['slug'] = Str::slug($validated['name']);
         $validated['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
@@ -129,29 +114,17 @@ class CateringController extends Controller
     /**
      * Update katering — tipe tidak dapat diubah.
      */
-    public function update(Request $request, LayananKatering $catering)
+        public function update(Request $request, LayananKatering $catering)
     {
         $isHarian = $catering->isHarian();
         $validated = $request->validate([
             'name' => 'required|string|max:100',
-            'deskripsi' => 'required|string',
-            'min_portion' => $isHarian ? 'nullable|integer|min:1' : 'required|integer|min:1',
-            'maksimal_porsi' => 'nullable|integer|min:1',
-            'base_price' => 'required|numeric|min:0|max:1000000000',
-            'order_terms' => 'nullable|string',
-            'schedule_notes' => 'nullable|string',
-            'minimal_order_days' => 'nullable|integer|min:0',
+            'minimal_order_days' => $isHarian ? 'nullable' : 'required|integer|min:0',
             'is_active' => 'boolean',
             'image' => 'nullable|image|max:2048',
-        ], [
-            'base_price.max' => 'Harga tidak boleh lebih dari Rp 1.000.000.000.',
         ]);
 
         if ($isHarian) {
-            $validated['min_portion'] = $validated['min_portion'] ?? $catering->min_portion ?? 1;
-            $validated['maksimal_porsi'] = null;
-            $validated['order_terms'] = null;
-            $validated['schedule_notes'] = null;
             $validated['minimal_order_days'] = null;
         }
 
@@ -159,6 +132,9 @@ class CateringController extends Controller
         $validated['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
+            if ($catering->image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($catering->image);
+            }
             $validated['image'] = $request->file('image')->store('services', 'public');
         }
 

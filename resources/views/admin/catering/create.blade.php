@@ -17,87 +17,29 @@
                     {{-- Nama --}}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nama Katering <span class="text-danger">*</span></label>
-                        <input type="text" name="name" required value="{{ old('name') }}" class="form-control" placeholder="cth: Katering Harian">
+                        <input type="text" name="name" required value="{{ old('name') }}" class="form-control" placeholder="Nama Katering">
                         @error('name')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                    </div>
-
-                    {{-- Deskripsi --}}
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Deskripsi <span class="text-danger">*</span></label>
-                        <textarea name="deskripsi" rows="3" required class="form-control" placeholder="Deskripsi singkat katering...">{{ old('deskripsi') }}</textarea>
                     </div>
 
                     {{-- Tipe Katering --}}
                     <div class="mb-3">
                         <label class="form-label fw-bold d-block">Tipe Katering <span class="text-danger">*</span></label>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="w-100 cursor-pointer">
-                                    <input type="radio" name="catering_type" value="harian" {{ old('catering_type', 'harian') === 'harian' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
-                                    <div class="card mb-0 h-100 border type-selector">
-                                        <div class="card-body d-flex align-items-center">
-                                            <i class="fa-solid fa-calendar-day fa-2x text-info me-3"></i>
-                                            <div>
-                                                <h5 class="mb-1 fw-bold">Harian</h5>
-                                                <small class="text-muted">Menu harian dengan produk</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="w-100 cursor-pointer">
-                                    <input type="radio" name="catering_type" value="acara" {{ old('catering_type') === 'acara' ? 'checked' : '' }} onchange="toggleCateringTypeFields()" class="d-none peer">
-                                    <div class="card mb-0 h-100 border type-selector">
-                                        <div class="card-body d-flex align-items-center">
-                                            <i class="fa-solid fa-glass-cheers fa-2x text-purple me-3" style="color: #6f42c1;"></i>
-                                            <div>
-                                                <h5 class="mb-1 fw-bold">Acara</h5>
-                                                <small class="text-muted">Acara dengan paket catering</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="catering_type" id="typeHarian" value="harian" {{ old('catering_type', 'harian') === 'harian' ? 'checked' : '' }} onchange="toggleCateringTypeFields()">
+                            <label class="form-check-label" for="typeHarian">Harian</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="catering_type" id="typeAcara" value="acara" {{ old('catering_type') === 'acara' ? 'checked' : '' }} onchange="toggleCateringTypeFields()">
+                            <label class="form-check-label" for="typeAcara">Acara</label>
                         </div>
                         @error('catering_type')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
-                    {{-- Harga & Porsi --}}
-                    <div class="row g-3" id="base_price_grid">
-                        <div id="base_price_wrapper" class="col-md-4">
-                            <label class="form-label fw-bold">Harga Dasar (Rp) <span class="text-danger">*</span></label>
-                            <input type="text" name="base_price" required value="{{ old('base_price') }}" class="form-control rupiah-input">
-                        </div>
-                        <div id="min_portion_wrapper" class="col-md-4">
-                            <label class="form-label fw-bold">Min. Porsi <span class="text-danger">*</span></label>
-                            <input type="number" name="min_portion" value="{{ old('min_portion', 1) }}" min="1" class="form-control">
-                        </div>
-                        <div id="max_portion_wrapper" class="col-md-4">
-                            <label class="form-label fw-bold">Max. Porsi</label>
-                            <input type="number" name="maksimal_porsi" value="{{ old('maksimal_porsi') }}" placeholder="Tidak dibatasi" class="form-control">
-                        </div>
-                    </div>
-
-                    {{-- Ketentuan & Jadwal (Hanya Acara) --}}
-                    <div id="terms_schedule_wrapper" class="row g-3 mt-1">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Ketentuan Pemesanan</label>
-                            <textarea name="order_terms" rows="2" class="form-control" placeholder="Ketentuan khusus...">{{ old('order_terms') }}</textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Catatan Jadwal</label>
-                            <textarea name="schedule_notes" rows="2" class="form-control" placeholder="Info jadwal...">{{ old('schedule_notes') }}</textarea>
-                        </div>
-                    </div>
-
-                    {{-- Pengaturan Cutoff (Hanya Acara) --}}
-                    <div id="cutoff_wrapper" class="callout callout-info mt-3 bg-light border-start border-4 border-info">
-                        <h5><i class="fa-solid fa-info-circle text-info"></i> Pengaturan Cutoff Pemesanan</h5>
-                        <p class="text-muted mb-2">Batas waktu minimal pemesanan untuk layanan ini</p>
-                        <label class="form-label fw-bold">Minimal Hari Pemesanan</label>
-                        <input type="number" name="minimal_order_days" value="{{ old('minimal_order_days') }}" min="0" placeholder="cth: 3" class="form-control">
-                        <small class="text-muted">Jumlah hari minimal sebelum tanggal acara/pengiriman</small>
+                    {{-- Minimal Hari Pemesanan (Hanya Acara) --}}
+                    <div class="mb-3" id="cutoff_wrapper">
+                        <label class="form-label fw-bold">Minimal Hari Pemesanan <span class="text-danger">*</span></label>
+                        <input type="number" name="minimal_order_days" value="{{ old('minimal_order_days') }}" min="0" step="1" class="form-control" placeholder="Minimal Hari Pemesanan (contoh: 3)">
+                        @error('minimal_order_days')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
                     {{-- Gambar --}}
@@ -110,6 +52,7 @@
                                 <img id="imagePreview" src="" alt="Preview Gambar" style="height: 112px; object-fit: cover;">
                             </div>
                         </div>
+                        @error('image')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
                     {{-- Status --}}
@@ -128,56 +71,20 @@
     </div>
 </div>
 
-@push('styles')
-<style>
-    .type-selector.active {
-        border-color: var(--bs-primary) !important;
-        background-color: rgba(13, 110, 253, 0.1);
-    }
-    input[type=radio]:checked + .type-selector {
-        border-color: var(--bs-primary) !important;
-        background-color: rgba(13, 110, 253, 0.1);
-    }
-</style>
-@endpush
-
 @push('scripts')
 <script>
 function toggleCateringTypeFields() {
     const typeRadio = document.querySelector('input[name="catering_type"]:checked');
-    const isDaily = typeRadio && typeRadio.value === 'harian';
+    const isAcara = typeRadio && typeRadio.value === 'acara';
 
-    const minWrapper = document.getElementById('min_portion_wrapper');
-    const maxWrapper = document.getElementById('max_portion_wrapper');
-    const termsWrapper = document.getElementById('terms_schedule_wrapper');
     const cutoffWrapper = document.getElementById('cutoff_wrapper');
-    const baseGrid = document.getElementById('base_price_grid');
-    const baseWrapper = document.getElementById('base_price_wrapper');
 
-    if (minWrapper) {
-        minWrapper.style.display = isDaily ? 'none' : 'block';
-        const input = minWrapper.querySelector('input');
-        if (input) input.disabled = isDaily;
-    }
-    if (maxWrapper) {
-        maxWrapper.style.display = isDaily ? 'none' : 'block';
-        const input = maxWrapper.querySelector('input');
-        if (input) input.disabled = isDaily;
-    }
-    if (termsWrapper) {
-        termsWrapper.style.display = isDaily ? 'none' : 'flex';
-        termsWrapper.querySelectorAll('textarea').forEach(el => el.disabled = isDaily);
-    }
     if (cutoffWrapper) {
-        cutoffWrapper.style.display = isDaily ? 'none' : 'block';
+        cutoffWrapper.style.display = isAcara ? 'block' : 'none';
         const input = cutoffWrapper.querySelector('input');
-        if (input) input.disabled = isDaily;
-    }
-    if (baseGrid && baseWrapper) {
-        if (isDaily) {
-            baseWrapper.className = 'col-12';
-        } else {
-            baseWrapper.className = 'col-md-4';
+        if (input) {
+            input.disabled = !isAcara;
+            if (!isAcara) input.value = '';
         }
     }
 }

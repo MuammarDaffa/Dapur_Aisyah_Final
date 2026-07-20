@@ -22,7 +22,7 @@
                             <tr>
                                 <th>Nama Katering</th>
                                 <th class="text-center">Tipe</th>
-                                <th class="text-center">Harga Mulai</th>
+                                
                                 <th class="text-center">Status</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
@@ -32,9 +32,7 @@
                             <tr>
                                 <td class="align-middle">
                                     <span class="fw-bold">{{ $c->name }}</span>
-                                    @if($c->deskripsi)
-                                    <br><small class="text-muted">{{ Str::limit($c->deskripsi, 60) }}</small>
-                                    @endif
+                                    
                                 </td>
                                 <td class="align-middle text-center">
                                     @if($c->isHarian())
@@ -45,9 +43,7 @@
                                         <span class="badge text-bg-secondary">-</span>
                                     @endif
                                 </td>
-                                <td class="align-middle text-center fw-bold text-success">
-                                    Rp {{ number_format($c->base_price, 0, ',', '.') }}
-                                </td>
+                                
                                 <td class="align-middle text-center">
                                     <span class="badge {{ $c->is_active ? 'text-bg-success' : 'text-bg-secondary' }}">
                                         {{ $c->is_active ? 'Aktif' : 'Nonaktif' }}
@@ -66,7 +62,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="text-center py-5">
+                                <td colspan="4" class="text-center py-5">
                                     <i class="fa-solid fa-utensils fa-3x text-muted mb-3 d-block"></i>
                                     <p class="text-muted fw-medium mb-1">Belum ada katering.</p>
                                     <small class="text-muted">Buat layanan katering pertama Anda.</small>
