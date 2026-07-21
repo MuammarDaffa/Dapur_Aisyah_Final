@@ -1,10 +1,6 @@
 <x-guest-layout>
-    <!-- Judul Lupa Password -->
-    <h2 class="fs-3 fw-bold text-center text-secondary mb-4">Lupa Password</h2>
-
-    <!-- Deskripsi singkat dalam Bahasa Indonesia -->
-    <div class="mb-6 fs-6 text-secondary text-center leading-relaxed">
-        Lupa password akun Anda? Tidak masalah. Masukkan alamat email yang terdaftar dan kami akan mengirimkan tautan untuk mereset password Anda.
+    <div class="mb-4 text-sm text-gray-600">
+        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
     </div>
 
     <!-- Session Status -->
@@ -13,25 +9,17 @@
     <form method="POST" action="{{ route('password.email') }}">
         @csrf
 
-        <!-- Input Email -->
+        <!-- Email Address -->
         <div>
-            <x-input-label for="email" value="Email" />
-            <x-text-input id="email" class="d-block mt-1 w-100 border border-secondary focus:border border-primary rounded shadow-sm" type="email" name="email" :value="old('email')" required autofocus placeholder="nama@email.com" />
+            <x-input-label for="email" :value="__('Email')" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <!-- Button Kirim Tautan Reset Password -->
-        <div class="mt-6">
-            <x-primary-button class="w-100 justify-content-center bg-primary text-white hover:bg-primary text-white focus:bg-primary text-white active:bg-primary text-white py-3 text-base">
-                Kirim Tautan Reset Password
+        <div class="flex items-center justify-end mt-4">
+            <x-primary-button>
+                {{ __('Email Password Reset Link') }}
             </x-primary-button>
-        </div>
-
-        <!-- Link Kembali ke Masuk -->
-        <div class="mt-6 text-center border-t border border-secondary pt-4">
-            <a href="{{ route('login') }}" class="fs-6 fw-medium text-primary hover:text-primary underline">
-                &larr; Kembali ke Masuk
-            </a>
         </div>
     </form>
 </x-guest-layout>

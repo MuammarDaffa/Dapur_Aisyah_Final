@@ -12,18 +12,17 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-secondary antialiased">
-        <div class="min-vh-100 d-flex d-flex-column sm:justify-content-center align-items-center pt-6 sm:pt-0 bg-light">
+    <body class="font-sans text-gray-900 antialiased">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div>
                 <a href="/">
-                    <x-application-logo style="height: 96px;" class="w-24 sm:w-28 h-auto max- object-fit-contain mx-auto transition-" />
+                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
                 </a>
             </div>
 
-            <div class="w-100 sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded">
+            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
                 {{ $slot }}
             </div>
         </div>

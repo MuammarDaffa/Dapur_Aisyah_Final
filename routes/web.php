@@ -72,10 +72,6 @@ Route::middleware('unverified_customer_redirect')->prefix('dashboard')->name('pe
 
     // Keranjang Count (untuk badge di navbar, mengembalikan 0 jika guest)
     Route::get('/keranjang/count', [KeranjangController::class, 'count'])->name('keranjang.count');
-
-    // Keranjang Store (masukkan ke keranjang - di-intercept dalam controller jika belum login)
-    Route::post('/keranjang', [KeranjangController::class, 'store'])->name('keranjang.store');
-    Route::post('/acara/keranjang', [KeranjangController::class, 'storeAcaraGroup'])->name('acara.keranjang.store');
 });
 
 Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('pelanggan.')->group(function () {
@@ -83,6 +79,10 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
 
     Route::get('/profile', [ProfilController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfilController::class, 'update'])->name('profile.update');
+
+    // Keranjang Store
+    Route::post('/keranjang', [KeranjangController::class, 'store'])->name('keranjang.store');
+    Route::post('/acara/keranjang', [KeranjangController::class, 'storeAcaraGroup'])->name('acara.keranjang.store');
 
     // Acara Keranjang Update & Destroy
     Route::put('/acara/keranjang/{groupId}', [KeranjangController::class, 'updateAcaraGroup'])->name('acara.keranjang.update');

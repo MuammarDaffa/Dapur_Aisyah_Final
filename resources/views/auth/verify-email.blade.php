@@ -1,32 +1,30 @@
 <x-guest-layout>
-    <!-- Judul Verifikasi Email -->
-    <h2 class="fs-3 fw-bold text-center text-secondary mb-4">Verifikasi Email</h2>
-
-    <!-- Deskripsi singkat dalam Bahasa Indonesia -->
-    <div class="mb-6 fs-6 text-secondary text-center leading-relaxed">
-        Terima kasih telah mendaftar! Sebelum memulai, mohon verifikasi alamat email Anda dengan mengklik tautan yang baru saja kami kirimkan ke email Anda. Jika Anda tidak menerima email tersebut, kami dengan senang hati akan mengirimkan ulang.
+    <div class="mb-4 text-sm text-gray-600">
+        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
     </div>
 
     @if (session('status') == 'verification-link-sent')
-        <div class="mb-6 fw-medium fs-6 text-success bg-success text-white p-3 rounded text-center border border-green-200">
-            Tautan verifikasi baru telah dikirimkan ke alamat email yang Anda berikan saat pendaftaran.
+        <div class="mb-4 font-medium text-sm text-green-600">
+            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
         </div>
     @endif
 
-    <div class="mt-6 d-flex d-flex-column sm:d-flex-row align-items-center justify-content-between g-3">
-        <!-- Button Kirim Ulang Email Verifikasi -->
-        <form method="POST" action="{{ route('verification.send') }}" class="w-100 sm:w-auto">
+    <div class="mt-4 flex items-center justify-between">
+        <form method="POST" action="{{ route('verification.send') }}">
             @csrf
-            <x-primary-button class="w-100 sm:w-auto justify-content-center bg-primary text-white hover:bg-primary text-white focus:bg-primary text-white active:bg-primary text-white py-2.5">
-                Kirim Ulang Email Verifikasi
-            </x-primary-button>
+
+            <div>
+                <x-primary-button>
+                    {{ __('Resend Verification Email') }}
+                </x-primary-button>
+            </div>
         </form>
 
-        <!-- Link Keluar -->
-        <form method="POST" action="{{ route('logout') }}" class="w-100 sm:w-auto text-center sm:text-end">
+        <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="underline fs-6 fw-medium text-secondary hover:text-primary rounded focus: -2">
-                Keluar
+
+            <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                {{ __('Log Out') }}
             </button>
         </form>
     </div>

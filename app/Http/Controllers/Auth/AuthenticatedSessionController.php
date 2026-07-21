@@ -36,11 +36,6 @@ class AuthenticatedSessionController extends Controller
             return redirect(route('verification.notice'));
         }
 
-        // Pulihkan pesanan tertunda jika ada di session (dari proses Masukkan ke Keranjang saat guest)
-        if ($redirect = \App\Http\Controllers\Pelanggan\KeranjangController::restorePendingCart($request)) {
-            return $redirect;
-        }
-
         // Role-based redirect
         return match ($request->user()->role) {
             'admin' => redirect()->intended(route('admin.dashboard')),

@@ -37,6 +37,7 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::min(8)],
         ], [
             'email.regex' => 'Pendaftaran hanya dapat menggunakan email Gmail (@gmail.com).',
+            'phone.regex' => 'Password harus diawali 08 dan memiliki panjang 10-13 digit',
         ]);
 
         $user = User::create([

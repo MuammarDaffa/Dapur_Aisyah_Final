@@ -15,18 +15,11 @@ class VerifyEmailController extends Controller
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
-            if ($redirect = \App\Http\Controllers\Pelanggan\KeranjangController::restorePendingCart($request)) {
-                return $redirect;
-            }
             return redirect()->intended(route($request->user()->getDashboardRouteName(), absolute: false).'?verified=1');
         }
 
         if ($request->user()->markEmailAsVerified()) {
             event(new Verified($request->user()));
-        }
-
-        if ($redirect = \App\Http\Controllers\Pelanggan\KeranjangController::restorePendingCart($request)) {
-            return $redirect;
         }
 
         return redirect()->intended(route($request->user()->getDashboardRouteName(), absolute: false).'?verified=1');

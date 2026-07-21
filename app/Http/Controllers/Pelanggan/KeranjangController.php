@@ -70,25 +70,7 @@ class KeranjangController extends Controller
             'extras.*.qty' => 'integer|min:1',
         ]);
 
-        if (!auth()->check()) {
-            session([
-                'pending_cart_item' => [
-                    'type' => 'harian',
-                    'data' => $request->all(),
-                ]
-            ]);
 
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'require_auth' => true,
-                    'redirect_url' => route('register'),
-                    'message' => 'Silakan registrasi atau login terlebih dahulu untuk memasukkan pesanan ke keranjang.'
-                ]);
-            }
-
-            return redirect()->route('register')->with('info', 'Silakan registrasi atau login terlebih dahulu untuk memasukkan pesanan ke keranjang.');
-        }
 
         $user = auth()->user();
 
@@ -187,25 +169,7 @@ class KeranjangController extends Controller
             'catatan' => 'nullable|string|max:1000',
         ]);
 
-        if (!auth()->check()) {
-            session([
-                'pending_cart_item' => [
-                    'type' => 'acara_group',
-                    'data' => $request->all(),
-                ]
-            ]);
 
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'require_auth' => true,
-                    'redirect_url' => route('register'),
-                    'message' => 'Silakan registrasi atau login terlebih dahulu untuk memasukkan pesanan ke keranjang.'
-                ]);
-            }
-
-            return redirect()->route('register')->with('info', 'Silakan registrasi atau login terlebih dahulu untuk memasukkan pesanan ke keranjang.');
-        }
 
         $service = \App\Models\LayananKatering::findOrFail($validated['layanan_katering_id']);
         $user = auth()->user();
@@ -634,36 +598,4 @@ class KeranjangController extends Controller
         }
 
         return back()->with('success', 'Item berhasil dihapus dari keranjang.');
-    }
-
-    /**
-     * Memulihkan pesanan yang disimpan di session sebelum login / registrasi.
-     */
-    public static function restorePendingCart(Request $request)
-    {
-        if (!$request->session()->has('pending_cart_item') || !auth()->check()) {
-            return null;
-        }
-
-        $pending = $request->session()->pull('pending_cart_item');
-        if (!is_array($pending) || empty($pending['type']) || empty($pending['data'])) {
-            return null;
-        }
-
-        $controller = app(self::class);
-        $req = Request::create('/', 'POST', $pending['data']);
-        $req->headers->set('X-Requested-With', ''); // Non-ajax
-
-        if ($pending['type'] === 'harian') {
-            $controller->store($req);
-            Keranjang::cleanupInvalidAndExpiredItems(auth()->id());
-            return redirect()->route('pelanggan.keranjang', ['tab' => 'harian'])->with('success', 'Produk dan opsi berhasil ditambahkan ke keranjang!');
-        } elseif ($pending['type'] === 'acara_group') {
-            $controller->storeGrupAcara($req);
-            Keranjang::cleanupInvalidAndExpiredItems(auth()->id());
-            return redirect()->route('pelanggan.keranjang', ['tab' => 'acara'])->with('success', 'Pesanan acara berhasil ditambahkan ke keranjang!');
-        }
-
-        return null;
-    }
-}
+    }}
