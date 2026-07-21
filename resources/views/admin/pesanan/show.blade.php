@@ -41,7 +41,7 @@
                     <div class="col-sm-4 tagihan-col">
                         Alamat Pengiriman
                         <address>
-                            <strong>{{ $pesanan->kecamatan->name ?? '' }}, {{ $pesanan->desa->name ?? '' }}</strong><br>
+
                             {{ $pesanan->detail_alamat }}<br>
                             @if($pesanan->latitude && $pesanan->longitude)
                                 Koordinat: {{ $pesanan->latitude }}, {{ $pesanan->longitude }}

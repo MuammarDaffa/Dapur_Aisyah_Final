@@ -18,8 +18,7 @@ class CheckoutRequest extends FormRequest
         return [
             'tanggal_pesanan' => 'nullable|date',
             'metode_pengambilan' => 'required|in:pickup,delivery',
-            'kecamatan_id' => 'required_if:metode_pengambilan,delivery|nullable|exists:kecamatan,id',
-            'desa_id' => 'nullable|exists:desa,id',
+
             'detail_alamat' => 'nullable|string|max:255',
             'osm_address' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
@@ -38,13 +37,12 @@ class CheckoutRequest extends FormRequest
                 $validation = \App\Services\LocationService::validateLocation(
                     $this->input('latitude'),
                     $this->input('longitude'),
-                    $this->input('kecamatan_id'),
                     null,
                     $this->input('osm_address')
                 );
 
                 if (!$validation['is_in_pontianak']) {
-                    $validator->errors()->add('kecamatan_id', $validation['message'] ?? 'Lokasi berada di luar wilayah Pontianak.');
+                    $validator->errors()->add('osm_address', $validation['message'] ?? 'Lokasi berada di luar wilayah Pontianak.');
                 }
             }
         });
@@ -57,9 +55,7 @@ class CheckoutRequest extends FormRequest
             'tanggal_pesanan.after_or_equal' => 'Tanggal pemesanan tidak boleh di masa lalu.',
             'metode_pengambilan.required' => 'Metode pengambilan wajib dipilih.',
             'metode_pengambilan.in' => 'Metode pengambilan harus pickup atau delivery.',
-            'kecamatan_id.required_if' => 'Kecamatan wajib dipilih untuk pengiriman.',
-            'kecamatan_id.exists' => 'Kecamatan tidak valid.',
-            'desa_id.exists' => 'Kelurahan tidak valid.',
+
             'detail_alamat.max' => 'Alamat detail maksimal 255 karakter.',
             'porsi.integer' => 'Jumlah porsi harus berupa angka.',
             'porsi.min' => 'Jumlah porsi minimal 1.',

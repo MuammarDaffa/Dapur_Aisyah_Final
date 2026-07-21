@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Pelanggan;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CheckoutRequest;
-use App\Models\Kecamatan;
+
 use App\Models\Pesanan;
 use App\Models\DetailPesanan;
 use App\Models\Tagihan;
@@ -48,7 +48,6 @@ class PembayaranController extends Controller
             return 'ungrouped_' . $keranjang->id;
         });
 
-        $kecamatan = Kecamatan::with('desa')->get();
         $subtotal = $keranjang->sum(fn ($keranjang) => $keranjang->subtotal);
         if ($keranjang->isEmpty() && $existingOrder) {
             $subtotal = (float) $existingOrder->total;
@@ -60,7 +59,7 @@ class PembayaranController extends Controller
         $firstCart = $keranjang->first();
         $service = $firstCart && $firstCart->menuHarian ? $firstCart->menuHarian->layananKatering : ($firstCart && $firstCart->opsiKustom ? $firstCart->opsiKustom->layananKatering : null);
 
-        return view('pelanggan.checkout', compact('keranjang', 'groupedCarts', 'kecamatan', 'subtotal', 'user', 'orderDate', 'service', 'existingOrder'));
+        return view('pelanggan.checkout', compact('keranjang', 'groupedCarts', 'subtotal', 'user', 'orderDate', 'service', 'existingOrder'));
     }
 
     /**
@@ -170,8 +169,7 @@ class PembayaranController extends Controller
                 'paket_katering_id' => $packageId,
                 'tanggal_pesanan' => $keranjang->min('menu_date') ? $keranjang->min('menu_date')->format('Y-m-d') : date('Y-m-d'),
                 'metode_pengambilan' => $validated['metode_pengambilan'],
-                'kecamatan_id' => $validated['kecamatan_id'] ?? null,
-                'desa_id' => $validated['desa_id'] ?? null,
+
                 'detail_alamat' => $finalAddressDetail,
                 'latitude' => $validated['latitude'] ?? null,
                 'longitude' => $validated['longitude'] ?? null,
@@ -337,11 +335,10 @@ class PembayaranController extends Controller
             $subtotal = (float) $existingOrder->total;
         }
 
-        $kecamatan = Kecamatan::with('desa')->get();
 
         return view('pelanggan.acara_checkout', compact(
             'groupId', 'groupItems', 'acaraGroups', 'packageItem', 'menuItems',
-            'additionItems', 'service', 'servingType', 'subtotal', 'kecamatan', 'minDays', 'existingOrder'
+            'additionItems', 'service', 'servingType', 'subtotal', 'minDays', 'existingOrder'
         ));
     }
 
@@ -418,8 +415,7 @@ class PembayaranController extends Controller
         $validated = $request->validate([
             'tanggal_pesanan' => 'required|date|after:today',
             'metode_pengambilan' => 'required|in:delivery,pickup',
-            'kecamatan_id' => 'required_if:metode_pengambilan,delivery|nullable|exists:kecamatan,id',
-            'desa_id' => 'nullable|exists:desa,id',
+
             'detail_alamat' => 'nullable|string',
             'osm_address' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
@@ -432,7 +428,6 @@ class PembayaranController extends Controller
             $locValidation = \App\Services\LocationService::validateLocation(
                 $validated['latitude'] ?? null,
                 $validated['longitude'] ?? null,
-                $validated['kecamatan_id'] ?? null,
                 null,
                 $validated['osm_address'] ?? null
             );
@@ -493,8 +488,7 @@ class PembayaranController extends Controller
                 'paket_katering_id' => $packageId,
                 'tanggal_pesanan' => $validated['tanggal_pesanan'],
                 'metode_pengambilan' => $validated['metode_pengambilan'],
-                'kecamatan_id' => $validated['kecamatan_id'] ?? null,
-                'desa_id' => $validated['desa_id'] ?? null,
+
                 'detail_alamat' => $finalAddressDetail,
                 'latitude' => $validated['latitude'] ?? null,
                 'longitude' => $validated['longitude'] ?? null,

@@ -31,16 +31,6 @@
                             </select>
                         </div>
                         <div id="delivery-fields" class="{{ old('metode_pengambilan') == 'delivery' ? '' : 'd-none' }} d-flex flex-column gap-3">
-                                <select name="kecamatan_id" id="kecamatan_id" class="form-select d-none">
-                                    <option value="">-- Pilih dari peta di bawah --</option>
-                                    @foreach($kecamatan as $kecamatan)
-                                        <option value="{{ $kecamatan->id }}" data-lat="{{ $kecamatan->latitude ?? '' }}" data-lng="{{ $kecamatan->longitude ?? '' }}" {{ old('kecamatan_id') == $kecamatan->id ? 'selected' : '' }}>{{ $kecamatan->name }}</option>
-                                    @endforeach
-                                </select>
-                            
-                            
-
-                         
                             <!-- Peta Lokasi (Leaflet.js) -->
                             <div class="mb-3">
             <label class="form-label fw-bold">Tandai Lokasi Pengiriman di Peta</label>
@@ -57,10 +47,10 @@
                                     <svg style="width: 16px; height: 16px;" class="d-inline-block text-danger me-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                                     Anda wajib menandai lokasi pengiriman di peta.
                                 </p>
-                                @error('kecamatan_id')
+                                @error('osm_address')
                                     <p class="fs-6 text-danger mt-2 fw-medium">
                                         <svg style="width: 16px; height: 16px;" class="d-inline-block text-danger me-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                        Anda harus menandai lokasi pengiriman di peta dengan benar.
+                                        {{ $message }}
                                     </p>
                                 @enderror
                             </div>
@@ -225,31 +215,21 @@ function setCoordinates(lat, lng) {
     document.getElementById('coord-display').textContent = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
 }
 
-function checkLocationRealtime(lat, lng, districtId = '', districtName = '', address = '') {
+function checkLocationRealtime(lat, lng, districtName = '', address = '') {
     const msgEl = document.getElementById('location-validation-msg');
     if (!msgEl) return;
 
-    fetch(`/api/validate-location?latitude=${lat}&longitude=${lng}&kecamatan_id=${districtId}&district_name=${encodeURIComponent(districtName)}&address=${encodeURIComponent(address)}`)
+    fetch(`/api/validate-location?latitude=${lat}&longitude=${lng}&district_name=${encodeURIComponent(districtName)}&address=${encodeURIComponent(address)}`)
         .then(res => res.json())
         .then(data => {
             if (data && data.is_in_pontianak) {
                 isLocationValid = true;
                 msgEl.textContent = 'Lokasi berada di wilayah Pontianak.';
                 msgEl.className = 'text-sm font-medium mt-2 text-green-600 block';
-                if (data.kecamatan_id) {
-                    const select = document.getElementById('kecamatan_id');
-                    for (let i = 0; i < select.options.length; i++) {
-                        if (select.options[i].value == data.kecamatan_id) {
-                            select.selectedIndex = i;
-                            break;
-                        }
-                    }
-                }
             } else {
                 isLocationValid = false;
                 msgEl.textContent = 'Lokasi berada di luar wilayah Pontianak.';
                 msgEl.className = 'text-sm font-medium mt-2 text-red-600 block';
-                document.getElementById('kecamatan_id').value = '';
             }
             validateCheckout();
         })
@@ -284,22 +264,7 @@ function reverseGeocode(lat, lng) {
                     osmAddressInput.value = '';
                 }
 
-                if (!districtName.toLowerCase().startsWith('kecamatan') && districtName) {
-                    districtName = 'Kecamatan ' + districtName;
-                }
-
-                const select = document.getElementById('kecamatan_id');
-                let matchFound = false;
-                for (let i = 0; i < select.options.length; i++) {
-                    if (select.options[i].text.toLowerCase() === districtName.toLowerCase()) {
-                        select.selectedIndex = i;
-                        matchFound = true;
-                        loadShippingCost(select.options[i].value);
-                        break;
-                    }
-                }
-
-                checkLocationRealtime(lat, lng, matchFound ? select.value : '', districtName, data.display_name);
+                checkLocationRealtime(lat, lng, districtName, data.display_name);
             }
         })
         .catch(err => {

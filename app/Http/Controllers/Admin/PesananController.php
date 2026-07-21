@@ -42,7 +42,7 @@ class PesananController extends Controller
 
     public function show(Pesanan $pesanan)
     {
-        $pesanan->load(['user', 'items.produk', 'layananKatering', 'tagihan', 'kecamatan', 'desa']);
+        $pesanan->load(['user', 'items.produk', 'layananKatering', 'tagihan']);
         
         // Sync dengan Midtrans jika masih pending/unpaid (berguna untuk testing local tanpa webhook)
         if ($pesanan->status_pembayaran === 'belum_dibayar' && $pesanan->midtrans_snap_token) {

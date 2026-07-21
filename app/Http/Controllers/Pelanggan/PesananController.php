@@ -29,7 +29,7 @@ class PesananController extends Controller
         // Pastikan pesanan milik user yang login
         abort_unless($pesanan->user_id === auth()->id(), 403);
 
-        $pesanan->load(['items', 'layananKatering', 'tagihan', 'ulasan', 'kecamatan', 'desa']);
+        $pesanan->load(['items', 'layananKatering', 'tagihan', 'ulasan']);
 
         // Sync dengan Midtrans jika masih pending/unpaid (berguna untuk testing local tanpa webhook)
         if ($pesanan->status_pembayaran === 'belum_dibayar' && $pesanan->midtrans_snap_token) {

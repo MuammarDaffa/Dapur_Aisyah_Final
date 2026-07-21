@@ -32,7 +32,7 @@
                 @if($pesanan->metode_pengambilan === 'delivery')
                     <div class="mt-4 pt-4 border-t border border-secondary fs-6">
                         <p class="text-secondary mb-1">Alamat Pengiriman:</p>
-                        <p class="fw-medium">{{ $pesanan->kecamatan->name ?? '' }}, {{ $pesanan->desa->name ?? '' }}</p>
+
                         <p class="text-secondary">{{ $pesanan->detail_alamat }}</p>
                     </div>
                 @endif

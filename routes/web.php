@@ -177,16 +177,14 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    Route::get('/api/desa/{kecamatan}', function (\App\Models\Kecamatan $kecamatan) {
-        return $kecamatan->desa()->get(['id', 'name']);
-    })->name('api.desa');
+
 
 
     Route::get('/api/validate-location', function (\Illuminate\Http\Request $request) {
         $result = \App\Services\LocationService::validateLocation(
             $request->input('latitude'),
             $request->input('longitude'),
-            $request->input('kecamatan_id'),
+
             $request->input('district_name'),
             $request->input('address')
         );

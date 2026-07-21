@@ -18,7 +18,7 @@ class Pesanan extends Model
 
     protected $fillable = [
         'nomor_pesanan', 'user_id', 'layanan_katering_id', 'paket_katering_id',
-        'tanggal_pesanan', 'event_start_time', 'metode_pengambilan', 'kecamatan_id', 'desa_id',
+        'tanggal_pesanan', 'event_start_time', 'metode_pengambilan',
         'detail_alamat', 'latitude', 'longitude', 'tipe_penyajian', 'porsi', 'subtotal',
         'total', 'metode_pembayaran', 'status_pembayaran', 'refund_status',
         'midtrans_snap_token', 'midtrans_transaction_id', 'status',
@@ -106,15 +106,6 @@ class Pesanan extends Model
         return $this->belongsTo(PaketKatering::class, 'paket_katering_id');
     }
 
-    public function kecamatan(): BelongsTo
-    {
-        return $this->belongsTo(Kecamatan::class);
-    }
-
-    public function desa(): BelongsTo
-    {
-        return $this->belongsTo(Desa::class);
-    }
 
     public function items(): HasMany
     {

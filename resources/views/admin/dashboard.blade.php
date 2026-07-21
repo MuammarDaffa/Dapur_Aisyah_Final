@@ -5,28 +5,12 @@
 @section('content')
     <!-- Small Boxes (Stat box) -->
     <div class="row">
-        <!-- Penjualan Hari Ini -->
-        <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-success">
-                <div class="inner">
-                    <h4 class="fw-bold">Rp {{ number_format($stats['daily_sales'], 0, ',', '.') }}</h4>
-                    <p>Penjualan Hari Ini</p>
-                </div>
-                <div class="small-box-icon">
-                    <i class="fa-solid fa-money-bill-wave"></i>
-                </div>
-                <a href="{{ route('admin.reports') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                    Lihat detail <i class="fa-solid fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-
-        <!-- Penjualan Bulanan -->
+        <!-- Pendapatan Bulan Ini -->
         <div class="col-lg-3 col-6">
             <div class="small-box text-bg-info">
                 <div class="inner">
                     <h4 class="fw-bold">Rp {{ number_format($stats['monthly_sales'], 0, ',', '.') }}</h4>
-                    <p>Penjualan Bulanan</p>
+                    <p>Pendapatan Bulan Ini</p>
                 </div>
                 <div class="small-box-icon">
                     <i class="fa-solid fa-chart-bar"></i>
@@ -65,6 +49,22 @@
                 </div>
                 <a href="{{ route('admin.pesanan') }}?status=processing" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
                     Kelola pesanan <i class="fa-solid fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Pesanan Selesai -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box text-bg-success">
+                <div class="inner">
+                    <h4 class="fw-bold">{{ $stats['completed_orders'] }}</h4>
+                    <p>Pesanan Selesai</p>
+                </div>
+                <div class="small-box-icon">
+                    <i class="fa-solid fa-check-circle"></i>
+                </div>
+                <a href="{{ route('admin.pesanan') }}?status=selesai" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                    Lihat pesanan <i class="fa-solid fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>

@@ -12,14 +12,16 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $today = Carbon::today();
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
 
         $stats = [
-            'daily_sales' => Pesanan::completed()->whereDate('created_at', $today)->sum('total'),
-            'weekly_sales' => Pesanan::completed()->where('created_at', '>=', $today->copy()->subDays(7))->sum('total'),
-            'monthly_sales' => Pesanan::completed()->whereMonth('created_at', $today->month)->whereYear('created_at', $today->year)->sum('total'),
+            'monthly_sales' => Pesanan::completed()
+                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->sum('total'),
             'total_orders' => Pesanan::count(),
             'processing_orders' => Pesanan::where('status', 'diproses')->count(),
+            'completed_orders' => Pesanan::completed()->count(),
         ];
 
         $bestSellers = MenuHarian::withCount('detailPesanan')
