@@ -118,14 +118,9 @@ class LayananKatering extends Model
 
     // === Relationships ===
 
-    public function produk(): HasMany
+    public function menuHarian(): HasMany
     {
-        return $this->hasMany(Produk::class);
-    }
-
-    public function periodeMenu(): HasMany
-    {
-        return $this->hasMany(PeriodeMenu::class);
+        return $this->hasMany(MenuHarian::class);
     }
 
 

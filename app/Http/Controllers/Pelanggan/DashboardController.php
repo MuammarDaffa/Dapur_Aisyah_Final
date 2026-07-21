@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Pelanggan;
 
 use App\Http\Controllers\Controller;
 use App\Models\LayananKatering;
-use App\Models\Produk;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -35,35 +34,17 @@ class DashboardController extends Controller
         $services = $servicesQuery->get();
         $serviceIds = $services->pluck('id');
 
-        // Gunakan string tanggal hari ini (Y-m-d) dalam zona waktu lokal (Asia/Jakarta)
-        // Ini memastikan komparasi di database (SQL) maupun di collection mutlak akurat tanpa bias waktu/UTC
         $todayDateString = \Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d');
 
-        // Ambil jadwal aktif yang belum berakhir (end_date >= hari ini)
-        $schedules = \App\Models\PeriodeMenu::whereIn('layanan_katering_id', $serviceIds)
-            ->active()
-            ->whereDate('end_date', '>=', $todayDateString)
-            ->with(['items' => function ($q) use ($todayDateString) {
-                // Filter langsung di level query database: hanya ambil menu dengan tanggal >= hari ini (misal >= 2026-07-07)
-                // Menu yang tanggalnya sudah lewat (misal 2026-07-06) disembunyikan / tidak dimuat
-                $q->whereDate('menu_date', '>=', $todayDateString)
-                  ->orderBy('menu_date', 'asc');
-            }, 'items.produk.layananKatering', 'layananKatering'])
+        // Ambil Menu Harian yang tanggalnya hari ini atau ke depan
+        $menus = \App\Models\MenuHarian::whereIn('layanan_katering_id', $serviceIds)
+            ->whereNotNull('tanggal')
+            ->whereDate('tanggal', '>=', $todayDateString)
+            ->with(['layananKatering', 'extras'])
+            ->orderBy('tanggal', 'asc')
             ->get();
 
-        // Kumpulkan semua menu items dari jadwal yang valid
-        $items = collect();
-        foreach ($schedules as $schedule) {
-            foreach ($schedule->items as $item) {
-                if ($item->menu_date && $item->menu_date->format('Y-m-d') >= $todayDateString) {
-                    $items->push($item);
-                }
-            }
-        }
-        // Urutkan menu berdasarkan tanggal secara ascending (terdekat ke terjauh)
-        $items = $items->sortBy('menu_date')->values();
-
-        return view('pelanggan.produk', compact('services', 'schedules', 'items'));
+        return view('pelanggan.produk', compact('services', 'menus'));
     }
 
     /**

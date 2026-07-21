@@ -73,21 +73,14 @@ class CateringController extends Controller
     }
 
     /**
-     * Detail Katering — menampilkan Produk (Daily) atau Paket+Menu+Penyajian+Extra (Event).
+     * Detail Katering — menampilkan Menu Harian (Daily) atau Paket+Menu+Penyajian+Extra (Event).
      */
     public function show(LayananKatering $catering)
     {
         if ($catering->isHarian()) {
-            $produk = $catering->produk()->latest()->paginate(10);
-            $allProducts = $catering->produk()->active()->get();
-            $extras = $catering->opsiKustom()->where('type', 'extra')->get();
-            $currentSchedule = $catering->periodeMenu()
-                ->with(['items' => fn($q) => $q->orderBy('menu_date')])
-                ->withCount('items')
-                ->latest('start_date')
-                ->first();
+            $menus = $catering->menuHarian()->with('extras')->get();
 
-            return view('admin.catering.show-harian', compact('catering', 'produk', 'allProducts', 'extras', 'currentSchedule'));
+            return view('admin.catering.show-harian', compact('catering', 'menus'));
         }
 
         if ($catering->isAcara()) {

@@ -31,10 +31,11 @@ class Keranjang extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function produk(): BelongsTo
+    public function menuHarian(): BelongsTo
     {
-        return $this->belongsTo(Produk::class);
+        return $this->belongsTo(MenuHarian::class);
     }
+
 
     public function opsiKustom(): BelongsTo
     {
@@ -117,8 +118,8 @@ class Keranjang extends Model
         }
 
         // Item produk harian / tambahan event
-        $basePrice = $this->produk
-            ? (float) $this->produk->harga
+        $basePrice = $this->menuHarian
+            ? (float) $this->menuHarian->harga
             : ($this->opsiKustom ? (float) $this->opsiKustom->harga : 0);
 
         $extrasPrice = 0;
@@ -163,9 +164,9 @@ class Keranjang extends Model
         $today = \Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d');
 
         // Pre-fetch lookup maps (bulk queries untuk menghindari loop query)
-        $productIds = $userCarts->pluck('produk_id')->filter()->unique();
-        $activeProducts = $productIds->isNotEmpty()
-            ? \App\Models\Produk::whereIn('id', $productIds)->where('is_active', true)->pluck('id')->flip()
+        $menuHarianIds = $userCarts->pluck('menu_harian_id')->filter()->unique();
+        $activeMenus = $menuHarianIds->isNotEmpty()
+            ? \App\Models\MenuHarian::whereIn('id', $menuHarianIds)->get()->keyBy('id')
             : collect();
 
         $optionIds = collect();
@@ -188,19 +189,6 @@ class Keranjang extends Model
             ? \App\Models\PaketKatering::whereIn('id', $packageIds)->where('is_active', true)->pluck('id')->flip()
             : collect();
 
-        // Lookup ItemPeriodeMenu untuk Katering Harian
-        $keranjangHarianWithDate = $userCarts->whereNull('cart_group_id')->whereNotNull('produk_id')->whereNotNull('menu_date');
-        $menuPeriodMap = collect();
-        if ($keranjangHarianWithDate->isNotEmpty()) {
-            $pIds = $keranjangHarianWithDate->pluck('produk_id')->unique();
-            $dates = $keranjangHarianWithDate->pluck('menu_date')->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))->unique();
-            $mpItems = \App\Models\ItemPeriodeMenu::whereIn('produk_id', $pIds)->whereIn('menu_date', $dates)->get();
-            foreach ($mpItems as $mpi) {
-                $dateStr = \Carbon\Carbon::parse($mpi->menu_date)->format('Y-m-d');
-                $menuPeriodMap->put("{$mpi->produk_id}_{$dateStr}", $mpi);
-            }
-        }
-
         $expiredIds = [];
         $unavailableHarianIds = [];
         $habisHarianIds = [];
@@ -208,17 +196,24 @@ class Keranjang extends Model
 
         // 1. Cek Katering Harian (cart_group_id IS NULL)
         foreach ($userCarts->whereNull('cart_group_id') as $keranjang) {
-            // Cek jadwal lewat (kadaluwarsa)
-            if ($keranjang->menu_date) {
-                $dateStr = \Carbon\Carbon::parse($keranjang->menu_date)->format('Y-m-d');
-                if ($dateStr < $today) {
-                    $expiredIds[] = $keranjang->id;
+            // Cek jadwal lewat (kadaluwarsa) berdasarkan tanggal menu
+            if ($keranjang->menu_harian_id && isset($activeMenus[$keranjang->menu_harian_id])) {
+                $menu = $activeMenus[$keranjang->menu_harian_id];
+                if ($menu->tanggal) {
+                    $dateStr = \Carbon\Carbon::parse($menu->tanggal)->format('Y-m-d');
+                    if ($dateStr < $today) {
+                        $expiredIds[] = $keranjang->id;
+                        continue;
+                    }
+                }
+                
+                // Cek stok (habis)
+                if ($menu->stok_tersisa !== null && $menu->stok_tersisa <= 0) {
+                    $habisHarianIds[] = $keranjang->id;
                     continue;
                 }
-            }
-
-            // Cek produk deleted/inactive atau null (Jika produk menu)
-            if (!$keranjang->produk_id || !isset($activeProducts[$keranjang->produk_id])) {
+            } else {
+                // Menu tidak ada atau inactive
                 $unavailableHarianIds[] = $keranjang->id;
                 continue;
             }
@@ -236,21 +231,6 @@ class Keranjang extends Model
             if ($hasDeletedExtra) {
                 $unavailableHarianIds[] = $keranjang->id;
                 continue;
-            }
-
-            // Cek ItemPeriodeMenu (ketersediaan/habis di jadwal)
-            if ($keranjang->menu_date) {
-                $dateStr = \Carbon\Carbon::parse($keranjang->menu_date)->format('Y-m-d');
-                $mpi = $menuPeriodMap->get("{$keranjang->produk_id}_{$dateStr}");
-                if (!$mpi) {
-                    // Menu sudah tidak ada di jadwal periode aktif
-                    $unavailableHarianIds[] = $keranjang->id;
-                    continue;
-                } elseif ($mpi->isOutOfStock()) {
-                    // Status menu diubah menjadi Habis
-                    $habisHarianIds[] = $keranjang->id;
-                    continue;
-                }
             }
         }
 

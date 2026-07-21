@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use App\Models\PaketKatering;
 use App\Models\LayananKatering;
 use App\Models\OpsiKustom;
-use App\Models\Produk;
+use App\Models\MenuHarian;
 use App\Models\OngkosKirim;
 use App\Models\Kecamatan;
 use Illuminate\Database\Seeder;
@@ -37,14 +37,16 @@ class LayananKateringSeeder extends Seeder
             ['name' => 'Nasi Gudeg Jogja', 'harga' => 26000, 'deskripsi' => 'Nasi gudeg Jogja lengkap dengan krecek, telur, dan ayam opor.', 'is_best_seller' => true],
         ];
 
-        foreach ($menuHarian as $menu) {
-            Produk::updateOrCreate(
-                ['slug' => \Str::slug($menu['name'])],
-                array_merge($menu, [
-                    'layanan_katering_id' => $harian->id,
-                    'is_active' => true,
-                    'image' => null,
-                ])
+        $hariIni = \Carbon\Carbon::now('Asia/Jakarta');
+        foreach ($menuHarian as $index => $menu) {
+            MenuHarian::updateOrCreate(
+                ['layanan_katering_id' => $harian->id, 'nama_menu' => $menu['name'], 'tanggal' => $hariIni->copy()->addDays($index)->format('Y-m-d')],
+                [
+                    'hari' => $hariIni->copy()->addDays($index)->translatedFormat('l'),
+                    'harga' => $menu['harga'],
+                    'stok_awal' => 50,
+                    'stok_tersisa' => 50,
+                ]
             );
         }
 

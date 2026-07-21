@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Pelanggan;
 use App\Http\Controllers\Controller;
 use App\Models\Keranjang;
 use App\Models\OpsiKustom;
-use App\Models\Produk;
+use App\Models\MenuHarian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -18,7 +18,7 @@ class KeranjangController extends Controller
         }
 
         $keranjang = auth()->user()->keranjang()
-            ->with(['produk.layananKatering', 'opsiKustom', 'paketKatering', 'layananKatering', 'servingType'])
+            ->with(['menuHarian.layananKatering', 'opsiKustom', 'paketKatering', 'layananKatering', 'servingType'])
             ->get();
 
         // Pisahkan Daily dan Acara
@@ -61,8 +61,8 @@ class KeranjangController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'produk_id' => 'required_without:opsi_kustom_id|exists:produk,id',
-            'opsi_kustom_id' => 'required_without:produk_id|exists:opsi_kustom,id',
+            'menu_harian_id' => 'required_without:opsi_kustom_id|exists:menu_harian,id',
+            'opsi_kustom_id' => 'required_without:menu_harian_id|exists:opsi_kustom,id',
             'jumlah' => 'required|integer|min:1',
             'menu_date' => 'nullable|date',
             'extras' => 'nullable|array',
@@ -109,7 +109,7 @@ class KeranjangController extends Controller
 
         // Find existing keranjang to increment jumlah
         $existing = $user->keranjang()
-            ->where('produk_id', $validated['produk_id'] ?? null)
+            ->where('menu_harian_id', $validated['menu_harian_id'] ?? null)
             ->where('opsi_kustom_id', $validated['opsi_kustom_id'] ?? null)
             ->where('menu_date', $validated['menu_date'] ?? null)
             ->whereNull('cart_group_id')
@@ -145,7 +145,7 @@ class KeranjangController extends Controller
             ]);
         } else {
             $user->keranjang()->create([
-                'produk_id' => $validated['produk_id'] ?? null,
+                'menu_harian_id' => $validated['menu_harian_id'] ?? null,
                 'opsi_kustom_id' => $validated['opsi_kustom_id'] ?? null,
                 'jumlah' => $validated['jumlah'],
                 'menu_date' => $validated['menu_date'] ?? null,

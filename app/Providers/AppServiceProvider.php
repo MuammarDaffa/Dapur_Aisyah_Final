@@ -22,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \App\Models\DetailPesanan::observe(\App\Observers\DetailPesananObserver::class);
+
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
             return (new MailMessage)
                 ->subject('Verifikasi Alamat Email Anda - Dapur Aisyah')

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pesanan;
-use App\Models\Produk;
+use App\Models\MenuHarian;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -22,7 +22,7 @@ class DashboardController extends Controller
             'processing_orders' => Pesanan::where('status', 'diproses')->count(),
         ];
 
-        $bestSellers = Produk::withCount('detailPesanan')
+        $bestSellers = MenuHarian::withCount('detailPesanan')
             ->orderByDesc('detail_pesanan_count')
             ->take(5)
             ->get();

@@ -32,10 +32,9 @@ class DetailPesanan extends Model
     {
         return $this->belongsTo(Pesanan::class);
     }
-
-    public function produk(): BelongsTo
+    public function menuHarian(): BelongsTo
     {
-        return $this->belongsTo(Produk::class);
+        return $this->belongsTo(MenuHarian::class);
     }
 
     public function opsiKustom(): BelongsTo

@@ -28,7 +28,7 @@ class PembayaranController extends Controller
         }
         $cartsQuery = $user->keranjang()
             ->whereNull('cart_group_id') // Hanya harian
-            ->with(['produk.layananKatering', 'opsiKustom', 'paketKatering']);
+            ->with(['menuHarian.layananKatering', 'opsiKustom', 'paketKatering']);
             
         $keranjang = $cartsQuery->get();
 
@@ -58,7 +58,7 @@ class PembayaranController extends Controller
         
         // Pass cutoff data if available
         $firstCart = $keranjang->first();
-        $service = $firstCart && $firstCart->produk ? $firstCart->produk->layananKatering : ($firstCart && $firstCart->opsiKustom ? $firstCart->opsiKustom->layananKatering : null);
+        $service = $firstCart && $firstCart->menuHarian ? $firstCart->menuHarian->layananKatering : ($firstCart && $firstCart->opsiKustom ? $firstCart->opsiKustom->layananKatering : null);
 
         return view('pelanggan.checkout', compact('keranjang', 'groupedCarts', 'kecamatan', 'subtotal', 'user', 'orderDate', 'service', 'existingOrder'));
     }
@@ -74,7 +74,7 @@ class PembayaranController extends Controller
         }
         $cartsQuery = $user->keranjang()
             ->whereNull('cart_group_id') // Hanya harian
-            ->with(['produk.layananKatering', 'opsiKustom', 'paketKatering']);
+            ->with(['menuHarian.layananKatering', 'opsiKustom', 'paketKatering']);
             
         $keranjang = $cartsQuery->get();
 
@@ -141,8 +141,8 @@ class PembayaranController extends Controller
         $cateringServiceId = null;
         $packageId = null;
 
-        if ($firstCart->produk) {
-            $cateringServiceId = $firstCart->produk->layanan_katering_id;
+        if ($firstCart->menuHarian) {
+            $cateringServiceId = $firstCart->menuHarian->layanan_katering_id;
         } elseif ($firstCart->opsiKustom) {
             $cateringServiceId = $firstCart->opsiKustom->layanan_katering_id;
         }
@@ -200,9 +200,9 @@ class PembayaranController extends Controller
                 $unitPrice = 0;
                 $itemName = 'Item';
 
-                if ($keranjang->produk) {
-                    $unitPrice = (float) $keranjang->produk->harga;
-                    $itemName = $keranjang->produk->name;
+                if ($keranjang->menuHarian) {
+                    $unitPrice = (float) $keranjang->menuHarian->harga;
+                    $itemName = $keranjang->menuHarian->nama_menu;
                 } elseif ($keranjang->opsiKustom) {
                     // Paket Katering items & extras → harga 0 (sudah termasuk harga paket)
                     $unitPrice = in_array($keranjang->item_type, ['package_item', 'package_extra'])
@@ -237,7 +237,7 @@ class PembayaranController extends Controller
 
                 DetailPesanan::create([
                     'pesanan_id' => $pesanan->id,
-                    'produk_id' => $keranjang->produk_id,
+                    'menu_harian_id' => $keranjang->menu_harian_id,
                     'opsi_kustom_id' => $keranjang->opsi_kustom_id,
                     'item_name' => $itemName,
                     'jumlah' => $keranjang->jumlah,

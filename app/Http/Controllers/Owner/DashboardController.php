@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pesanan;
-use App\Models\Produk;
+use App\Models\MenuHarian;
 use App\Models\Ulasan;
 use App\Models\User;
 use Carbon\Carbon;
@@ -30,7 +30,7 @@ class DashboardController extends Controller
             ->pluck('count', 'status')
             ->toArray();
 
-        $bestSellers = Produk::withCount('detailPesanan')
+        $bestSellers = MenuHarian::withCount('detailPesanan')
             ->orderByDesc('detail_pesanan_count')
             ->take(10)
             ->get();
@@ -45,7 +45,7 @@ class DashboardController extends Controller
 
     public function bestSellers()
     {
-        $bestSellers = Produk::withCount('detailPesanan')
+        $bestSellers = MenuHarian::withCount('detailPesanan')
             ->with('layananKatering')
             ->orderByDesc('detail_pesanan_count')
             ->paginate(20);

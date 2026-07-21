@@ -132,12 +132,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/catering/{catering}/options/{option}', [CateringController::class, 'updateOption'])->name('catering.options.update');
     Route::delete('/catering/{catering}/options/{option}', [CateringController::class, 'destroyOption'])->name('catering.options.destroy');
 
-    // Menu Mingguan (Jadwal Menu — nested under catering)
-    Route::get('/catering/{catering}/menu-periods', [MenuPeriodController::class, 'index'])->name('menu-periods.index');
-    Route::post('/catering/{catering}/menu-periods', [MenuPeriodController::class, 'store'])->name('menu-periods.store');
-
-    // Produk (diakses dari detail katering, bukan standalone)
-    Route::resource('produk', AdminProdukController::class)->except(['index', 'show']);
+    // Menu Harian (Nested under catering)
+    Route::post('/catering/{catering}/menu-harian', [\App\Http\Controllers\Admin\MenuHarianController::class, 'updateBatch'])->name('menu-harian.update-batch');
+    
+    // Menu Harian Extra
+    Route::get('/menu-harian/{menuHarian}/extra', [\App\Http\Controllers\Admin\MenuHarianController::class, 'extraIndex'])->name('menu-harian.extra.index');
+    Route::post('/menu-harian/{menuHarian}/extra', [\App\Http\Controllers\Admin\MenuHarianController::class, 'extraStore'])->name('menu-harian.extra.store');
+    Route::get('/menu-harian/{menuHarian}/extra/{extra}/edit', [\App\Http\Controllers\Admin\MenuHarianController::class, 'extraEdit'])->name('menu-harian.extra.edit');
+    Route::put('/menu-harian/{menuHarian}/extra/{extra}', [\App\Http\Controllers\Admin\MenuHarianController::class, 'extraUpdate'])->name('menu-harian.extra.update');
+    Route::delete('/menu-harian/{menuHarian}/extra/{extra}', [\App\Http\Controllers\Admin\MenuHarianController::class, 'extraDestroy'])->name('menu-harian.extra.destroy');
 
     // Paket Katering (diakses dari detail katering, bukan standalone)
     Route::resource('paket_katering', PaketKateringController::class)->except(['index', 'show']);
@@ -205,8 +208,8 @@ Route::middleware('auth')->group(function () {
     })->name('api.service.options');
 
     // API: Extras per produk
-    Route::get('/api/produk/{produk}/extras', function (\App\Models\Produk $produk) {
-        return $produk->extras()->where('is_active', true)->get(['opsi_kustom.id', 'type', 'name', 'harga', 'min_qty']);
+    Route::get('/api/menu-harian/{menu}/extras', function (\App\Models\MenuHarian $menu) {
+        return $menu->extras()->get(['id', 'nama_extra', 'harga']);
     })->name('api.produk.extras');
 
     // API: Paket per layanan

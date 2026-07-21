@@ -52,7 +52,7 @@
             <div class="bg-white rounded shadow-sm border border border-primary p-6 space-y-6">
                 @foreach($grupHarian->flatten() as $keranjang)
                 @php
-                    $basePrice = $keranjang->produk ? (float) $keranjang->produk->harga : ($keranjang->opsiKustom ? (float) $keranjang->opsiKustom->harga : 0);
+                    $basePrice = $keranjang->menuHarian ? (float) $keranjang->menuHarian->harga : ($keranjang->opsiKustom ? (float) $keranjang->opsiKustom->harga : 0);
                     $extrasList = collect();
                     $extrasPrice = 0;
                     if (!empty($keranjang->extras)) {
@@ -73,8 +73,8 @@
                 @endphp
                 <div class="d-flex items-start space-x-4 {{ !$loop->last ? 'border-b border border-secondary pb-6' : '' }}">
                     <div style="width: 64px; height: 64px;" class="bg-primary text-white rounded d-flex align-items-center justify-content-center fs-2 d-flex-flex-shrink-0">
-                        @if($keranjang->produk && $keranjang->produk->image)
-                            <img src="{{ Storage::url($keranjang->produk->image) }}" alt="{{ $keranjang->produk->name }}" class="w-100 h-100 object-cover rounded">
+                        @if($keranjang->menuHarian && null)
+                            <img src="{{ Storage::url(null) }}" alt="{{ $keranjang->menuHarian->nama_menu }}" class="w-100 h-100 object-cover rounded">
                         @else
                             <svg style="width: 32px; height: 32px;" class="text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         @endif
@@ -82,7 +82,7 @@
                     <div class="d-flex-1 w-100">
                         <div class="d-flex sm:items-start justify-content-between d-flex-column sm:d-flex-row g-3">
                             <div>
-                                <h4 class="fw-bold text-secondary fs-5">{{ $keranjang->produk->name ?? ($keranjang->opsiKustom->name ?? 'Item') }}</h4>
+                                <h4 class="fw-bold text-secondary fs-5">{{ $keranjang->menuHarian->nama_menu ?? ($keranjang->opsiKustom->name ?? 'Item') }}</h4>
                                 <p class="fs-6 fw-medium text-secondary">{{ $keranjang->jumlah }} Porsi</p>
                             </div>
                             <p class="fs-5 fw-bold text-secondary">Rp {{ number_format($keranjang->subtotal, 0, ',', '.') }}</p>
@@ -236,16 +236,16 @@
 {{-- =============================== --}}
 @php
     $allHarianCartsJson = $grupHarian->flatten()->keyBy('id')->map(function($c) {
-        $basePrice = $c->produk ? (float) $c->produk->harga : ($c->opsiKustom ? (float) $c->opsiKustom->harga : 0);
-        $name = $c->produk->name ?? ($c->opsiKustom->name ?? 'Item');
-        $serviceId = $c->produk->layanan_katering_id ?? ($c->opsiKustom->layanan_katering_id ?? null);
+        $basePrice = $c->menuHarian ? (float) $c->menuHarian->harga : ($c->opsiKustom ? (float) $c->opsiKustom->harga : 0);
+        $name = $c->menuHarian->nama_menu ?? ($c->opsiKustom->name ?? 'Item');
+        $serviceId = $c->menuHarian->layanan_katering_id ?? ($c->opsiKustom->layanan_katering_id ?? null);
         return [
             'id' => $c->id,
             'name' => $name,
             'harga' => $basePrice,
             'jumlah' => $c->jumlah,
             'service_id' => $serviceId,
-            'produk_id' => $c->produk_id,
+            'produk_id' => $c->menuHarian_id,
             'extras' => $c->extras ?? [],
             'update_url' => route('pelanggan.keranjang.update', $c->id),
         ];
@@ -525,84 +525,7 @@
         document.getElementById('harianModalExtrasLoading').classList.remove('hidden');
 
         let extrasUrl = `/api/service/${currentHarianCart.service_id}/custom-options`;
-        if (currentHarianCart.produk_id) {
-            extrasUrl = `/api/produk/${currentHarianCart.produk_id}/extras`;
-        }
-
-        fetch(extrasUrl)
-            .then(res => res.json())
-            .then(data => {
-                harianAvailableExtras = data.filter(opt => opt.type === 'extra');
-                document.getElementById('harianModalExtrasLoading').classList.add('hidden');
-
-                if (harianAvailableExtras.length > 0) {
-                    let html = '';
-                    harianAvailableExtras.forEach(extra => {
-                        let extraInCart = currentHarianCart.extras.find(e => parseInt(e.id) === parseInt(extra.id));
-                        let isChecked = extraInCart ? 'checked' : '';
-                        let extraQty = extraInCart ? extraInCart.qty : 0;
-                        let disabledState = extraInCart ? '' : 'disabled';
-                        let containerClasses = extraInCart ? 'flex' : 'hidden';
-
-                        html += `
-                            <div class="d-flex align-items-center justify-content-between py-2.5 px-2 border-b border border-secondary last:border-b-0 hover:bg-primary text-white/50 rounded g-3">
-                                <label class="d-flex align-items-center g-3.5 cursor-pointer d-flex-1 min-w-0">
-                                    <input type="checkbox" name="extras[${extra.id}][id]" value="${extra.id}" data-harga="${extra.harga}" id="harian_extra_cb_${extra.id}" onchange="toggleHarianExtra(${extra.id})" style="width: 16px; height: 16px;" class="rounded border border-secondary text-primary harian-extra-checkbox flex-shrink-0" ${isChecked}>
-                                    <span class="fs-6 fw-medium text-secondary truncate">${extra.name}</span>
-                                </label>
-                                <div class="d-flex align-items-center g-3.5 flex-shrink-0">
-                                    <span class="fs-6 fw-bold text-primary flex-shrink-0">+${formatRupiah(extra.harga)}</span>
-                                    <div id="daily_extra_qty_container_${extra.id}" class="${containerClasses} align-items-center g-3">
-                                        <button type="button" onclick="changeDailyExtraQty(${extra.id}, -1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0">−</button>
-                                        <input type="text" inputmode="none" readonly tabindex="-1" name="extras[${extra.id}][qty]" id="daily_extra_qty_${extra.id}" value="${extraInCart ? (extraQty || 1) : 0}" class="form-control w-12 text-center py-1 rounded border border border-secondary small fw-bold text-secondary focus: cursor-default select-none bg-light flex-shrink-0" ${disabledState}>
-                                        <button type="button" onclick="changeDailyExtraQty(${extra.id}, 1)" class="w-7 h-7 d-flex align-items-center justify-content-center bg-light hover:bg-light rounded fw-bold text-secondary fs-6 flex-shrink-0">+</button>
-                                    </div>
-                                </div>
-                            </div>`;
-                    });
-                    document.getElementById('harianModalExtrasList').innerHTML = html;
-                    document.getElementById('harianModalExtrasContainer').classList.remove('hidden');
-                }
-                updateDailyModalTotal();
-            })
-            .catch(err => {
-                console.error("Gagal memuat extras", err);
-                document.getElementById('harianModalExtrasLoading').classList.add('hidden');
-            });
-
-        updateDailyModalTotal();
-        document.getElementById('harianEditModal').style.display = 'flex';
-    }
-
-    function closeHarianEditModal() {
-        document.getElementById('harianEditModal').style.display = 'none';
-    }
-
-    function changeHarianQty(delta) {
-        const input = document.getElementById('harianModalQty');
-        let val = parseInt(input.value) + delta;
-        if (val < 1) val = 1;
-        input.value = val;
-        updateDailyModalTotal();
-    }
-
-    function toggleHarianExtra(id) {
-        const cb = document.getElementById('harian_extra_cb_' + id);
-        const qtyContainer = document.getElementById('daily_extra_qty_container_' + id);
-        const qtyInput = document.getElementById('daily_extra_qty_' + id);
-        
-        if (cb && cb.checked) {
-            if (qtyContainer) {
-                qtyContainer.classList.remove('hidden');
-                qtyContainer.classList.add('flex');
-            }
-            if (qtyInput) {
-                let val = parseInt(qtyInput.value) || 0;
-                if (val < 1) val = 1;
-                qtyInput.value = val;
-                qtyInput.disabled = false;
-            }
-        } else {
+        if (false) {} else {
             if (qtyContainer) {
                 qtyContainer.classList.add('hidden');
                 qtyContainer.classList.remove('flex');
