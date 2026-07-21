@@ -79,6 +79,7 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
 
     Route::get('/profile', [ProfilController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfilController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Keranjang Store
     Route::post('/keranjang', [KeranjangController::class, 'store'])->name('keranjang.store');

@@ -22,6 +22,12 @@
     <!-- Flatpickr Date Picker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+
     @stack('styles')
 </head>
 <body class="font-sans antialiased bg-light text-secondary" {!! request()->routeIs('landing') ? 'data-bs-spy="scroll" data-bs-target="#mainNavbar" data-bs-offset="80"' : '' !!}>
