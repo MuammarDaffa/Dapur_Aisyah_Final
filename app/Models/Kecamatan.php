@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Model Kecamatan merepresentasikan entitas Kecamatan.
- * Berfungsi sebagai relasi wilayah (Desa) dan basis perhitungan tarif pengiriman (OngkosKirim).
+ * Berfungsi sebagai relasi wilayah (Desa).
  */
 class Kecamatan extends Model
 {
@@ -22,8 +22,4 @@ class Kecamatan extends Model
         return $this->hasMany(Desa::class);
     }
 
-    public function ongkosKirim(): HasMany
-    {
-        return $this->hasMany(OngkosKirim::class);
-    }
 }

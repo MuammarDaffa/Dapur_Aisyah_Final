@@ -151,10 +151,7 @@
                             <span class="text-secondary">Subtotal</span>
                             <span class="fw-medium">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
-                        <div class="d-flex justify-content-between fs-6">
-                            <span class="text-secondary">Ongkos Kirim</span>
-                            <span class="fw-medium" id="shipping-display">Gratis</span>
-                        </div>
+
                         <div class="d-flex justify-content-between fs-5 fw-bold pt-2 border-t border border-secondary">
                             <span>Total</span>
                             <span class="text-primary" id="total-display">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
@@ -244,7 +241,6 @@ function checkLocationRealtime(lat, lng, districtId = '', districtName = '', add
                     for (let i = 0; i < select.options.length; i++) {
                         if (select.options[i].value == data.kecamatan_id) {
                             select.selectedIndex = i;
-                            loadShippingCost(data.kecamatan_id);
                             break;
                         }
                     }
@@ -254,7 +250,6 @@ function checkLocationRealtime(lat, lng, districtId = '', districtName = '', add
                 msgEl.textContent = 'Lokasi berada di luar wilayah Pontianak.';
                 msgEl.className = 'text-sm font-medium mt-2 text-red-600 block';
                 document.getElementById('kecamatan_id').value = '';
-                loadShippingCost('');
             }
             validateCheckout();
         })
@@ -358,23 +353,6 @@ function toggleDelivery() {
     validateCheckout();
 }
 
-// === Load Shipping ===
-function loadShippingCost(districtId) {
-    if (!districtId) {
-        document.getElementById('shipping-display').textContent = 'Rp 0';
-        document.getElementById('total-display').textContent = 'Rp {{ number_format($subtotal, 0, ",", ".") }}';
-        return;
-    }
-
-    fetch(`/api/ongkos_kirim-cost/${districtId}`)
-        .then(r => r.json())
-        .then(data => {
-            const cost = data.cost;
-            document.getElementById('shipping-display').textContent = 'Rp ' + Number(cost).toLocaleString('id-ID');
-            const total = {{ $subtotal }} + cost;
-            document.getElementById('total-display').textContent = 'Rp ' + Number(total).toLocaleString('id-ID');
-        });
-}
 
 // Init map jika delivery sudah dipilih (misal old value)
 document.addEventListener('DOMContentLoaded', function() {

@@ -168,10 +168,6 @@
                     <span class="text-muted">Subtotal</span>
                     <span>Rp {{ number_format($pesanan->subtotal,0,',','.') }}</span>
                 </div>
-                <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
-                    <span class="text-muted">Ongkos Kirim</span>
-                    <span>Rp {{ number_format($pesanan->ongkos_kirim,0,',','.') }}</span>
-                </div>
                 <div class="d-flex justify-content-between mb-3">
                     <strong class="fs-5">Total</strong>
                     <strong class="fs-5 text-success">Rp {{ number_format($pesanan->total,0,',','.') }}</strong>

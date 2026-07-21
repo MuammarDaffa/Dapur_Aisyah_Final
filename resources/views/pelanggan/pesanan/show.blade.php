@@ -248,7 +248,6 @@
                 <h3 class="fw-bold text-secondary mb-4">Ringkasan Pembayaran</h3>
                 <div class="d-flex flex-column gap-2 fs-6">
                     <div class="d-flex justify-content-between"><span class="text-secondary">Subtotal</span><span>Rp {{ number_format($pesanan->subtotal, 0, ',', '.') }}</span></div>
-                    <div class="d-flex justify-content-between"><span class="text-secondary">Ongkos Kirim</span><span>Rp {{ number_format($pesanan->ongkos_kirim, 0, ',', '.') }}</span></div>
                     <div class="d-flex justify-content-between fs-5 fw-bold pt-3 border-t border border-secondary">
                         <span>Total</span>
                         <span class="text-primary">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</span>

@@ -16,7 +16,7 @@ use App\Http\Controllers\Admin\CateringController;
 use App\Http\Controllers\Admin\PaketKateringController;
 use App\Http\Controllers\Admin\PelangganController as AdminPelangganController;
 use App\Http\Controllers\Admin\UlasanController as AdminUlasanController;
-use App\Http\Controllers\Admin\OngkosKirimController;
+
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboard;
 use App\Http\Controllers\PaymentController;
@@ -152,8 +152,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/ulasan', [AdminUlasanController::class, 'index'])->name('ulasan');
     Route::delete('/ulasan/{ulasan}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
 
-    // Shipping
-    Route::resource('ongkos_kirim', OngkosKirimController::class)->except(['show']);
+
 
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('reports');
@@ -182,9 +181,6 @@ Route::middleware('auth')->group(function () {
         return $kecamatan->desa()->get(['id', 'name']);
     })->name('api.desa');
 
-    Route::get('/api/ongkos_kirim-cost/{kecamatan}', function (\App\Models\Kecamatan $kecamatan) {
-        return response()->json(['cost' => \App\Models\OngkosKirim::getCostByDistrict($kecamatan->id)]);
-    })->name('api.shipping-cost');
 
     Route::get('/api/validate-location', function (\Illuminate\Http\Request $request) {
         $result = \App\Services\LocationService::validateLocation(

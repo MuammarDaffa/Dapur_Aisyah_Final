@@ -7,7 +7,7 @@ use App\Http\Requests\CheckoutRequest;
 use App\Models\Kecamatan;
 use App\Models\Pesanan;
 use App\Models\DetailPesanan;
-use App\Models\OngkosKirim;
+use App\Models\Tagihan;
 use App\Services\InvoiceService;
 use App\Services\NotificationService;
 use App\Services\OrderService;
@@ -160,10 +160,7 @@ class PembayaranController extends Controller
         $pesanan = DB::transaction(function () use ($validated, $user, $keranjang, $cateringServiceId, $packageId, $finalAddressDetail) {
             // Hitung biaya
             $subtotal = $keranjang->sum(fn ($keranjang) => $keranjang->subtotal);
-            $ongkosKirim = $validated['metode_pengambilan'] === 'delivery'
-                ? OngkosKirim::getCostByDistrict($validated['kecamatan_id'])
-                : 0;
-            $total = $subtotal + $ongkosKirim;
+            $total = $subtotal;
 
             // Buat pesanan
             $pesanan = Pesanan::create([
@@ -181,7 +178,6 @@ class PembayaranController extends Controller
                 'tipe_penyajian' => $validated['tipe_penyajian'] ?? null,
                 'porsi' => $validated['porsi'] ?? null,
                 'subtotal' => $subtotal,
-                'ongkos_kirim' => $ongkosKirim,
                 'total' => $total,
                 'metode_pembayaran' => 'transfer',
                 'status_pembayaran' => 'belum_dibayar',
@@ -487,10 +483,7 @@ class PembayaranController extends Controller
         $pesanan = DB::transaction(function () use ($request, $validated, $user, $groupItems, $groupId, $cateringServiceId, $packageId, $packageItem, $totalPortions, $servingType, $finalAddressDetail) {
             // Hitung subtotal
             $subtotal = $groupItems->sum(fn ($c) => $c->subtotal);
-            $ongkosKirim = $validated['metode_pengambilan'] === 'delivery'
-                ? OngkosKirim::getCostByDistrict($validated['kecamatan_id'])
-                : 0;
-            $total = $subtotal + $ongkosKirim;
+            $total = $subtotal;
 
             // Buat pesanan
             $pesanan = Pesanan::create([
@@ -508,7 +501,6 @@ class PembayaranController extends Controller
                 'tipe_penyajian' => $servingType?->name,
                 'porsi' => $totalPortions,
                 'subtotal' => $subtotal,
-                'ongkos_kirim' => $ongkosKirim,
                 'total' => $total,
                 'metode_pembayaran' => 'transfer',
                 'status_pembayaran' => 'belum_dibayar',

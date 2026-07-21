@@ -76,15 +76,7 @@ class PaymentService
             $calculatedTotal += ($unitPrice * $qty);
         }
 
-        if ($pesanan->ongkos_kirim > 0) {
-            $items[] = [
-                'id' => 'shipping',
-                'harga' => (int) $pesanan->ongkos_kirim,
-                'jumlah' => 1,
-                'name' => 'Ongkos Kirim',
-            ];
-            $calculatedTotal += (int) $pesanan->ongkos_kirim;
-        }
+
 
         // Jika ada selisih antara calculatedTotal dan pesanan->total (karena pembulatan dsb), sesuaikan di item adjustment
         $diff = ((int) $pesanan->total) - $calculatedTotal;

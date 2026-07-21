@@ -71,7 +71,6 @@
                                 ['route' => 'admin.catering.index', 'label' => 'Katering', 'icon' => 'fa-solid fa-utensils'],
                                 ['route' => 'admin.customers', 'label' => 'Pelanggan', 'icon' => 'fa-solid fa-users'],
                                 ['route' => 'admin.ulasan', 'label' => 'Ulasan', 'icon' => 'fa-solid fa-star'],
-                                ['route' => 'admin.ongkos_kirim.index', 'label' => 'Ongkos Kirim', 'icon' => 'fa-solid fa-truck'],
                                 ['route' => 'admin.reports', 'label' => 'Laporan', 'icon' => 'fa-solid fa-chart-line'],
                             ];
                         @endphp

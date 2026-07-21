@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Model Pesanan merepresentasikan keseluruhan transaksi pesanan dari pelanggan.
- * Menampung informasi tujuan pengiriman, ringkasan harga (subtotal & ongkir),
+ * Menampung informasi tujuan pengiriman, ringkasan harga (subtotal),
  * status transaksi (dari Midtrans), dan metode pembayaran.
  */
 class Pesanan extends Model
@@ -20,7 +20,7 @@ class Pesanan extends Model
         'nomor_pesanan', 'user_id', 'layanan_katering_id', 'paket_katering_id',
         'tanggal_pesanan', 'event_start_time', 'metode_pengambilan', 'kecamatan_id', 'desa_id',
         'detail_alamat', 'latitude', 'longitude', 'tipe_penyajian', 'porsi', 'subtotal',
-        'ongkos_kirim', 'total', 'metode_pembayaran', 'status_pembayaran', 'refund_status',
+        'total', 'metode_pembayaran', 'status_pembayaran', 'refund_status',
         'midtrans_snap_token', 'midtrans_transaction_id', 'status',
         'alasan_pembatalan', 'dibatalkan_pada', 'catatan',
     ];
@@ -30,7 +30,6 @@ class Pesanan extends Model
         return [
             'tanggal_pesanan' => 'date',
             'subtotal' => 'decimal:2',
-            'ongkos_kirim' => 'decimal:2',
             'total' => 'decimal:2',
             'dibatalkan_pada' => 'datetime',
         ];

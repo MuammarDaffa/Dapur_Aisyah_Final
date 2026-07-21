@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('tipe_penyajian', 50)->nullable();
             $table->integer('porsi')->nullable();
             $table->decimal('subtotal', 12, 2)->default(0);
-            $table->decimal('ongkos_kirim', 10, 2)->default(0);
             $table->decimal('total', 12, 2)->default(0);
             $table->enum('metode_pembayaran', ['transfer']);
             $table->enum('status_pembayaran', ['belum_dibayar', 'sudah_dibayar', 'gagal'])->default('belum_dibayar');

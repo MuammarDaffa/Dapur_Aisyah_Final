@@ -6,7 +6,6 @@ use App\Models\PaketKatering;
 use App\Models\LayananKatering;
 use App\Models\OpsiKustom;
 use App\Models\MenuHarian;
-use App\Models\OngkosKirim;
 use App\Models\Kecamatan;
 use Illuminate\Database\Seeder;
 
@@ -110,13 +109,5 @@ class LayananKateringSeeder extends Seeder
             );
         }
 
-        // === Shipping Costs (Default) ===
-        $kecamatan = Kecamatan::all();
-        foreach ($kecamatan as $kecamatan) {
-            OngkosKirim::updateOrCreate(
-                ['kecamatan_id' => $kecamatan->id],
-                ['cost' => 20000, 'catatan' => 'Ongkir default area Pontianak']
-            );
-        }
     }
 }

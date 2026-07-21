@@ -191,10 +191,7 @@
                             <span class="text-secondary">Subtotal</span>
                             <span class="fw-medium">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
-                        <div class="d-flex justify-content-between fs-6" id="eventRowShipping">
-                            <span class="text-secondary">Ongkos Kirim</span>
-                            <span class="fw-medium" id="eventShippingDisplay">Rp 0</span>
-                        </div>
+
                         <div class="d-flex justify-content-between fs-5 fw-bold pt-2 border-t border border-secondary">
                             <span>Total</span>
                             <span class="text-primary" id="eventTotalDisplay">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
@@ -286,7 +283,6 @@
                         for (let i = 0; i < select.options.length; i++) {
                             if (select.options[i].value == data.kecamatan_id) {
                                 select.selectedIndex = i;
-                                loadEventShippingCost();
                                 break;
                             }
                         }
@@ -296,7 +292,6 @@
                     msgEl.textContent = 'Lokasi berada di luar wilayah Pontianak.';
                     msgEl.className = 'text-sm font-medium mt-2 text-red-600 block';
                     document.getElementById('kecamatan_id').value = '';
-                    loadEventShippingCost();
                 }
                 validateEventCheckout();
             })
@@ -400,22 +395,8 @@
     }
 
     function loadEventShippingCost() {
-        const districtId = document.getElementById('kecamatan_id').value;
-        const pickupMethod = document.querySelector('input[name="metode_pengambilan"]:checked')?.value;
-
-        if (districtId && pickupMethod === 'delivery') {
-            fetch(`/api/ongkos_kirim-cost/${districtId}`)
-                .then(res => res.json())
-                .then(data => {
-                    eventShippingCost = parseFloat(data.cost) || 0;
-                    document.getElementById('eventShippingDisplay').textContent = 'Rp ' + Number(eventShippingCost).toLocaleString('id-ID');
-                    updateEventTotal();
-                });
-        } else {
-            eventShippingCost = 0;
-            document.getElementById('eventShippingDisplay').textContent = 'Rp 0';
-            updateEventTotal();
-        }
+        eventShippingCost = 0;
+        updateEventTotal();
     }
 
     function updateEventTotal() {

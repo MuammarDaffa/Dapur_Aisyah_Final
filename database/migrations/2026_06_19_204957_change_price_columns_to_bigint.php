@@ -23,12 +23,9 @@ return new class extends Migration
         Schema::table('opsi_kustom', function (Blueprint $table) {
             $table->decimal('harga', 15, 2)->default(0)->change();
         });
-        Schema::table('ongkos_kirim', function (Blueprint $table) {
-            $table->decimal('cost', 15, 2)->default(20000)->change();
-        });
+
         Schema::table('pesanan', function (Blueprint $table) {
             $table->decimal('total', 15, 2)->default(0)->change();
-            $table->decimal('ongkos_kirim', 15, 2)->default(0)->change();
             $table->decimal('subtotal', 15, 2)->default(0)->change();
         });
         Schema::table('detail_pesanan', function (Blueprint $table) {
@@ -51,12 +48,9 @@ return new class extends Migration
         Schema::table('opsi_kustom', function (Blueprint $table) {
             $table->decimal('harga', 10, 2)->default(0)->change();
         });
-        Schema::table('ongkos_kirim', function (Blueprint $table) {
-            $table->decimal('cost', 10, 2)->default(20000)->change();
-        });
+
         Schema::table('pesanan', function (Blueprint $table) {
             $table->decimal('total', 12, 2)->default(0)->change();
-            $table->decimal('ongkos_kirim', 10, 2)->default(0)->change();
             $table->decimal('subtotal', 12, 2)->default(0)->change();
         });
         Schema::table('detail_pesanan', function (Blueprint $table) {
