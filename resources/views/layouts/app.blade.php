@@ -23,9 +23,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <style>
-        html {
-            scroll-behavior: smooth;
-        }
+        
     </style>
 
     @stack('styles')

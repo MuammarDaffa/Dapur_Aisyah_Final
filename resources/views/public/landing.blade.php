@@ -4,9 +4,7 @@
 
 @section('content')
     <style>
-        html {
-            scroll-behavior: smooth;
-        }
+       
         .hero-section {
             height: 100vh;
             min-height: 100vh;

@@ -1,10 +1,10 @@
 @extends('layouts.app')
 @section('title', 'Profil Saya')
 @section('content')
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- <h2 class="fs-3 fw-bold text-secondary mb-6 d-flex align-items-center">
-        <!-- <svg class="w-7 h-7 text-primary me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-        <span><span class="text-primary">Profil</span> Saya</span> -->
+<!-- <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h2 class="fs-3 fw-bold text-secondary mb-6 d-flex align-items-center">
+        <svg class="w-7 h-7 text-primary me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+        <span><span class="text-primary">Profil</span> Saya</span>
     </h2> -->
 
 
@@ -37,7 +37,7 @@
         </div>
 
         <!-- Ubah Password -->
-        <div class="card shadow-sm mb-4 p-4">
+        <!-- <div class="card shadow-sm mb-4 p-4">
             <h3 class="fw-bold text-secondary mb-1">Perbarui Password</h3>
             <p class="text-muted small mb-4">Pastikan akun Anda menggunakan kata sandi acak yang panjang untuk tetap aman.</p>
             <form action="{{ route('password.update') }}" method="POST" class="d-flex flex-column gap-3">
@@ -64,10 +64,10 @@
                     @endif
                 </div>
             </form>
-        </div>
+        </div> -->
 
         <!-- Hapus Akun -->
-        <div class="card shadow-sm mb-4 p-4">
+        <!-- <div class="card shadow-sm mb-4 p-4">
             <h3 class="fw-bold text-secondary mb-1">Hapus Akun</h3>
             <p class="text-muted small mb-4">Setelah akun Anda dihapus, semua sumber daya dan datanya akan dihapus secara permanen. Harap masukkan kata sandi Anda untuk mengonfirmasi bahwa Anda ingin menghapus akun Anda secara permanen.</p>
             <form action="{{ route('pelanggan.profile.destroy') }}" method="POST" class="d-flex flex-column gap-3">
@@ -81,7 +81,7 @@
                     <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus akun Anda secara permanen? Tindakan ini tidak dapat dibatalkan.')">Hapus Akun Secara Permanen</button>
                 </div>
             </form>
-        </div>
+        </div> -->
     </div>
 </div>
 @endsection
