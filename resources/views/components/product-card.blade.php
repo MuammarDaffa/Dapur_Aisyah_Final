@@ -49,18 +49,7 @@
                 </p>
             </div>
 
-            <form action="{{ route('pelanggan.keranjang.store') }}" method="POST" onsubmit="return window.submitQuickAddCart ? window.submitQuickAddCart(event, this) : true;">
-                @csrf
-                <input type="hidden" name="produk_id" value="{{ $produk->id }}">
-                <input type="hidden" name="jumlah" value="1">
-                <button type="submit"
-                        class="hover: hover: text-white p-2.5 rounded shadow-md hover:shadow active:"
-                        title="Tambah ke Keranjang">
-                    <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                </button>
-            </form>
+
         </div>
     </div>
 </div>

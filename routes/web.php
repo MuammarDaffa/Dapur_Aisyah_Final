@@ -5,7 +5,6 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Pelanggan\DashboardController as CustomerDashboard;
 use App\Http\Controllers\Admin\MenuPeriodController;
 use App\Http\Controllers\Pelanggan\ProfilController;
-use App\Http\Controllers\Pelanggan\KeranjangController;
 use App\Http\Controllers\Pelanggan\PembayaranController;
 use App\Http\Controllers\Pelanggan\PesananController as CustomerPesananController;
 use App\Http\Controllers\Pelanggan\UlasanController as CustomerUlasanController;
@@ -69,9 +68,6 @@ Route::middleware('unverified_customer_redirect')->prefix('dashboard')->name('pe
     Route::get('/acara/{service}', [CustomerDashboard::class, 'acaraService'])->name('acara.service');
     Route::get('/acara/{service}/package/{package}', [CustomerDashboard::class, 'acaraPackage'])->name('acara.package');
     Route::get('/acara/{service}/custom', [CustomerDashboard::class, 'acaraCustom'])->name('acara.custom');
-
-    // Keranjang Count (untuk badge di navbar, mengembalikan 0 jika guest)
-    Route::get('/keranjang/count', [KeranjangController::class, 'count'])->name('keranjang.count');
 });
 
 Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('pelanggan.')->group(function () {
@@ -81,21 +77,9 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     Route::put('/profile', [ProfilController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Keranjang Store
-    Route::post('/keranjang', [KeranjangController::class, 'store'])->name('keranjang.store');
-    Route::post('/acara/keranjang', [KeranjangController::class, 'storeAcaraGroup'])->name('acara.keranjang.store');
-
-    // Acara Keranjang Update & Destroy
-    Route::put('/acara/keranjang/{groupId}', [KeranjangController::class, 'updateAcaraGroup'])->name('acara.keranjang.update');
-
     // Acara Lanjut Ke Pembayaran (per group)
     Route::get('/acara/pembayaran/{groupId}', [PembayaranController::class, 'showAcaraCheckout'])->name('acara.checkout.show');
     Route::post('/acara/pembayaran/{groupId}', [PembayaranController::class, 'checkoutAcaraGroup'])->name('acara.checkout.store');
-
-    // Keranjang Index & Item Operations (Daily)
-    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang');
-    Route::put('/keranjang/{keranjang}', [KeranjangController::class, 'update'])->name('keranjang.update');
-    Route::delete('/keranjang/{keranjang}', [KeranjangController::class, 'destroy'])->name('keranjang.destroy');
 
     // Lanjut Ke Pembayaran (Daily)
     Route::get('/pembayaran/{menu_date?}', [PembayaranController::class, 'index'])->name('checkout');

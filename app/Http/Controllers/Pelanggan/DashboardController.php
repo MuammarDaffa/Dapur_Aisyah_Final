@@ -17,9 +17,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $cartCount = $user->cartItemsCount();
-
-        return view('pelanggan.dashboard', compact('recentOrders', 'cartCount'));
+        return view('pelanggan.dashboard', compact('recentOrders'));
     }
 
     /**

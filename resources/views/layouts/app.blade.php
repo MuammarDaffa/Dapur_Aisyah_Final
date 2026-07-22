@@ -63,18 +63,7 @@
             <!-- Auth Links -->
             <ul class="navbar-nav">
                 @if(auth()->check() && (!auth()->user()->isCustomer() || auth()->user()->hasVerifiedEmail()))
-                    <!-- Keranjang -->
-                    <li class="nav-item me-3">
-                        <a href="{{ route('pelanggan.keranjang') }}" class="nav-link position-relative text-dark {{ request()->routeIs('pelanggan.keranjang') ? 'active fw-bold' : '' }}">
-                            Keranjang
-                            @php $cartCount = auth()->user()->cartItemsCount(); @endphp
-                            @if($cartCount > 0)
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                {{ $cartCount }}
-                            </span>
-                            @endif
-                        </a>
-                    </li>
+
                     <!-- Dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('pelanggan.profile.edit', 'pelanggan.pesanan') ? 'active fw-bold' : '' }}" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -316,95 +305,7 @@
         });
     }
 
-    window.updateCartBadges = function(count) {
-        const desktopBadge = document.getElementById('desktop-keranjang-badge');
-        const mobileBadge = document.getElementById('mobile-keranjang-badge');
-        const hamburgerBadge = document.getElementById('hamburger-keranjang-badge');
-        [desktopBadge, mobileBadge, hamburgerBadge].forEach(badge => {
-            if (!badge) return;
-            const num = parseInt(count);
-            if (!isNaN(num) && num > 0) {
-                badge.textContent = num;
-                badge.classList.remove('hidden');
-            } else {
-                badge.textContent = '';
-                badge.classList.add('hidden');
-            }
-        });
-    };
 
-    window.refreshCartBadges = function() {
-        fetch('{{ route("pelanggan.keranjang.count") }}', {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success && typeof data.cart_count !== 'undefined') {
-                window.updateCartBadges(data.cart_count);
-            }
-        })
-        .catch(() => {});
-    };
-
-    window.submitQuickAddCart = function(e, form) {
-        if (e && e.preventDefault) e.preventDefault();
-        if (!form) return false;
-        const btn = form.querySelector('button[type="submit"]');
-        if (btn) btn.disabled = true;
-
-        const formData = new FormData(form);
-        fetch(form.action, {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (btn) btn.disabled = false;
-            if (data.redirect_url) {
-                window.location.href = data.redirect_url;
-                return;
-            }
-            if (data.success) {
-                if (typeof window.updateCartBadges === 'function' && typeof data.cart_count !== 'undefined') {
-                    window.updateCartBadges(data.cart_count);
-                }
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: data.message || 'Produk berhasil ditambahkan ke keranjang!',
-                        showConfirmButton: true,
-                        confirmButtonText: 'Oke',
-                        confirmButtonColor: '#f97316'
-                    });
-                }
-            } else {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: data.message || 'Terjadi kesalahan saat menambahkan ke keranjang.',
-                        confirmButtonColor: '#f97316'
-                    });
-                } else {
-                    form.submit();
-                }
-            }
-        })
-        .catch(err => {
-            if (btn) btn.disabled = false;
-            form.submit();
-        });
-        return false;
-    };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>

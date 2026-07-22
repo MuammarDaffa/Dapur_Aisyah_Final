@@ -30,8 +30,7 @@
         <p class="text-secondary">Pilih menu sesuka Anda sesuai kebutuhan acara.</p>
     </div>
 
-    <form id="customForm" action="{{ route('pelanggan.acara.keranjang.store') }}" method="POST" onkeydown="return event.key != 'Enter';">
-        @csrf
+    <div id="customForm" onkeydown="return event.key != 'Enter';">
         <input type="hidden" name="layanan_katering_id" value="{{ $service->id }}">
 
         @php
@@ -142,13 +141,10 @@
                         <span id="custom-total-harga" class="fs-3 fw-bold text-primary">Rp 0</span>
                     </div>
                 </div>
-                <button type="submit" id="custom-submit-btn" disabled
-                    class="w-100 px-6 py-4 text-white fw-bold fs-5 rounded hover:shadow disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span class="d-inline-d-flex align-items-center justify-content-center g-3"><span>Masukkan ke Keranjang</span><svg style="width: 20px; height: 20px;" class="flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg></span>
-                </button>
+
             </div>
         </div>
-    </form>
+    </div>
 </div>
 
 @push('scripts')
