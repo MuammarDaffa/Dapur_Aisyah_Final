@@ -51,7 +51,7 @@ class CateringController extends Controller
             'status' => 'boolean',
         ]);
 
-        $validated['status'] = $request->boolean('status', true);
+        $validated['status'] = $request->boolean('status');
 
         if ($isHarian) {
             $validated['kapasitas_total'] = null;
@@ -89,7 +89,7 @@ class CateringController extends Controller
             'status' => 'boolean',
         ]);
 
-        $validated['status'] = $request->boolean('status', true);
+        $validated['status'] = $request->boolean('status');
 
         if ($isHarian) {
             $validated['kapasitas_total'] = null;

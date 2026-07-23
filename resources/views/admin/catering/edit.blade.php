@@ -22,33 +22,32 @@
                         @error('nama')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
-                    {{-- Tipe Katering --}}
+            
+                {{-- Tipe Katering (Dikunci) --}}
                     <div class="mb-3">
-                        <label class="form-label fw-bold d-block">Tipe Katering <span class="text-danger">*</span></label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tipe" id="tipeHarian" value="harian" {{ old('tipe', $catering->tipe) === 'harian' ? 'checked' : '' }} onchange="toggleCateringTypeFields()">
-                            <label class="form-check-label" for="tipeHarian">Harian</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tipe" id="tipeAcara" value="acara" {{ old('tipe', $catering->tipe) === 'acara' ? 'checked' : '' }} onchange="toggleCateringTypeFields()">
-                            <label class="form-check-label" for="tipeAcara">Acara</label>
-                        </div>
-                        @error('tipe')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        <label class="form-label fw-bold d-block">Tipe Katering</label>
+                        <input type="text" class="form-control bg-light" value="{{ ucfirst($catering->tipe) }}" readonly>
+                        {{-- Hidden input agar data tipe tetap terkirim ke controller --}}
+                        <input type="hidden" name="tipe" value="{{ $catering->tipe }}">
+                        <small class="text-muted">Tipe katering tidak dapat diubah setelah layanan dibuat.</small>
                     </div>
 
-                    {{-- Kapasitas (Hanya Acara) --}}
-                    <div class="mb-3 acara-field">
-                        <label class="form-label fw-bold">Kapasitas Total <span class="text-danger">*</span></label>
-                        <input type="number" name="kapasitas_total" value="{{ old('kapasitas_total', $catering->kapasitas_total) }}" min="1" step="1" class="form-control">
-                        @error('kapasitas_total')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                    </div>
-                    
-                    {{-- Minimal Porsi (Hanya Acara) --}}
-                    <div class="mb-3 acara-field">
-                        <label class="form-label fw-bold">Minimal Porsi Pemesanan <span class="text-danger">*</span></label>
-                        <input type="number" name="minimal_porsi" value="{{ old('minimal_porsi', $catering->minimal_porsi) }}" min="1" step="1" class="form-control">
-                        @error('minimal_porsi')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                    </div>
+
+                     @if($catering->isAcara())
+                        {{-- Kapasitas (Hanya Acara) --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Kapasitas Total <span class="text-danger">*</span></label>
+                            <input type="number" name="kapasitas_total" value="{{ old('kapasitas_total', $catering->kapasitas_total) }}" min="1" step="1" class="form-control">
+                            @error('kapasitas_total')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        </div>
+                        
+                        {{-- Minimal Porsi (Hanya Acara) --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Minimal Porsi Pemesanan <span class="text-danger">*</span></label>
+                            <input type="number" name="minimal_porsi" value="{{ old('minimal_porsi', $catering->minimal_porsi) }}" min="1" step="1" class="form-control">
+                            @error('minimal_porsi')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        </div>
+                    @endif
 
                     {{-- Status --}}
                     <div class="form-check mt-3">
@@ -59,31 +58,12 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Perbarui Katering</button>
+                    <button type="submit" class="btn btn-warning">Perbarui Katering</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-@push('scripts')
-<script>
-function toggleCateringTypeFields() {
-    const typeRadio = document.querySelector('input[name="tipe"]:checked');
-    const isAcara = typeRadio && typeRadio.value === 'acara';
-    const acaraFields = document.querySelectorAll('.acara-field');
 
-    acaraFields.forEach(field => {
-        field.style.display = isAcara ? 'block' : 'none';
-        const input = field.querySelector('input');
-        if (input) {
-            input.disabled = !isAcara;
-        }
-    });
-}
-document.addEventListener('DOMContentLoaded', function() {
-    toggleCateringTypeFields();
-});
-</script>
-@endpush
 @endsection
