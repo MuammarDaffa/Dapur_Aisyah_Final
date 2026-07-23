@@ -76,7 +76,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('/pesanan/{pesanan}', [AdminPesananController::class, 'destroy'])->name('pesanan.destroy');
 
     // Master Layanan
-    Route::resource('catering', CateringController::class)->only(['index', 'create', 'store']);
+    Route::resource('catering', CateringController::class)->only(['index', 'create', 'store','edit','update', 'destroy']);
 
     Route::get('/customers', [AdminPelangganController::class, 'index'])->name('customers');
     Route::get('/ulasan', [AdminUlasanController::class, 'index'])->name('ulasan');

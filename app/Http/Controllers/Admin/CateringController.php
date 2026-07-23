@@ -66,5 +66,58 @@ class CateringController extends Controller
         return redirect()->route('admin.catering.index')->with('success', 'Layanan Katering berhasil ditambahkan.');
     }
 
-    
+        /**
+     * Tampilkan form edit katering.
+     */
+    public function edit(Layanan $catering)
+    {
+        return view('admin.catering.edit', compact('catering'));
+    }
+
+    /**
+     * Proses pembaruan data katering.
+     */
+    public function update(Request $request, Layanan $catering)
+    {
+        $isHarian = $request->input('tipe') === 'harian';
+        
+        $validated = $request->validate([
+            'nama' => 'required|string|max:150',
+            'tipe' => 'required|in:harian,acara',
+            'kapasitas_total' => $isHarian ? 'nullable' : 'required|integer|min:1',
+            'minimal_porsi' => $isHarian ? 'nullable' : 'required|integer|min:1',
+            'status' => 'boolean',
+        ]);
+
+        $validated['status'] = $request->boolean('status', true);
+
+        if ($isHarian) {
+            $validated['kapasitas_total'] = null;
+            $validated['kapasitas_tersisa'] = null;
+            $validated['minimal_porsi'] = null;
+        } else {
+            // Hitung selisih jika kapasitas total diubah
+            if ($validated['kapasitas_total'] != $catering->kapasitas_total) {
+                $selisih = $validated['kapasitas_total'] - $catering->kapasitas_total;
+                $validated['kapasitas_tersisa'] = $catering->kapasitas_tersisa + $selisih;
+                
+                // Pastikan kapasitas tersisa tidak bocor/negatif
+                if ($validated['kapasitas_tersisa'] < 0) {
+                    return back()->withErrors(['kapasitas_total' => 'Kapasitas total tidak boleh lebih kecil dari pesanan aktif.'])->withInput();
+                }
+            }
+        }
+
+        $catering->update($validated);
+
+        return redirect()->route('admin.catering.index')->with('success', 'Layanan Katering berhasil diperbarui.');
+    }
+
+
+    public function destroy(Layanan $catering)
+    {
+        $catering->delete();
+        
+        return redirect()->route('admin.catering.index')->with('success', 'Layanan Katering berhasil dihapus.');
+    }
 }

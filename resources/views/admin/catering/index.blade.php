@@ -49,9 +49,26 @@
                                         {{ $c->status ? 'Aktif' : 'Nonaktif' }}
                                     </span>
                                 </td>
-<td class="align-middle text-center">
-                                    <span class="text-muted fst-italic">Dalam Pengembangan</span>
+                                <td class="align-middle text-center">
+                                    <div class="btn-group">
+                                        <a href="#" class="btn btn-sm btn-info text-white" title="Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ route('admin.catering.edit', $c) }}" class="btn btn-sm btn-warning" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        <form action="{{ route('admin.catering.destroy', $c) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Yakin ingin menghapus layanan ini?');">
+                                            @csrf 
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+
+                                    </div>
                                 </td>
+
 
                             </tr>
                             @empty
