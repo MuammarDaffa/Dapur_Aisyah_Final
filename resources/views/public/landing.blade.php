@@ -176,57 +176,38 @@
                             ? route('pelanggan.acara.service', $service)
                             : route('pelanggan.produk', ['service' => $service->id]);
                     @endphp
-                    <a href="{{ $serviceUrl }}" class="group position-relative bg-white rounded-2xl border border border-secondary hover:-translate-y-1 d-flex d-flex-column h-100 overflow-hidden">
-                        @if($service->image)
-                            <div class="w-100 overflow-hidden position-relative flex-shrink-0" style="height: 200px;">
-                                <img src="{{ Storage::url($service->image) }}" class="w-100 h-100 object-fit-cover">
-                                <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);"></div>
-                                <h3 class="position-absolute bottom-0 start-0 p-3 fs-4 fw-bold text-white mb-0">{{ $service->name }}</h3>
-                            </div>
-                            <div class="p-6 d-flex-1 d-flex d-flex-column justify-content-between">
-                                <p class="fs-6 text-secondary mb-6 line-clamp-3 leading-relaxed d-flex-1">{{ $service->deskripsi }}</p>
-                                <div class="d-flex align-items-center justify-content-between pt-4 border-t border border-secondary mt-auto">
-                                    <span class="fs-5 fw-bold text-primary">
+                    <a href="{{ $serviceUrl }}" class="group position-relative bg-white rounded-2xl border border border-secondary hover:-translate-y-1 shadow-sm d-flex flex-column h-100 overflow-hidden text-decoration-none">
+                        <div class="p-6 d-flex align-items-center justify-content-center bg-light" style="height: 160px;">
+                            @if($service->isAcara())
+                                <span style="font-size: 4rem;">🎉</span>
+                            @else
+                                <span style="font-size: 4rem;">🍱</span>
+                            @endif
+                        </div>
+                        <div class="p-6 flex-grow-1 d-flex flex-column justify-content-between text-center">
+                            <h3 class="fs-4 fw-bold text-secondary mb-3">{{ $service->nama }}</h3>
+                            <p class="fs-6 text-secondary mb-4 line-clamp-2">Layanan Katering {{ ucfirst($service->tipe) }}</p>
+                            <div class="d-flex align-items-center justify-content-between pt-4 border-top border-secondary mt-auto">
+                                <span class="fs-5 fw-bold text-primary">
+                                    @if($service->base_price > 0)
                                         Mulai Rp {{ number_format($service->base_price, 0, ',', '.') }}
-                                    </span>
-                                    @if($service->isAcara())
-                                        <span class="small bg-purple-100 text-purple-700 px-2 py-1 rounded-pill fw-medium">Acara</span>
                                     @else
-                                        <span class="small bg-success text-white text-success px-2 py-1 rounded-pill fw-medium">Tersedia</span>
+                                        Lihat Menu
                                     @endif
-                                </div>
+                                </span>
+                                @if($service->isAcara())
+                                    <span class="small bg-purple-100 text-purple-700 px-2 py-1 rounded-pill fw-medium">Acara</span>
+                                @else
+                                    <span class="small bg-success text-white px-2 py-1 rounded-pill fw-medium">Tersedia</span>
+                                @endif
                             </div>
-                        @else
-                            <div class="p-6 d-flex-1 d-flex d-flex-column justify-content-between h-100">
-                                <div>
-                                    <div style="width: 64px; height: 64px;" class="rounded-2xl d-flex align-items-center justify-content-center text-white mb-6 group- transition- shadow-sm">
-                                        @if($service->isHarian())
-                                            <svg style="width: 32px; height: 32px;" class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                        @elseif($service->isAcara())
-                                            <svg style="width: 32px; height: 32px;" class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-                                        @else
-                                            <svg style="width: 32px; height: 32px;" class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
-                                        @endif
-                                    </div>
-                                    <h3 class="fs-4 fw-bold text-secondary mb-3">{{ $service->name }}</h3>
-                                    <p class="fs-6 text-secondary mb-6 line-clamp-3 leading-relaxed">{{ $service->deskripsi }}</p>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between pt-4 border-t border border-primary/60 mt-auto">
-                                    <span class="fs-5 fw-bold text-primary">
-                                        Mulai Rp {{ number_format($service->base_price, 0, ',', '.') }}
-                                    </span>
-                                    @if($service->isAcara())
-                                        <span class="small bg-purple-100 text-purple-700 px-2 py-1 rounded-pill fw-medium">Acara</span>
-                                    @else
-                                        <span class="small bg-success text-white text-success px-2 py-1 rounded-pill fw-medium">Tersedia</span>
-                                    @endif
-                                </div>
-                            </div>
-                        @endif
+                        </div>
                     </a>
                 @empty
-                    <div class="col-span-full text-center text-secondary py-8">
-                        Belum ada layanan tersedia.
+                    <div class="col-12 text-center py-12">
+                        <span class="fs-1 d-block mb-3">🍽️</span>
+                        <h3 class="fs-4 fw-medium text-secondary mb-2">Belum Ada Layanan</h3>
+                        <p class="text-secondary">Mohon maaf, layanan katering saat ini sedang tidak tersedia.</p>
                     </div>
                 @endforelse
             </div>
@@ -275,7 +256,7 @@
                                     </div>
                                     <div class="ms-3">
                                         <h5 class="fw-bold text-dark mb-0 fs-6">{{ $ulasan->user->name ?? 'Pelanggan' }}</h5>
-                                        <small class="text-primary fw-medium">{{ $ulasan->pesanan->layananKatering->name ?? 'Pelanggan Setia' }}</small>
+                                        <small class="text-primary fw-medium">{{ $ulasan->pesanan->layanan->nama ?? 'Pelanggan Setia' }}</small>
                                     </div>
                                 </div>
                                 <p class="card-text text-secondary mb-0" style="font-style: italic;">"{{ $ulasan->comment ?? 'Pelayanan sangat memuaskan!' }}"</p>

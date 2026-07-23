@@ -15,14 +15,14 @@ class PesananController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Pesanan::with(['user', 'layananKatering'])
+        $query = Pesanan::with(['user', 'layanan'])
             ->orderBy('created_at', 'desc');
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
         if ($request->filled('service')) {
-            $query->where('layanan_katering_id', $request->service);
+            $query->where('layanan_id', $request->service);
         }
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
@@ -42,7 +42,7 @@ class PesananController extends Controller
 
     public function show(Pesanan $pesanan)
     {
-        $pesanan->load(['user', 'items.produk', 'layananKatering', 'tagihan']);
+        $pesanan->load(['user', 'items', 'layanan', 'tagihan']);
         
         // Sync dengan Midtrans jika masih pending/unpaid (berguna untuk testing local tanpa webhook)
         if ($pesanan->status_pembayaran === 'belum_dibayar' && $pesanan->midtrans_snap_token) {

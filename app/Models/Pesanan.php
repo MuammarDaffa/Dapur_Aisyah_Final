@@ -7,22 +7,33 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-/**
- * Model Pesanan merepresentasikan keseluruhan transaksi pesanan dari pelanggan.
- * Menampung informasi tujuan pengiriman, ringkasan harga (subtotal),
- * status transaksi (dari Midtrans), dan metode pembayaran.
- */
 class Pesanan extends Model
 {
     protected $table = 'pesanan';
 
     protected $fillable = [
-        'nomor_pesanan', 'user_id', 'layanan_katering_id', 'paket_katering_id',
-        'tanggal_pesanan', 'event_start_time', 'metode_pengambilan',
-        'detail_alamat', 'latitude', 'longitude', 'tipe_penyajian', 'porsi', 'subtotal',
-        'total', 'metode_pembayaran', 'status_pembayaran', 'refund_status',
-        'midtrans_snap_token', 'midtrans_transaction_id', 'status',
-        'alasan_pembatalan', 'dibatalkan_pada', 'catatan',
+        'nomor_pesanan',
+        'user_id',
+        'layanan_id',
+        'tanggal_pesanan',
+        'event_start_time',
+        'metode_pengambilan',
+        'detail_alamat',
+        'latitude',
+        'longitude',
+        'tipe_penyajian',
+        'porsi',
+        'subtotal',
+        'total',
+        'metode_pembayaran',
+        'status_pembayaran',
+        'refund_status',
+        'midtrans_snap_token',
+        'midtrans_transaction_id',
+        'status',
+        'alasan_pembatalan',
+        'dibatalkan_pada',
+        'catatan',
     ];
 
     protected function casts(): array
@@ -35,12 +46,6 @@ class Pesanan extends Model
         ];
     }
 
-    // === Status Labels ===
-
-    /**
-         * Mengonversi status pesanan database ke label Bahasa Indonesia yang mudah dipahami (UI-Friendly).
-         * @return string
-         */
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
@@ -65,29 +70,27 @@ class Pesanan extends Model
         };
     }
 
-    // === Scopes ===
-
-    public function scopeByStatus($query, string $status)
-    {
-        return $query->where('status', $status);
-    }
-
     public function scopeCompleted($query)
     {
         return $query->where('status', 'selesai');
     }
 
-    // === Pesanan Number Generation ===
-
-    /**
-         * Membuat nomor pesanan unik dengan memanggil Service khusus pemesanan.
-         * @return string
-         */
     public static function generateOrderNumber(): string
     {
-        return \App\Services\OrderService::generateOrderNumber();
-    }
+        $date = now()->format('Ymd');
+        $lastOrder = static::where('nomor_pesanan', 'like', "ORD-{$date}-%")
+                            ->orderBy('nomor_pesanan', 'desc')
+                            ->first();
 
+        if ($lastOrder) {
+            $lastNumber = (int) substr($lastOrder->nomor_pesanan, -4);
+            $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $nextNumber = '0001';
+        }
+
+        return "ORD-{$date}-{$nextNumber}";
+    }
 
     // === Relationships ===
 
@@ -96,27 +99,23 @@ class Pesanan extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function layananKatering(): BelongsTo
+    public function layanan(): BelongsTo
     {
-        return $this->belongsTo(LayananKatering::class);
+        return $this->belongsTo(Layanan::class, 'layanan_id');
     }
-
-
-
 
     public function items(): HasMany
     {
-        return $this->hasMany(DetailPesanan::class);
+        return $this->hasMany(DetailPesanan::class, 'pesanan_id');
     }
-
 
     public function tagihan(): HasOne
     {
-        return $this->hasOne(Tagihan::class);
+        return $this->hasOne(Tagihan::class, 'pesanan_id');
     }
 
     public function ulasan(): HasOne
     {
-        return $this->hasOne(Ulasan::class);
+        return $this->hasOne(Ulasan::class, 'pesanan_id');
     }
 }

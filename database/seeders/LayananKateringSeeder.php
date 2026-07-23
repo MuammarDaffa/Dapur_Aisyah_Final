@@ -2,112 +2,172 @@
 
 namespace Database\Seeders;
 
-use App\Models\PaketKatering;
-use App\Models\LayananKatering;
-use App\Models\OpsiKustom;
+use App\Models\Layanan;
 use App\Models\MenuHarian;
-use App\Models\Kecamatan;
+use App\Models\JadwalMenu;
+use App\Models\ExtraHarian;
+use App\Models\MenuAcara;
+use App\Models\ExtraAcara;
 use Illuminate\Database\Seeder;
+use Carbon\Carbon;
 
 class LayananKateringSeeder extends Seeder
 {
     public function run(): void
     {
-        // === Katering Harian ===
-        $harian = LayananKatering::updateOrCreate(
-            ['slug' => 'katering-harian'],
-            [
-                'name' => 'Katering Harian',
-                'serving_types' => ['lunchbox'],
-                'service_area' => ['Pontianak Barat', 'Pontianak Kota', 'Pontianak Selatan', 'Pontianak Tenggara', 'Pontianak Timur', 'Pontianak Utara'],
-                'fitur_tersedia' => ['menu_harian'],
-                'is_active' => true,
-                'image' => null,
-            ]
-        );
+        // 1. Layanan Harian
+        $harianA = Layanan::create([
+            'nama' => 'Katering Harian A',
+            'tipe' => 'harian',
+            'status' => true,
+        ]);
 
-        // Produk Katering Harian
-        $menuHarian = [
-            ['name' => 'Nasi Ayam Geprek', 'harga' => 25000, 'deskripsi' => 'Nasi putih dengan ayam geprek sambal bawang, lalapan, dan kerupuk.', 'is_best_seller' => true],
-            ['name' => 'Nasi Rendang Sapi', 'harga' => 30000, 'deskripsi' => 'Nasi putih dengan rendang sapi empuk bumbu rempah, daun singkong rebus.', 'is_best_seller' => true],
-            ['name' => 'Nasi Ikan Bakar', 'harga' => 28000, 'deskripsi' => 'Nasi putih dengan ikan bakar bumbu kecap, sambal matah, dan sayur asem.', 'is_best_seller' => false],
-            ['name' => 'Nasi Ayam Bakar Madu', 'harga' => 27000, 'deskripsi' => 'Nasi putih dengan ayam bakar madu, tumis kangkung, dan sambal terasi.', 'is_best_seller' => false],
-            ['name' => 'Nasi Empal Gentong', 'harga' => 32000, 'deskripsi' => 'Nasi putih dengan empal gentong khas Cirebon, pelengkap kerupuk.', 'is_best_seller' => false],
-            ['name' => 'Nasi Gudeg Jogja', 'harga' => 26000, 'deskripsi' => 'Nasi gudeg Jogja lengkap dengan krecek, telur, dan ayam opor.', 'is_best_seller' => true],
+        $harianB = Layanan::create([
+            'nama' => 'Katering Harian B',
+            'tipe' => 'harian',
+            'status' => true,
+        ]);
+
+        // 2. Layanan Acara
+        $wedding = Layanan::create([
+            'nama' => 'Wedding',
+            'tipe' => 'acara',
+            'kapasitas_total' => 500,
+            'kapasitas_tersisa' => 500,
+            'minimal_porsi' => 100,
+            'status' => true,
+        ]);
+
+        $kantoran = Layanan::create([
+            'nama' => 'Kantoran',
+            'tipe' => 'acara',
+            'kapasitas_total' => 200,
+            'kapasitas_tersisa' => 200,
+            'minimal_porsi' => 20,
+            'status' => true,
+        ]);
+
+        $seminar = Layanan::create([
+            'nama' => 'Seminar',
+            'tipe' => 'acara',
+            'kapasitas_total' => 300,
+            'kapasitas_tersisa' => 300,
+            'minimal_porsi' => 30,
+            'status' => true,
+        ]);
+
+        $gathering = Layanan::create([
+            'nama' => 'Gathering',
+            'tipe' => 'acara',
+            'kapasitas_total' => 150,
+            'kapasitas_tersisa' => 150,
+            'minimal_porsi' => 15,
+            'status' => true,
+        ]);
+
+        // 3. Menu Harian & Jadwal
+        $menusHarianData = [
+            ['nama_menu' => 'Nasi Ayam Geprek', 'harga' => 25000, 'deskripsi' => 'Nasi putih dengan ayam geprek sambal bawang dan lalapan.'],
+            ['nama_menu' => 'Nasi Rendang Sapi', 'harga' => 30000, 'deskripsi' => 'Nasi putih dengan rendang sapi empuk bumbu rempah.'],
+            ['nama_menu' => 'Nasi Ikan Bakar', 'harga' => 28000, 'deskripsi' => 'Nasi putih dengan ikan bakar bumbu kecap.'],
+            ['nama_menu' => 'Nasi Ayam Bakar Madu', 'harga' => 27000, 'deskripsi' => 'Nasi putih dengan ayam bakar madu.'],
+            ['nama_menu' => 'Nasi Gudeg Jogja', 'harga' => 26000, 'deskripsi' => 'Nasi gudeg Jogja lengkap dengan krecek dan telur.'],
         ];
 
-        $hariIni = \Carbon\Carbon::now('Asia/Jakarta');
-        foreach ($menuHarian as $index => $menu) {
-            MenuHarian::updateOrCreate(
-                ['layanan_katering_id' => $harian->id, 'nama_menu' => $menu['name'], 'tanggal' => $hariIni->copy()->addDays($index)->format('Y-m-d')],
-                [
-                    'hari' => $hariIni->copy()->addDays($index)->translatedFormat('l'),
-                    'harga' => $menu['harga'],
+        $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+        $startDate = Carbon::now('Asia/Jakarta')->startOfWeek();
+
+        foreach ($menusHarianData as $menuIndex => $mdata) {
+            $menuHarian = MenuHarian::create([
+                'layanan_id' => $harianA->id,
+                'nama_menu' => $mdata['nama_menu'],
+                'deskripsi' => $mdata['deskripsi'],
+                'harga' => $mdata['harga'],
+                'status' => true,
+            ]);
+
+            // Buat Jadwal Menu (Senin - Jumat)
+            foreach ($hariList as $hIndex => $hari) {
+                $tanggalObj = $startDate->copy()->addDays($hIndex);
+                $jadwal = JadwalMenu::create([
+                    'menu_harian_id' => $menuHarian->id,
+                    'hari' => $hari,
+                    'aktif' => true,
+                    'tanggal' => $tanggalObj->format('Y-m-d'),
                     'stok_awal' => 50,
                     'stok_tersisa' => 50,
-                ]
-            );
+                ]);
+
+                // Extra Harian per Jadwal
+                ExtraHarian::create([
+                    'jadwal_menu_id' => $jadwal->id,
+                    'nama' => 'Sayur Sup',
+                    'harga' => 2000,
+                ]);
+                ExtraHarian::create([
+                    'jadwal_menu_id' => $jadwal->id,
+                    'nama' => 'Tahu Cabe Garam',
+                    'harga' => 2000,
+                ]);
+                ExtraHarian::create([
+                    'jadwal_menu_id' => $jadwal->id,
+                    'nama' => 'Sambal Ekstra',
+                    'harga' => 1000,
+                ]);
+            }
         }
 
-
-
-        // === Katering Acara Kantoran ===
-        $kantoran = LayananKatering::updateOrCreate(
-            ['slug' => 'katering-acara-kantoran'],
-            [
-                'name' => 'Katering Acara Kantoran',
-                'serving_types' => ['lunchbox', 'prasmanan', 'plated'],
-                'minimal_order_days' => 3,
-                'service_area' => ['Pontianak Barat', 'Pontianak Kota', 'Pontianak Selatan', 'Pontianak Tenggara', 'Pontianak Timur', 'Pontianak Utara'],
-                'fitur_tersedia' => ['paket', 'kustom_penuh'],
-                'is_active' => true,
-                'image' => null,
-            ]
-        );
-
-        // Paket Tetap Kantoran
-        $packages = [
-            ['name' => 'Paket Hemat', 'deskripsi' => 'Nasi + 1 Lauk Utama + Sayur + Kerupuk + Air Mineral. Cocok untuk meeting singkat.', 'harga' => 35000, 'is_custom' => false],
-            ['name' => 'Paket Standard', 'deskripsi' => 'Nasi + 1 Lauk Utama + 1 Lauk Pendamping + Sayur + Buah + Minuman. Ideal untuk workshop & seminar.', 'harga' => 55000, 'is_custom' => false],
-            ['name' => 'Paket Premium', 'deskripsi' => 'Nasi + 2 Lauk Utama + 1 Lauk Pendamping + Sayur + Dessert + Buah + Minuman. Untuk acara formal & spesial.', 'harga' => 85000, 'is_custom' => false],
+        // 4. Menu Acara & Extra Acara
+        $menusAcaraKantoran = [
+            ['nama_menu' => 'Menu Meeting Standard', 'harga_per_porsi' => 35000, 'deskripsi' => 'Nasi + Lauk Utama + Sayur + Kerupuk + Air Mineral.'],
+            ['nama_menu' => 'Menu Seminar Premium', 'harga_per_porsi' => 55000, 'deskripsi' => 'Nasi + 2 Lauk + Sayur + Buah + Minuman.'],
+            ['nama_menu' => 'Menu Executive Gathering', 'harga_per_porsi' => 85000, 'deskripsi' => 'Nasi + 3 Lauk + Dessert + Fruit Punch.'],
         ];
 
-        foreach ($packages as $pkg) {
-            PaketKatering::updateOrCreate(
-                ['layanan_katering_id' => $kantoran->id, 'name' => $pkg['name']],
-                array_merge($pkg, ['is_active' => true])
-            );
+        foreach ($menusAcaraKantoran as $acData) {
+            $menuAcara = MenuAcara::create([
+                'layanan_id' => $kantoran->id,
+                'nama_menu' => $acData['nama_menu'],
+                'harga_per_porsi' => $acData['harga_per_porsi'],
+                'deskripsi' => $acData['deskripsi'],
+                'status' => true,
+            ]);
+
+            ExtraAcara::create([
+                'menu_acara_id' => $menuAcara->id,
+                'nama' => 'Paket Minuman Teh & Kopi',
+                'harga' => 8000,
+            ]);
+            ExtraAcara::create([
+                'menu_acara_id' => $menuAcara->id,
+                'nama' => 'Cemilan Assorted',
+                'harga' => 12000,
+            ]);
+            ExtraAcara::create([
+                'menu_acara_id' => $menuAcara->id,
+                'nama' => 'Buah Potong Segar',
+                'harga' => 10000,
+            ]);
         }
 
-        // Custom Options untuk Kantoran
-        $opsiKustom = [
-            // Menu
-            ['type' => 'menu', 'name' => 'Ayam Goreng Kremes', 'harga' => 15000],
-            ['type' => 'menu', 'name' => 'Ayam Bakar Madu', 'harga' => 18000],
-            ['type' => 'menu', 'name' => 'Rendang Sapi', 'harga' => 22000],
-            ['type' => 'menu', 'name' => 'Ikan Gurame Asam Manis', 'harga' => 20000],
-            ['type' => 'menu', 'name' => 'Udang Saus Tiram', 'harga' => 25000],
-            ['type' => 'menu', 'name' => 'Cah Kangkung', 'harga' => 8000],
-            ['type' => 'menu', 'name' => 'Capcay Goreng', 'harga' => 10000],
-            // Decoration
-            ['type' => 'decoration', 'name' => 'Dekorasi Meja Standar', 'harga' => 50000],
-            ['type' => 'decoration', 'name' => 'Dekorasi Meja Premium', 'harga' => 100000],
-            ['type' => 'decoration', 'name' => 'Dekorasi Bunga Meja', 'harga' => 75000],
-            // Serving Type
-            ['type' => 'tipe_penyajian', 'name' => 'Nasi Kotak', 'harga' => 0],
-            ['type' => 'tipe_penyajian', 'name' => 'Prasmanan', 'harga' => 0],
-            // Extra
-            ['type' => 'extra', 'name' => 'Paket Minuman (Teh/Kopi)', 'harga' => 8000],
-            ['type' => 'extra', 'name' => 'Cemilan Assorted', 'harga' => 12000],
-            ['type' => 'extra', 'name' => 'Buah Potong Segar', 'harga' => 10000],
-        ];
+        // Menu Wedding
+        $menuWedding = MenuAcara::create([
+            'layanan_id' => $wedding->id,
+            'nama_menu' => 'Buffet Royal Wedding',
+            'harga_per_porsi' => 120000,
+            'deskripsi' => 'Prasmanan Mewah 5 Lauk Utama, Stall Es Krim & Buah.',
+            'status' => true,
+        ]);
 
-        foreach ($opsiKustom as $opt) {
-            OpsiKustom::updateOrCreate(
-                ['layanan_katering_id' => $kantoran->id, 'type' => $opt['type'], 'name' => $opt['name']],
-                ['harga' => $opt['harga'], 'is_active' => true]
-            );
-        }
-
+        ExtraAcara::create([
+            'menu_acara_id' => $menuWedding->id,
+            'nama' => 'Stall Kambing Guling',
+            'harga' => 25000,
+        ]);
+        ExtraAcara::create([
+            'menu_acara_id' => $menuWedding->id,
+            'nama' => 'Stall Zuppa Soup',
+            'harga' => 18000,
+        ]);
     }
 }

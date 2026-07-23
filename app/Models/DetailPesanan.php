@@ -5,10 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Model DetailPesanan merepresentasikan satuan item/menu dalam sebuah pesanan.
- * Menyimpan nama final item (termasuk kustomisasi) serta harga dan subtotal per item.
- */
 class DetailPesanan extends Model
 {
     protected $table = 'detail_pesanan';
@@ -16,8 +12,16 @@ class DetailPesanan extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'pesanan_id', 'produk_id', 'opsi_kustom_id',
-        'item_name', 'jumlah', 'unit_price', 'subtotal',
+        'pesanan_id',
+        'menu_harian_id',
+        'jadwal_menu_id',
+        'extra_harian_id',
+        'menu_acara_id',
+        'extra_acara_id',
+        'item_name',
+        'jumlah',
+        'unit_price',
+        'subtotal',
     ];
 
     protected function casts(): array
@@ -30,102 +34,31 @@ class DetailPesanan extends Model
 
     public function pesanan(): BelongsTo
     {
-        return $this->belongsTo(Pesanan::class);
+        return $this->belongsTo(Pesanan::class, 'pesanan_id');
     }
+
     public function menuHarian(): BelongsTo
     {
-        return $this->belongsTo(MenuHarian::class);
+        return $this->belongsTo(MenuHarian::class, 'menu_harian_id');
     }
 
-    public function opsiKustom(): BelongsTo
+    public function jadwalMenu(): BelongsTo
     {
-        return $this->belongsTo(OpsiKustom::class);
+        return $this->belongsTo(JadwalMenu::class, 'jadwal_menu_id');
     }
 
-    /**
-     * Nama menu yang sudah dibersihkan dari tag Extra dan Kirim.
-     */
-    /**
-         * Mendapatkan nama menu inti dengan menghapus teks atribut tambahan (seperti Ekstra atau Kirim).
-         * Tujuannya agar rekapitulasi nama makanan di dapur menjadi lebih bersih.
-         * @return string
-         */
-    public function getFormattedMenuNameAttribute(): string
+    public function extraHarian(): BelongsTo
     {
-        $name = $this->item_name ?? '';
-
-        // Hapus tag [Kirim: ...] terlebih dahulu
-        $name = preg_replace('/\s*\[Kirim:.*?\]/i', '', $name);
-        // Hapus bagian (Extra: ...) atau Extra: ... yang ada di akhir string
-        $name = preg_replace('/\s*\(\s*Extra:.*$/i', '', $name);
-        $name = preg_replace('/\s*Extra:.*$/i', '', $name);
-        // Hapus prefix "Menu: " dsb apabila ada
-        $name = preg_replace('/^(Menu|Paket|Penyajian):\s*/i', '', $name);
-
-        return trim($name);
+        return $this->belongsTo(ExtraHarian::class, 'extra_harian_id');
     }
 
-    /**
-     * Daftar extra yang diformat ringkas, misal "Sayur Sup (1), Sambal (1)" atau null jika tidak ada.
-     */
-    /**
-         * Mengekstrak detail opsi tambahan (ekstra) dari dalam string nama item dan memformatnya kembali.
-         * Proses: Membaca pola (Extra: ...) menggunakan Regex dan memisahkannya.
-         * Output yang diharapkan: "Sayur Sup (1), Sambal (2)".
-         * @return string|null
-         */
-    public function getFormattedExtrasAttribute(): ?string
+    public function menuAcara(): BelongsTo
     {
-        $raw = $this->item_name ?? '';
+        return $this->belongsTo(MenuAcara::class, 'menu_acara_id');
+    }
 
-        // Jika item ini sendiri merupakan baris Extra pada event catering (misal "Extra: Es Buah"), maka tidak memiliki sub-extra
-        if (preg_match('/^Extra:\s*/i', trim($raw))) {
-            return null;
-        }
-
-        // Hapus tag [Kirim: ...] terlebih dahulu
-        $clean = preg_replace('/\s*\[Kirim:.*?\]/i', '', $raw);
-
-        // Ekstrak string ekstra
-        if (preg_match('/\(\s*Extra:\s*(.+?)\s*\)\s*$/i', trim($clean), $matches)) {
-            $rawExtras = $matches[1];
-        } elseif (preg_match('/\(\s*Extra:\s*(.+?)\)/i', $clean, $matches)) {
-            $rawExtras = $matches[1];
-        } elseif (preg_match('/\s+Extra:\s*(.+?)$/i', trim($clean), $matches)) {
-            $rawExtras = $matches[1];
-        } else {
-            return null;
-        }
-
-        $rawExtras = trim($rawExtras);
-        if (empty($rawExtras)) {
-            return null;
-        }
-
-        // Pecah berdasarkan koma
-        $parts = explode(',', $rawExtras);
-        $formatted = [];
-
-        foreach ($parts as $part) {
-            $part = trim($part);
-            if (empty($part)) continue;
-
-            // Hapus informasi harga seperti (+Rp10.000), (+Rp 2.000), atau (Rp10.000)
-            $part = preg_replace('/\s*\(\+?Rp.*?\)/i', '', $part);
-            $part = trim($part);
-
-            // Ubah format jumlah, misal "Sayur Sup 1x" -> "Sayur Sup (1)"
-            if (preg_match('/^(.+?)\s+(\d+)x$/i', $part, $m)) {
-                $formatted[] = trim($m[1]) . ' (' . $m[2] . ')';
-            } elseif (preg_match('/^(.+?)\s*\(\s*(\d+)\s*\)$/', $part, $m)) {
-                // Jika sudah format "Sayur Sup (1)"
-                $formatted[] = trim($m[1]) . ' (' . $m[2] . ')';
-            } else {
-                // Jika tanpa indikator jumlah (misal hanya "Sayur Sup"), asumsikan (1)
-                $formatted[] = $part . ' (1)';
-            }
-        }
-
-        return !empty($formatted) ? implode(', ', $formatted) : null;
+    public function extraAcara(): BelongsTo
+    {
+        return $this->belongsTo(ExtraAcara::class, 'extra_acara_id');
     }
 }

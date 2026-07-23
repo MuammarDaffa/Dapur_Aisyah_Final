@@ -7,17 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class MenuHarian extends Model
+class MenuAcara extends Model
 {
     use HasFactory;
 
-    protected $table = 'menu_harian';
+    protected $table = 'menu_acara';
 
     protected $fillable = [
         'layanan_id',
         'nama_menu',
         'deskripsi',
-        'harga',
+        'harga_per_porsi',
         'gambar',
         'status',
     ];
@@ -25,7 +25,7 @@ class MenuHarian extends Model
     protected function casts(): array
     {
         return [
-            'harga' => 'decimal:2',
+            'harga_per_porsi' => 'decimal:2',
             'status' => 'boolean',
         ];
     }
@@ -35,13 +35,13 @@ class MenuHarian extends Model
         return $this->belongsTo(Layanan::class, 'layanan_id');
     }
 
-    public function jadwalMenu(): HasMany
+    public function extraAcara(): HasMany
     {
-        return $this->hasMany(JadwalMenu::class, 'menu_harian_id');
+        return $this->hasMany(ExtraAcara::class, 'menu_acara_id');
     }
 
     public function detailPesanan(): HasMany
     {
-        return $this->hasMany(DetailPesanan::class, 'menu_harian_id');
+        return $this->hasMany(DetailPesanan::class, 'menu_acara_id');
     }
 }

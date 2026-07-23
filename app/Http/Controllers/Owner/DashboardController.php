@@ -30,27 +30,12 @@ class DashboardController extends Controller
             ->pluck('count', 'status')
             ->toArray();
 
-        $bestSellers = MenuHarian::withCount('detailPesanan')
-            ->orderByDesc('detail_pesanan_count')
-            ->take(10)
-            ->get();
-
-        $recentReviews = Ulasan::with(['user', 'pesanan.layananKatering'])
+        $recentReviews = Ulasan::with(['user', 'pesanan.layanan'])
             ->latest()
             ->take(10)
             ->get();
 
-        return view('owner.dashboard', compact('stats', 'orderStatuses', 'bestSellers', 'recentReviews'));
-    }
-
-    public function bestSellers()
-    {
-        $bestSellers = MenuHarian::withCount('detailPesanan')
-            ->with('layananKatering')
-            ->orderByDesc('detail_pesanan_count')
-            ->paginate(20);
-
-        return view('owner.best-sellers', compact('bestSellers'));
+        return view('owner.dashboard', compact('stats', 'orderStatuses', 'recentReviews'));
     }
 
     public function customers()
@@ -66,7 +51,7 @@ class DashboardController extends Controller
 
     public function ulasan()
     {
-        $ulasan = Ulasan::with(['user', 'pesanan.layananKatering'])
+        $ulasan = Ulasan::with(['user', 'pesanan.layanan'])
             ->latest()
             ->paginate(20);
 

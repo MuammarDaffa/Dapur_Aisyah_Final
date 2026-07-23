@@ -3,61 +3,38 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\OpsiKustom;
-use App\Models\LayananKatering;
+use App\Models\JadwalMenu;
+use App\Models\ExtraHarian;
 
 class EkstraHarianSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Cari layanan Catering Daily
-        $dailyService = LayananKatering::whereJsonContains('fitur_tersedia', 'menu_harian')->first();
+        $jadwalList = JadwalMenu::all();
 
-        if (!$dailyService) {
-            $this->command->warn("Layanan Catering Daily tidak ditemukan. Seeder dibatalkan.");
+        if ($jadwalList->isEmpty()) {
             return;
         }
 
-        // Daftar Extra
         $extras = [
             'Sayur Sup',
             'Tahu Cabe Garam',
-            'Sambal',
-            'Gulai Daun Ubi',
+            'Sambal Teri',
             'Bakwan Udang',
             'Sayur Asam',
-            'Ikan Asin Balado',
-            'Sup Labu Kuning',
             'Telur Dadar',
-            'Sambal Kentang Hati',
-            'Tumis Kacang Panjang',
-            'Gulai Tahu',
-            'Paru Balado',
-            'Ampela Balado',
-            'Bakwan Jagung',
             'Perkedel Kentang',
-            'Tempe Orak-Arik',
-            'Sambal Teri Kecombrang',
         ];
 
-        foreach ($extras as $extraName) {
-            OpsiKustom::firstOrCreate(
-                [
-                    'layanan_katering_id' => $dailyService->id,
-                    'type' => 'extra',
-                    'name' => $extraName,
-                ],
-                [
+        foreach ($jadwalList as $jadwal) {
+            foreach (array_slice($extras, 0, 3) as $extraName) {
+                ExtraHarian::firstOrCreate([
+                    'jadwal_menu_id' => $jadwal->id,
+                    'nama' => $extraName,
+                ], [
                     'harga' => 2000,
-                    'min_qty' => 1,
-                    'is_active' => true,
-                ]
-            );
+                ]);
+            }
         }
-
-        $this->command->info("Seeder selesai. " . count($extras) . " data Extra berhasil diproses untuk Catering Harian.");
     }
 }

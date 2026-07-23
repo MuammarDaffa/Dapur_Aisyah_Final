@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LayananKatering;
+use App\Models\Layanan;
 use App\Models\Ulasan;
 use Illuminate\Http\Request;
 
@@ -10,9 +10,16 @@ class LandingController extends Controller
 {
     public function index()
     {
-        $services = LayananKatering::active()->get();
+        $services = Layanan::where('status', true)->get()->map(function($service) {
+            if ($service->isHarian()) {
+                $service->base_price = $service->menuHarian()->min('harga') ?? 0;
+            } else {
+                $service->base_price = $service->menuAcara()->min('harga_per_porsi') ?? 0;
+            }
+            return $service;
+        });
 
-        $ulasan = Ulasan::with('user', 'pesanan.layananKatering')
+        $ulasan = Ulasan::with('user', 'pesanan.layanan')
             ->latest()
             ->take(6)
             ->get();

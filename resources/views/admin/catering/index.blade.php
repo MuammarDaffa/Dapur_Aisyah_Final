@@ -31,7 +31,7 @@
                             @forelse($caterings as $c)
                             <tr>
                                 <td class="align-middle">
-                                    <span class="fw-bold">{{ $c->name }}</span>
+                                    <span class="fw-bold">{{ $c->nama }}</span>
                                     
                                 </td>
                                 <td class="align-middle text-center">
@@ -45,20 +45,14 @@
                                 </td>
                                 
                                 <td class="align-middle text-center">
-                                    <span class="badge {{ $c->is_active ? 'text-bg-success' : 'text-bg-secondary' }}">
-                                        {{ $c->is_active ? 'Aktif' : 'Nonaktif' }}
+                                    <span class="badge {{ $c->status ? 'text-bg-success' : 'text-bg-secondary' }}">
+                                        {{ $c->status ? 'Aktif' : 'Nonaktif' }}
                                     </span>
                                 </td>
-                                <td class="align-middle text-center">
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.catering.show', $c) }}" class="btn btn-sm btn-info text-white" title="Detail"><i class="fa-solid fa-eye"></i></a>
-                                        <a href="{{ route('admin.catering.edit', $c) }}" class="btn btn-sm btn-warning" title="Edit"><i class="fa-solid fa-edit"></i></a>
-                                        <form action="{{ route('admin.catering.destroy', $c) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Hapus katering ini beserta semua data terkait?');">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Hapus"><i class="fa-solid fa-trash"></i></button>
-                                        </form>
-                                    </div>
+<td class="align-middle text-center">
+                                    <span class="text-muted fst-italic">Dalam Pengembangan</span>
                                 </td>
+
                             </tr>
                             @empty
                             <tr>

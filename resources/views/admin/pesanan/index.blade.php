@@ -53,25 +53,28 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($pesanan as $pesanan)
+                            @forelse($pesanan as $p)
                                 <tr>
-                                    <td class="align-middle fw-medium">{{ $pesanan->nomor_pesanan }}</td>
-                                    <td class="align-middle">{{ $pesanan->user->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $pesanan->layananKatering->name ?? '-' }}</td>
-                                    <td class="align-middle fw-bold text-success">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
+                                    <td class="align-middle fw-medium">{{ $p->nomor_pesanan }}</td>
+                                    <td class="align-middle">{{ $p->user->name ?? '-' }}</td>
                                     <td class="align-middle">
-                                        <span class="badge {{ match($pesanan->status) { 'diproses'=>'text-bg-info','dikirim'=>'text-bg-primary','selesai'=>'text-bg-success','dibatalkan'=>'text-bg-danger', default=>'text-bg-secondary' } }}">
-                                            {{ $pesanan->status_label }}
+                                        <span class="d-block">{{ $p->layanan->nama ?? '-' }}</span>
+                                        <small class="text-muted">{{ ucfirst($p->layanan->tipe ?? '') }}</small>
+                                    </td>
+                                    <td class="align-middle fw-bold text-success">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
+                                    <td class="align-middle">
+                                        <span class="badge {{ match($p->status) { 'diproses'=>'text-bg-info','dikirim'=>'text-bg-primary','selesai'=>'text-bg-success','dibatalkan'=>'text-bg-danger', default=>'text-bg-secondary' } }}">
+                                            {{ $p->status_label }}
                                         </span>
                                     </td>
-                                    <td class="align-middle text-muted">{{ $pesanan->created_at->format('d/m/Y') }}</td>
-                                    <td class="align-middle fw-medium text-primary">{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->format('d/m/Y') }}</td>
+                                    <td class="align-middle text-muted">{{ $p->created_at->format('d/m/Y') }}</td>
+                                    <td class="align-middle fw-medium text-primary">{{ \Carbon\Carbon::parse($p->tanggal_pesanan)->format('d/m/Y') }}</td>
                                     <td class="align-middle text-center">
                                         <div class="btn-group">
-                                            <a href="{{ route('admin.pesanan.show', $pesanan) }}" class="btn btn-sm btn-info text-white" title="Lihat Detail Pesanan">
+                                            <a href="{{ route('admin.pesanan.show', $p) }}" class="btn btn-sm btn-info text-white" title="Lihat Detail Pesanan">
                                                 <i class="fa-solid fa-eye"></i>
                                             </a>
-                                            <form action="{{ route('admin.pesanan.destroy', $pesanan) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus pesanan ini?');">
+                                            <form action="{{ route('admin.pesanan.destroy', $p) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus pesanan ini?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger" title="Hapus Pesanan">
