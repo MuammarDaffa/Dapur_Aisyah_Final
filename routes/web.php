@@ -75,8 +75,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/pesanan/{pesanan}/cancel', [AdminPesananController::class, 'cancel'])->name('pesanan.cancel');
     Route::delete('/pesanan/{pesanan}', [AdminPesananController::class, 'destroy'])->name('pesanan.destroy');
 
-    // Master Layanan
-    Route::resource('catering', CateringController::class)->only(['index', 'create', 'store','edit','update', 'destroy']);
+    // =======================================
+    // File : routes/web.php
+    // Fungsi : Mengatur rute URL untuk Katering.
+    // Penambahan 'show' berguna untuk membuka rute halaman detail katering.
+    // =======================================
+    Route::resource('catering', CateringController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
 
     Route::get('/customers', [AdminPelangganController::class, 'index'])->name('customers');
     Route::get('/ulasan', [AdminUlasanController::class, 'index'])->name('ulasan');

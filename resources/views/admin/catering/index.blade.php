@@ -51,7 +51,9 @@
                                 </td>
                                 <td class="align-middle text-center">
                                     <div class="btn-group">
-                                        <a href="#" class="btn btn-sm btn-info text-white" title="Detail">
+                                        {{-- Tombol untuk melihat detail katering --}}
+                                        {{-- Akan mengarahkan ke fungsi show() di CateringController --}}
+                                        <a href="{{ route('admin.catering.show', $c->id) }}" class="btn btn-sm btn-info text-white" title="Detail">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         <a href="{{ route('admin.catering.edit', $c) }}" class="btn btn-sm btn-warning" title="Edit">

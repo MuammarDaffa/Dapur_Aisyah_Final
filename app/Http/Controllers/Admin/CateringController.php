@@ -66,6 +66,20 @@ class CateringController extends Controller
         return redirect()->route('admin.catering.index')->with('success', 'Layanan Katering berhasil ditambahkan.');
     }
 
+    // =======================================
+    // File : app/Http/Controllers/Admin/CateringController.php
+    // Fungsi : Menampilkan halaman detail spesifik dari satu katering.
+    // Dijalankan Kapan : Ketika admin menekan tombol ikon mata (Detail) di halaman daftar katering.
+    // Data berasal dari mana : Model Layanan berdasarkan ID yang diklik.
+    // Data dikirim ke mana : Halaman resources/views/admin/catering/show.blade.php
+    // Apa yang terjadi jika dihapus : Tombol detail akan error (method not found).
+    // =======================================
+    public function show(Layanan $catering)
+    {
+        // Mengambil data satu katering dari database (melalui model Layanan) dan mengirimkannya ke file view.
+        return view('admin.catering.show', compact('catering'));
+    }
+
         /**
      * Tampilkan form edit katering.
      */
