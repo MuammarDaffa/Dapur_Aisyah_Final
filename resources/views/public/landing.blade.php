@@ -177,13 +177,6 @@
                             : route('pelanggan.produk', ['service' => $service->id]);
                     @endphp
                     <a href="{{ $serviceUrl }}" class="group position-relative bg-white rounded-2xl border border border-secondary hover:-translate-y-1 shadow-sm d-flex flex-column h-100 overflow-hidden text-decoration-none">
-                        <div class="p-6 d-flex align-items-center justify-content-center bg-light" style="height: 160px;">
-                            @if($service->isAcara())
-                                <span style="font-size: 4rem;">🎉</span>
-                            @else
-                                <span style="font-size: 4rem;">🍱</span>
-                            @endif
-                        </div>
                         <div class="p-6 flex-grow-1 d-flex flex-column justify-content-between text-center">
                             <h3 class="fs-4 fw-bold text-secondary mb-3">{{ $service->nama }}</h3>
                             <p class="fs-6 text-secondary mb-4 line-clamp-2">Layanan Katering {{ ucfirst($service->tipe) }}</p>
@@ -195,11 +188,6 @@
                                         Lihat Menu
                                     @endif
                                 </span>
-                                @if($service->isAcara())
-                                    <span class="small bg-purple-100 text-purple-700 px-2 py-1 rounded-pill fw-medium">Acara</span>
-                                @else
-                                    <span class="small bg-success text-white px-2 py-1 rounded-pill fw-medium">Tersedia</span>
-                                @endif
                             </div>
                         </div>
                     </a>

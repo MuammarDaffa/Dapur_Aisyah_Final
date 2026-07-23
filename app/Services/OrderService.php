@@ -32,16 +32,7 @@ class OrderService
         return "ORD-{$date}-{$newNumber}";
     }
 
-    /**
-     * Generate nomor pesanan unik khusus saat terjadi collision di Midtrans (misalnya sehabis reset DB).
-     */
-    public static function generateUniqueOrderNumber(?string $oldOrderNumber = null): string
-    {
-        if ($oldOrderNumber && !str_contains($oldOrderNumber, '-R')) {
-            return $oldOrderNumber . '-R' . rand(100, 999);
-        }
-        return self::generateOrderNumber() . '-R' . rand(100, 999);
-    }
+
 
     /**
      * Validasi tanggal pemesanan berdasarkan cutoff layanan.
@@ -150,10 +141,7 @@ class OrderService
             }
         }
 
-        $pesanan->update($data);
 
-        // Kirim notifikasi
-        NotificationService::notifyStatusChanged($pesanan);
 
         return $pesanan->fresh();
     }

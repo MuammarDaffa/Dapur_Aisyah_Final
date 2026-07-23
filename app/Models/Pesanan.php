@@ -28,8 +28,7 @@ class Pesanan extends Model
         'metode_pembayaran',
         'status_pembayaran',
         'refund_status',
-        'midtrans_snap_token',
-        'midtrans_transaction_id',
+
         'status',
         'alasan_pembatalan',
         'dibatalkan_pada',

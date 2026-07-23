@@ -36,9 +36,9 @@
                                 </td>
                                 <td class="align-middle text-center">
                                     @if($c->isHarian())
-                                        <span class="badge text-bg-info"><i class="fa-solid fa-calendar-day"></i> Harian</span>
+                                        <span class="badge text-bg-info">Harian</span>
                                     @elseif($c->isAcara())
-                                        <span class="badge text-bg-purple" style="background-color: #6f42c1; color: white;"><i class="fa-solid fa-glass-cheers"></i> Acara</span>
+                                        <span class="badge text-bg-purple" style="background-color: #6f42c1; color: white;">Acara</span>
                                     @else
                                         <span class="badge text-bg-secondary">-</span>
                                     @endif

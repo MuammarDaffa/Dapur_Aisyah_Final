@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Pesanan;
 use App\Services\NotificationService;
 use App\Services\OrderService;
-use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -43,12 +42,6 @@ class PesananController extends Controller
     public function show(Pesanan $pesanan)
     {
         $pesanan->load(['user', 'items', 'layanan', 'tagihan']);
-        
-        // Sync dengan Midtrans jika masih pending/unpaid (berguna untuk testing local tanpa webhook)
-        if ($pesanan->status_pembayaran === 'belum_dibayar' && $pesanan->midtrans_snap_token) {
-            PaymentService::checkAndSyncStatus($pesanan);
-            $pesanan->refresh();
-        }
 
         return view('admin.pesanan.show', compact('pesanan'));
     }
