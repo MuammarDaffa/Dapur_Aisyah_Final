@@ -124,10 +124,7 @@ class LayananKatering extends Model
     }
 
 
-    public function packages(): HasMany
-    {
-        return $this->hasMany(PaketKatering::class);
-    }
+
 
     public function opsiKustom(): HasMany
     {

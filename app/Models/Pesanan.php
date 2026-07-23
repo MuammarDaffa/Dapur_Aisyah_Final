@@ -101,10 +101,7 @@ class Pesanan extends Model
         return $this->belongsTo(LayananKatering::class);
     }
 
-    public function package(): BelongsTo
-    {
-        return $this->belongsTo(PaketKatering::class, 'paket_katering_id');
-    }
+
 
 
     public function items(): HasMany

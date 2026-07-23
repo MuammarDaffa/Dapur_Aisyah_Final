@@ -45,14 +45,6 @@ class OpsiKustom extends Model
         return $this->belongsTo(LayananKatering::class);
     }
 
-    /**
-     * Paket-paket yang menyertakan custom option ini.
-     */
-    public function packages(): BelongsToMany
-    {
-        return $this->belongsToMany(PaketKatering::class, 'catering_package_custom_option')
-                    ->withPivot('jumlah');
-    }
 
     /**
      * Harga terformat

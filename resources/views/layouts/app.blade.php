@@ -66,12 +66,11 @@
 
                     <!-- Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('pelanggan.profile.edit', 'pelanggan.pesanan') ? 'active fw-bold' : '' }}" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('pelanggan.profile.edit') ? 'active fw-bold' : '' }}" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {{ auth()->user()->name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item {{ request()->routeIs('pelanggan.profile.edit') ? 'active' : '' }}" href="{{ route('pelanggan.profile.edit') }}">Profil Saya</a></li>
-                            <li><a class="dropdown-item {{ request()->routeIs('pelanggan.pesanan') ? 'active' : '' }}" href="{{ route('pelanggan.pesanan') }}">Pesanan Saya</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop" class="m-0">
