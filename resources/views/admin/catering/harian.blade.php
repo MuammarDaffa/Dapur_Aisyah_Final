@@ -124,15 +124,20 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                     </td>
                                     
                                     <td>
-                                        @if($isAktif)
-                                            <a href="{{ route('admin.extra-harian.index', $jadwal->id) }}" class="btn btn-sm btn-outline-primary button-kelola">
-                                                Kelola
-                                            </a>
-                                        @else
-                                            <button type="button" class="btn btn-sm btn-outline-secondary button-kelola" onclick="Swal.fire('Oops!', 'Silakan isi form lalu klik tombol <b>Simpan Jadwal</b> (di bawah tabel) terlebih dahulu untuk mengaktifkan hari ini. Setelah tersimpan, tombol Kelola Extra akan terbuka!', 'info')">
-                                                Kelola
-                                            </button>
-                                        @endif
+                                        <div id="extra-container-{{ $tanggalStr }}">
+                                            @if($jadwal && $jadwal->extraHarian)
+                                                @foreach($jadwal->extraHarian as $idx => $ex)
+                                                    <div class="extra-item" data-index="{{ $idx }}">
+                                                        <input type="hidden" name="jadwal[{{ $tanggalStr }}][extras][{{ $idx }}][id]" value="{{ $ex->id }}" class="extra-id">
+                                                        <input type="hidden" name="jadwal[{{ $tanggalStr }}][extras][{{ $idx }}][nama]" value="{{ $ex->nama }}" class="extra-nama">
+                                                        <input type="hidden" name="jadwal[{{ $tanggalStr }}][extras][{{ $idx }}][harga]" value="{{ $ex->harga }}" class="extra-harga">
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary button-kelola" onclick="openExtraModal('{{ $tanggalStr }}', '{{ $hariStr }}')" {{ $isAktif ? '' : 'disabled' }}>
+                                            Kelola
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -221,6 +226,48 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
     </div>
 </div>
 
+{{-- Modal Kelola Extra --}}
+<div class="modal fade" id="modalKelolaExtra" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kelola Extra - <span id="extraModalDateText"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="extraModalTanggal">
+                <div class="row mb-3">
+                    <div class="col-5">
+                        <input type="text" id="extraNama" class="form-control" placeholder="Nama Extra">
+                    </div>
+                    <div class="col-5">
+                        <input type="number" id="extraHarga" class="form-control" placeholder="Harga" min="0">
+                    </div>
+                    <div class="col-2">
+                        <button type="button" class="btn btn-primary w-100" onclick="addExtra()">+</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nama Extra</th>
+                                <th>Harga</th>
+                                <th style="width: 50px;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="extraTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
 // =======================================
@@ -228,26 +275,111 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
 // Dijalankan Kapan : Saat admin meng-klik checkbox "Aktif" di suatu baris.
 // =======================================
 function toggleInputs(checkbox) {
-    // Mencari elemen induk "tr" (baris tabel) tempat checkbox ini berada
     const row = checkbox.closest('.jadwal-row');
-    
-    // Mencari elemen-elemen input di dalam baris tersebut
     const inputTanggal = row.querySelector('.input-tanggal');
     const inputMenu = row.querySelector('.input-menu');
     const inputStok = row.querySelector('.input-stok');
+    const btnKelola = row.querySelector('.button-kelola');
     
-    // Mengecek apakah checkbox dicentang atau tidak
     const isChecked = checkbox.checked;
     
-    // Menghidupkan (false) atau mematikan (true) atribut "disabled"
     inputTanggal.disabled = !isChecked;
     inputMenu.disabled = !isChecked;
     inputStok.disabled = !isChecked;
+    if (btnKelola) {
+        btnKelola.disabled = !isChecked;
+    }
+}
+
+let extraIndex = 1000;
+
+function openExtraModal(tanggalStr, hariStr) {
+    document.getElementById('extraModalDateText').innerText = `${hariStr}, ${tanggalStr}`;
+    document.getElementById('extraModalTanggal').value = tanggalStr;
     
-    // Mengosongkan data jika baris dimatikan (opsional)
-    if (!isChecked) {
-        // Kita tidak otomatis mengosongkan nilainya agar jika tidak sengaja ter-klik, data tidak hilang.
-        // Data tidak akan terkirim ke server karena berstatus 'disabled'.
+    document.getElementById('extraNama').value = '';
+    document.getElementById('extraHarga').value = '';
+    
+    const container = document.getElementById('extra-container-' + tanggalStr);
+    const tableBody = document.getElementById('extraTableBody');
+    tableBody.innerHTML = '';
+    
+    const items = container.querySelectorAll('.extra-item');
+    items.forEach(item => {
+        const idInput = item.querySelector('.extra-id');
+        const namaInput = item.querySelector('.extra-nama');
+        const hargaInput = item.querySelector('.extra-harga');
+        const idx = item.getAttribute('data-index');
+        
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-index', idx);
+        tr.innerHTML = `
+            <td>${namaInput.value}</td>
+            <td>Rp ${parseInt(hargaInput.value).toLocaleString('id-ID')}</td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger" onclick="removeExtra('${tanggalStr}', '${idx}')">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(tr);
+    });
+    
+    const modal = new bootstrap.Modal(document.getElementById('modalKelolaExtra'));
+    modal.show();
+}
+
+function addExtra() {
+    const tanggalStr = document.getElementById('extraModalTanggal').value;
+    const nama = document.getElementById('extraNama').value;
+    const harga = document.getElementById('extraHarga').value;
+    
+    if (!nama || !harga) {
+        Swal.fire('Error', 'Nama dan Harga Extra harus diisi.', 'error');
+        return;
+    }
+    
+    const idx = extraIndex++;
+    
+    const container = document.getElementById('extra-container-' + tanggalStr);
+    const div = document.createElement('div');
+    div.className = 'extra-item';
+    div.setAttribute('data-index', idx);
+    div.innerHTML = `
+        <input type="hidden" name="jadwal[${tanggalStr}][extras][${idx}][nama]" value="${nama}" class="extra-nama">
+        <input type="hidden" name="jadwal[${tanggalStr}][extras][${idx}][harga]" value="${harga}" class="extra-harga">
+    `;
+    container.appendChild(div);
+    
+    const tableBody = document.getElementById('extraTableBody');
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-index', idx);
+    tr.innerHTML = `
+        <td>${nama}</td>
+        <td>Rp ${parseInt(harga).toLocaleString('id-ID')}</td>
+        <td>
+            <button type="button" class="btn btn-sm btn-danger" onclick="removeExtra('${tanggalStr}', '${idx}')">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    `;
+    tableBody.appendChild(tr);
+    
+    document.getElementById('extraNama').value = '';
+    document.getElementById('extraHarga').value = '';
+}
+
+function removeExtra(tanggalStr, idx) {
+    const container = document.getElementById('extra-container-' + tanggalStr);
+    const item = container.querySelector('.extra-item[data-index="' + idx + '"]');
+    if (item) {
+        item.remove();
+    }
+    
+    const tableBody = document.getElementById('extraTableBody');
+    const tr = tableBody.querySelector('tr[data-index="' + idx + '"]');
+    if (tr) {
+        tr.remove();
     }
 }
 </script>
