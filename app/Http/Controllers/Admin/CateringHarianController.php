@@ -8,6 +8,7 @@ use App\Models\Layanan;
 use App\Models\MenuHarian;
 use App\Models\JadwalMenu;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class CateringHarianController extends Controller
 {
@@ -18,7 +19,7 @@ class CateringHarianController extends Controller
     // Data berasal dari mana : Model Layanan, MenuHarian, dan JadwalMenu.
     // Data dikirim ke mana : View resources/views/admin/catering/harian.blade.php
     // =======================================
-    public function index(Layanan $layanan)
+    public function index(Request $request, Layanan $layanan)
     {
         // Memastikan katering yang dibuka benar-benar tipe harian
         if (!$layanan->isHarian()) {
@@ -29,15 +30,28 @@ class CateringHarianController extends Controller
         $daftarMenu = MenuHarian::where('layanan_id', $layanan->id)->get();
 
         // 2. Mengambil data jadwal menu yang sudah tersimpan sebelumnya (jika ada)
-        // Kita menggunakan array dengan key (kunci) nama hari agar mudah dicocokkan di tabel View
-        // Karena jadwal_menu terhubung via menu_harian_id, kita ambil jadwal yang terkait dengan menu milik layanan ini.
         $menuIds = $daftarMenu->pluck('id');
-        $jadwalTersimpan = JadwalMenu::whereIn('menu_harian_id', $menuIds)->get()->keyBy('hari');
+        $jadwalTersimpan = JadwalMenu::whereIn('menu_harian_id', $menuIds)->get()->keyBy('tanggal');
 
-        // Daftar hari paten (Senin sampai Jumat)
-        $daftarHari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+        // Mengambil rentang tanggal dari request (jika ada)
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        
+        $daftarTanggal = [];
 
-        return view('admin.catering.harian', compact('layanan', 'daftarMenu', 'jadwalTersimpan', 'daftarHari'));
+        if ($startDate && $endDate) {
+            Carbon::setLocale('id');
+            $period = CarbonPeriod::create($startDate, $endDate);
+            
+            foreach ($period as $date) {
+                $daftarTanggal[] = [
+                    'tanggal' => $date->format('Y-m-d'),
+                    'hari' => $date->translatedFormat('l')
+                ];
+            }
+        }
+
+        return view('admin.catering.harian', compact('layanan', 'daftarMenu', 'jadwalTersimpan', 'daftarTanggal', 'startDate', 'endDate'));
     }
 
     // =======================================
@@ -48,54 +62,54 @@ class CateringHarianController extends Controller
     // =======================================
     public function updateJadwal(Request $request, Layanan $layanan)
     {
-        // Array hari yang diizinkan untuk divalidasi
-        $hariValid = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-        
-        // Peta (Mapping) nama hari bahasa Inggris (dari Carbon) ke bahasa Indonesia
-        $mapHari = [
-            'Monday' => 'Senin',
-            'Tuesday' => 'Selasa',
-            'Wednesday' => 'Rabu',
-            'Thursday' => 'Kamis',
-            'Friday' => 'Jumat',
-            'Saturday' => 'Sabtu',
-            'Sunday' => 'Minggu'
-        ];
-
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
         $jadwalInput = $request->input('jadwal', []);
 
+        if (!$startDate || !$endDate) {
+            return back()->with('error', 'Rentang tanggal tidak ditemukan, silakan generate ulang.');
+        }
+
+        Carbon::setLocale('id');
+        $period = CarbonPeriod::create($startDate, $endDate);
+        
+        $daftarTanggal = [];
+        foreach ($period as $date) {
+            $daftarTanggal[] = $date->format('Y-m-d');
+        }
+
         // Melakukan proses validasi tanggal terlebih dahulu sebelum menyimpan data apapun
-        foreach ($hariValid as $hari) {
+        foreach ($daftarTanggal as $keyTanggal) {
+            $input = $jadwalInput[$keyTanggal] ?? [];
             // Jika hari tersebut dicentang aktif oleh admin
-            if (isset($jadwalInput[$hari]['aktif']) && $jadwalInput[$hari]['aktif'] == '1') {
-                $tanggalInput = $jadwalInput[$hari]['tanggal'] ?? null;
-                $menuId = $jadwalInput[$hari]['menu_harian_id'] ?? null;
+            if (isset($input['aktif']) && $input['aktif'] == '1') {
+                $tanggalInput = $input['tanggal'] ?? null;
+                $menuId = $input['menu_harian_id'] ?? null;
 
                 // Memastikan data tanggal dan menu diisi
                 if (!$tanggalInput || !$menuId) {
-                    return back()->with('error', "Tanggal dan Menu pada hari $hari harus diisi jika diaktifkan.");
+                    $hariError = Carbon::parse($keyTanggal)->translatedFormat('l');
+                    return back()->with('error', "Tanggal dan Menu pada hari $hariError harus diisi jika diaktifkan.");
                 }
 
-                // Mengambil nama hari dari tanggal yang dipilih menggunakan Carbon
-                $namaHariInggris = Carbon::parse($tanggalInput)->format('l');
-                $namaHariIndonesia = $mapHari[$namaHariInggris] ?? '';
-
-                // Mencocokkan apakah tanggal yang dipilih (misal 13 Agt = Selasa) sesuai dengan barisnya (misal Senin)
-                if ($namaHariIndonesia !== $hari) {
-                    return back()->with('error', "Validasi Gagal: Tanggal yang dipilih pada baris $hari ternyata adalah hari $namaHariIndonesia.");
+                // Memastikan input tanggal sesuai dengan barisnya
+                if ($keyTanggal !== $tanggalInput) {
+                    return back()->with('error', "Validasi Gagal: Tanggal yang dipilih tidak sesuai.");
                 }
             }
         }
 
         // Jika lolos validasi, kita mulai proses penyimpanan (menyimpan/mengubah/menghapus)
-        foreach ($hariValid as $hari) {
-            $input = $jadwalInput[$hari] ?? [];
+        foreach ($daftarTanggal as $keyTanggal) {
+            $input = $jadwalInput[$keyTanggal] ?? [];
             $isAktif = isset($input['aktif']) && $input['aktif'] == '1';
+            
+            $namaHari = Carbon::parse($keyTanggal)->translatedFormat('l');
 
             // Coba cari apakah sebelumnya jadwal hari ini sudah pernah dibuat
             // Kita cari dari daftar menu harian milik layanan ini
             $menuIds = MenuHarian::where('layanan_id', $layanan->id)->pluck('id');
-            $jadwalLama = JadwalMenu::whereIn('menu_harian_id', $menuIds)->where('hari', $hari)->first();
+            $jadwalLama = JadwalMenu::whereIn('menu_harian_id', $menuIds)->where('tanggal', $keyTanggal)->first();
 
             if ($isAktif) {
                 // Jika aktif, kita update (jika ada) atau create (jika belum ada)
@@ -104,6 +118,7 @@ class CateringHarianController extends Controller
                     $jadwalLama->update([
                         'menu_harian_id' => $input['menu_harian_id'],
                         'tanggal' => $input['tanggal'],
+                        'hari' => $namaHari,
                         'stok_awal' => $input['stok_awal'] ?? 0,
                         'stok_tersisa' => $input['stok_awal'] ?? 0, // Direset sama dengan stok awal jika diubah
                         'aktif' => true
@@ -112,7 +127,7 @@ class CateringHarianController extends Controller
                     // Create data jadwal baru
                     JadwalMenu::create([
                         'menu_harian_id' => $input['menu_harian_id'],
-                        'hari' => $hari,
+                        'hari' => $namaHari,
                         'tanggal' => $input['tanggal'],
                         'stok_awal' => $input['stok_awal'] ?? 0,
                         'stok_tersisa' => $input['stok_awal'] ?? 0,
