@@ -51,11 +51,17 @@
                                 </td>
                                 <td class="align-middle text-center">
                                     <div class="btn-group">
-                                        {{-- Tombol untuk melihat detail katering --}}
-                                        {{-- Akan mengarahkan ke fungsi show() di CateringController --}}
-                                        <a href="{{ route('admin.catering.show', $c->id) }}" class="btn btn-sm btn-info text-white" title="Detail">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
+                                        {{-- Tombol untuk melihat detail/manajemen katering --}}
+                                        {{-- Jika tipe harian, arahkan ke manajemen harian. Jika acara, tetap ke show --}}
+                                        @if($c->isHarian())
+                                            <a href="{{ route('admin.catering.harian', $c->id) }}" class="btn btn-sm btn-info text-white" title="Manajemen Harian">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        @else
+                                            <a href="{{ route('admin.catering.show', $c->id) }}" class="btn btn-sm btn-info text-white" title="Detail Acara">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        @endif
                                         <a href="{{ route('admin.catering.edit', $c) }}" class="btn btn-sm btn-warning" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
