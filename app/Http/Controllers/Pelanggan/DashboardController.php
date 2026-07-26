@@ -22,7 +22,7 @@ class DashboardController extends Controller
      */
     public function produk(Request $request)
     {
-        return view('pelanggan.placeholder');
+        return view('pelanggan.lokasi_harian');
     }
 
     /**
@@ -31,6 +31,48 @@ class DashboardController extends Controller
      */
     public function acaraService()
     {
-        return view('pelanggan.placeholder');
+        return view('pelanggan.lokasi_acara');
     }
+
+
+        /**
+     * Halaman Pilih Lokasi untuk Katering Harian (Tanpa Datepicker)
+     */
+    public function lokasiHarian()
+    {
+        return view('pelanggan.lokasi_harian');
+    }
+
+    /**
+     * Halaman Pilih Lokasi & Tanggal untuk Katering Acara (Dengan Datepicker)
+     */
+    public function lokasiTanggalAcara()
+    {
+        return view('pelanggan.lokasi_acara');
+    }
+
+
+        public function simpanLokasi(Request $request)
+    {
+        $lat = $request->input('latitude');
+        $lng = $request->input('longitude');
+
+        if (!$lat || !$lng) {
+            return back()->with('error', 'Silakan klik pada peta terlebih dahulu!');
+        }
+
+        // 1. Kenali siapa pelanggan yang sedang Login saat ini
+        $user = auth()->user();
+
+        // 2. Masukkan koordinat baru ke dalam tabel pelanggan tersebut
+        $user->latitude = $lat;
+        $user->longitude = $lng;
+        
+        // 3. Kunci dan simpan permanen ke Database MySQL
+        $user->save();
+
+        // 4. Kembalikan ke halaman peta dengan pesan sukses hijau
+        return back()->with('success', 'Lokasi pengiriman berhasil disimpan secara permanen!');
+    }
+
 }

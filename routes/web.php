@@ -61,6 +61,16 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     Route::put('/profile', [ProfilController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/ulasan', [CustomerUlasanController::class, 'store'])->name('ulasan.store');
+
+    //route pemesanan katering harian map only
+    Route::get('/katering-harian/lokasi',[CustomerDashboard::class, 'lokasiHarian'])->name('harian.lokasi');
+
+    // route pemesanan katering acara (peta + datepicker)
+    Route::get('/katering-acara/lokasi-tanggal',[CustomerDashboard::class, 'lokasiTanggalAcara'])->name('acara.lokasi-tanggal');
+
+        // Rute POST untuk menangkap kiriman data dari form peta
+    Route::post('/simpan-lokasi-peta', [CustomerDashboard::class, 'simpanLokasi'])->name('simpan-lokasi-peta');
+
 });
 
 /*
