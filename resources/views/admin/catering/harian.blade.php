@@ -22,11 +22,11 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
 </div>
 
 {{-- Judul Halaman Sesuai Nama Katering --}}
-<div class="row mb-4">
+<!-- <div class="row mb-4">
     <div class="col-12">
         <h2>{{ $layanan->nama }}</h2>
     </div>
-</div>
+</div> -->
 
 <div class="row">
     {{-- =======================================
@@ -70,16 +70,16 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                 <input type="hidden" name="start_date" value="{{ request('start_date') }}">
                 <input type="hidden" name="end_date" value="{{ request('end_date') }}">
                 <div class="card-body pt-0 table-responsive">
-                    <table class="table table-bordered table-hover table-sm align-middle">
+                    <table class="table table-bordered table-hover align-middle text-nowrap">
                         <thead class="table-light">
                             <tr>
-                                <th>Hari</th>
-                                <th>Aktif</th>
-                                <th>Tanggal</th>
-                                <th>Menu</th>
-                                <th>Stok Awal</th>
-                                <th>Sisa Stok</th>
-                                <th>Extra</th>
+                                <th style="width: 10%;">Hari</th>
+                                <th style="width: 5%;" class="text-center">Aktif</th>
+                                <th style="width: 15%;">Tanggal</th>
+                                <th style="width: 30%;">Menu</th>
+                                <th style="width: 15%;">Stok Awal</th>
+                                <th style="width: 15%;">Sisa Stok</th>
+                                <th style="width: 10%;" class="text-center">Extra</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -94,14 +94,14 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                 <tr class="jadwal-row">
                                     <td class="fw-bold">{{ $hariStr }}</td>
                                     
-                                    <td>
-                                        <div class="form-check">
+                                    <td class="text-center">
+                                        <div class="form-check d-flex justify-content-center m-0">
                                             <input class="form-check-input checkbox-aktif" type="checkbox" name="jadwal[{{ $tanggalStr }}][aktif]" value="1" {{ $isAktif ? 'checked' : '' }} onchange="toggleInputs(this)">
                                         </div>
                                     </td>
                                     
                                     <td>
-                                        <input type="date" class="form-control input-tanggal" name="jadwal[{{ $tanggalStr }}][tanggal]" value="{{ $tanggalStr }}" {{ $isAktif ? '' : 'disabled' }} readonly style="pointer-events: none; background-color: #e9ecef;">
+                                        <input type="date" class="form-control input-tanggal" name="jadwal[{{ $tanggalStr }}][tanggal]" value="{{ $tanggalStr }}" {{ $isAktif ? '' : 'disabled' }} readonly style="pointer-events: none;">
                                     </td>
                                     
                                     <td>
@@ -116,14 +116,14 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                     </td>
                                     
                                     <td>
-                                        <input type="number" class="form-control input-stok" name="jadwal[{{ $tanggalStr }}][stok_awal]" value="{{ $isAktif ? $jadwal->stok_awal : 0 }}" min="0" {{ $isAktif ? '' : 'disabled' }} style="width: 80px;">
+                                        <input type="number" class="form-control input-stok" name="jadwal[{{ $tanggalStr }}][stok_awal]" value="{{ $isAktif ? $jadwal->stok_awal : 0 }}" min="0" {{ $isAktif ? '' : 'disabled' }}>
                                     </td>
                                     
                                     <td>
-                                        <input type="text" class="form-control bg-light" value="{{ $isAktif ? $jadwal->stok_tersisa : '-' }}" readonly style="width: 80px;">
+                                        <input type="text" class="form-control bg-light" value="{{ $isAktif ? $jadwal->stok_tersisa : '-' }}" readonly>
                                     </td>
                                     
-                                    <td>
+                                    <td class="text-center">
                                         <div id="extra-container-{{ $tanggalStr }}">
                                             @if($jadwal && $jadwal->extraHarian)
                                                 @foreach($jadwal->extraHarian as $idx => $ex)
@@ -135,8 +135,8 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                                 @endforeach
                                             @endif
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-outline-primary button-kelola" onclick="openExtraModal('{{ $tanggalStr }}', '{{ $hariStr }}')" {{ $isAktif ? '' : 'disabled' }}>
-                                            Kelola
+                                        <button type="button" class="btn btn-sm btn-outline-primary button-kelola w-100" onclick="openExtraModal('{{ $tanggalStr }}', '{{ $hariStr }}')" {{ $isAktif ? '' : 'disabled' }}>
+                                            <i class="bi bi-list-ul"></i> Kelola
                                         </button>
                                     </td>
                                 </tr>

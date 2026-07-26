@@ -31,29 +31,36 @@ class CateringHarianController extends Controller
 
         // 2. Mengambil data jadwal menu yang sudah tersimpan sebelumnya (jika ada)
         $menuIds = $daftarMenu->pluck('id');
-        $jadwalTersimpan = JadwalMenu::with('extraHarian')->whereIn('menu_harian_id', $menuIds)->get()->keyBy('tanggal');
+        $jadwalTersimpan = JadwalMenu::with('extraHarian')->whereIn('menu_harian_id', $menuIds)->get()->keyBy(function ($item) {
+            return $item->tanggal->format('Y-m-d');
+        });
 
         // Mengambil rentang tanggal dari request (jika ada)
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         
-        if (!$startDate && !$endDate) {
-            $jadwalPalingAwal = JadwalMenu::whereIn('menu_harian_id', $menuIds)->orderBy('tanggal', 'asc')->first();
-            $jadwalPalingAkhir = JadwalMenu::whereIn('menu_harian_id', $menuIds)->orderBy('tanggal', 'desc')->first();
-            
-            if ($jadwalPalingAwal && $jadwalPalingAkhir) {
-                $startDate = $jadwalPalingAwal->tanggal->format('Y-m-d');
-                $endDate = $jadwalPalingAkhir->tanggal->format('Y-m-d');
-            }
-        }
-
         $daftarTanggal = [];
+        Carbon::setLocale('id');
 
         if ($startDate && $endDate) {
-            Carbon::setLocale('id');
+            // Jika ada request generate, buat rentang tanggal menggunakan CarbonPeriod
             $period = CarbonPeriod::create($startDate, $endDate);
             
             foreach ($period as $date) {
+                $daftarTanggal[] = [
+                    'tanggal' => $date->format('Y-m-d'),
+                    'hari' => $date->translatedFormat('l')
+                ];
+            }
+        } else {
+            // Jika tidak ada request generate, baca tanggal yang sudah ada di database (Sumber Utama)
+            $jadwalTersimpanDates = JadwalMenu::whereIn('menu_harian_id', $menuIds)
+                                        ->orderBy('tanggal', 'asc')
+                                        ->pluck('tanggal')
+                                        ->unique();
+            
+            foreach ($jadwalTersimpanDates as $dateObj) {
+                $date = Carbon::parse($dateObj);
                 $daftarTanggal[] = [
                     'tanggal' => $date->format('Y-m-d'),
                     'hari' => $date->translatedFormat('l')
