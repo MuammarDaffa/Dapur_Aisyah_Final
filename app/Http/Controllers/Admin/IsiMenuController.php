@@ -17,7 +17,7 @@ class IsiMenuController extends Controller
         $menu = MenuAcara::with('isiMenu')->findOrFail($menuId);
         $isiMenus = $menu->isiMenu;
 
-        return view('admin.catering.acara.isi_menu', compact('menu', 'isiMenus'));
+        return view('admin.catering.isi_menu', compact('menu', 'isiMenus'));
     }
 
     /**

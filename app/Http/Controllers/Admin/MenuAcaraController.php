@@ -10,18 +10,6 @@ use Illuminate\Http\Request;
 
 class MenuAcaraController extends Controller
 {
-    /**
-     * Menampilkan halaman Menu Acara (Menu Makanan & Minuman)
-     */
-    public function index($layananId)
-    {
-        $layanan = Layanan::findOrFail($layananId);
-        $menus = MenuAcara::with('isiMenu')->where('layanan_id', $layananId)->get();
-        // We will fetch MinumanAcara belonging to this layanan
-        $minumans = MinumanAcara::where('layanan_id', $layananId)->get();
-
-        return view('admin.catering.acara.index', compact('layanan', 'menus', 'minumans'));
-    }
 
     /**
      * Menyimpan Menu Makanan Baru
@@ -40,7 +28,7 @@ class MenuAcaraController extends Controller
             'status' => true,
         ]);
 
-        return redirect()->route('admin.catering.acara', $layananId)->with('success', 'Menu Makanan berhasil ditambahkan.');
+        return redirect()->route('admin.catering.show', $layananId)->with('success', 'Menu Makanan berhasil ditambahkan.');
     }
 
     /**
@@ -58,7 +46,7 @@ class MenuAcaraController extends Controller
             'deskripsi' => $request->deskripsi,
         ]);
 
-        return redirect()->route('admin.catering.acara', $menu->layanan_id)->with('success', 'Menu Makanan berhasil diperbarui.');
+        return redirect()->route('admin.catering.show', $menu->layanan_id)->with('success', 'Menu Makanan berhasil diperbarui.');
     }
 
     /**
@@ -69,7 +57,7 @@ class MenuAcaraController extends Controller
         $layananId = $menu->layanan_id;
         $menu->delete();
 
-        return redirect()->route('admin.catering.acara', $layananId)->with('success', 'Menu Makanan berhasil dihapus.');
+        return redirect()->route('admin.catering.show', $layananId)->with('success', 'Menu Makanan berhasil dihapus.');
     }
 
     /**
@@ -88,7 +76,7 @@ class MenuAcaraController extends Controller
             'harga' => $request->harga,
         ]);
 
-        return redirect()->route('admin.catering.acara', $layananId)->with('success', 'Minuman berhasil ditambahkan.');
+        return redirect()->route('admin.catering.show', $layananId)->with('success', 'Minuman berhasil ditambahkan.');
     }
 
     /**
@@ -110,7 +98,7 @@ class MenuAcaraController extends Controller
         ]);
 
         if ($layananId) {
-            return redirect()->route('admin.catering.acara', $layananId)->with('success', 'Minuman berhasil diperbarui.');
+            return redirect()->route('admin.catering.show', $layananId)->with('success', 'Minuman berhasil diperbarui.');
         }
         return back()->with('success', 'Minuman berhasil diperbarui.');
     }
@@ -124,7 +112,7 @@ class MenuAcaraController extends Controller
         $minuman->delete();
 
         if ($layananId) {
-            return redirect()->route('admin.catering.acara', $layananId)->with('success', 'Minuman berhasil dihapus.');
+            return redirect()->route('admin.catering.show', $layananId)->with('success', 'Minuman berhasil dihapus.');
         }
         return back()->with('success', 'Minuman berhasil dihapus.');
     }

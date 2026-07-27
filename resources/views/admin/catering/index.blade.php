@@ -65,10 +65,7 @@
                                                  Lihat
                                             </a>
                                         @endif
-                                        <a href="{{ route('admin.catering.edit', $c) }}" class="btn btn-sm btn-warning" title="Edit">
-                                            <!-- <i class="bi bi-pencil"></i> -->
-                                             Edit
-                                        </a>
+
 
                                         <form action="{{ route('admin.catering.destroy', $c) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Yakin ingin menghapus layanan ini?');">
                                             @csrf 

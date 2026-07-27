@@ -5,7 +5,7 @@
 @section('content')
 <div class="row mb-3">
     <div class="col-12">
-        <a href="{{ route('admin.catering.acara', $menu->layanan_id) }}" class="btn btn-secondary">
+        <a href="{{ route('admin.catering.show', $menu->layanan_id) }}" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Kembali ke Menu Acara
         </a>
     </div>
@@ -17,7 +17,7 @@
             <div class="card-header d-flex align-items-center">
                 <div>
                     <h3 class="card-title mb-0">Isi Menu</h3>
-                    <p class="text-muted small mb-0">Subjudul: {{ $menu->nama_menu }}</p>
+                    <p class="text-muted small mb-0">{{ $menu->nama_menu }}</p>
                 </div>
                 <div class="ms-auto">
                     <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambahIsi">

@@ -93,7 +93,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Fungsi : Mengatur rute URL untuk Katering.
     // Penambahan 'show' berguna untuk membuka rute halaman detail katering.
     // =======================================
-    Route::resource('catering', CateringController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+    Route::resource('catering', CateringController::class)->only(['index', 'create', 'store', 'show', 'update', 'destroy']);
 
     // =======================================
     // Rute Manajemen Katering Harian
@@ -120,7 +120,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // =======================================
     // Rute Manajemen Katering Acara
     // =======================================
-    Route::get('/catering/{layanan}/acara', [MenuAcaraController::class, 'index'])->name('catering.acara');
+
     Route::post('/catering/{layanan}/acara/menu', [MenuAcaraController::class, 'storeMenu'])->name('menu-acara.store');
     Route::put('/menu-acara/{menu}', [MenuAcaraController::class, 'updateMenu'])->name('menu-acara.update');
     Route::delete('/menu-acara/{menu}', [MenuAcaraController::class, 'destroyMenu'])->name('menu-acara.destroy');

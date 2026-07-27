@@ -76,17 +76,18 @@ class CateringController extends Controller
     // =======================================
     public function show(Layanan $catering)
     {
+        if ($catering->isAcara()) {
+            $catering->load(['menuAcara.isiMenu', 'minumanAcara']);
+            $menus = $catering->menuAcara;
+            $minumans = $catering->minumanAcara;
+            return view('admin.catering.show', compact('catering', 'menus', 'minumans'));
+        }
+
         // Mengambil data satu katering dari database (melalui model Layanan) dan mengirimkannya ke file view.
         return view('admin.catering.show', compact('catering'));
     }
 
-        /**
-     * Tampilkan form edit katering.
-     */
-    public function edit(Layanan $catering)
-    {
-        return view('admin.catering.edit', compact('catering'));
-    }
+
 
     /**
      * Proses pembaruan data katering.
@@ -124,7 +125,7 @@ class CateringController extends Controller
 
         $catering->update($validated);
 
-        return redirect()->route('admin.catering.index')->with('success', 'Layanan Katering berhasil diperbarui.');
+        return redirect()->route('admin.catering.show', $catering->id)->with('success', 'Layanan Katering berhasil diperbarui.');
     }
 
 
