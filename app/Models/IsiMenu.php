@@ -6,17 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ExtraAcara extends Model
+class IsiMenu extends Model
 {
     use HasFactory;
 
-    protected $table = 'extra_acara';
+    protected $table = 'isi_menu';
 
     protected $fillable = [
         'menu_acara_id',
         'nama',
         'harga',
-        'gambar',
     ];
 
     protected function casts(): array

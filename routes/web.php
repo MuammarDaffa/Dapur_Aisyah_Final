@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\CateringHarianController;
 use App\Http\Controllers\Admin\MenuHarianController;
 use App\Http\Controllers\Admin\ExtraHarianController;
 use App\Http\Controllers\Admin\MenuAcaraController;
+use App\Http\Controllers\Admin\IsiMenuController;
 use App\Http\Controllers\Admin\PelangganController as AdminPelangganController;
 use App\Http\Controllers\Admin\UlasanController as AdminUlasanController;
 use App\Http\Controllers\Admin\LaporanController;
@@ -115,6 +116,24 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/extra-harian/{extra}/edit', [ExtraHarianController::class, 'edit'])->name('extra-harian.edit');
     Route::put('/extra-harian/{extra}', [ExtraHarianController::class, 'update'])->name('extra-harian.update');
     Route::delete('/extra-harian/{extra}', [ExtraHarianController::class, 'destroy'])->name('extra-harian.destroy');
+
+    // =======================================
+    // Rute Manajemen Katering Acara
+    // =======================================
+    Route::get('/catering/{layanan}/acara', [MenuAcaraController::class, 'index'])->name('catering.acara');
+    Route::post('/catering/{layanan}/acara/menu', [MenuAcaraController::class, 'storeMenu'])->name('menu-acara.store');
+    Route::put('/menu-acara/{menu}', [MenuAcaraController::class, 'updateMenu'])->name('menu-acara.update');
+    Route::delete('/menu-acara/{menu}', [MenuAcaraController::class, 'destroyMenu'])->name('menu-acara.destroy');
+
+    Route::post('/catering/{layanan}/acara/minuman', [MenuAcaraController::class, 'storeMinuman'])->name('minuman-acara.store');
+    Route::put('/minuman-acara/{minuman}', [MenuAcaraController::class, 'updateMinuman'])->name('minuman-acara.update');
+    Route::delete('/minuman-acara/{minuman}', [MenuAcaraController::class, 'destroyMinuman'])->name('minuman-acara.destroy');
+
+    // Isi Menu
+    Route::get('/menu-acara/{menu}/isi', [IsiMenuController::class, 'index'])->name('isi-menu.index');
+    Route::post('/menu-acara/{menu}/isi', [IsiMenuController::class, 'store'])->name('isi-menu.store');
+    Route::put('/isi-menu/{isi}', [IsiMenuController::class, 'update'])->name('isi-menu.update');
+    Route::delete('/isi-menu/{isi}', [IsiMenuController::class, 'destroy'])->name('isi-menu.destroy');
 
     Route::get('/customers', [AdminPelangganController::class, 'index'])->name('customers');
     Route::get('/ulasan', [AdminUlasanController::class, 'index'])->name('ulasan');

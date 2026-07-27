@@ -56,6 +56,14 @@ Data berasal dari mana : Dikirim oleh CateringController (berupa variabel bernam
                             <th>Minimal Porsi Pemesanan</th>
                             <td>{{ $catering->minimal_porsi }} porsi</td>
                         </tr>
+                        <tr>
+                            <th>Pengelolaan Menu</th>
+                            <td>
+                                <a href="{{ route('admin.catering.acara', $catering->id) }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-list-check"></i> Kelola Menu & Minuman Acara
+                                </a>
+                            </td>
+                        </tr>
                         @endif
 
                         <tr>

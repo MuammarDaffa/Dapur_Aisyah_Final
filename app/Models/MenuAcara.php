@@ -17,15 +17,12 @@ class MenuAcara extends Model
         'layanan_id',
         'nama_menu',
         'deskripsi',
-        'harga_per_porsi',
-        'gambar',
         'status',
     ];
 
     protected function casts(): array
     {
         return [
-            'harga_per_porsi' => 'decimal:2',
             'status' => 'boolean',
         ];
     }
@@ -35,9 +32,9 @@ class MenuAcara extends Model
         return $this->belongsTo(Layanan::class, 'layanan_id');
     }
 
-    public function extraAcara(): HasMany
+    public function isiMenu(): HasMany
     {
-        return $this->hasMany(ExtraAcara::class, 'menu_acara_id');
+        return $this->hasMany(IsiMenu::class, 'menu_acara_id');
     }
 
     public function detailPesanan(): HasMany
