@@ -14,7 +14,9 @@ class LandingController extends Controller
             if ($service->isHarian()) {
                 $service->base_price = $service->menuHarian()->min('harga') ?? 0;
             } else {
-                $service->base_price = $service->menuAcara()->min('harga_per_porsi') ?? 0;
+                $service->base_price = \App\Models\IsiMenu::whereHas('menuAcara', function ($query) use ($service) {
+                    $query->where('layanan_id', $service->id);
+                })->min('harga') ?? 0;
             }
             return $service;
         });

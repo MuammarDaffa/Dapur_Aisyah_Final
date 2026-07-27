@@ -74,4 +74,9 @@ class Layanan extends Model
     {
         return $this->hasMany(Pesanan::class, 'layanan_id');
     }
+
+    public function minumanAcara(): HasMany
+    {
+        return $this->hasMany(MinumanAcara::class, 'layanan_id');
+    }
 }

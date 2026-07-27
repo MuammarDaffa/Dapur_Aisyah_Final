@@ -17,10 +17,8 @@ class MenuAcaraController extends Controller
     {
         $layanan = Layanan::findOrFail($layananId);
         $menus = MenuAcara::with('isiMenu')->where('layanan_id', $layananId)->get();
-        // As per requirements, Minuman is standalone but typically linked to the system.
-        // If Minuman doesn't belong to a specific Layanan, it shows all minuman. 
-        // We will fetch all MinumanAcara.
-        $minumans = MinumanAcara::all();
+        // We will fetch MinumanAcara belonging to this layanan
+        $minumans = MinumanAcara::where('layanan_id', $layananId)->get();
 
         return view('admin.catering.acara.index', compact('layanan', 'menus', 'minumans'));
     }
@@ -85,6 +83,7 @@ class MenuAcaraController extends Controller
         ]);
 
         MinumanAcara::create([
+            'layanan_id' => $layananId,
             'nama' => $request->nama,
             'harga' => $request->harga,
         ]);
