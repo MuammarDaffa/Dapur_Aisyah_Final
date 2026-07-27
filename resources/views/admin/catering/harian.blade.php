@@ -28,6 +28,8 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
     </div>
 </div> -->
 
+
+
 <div class="row">
     {{-- =======================================
          CARD 1: PENGATURAN JADWAL MENU
@@ -52,7 +54,8 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                         </div>
                         <div class="col-md-4">
                             <button type="submit" class="btn btn-success">
-                                <i class="bi bi-gear"></i> Generate
+                                <!-- <i class="bi bi-gear"></i> -->
+                                 Generate
                             </button>
                             @if(request('start_date') && request('end_date'))
                                 <a href="{{ route('admin.catering.harian', $layanan->id) }}" class="btn btn-secondary">

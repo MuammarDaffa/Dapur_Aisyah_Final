@@ -41,7 +41,7 @@ Data berasal dari mana : Dikirim oleh CateringController (berupa variabel bernam
                                 @if($catering->isHarian())
                                     <span class="badge text-bg-info">Harian</span>
                                 @else
-                                    <span class="badge text-bg-purple" style="background-color: #6f42c1; color: white;">Acara</span>
+                                    <span>Acara</span>
                                 @endif
                             </td>
                         </tr>

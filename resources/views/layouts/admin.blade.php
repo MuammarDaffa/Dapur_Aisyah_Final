@@ -47,7 +47,7 @@
                             <li class="user-footer">
                                 <form id="logout-form-admin" method="POST" action="{{ route('logout') }}" class="m-0">
                                     @csrf
-                                    <button type="button" onclick="confirmLogout('logout-form-admin')" class="btn btn-default btn-flat float-end">Sign out</button>
+                                    <button type="button" onclick="confirmLogout('logout-form-admin')" class="btn btn-danger btn-flat float-end">Keluar</button>
                                 </form>
                             </li>
                         </ul>

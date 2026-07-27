@@ -6,29 +6,29 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <div class="container mx-auto px-4 py-8">
 <div class="bg-white rounded-2xl shadow-sm border p-6">
-       <h2 class="fs-3 fw-bold mb-4">Metode Pengambilan & Tanggal</h2>
+       <h2 class="fs-3 fw-bold mb-4 text-black">Metode Pengambilan & Tanggal</h2>
 
     <!-- Pilihan Radio Button -->
     <div class="mb-4">
-        <label class="form-label fw-bold">Pilih Metode Pengambilan:</label>
+        <label class="form-label fw-bold text-black">Pilih Metode Pengambilan:</label>
         <div class="form-check">
             <!-- Kita atur Ambil Sendiri sebagai pilihan default (checked) -->
             <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_ambil" value="ambil_sendiri" checked>
-            <label class="form-check-label" for="radio_ambil">
-                Ambil Sendiri di Dapur Aisyah
+            <label class="form-check-labe text-black" for="radio_ambil">
+                Ambil Sendiri 
             </label>
         </div>
         <div class="form-check">
             <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar">
-            <label class="form-check-label" for="radio_antar">
-                Di Antar ke Rumah (Pilih Lokasi)
+            <label class="form-check-label text-black" for="radio_antar">
+                Di Antar ke Lokasi  
             </label>
         </div>
     </div>
 
     <!-- Input Datepicker Khusus Katering Acara (Selalu Tampil di bawah Radio) -->
     <div class="mb-4">
-        <label class="form-label fw-bold text-danger">Pilih Tanggal Acara</label>
+        <label class="form-label fw-bold text-black">Pilih Tanggal Acara</label>
         <input type="date" name="tanggal_acara" class="form-control border-danger" required>
     </div>
 

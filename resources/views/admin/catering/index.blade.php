@@ -10,7 +10,8 @@
                 <h3 class="card-title mb-0">Daftar Katering</h3>
                 <div class="ms-auto">
                     <a href="{{ route('admin.catering.create') }}" class="btn btn-primary btn-sm">
-                        <i class="fa-solid fa-plus"></i> Tambah Katering
+                        <!-- <i class="fa-solid fa-plus"></i> -->
+                         Tambah Katering
                     </a>
                 </div>
             </div>
@@ -36,9 +37,9 @@
                                 </td>
                                 <td class="align-middle text-center">
                                     @if($c->isHarian())
-                                        <span class="badge text-bg-info">Harian</span>
+                                        <span >Harian</span>
                                     @elseif($c->isAcara())
-                                        <span class="badge text-bg-purple" style="background-color: #6f42c1; color: white;">Acara</span>
+                                        <span>Acara</span>
                                     @else
                                         <span class="badge text-bg-secondary">-</span>
                                     @endif
@@ -55,22 +56,26 @@
                                         {{-- Jika tipe harian, arahkan ke manajemen harian. Jika acara, tetap ke show --}}
                                         @if($c->isHarian())
                                             <a href="{{ route('admin.catering.harian', $c->id) }}" class="btn btn-sm btn-info text-white" title="Manajemen Harian">
-                                                <i class="bi bi-eye"></i>
+                                                <!-- <i class="bi bi-eye"></i> -->
+                                                Lihat
                                             </a>
                                         @else
                                             <a href="{{ route('admin.catering.show', $c->id) }}" class="btn btn-sm btn-info text-white" title="Detail Acara">
-                                                <i class="bi bi-eye"></i>
+                                                <!-- <i class="bi bi-eye"></i> -->
+                                                 Lihat
                                             </a>
                                         @endif
                                         <a href="{{ route('admin.catering.edit', $c) }}" class="btn btn-sm btn-warning" title="Edit">
-                                            <i class="bi bi-pencil"></i>
+                                            <!-- <i class="bi bi-pencil"></i> -->
+                                             Edit
                                         </a>
 
                                         <form action="{{ route('admin.catering.destroy', $c) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Yakin ingin menghapus layanan ini?');">
                                             @csrf 
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
-                                                <i class="bi bi-trash"></i>
+                                                <!-- <i class="bi bi-trash"></i> -->
+                                                 Hapus
                                             </button>
                                         </form>
 
