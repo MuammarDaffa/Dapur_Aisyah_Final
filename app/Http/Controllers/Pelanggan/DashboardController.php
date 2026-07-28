@@ -51,6 +51,28 @@ class DashboardController extends Controller
         return view('pelanggan.lokasi_acara');
     }
 
+    /**
+     * Placeholder action untuk tombol Lanjut di Halaman Acara
+     */
+    public function lanjutAcara(Request $request)
+    {
+        // Validasi backend sesuai permintaan (opsional, karena JS sudah menangani)
+        $request->validate([
+            'metode_pengambilan' => 'required|in:ambil_sendiri,diantar',
+            'tanggal_acara' => 'required|date',
+        ]);
+
+        if ($request->metode_pengambilan === 'diantar') {
+            $request->validate([
+                'latitude' => 'required|numeric',
+                'longitude' => 'required|numeric',
+            ]);
+        }
+
+        // KARENA ALUR PEMESANAN DITUTUP, KITA HANYA RETURN SUCCESS / REDIRECT DUMMY
+        return back()->with('success', 'Data (' . $request->metode_pengambilan . ', ' . $request->tanggal_acara . ') berhasil dikirim ke proses berikutnya! (Placeholder)');
+    }
+
 
         public function simpanLokasi(Request $request)
     {

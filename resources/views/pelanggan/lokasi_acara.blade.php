@@ -8,29 +8,34 @@
 <div class="bg-white rounded-2xl shadow-sm border p-6">
        <h2 class="fs-3 fw-bold mb-4 text-black">Metode Pengambilan & Tanggal</h2>
 
-    <!-- Pilihan Radio Button -->
-    <div class="mb-4">
-        <label class="form-label fw-bold text-black">Pilih Metode Pengambilan:</label>
-        <div class="form-check">
-            <!-- Kita atur Ambil Sendiri sebagai pilihan default (checked) -->
-            <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_ambil" value="ambil_sendiri" checked>
-            <label class="form-check-labe text-black" for="radio_ambil">
-                Ambil Sendiri 
-            </label>
+    <form action="{{ route('pelanggan.acara.lanjut') }}" method="POST" id="formLanjutAcara" onsubmit="return validateForm()">
+        @csrf
+        <input type="hidden" name="latitude" id="input_latitude">
+        <input type="hidden" name="longitude" id="input_longitude">
+        
+        <!-- Pilihan Radio Button -->
+        <div class="mb-4">
+            <label class="form-label fw-bold text-black">Pilih Metode Pengambilan:</label>
+            <div class="form-check">
+                <!-- Kita atur Ambil Sendiri sebagai pilihan default (checked) -->
+                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_ambil" value="ambil_sendiri" checked>
+                <label class="form-check-labe text-black" for="radio_ambil">
+                    Ambil Sendiri 
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar">
+                <label class="form-check-label text-black" for="radio_antar">
+                    Di Antar ke Lokasi  
+                </label>
+            </div>
         </div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar">
-            <label class="form-check-label text-black" for="radio_antar">
-                Di Antar ke Lokasi  
-            </label>
-        </div>
-    </div>
 
-    <!-- Input Datepicker Khusus Katering Acara (Selalu Tampil di bawah Radio) -->
-    <div class="mb-4">
-        <label class="form-label fw-bold text-black">Pilih Tanggal Acara</label>
-        <input type="date" name="tanggal_acara" class="form-control border-danger" required>
-    </div>
+        <!-- Input Datepicker Khusus Katering Acara (Selalu Tampil di bawah Radio) -->
+        <div class="mb-4">
+            <label class="form-label fw-bold text-black">Pilih Tanggal Acara</label>
+            <input type="date" name="tanggal_acara" id="tanggal_acara" class="form-control border-danger" required>
+        </div>
 
     <!-- BUNGKUS SELURUH FORM & PETA KE DALAM KOTAK INI (Awalnya Disembunyikan) -->
     <div id="wadah_peta" style="display: none;">
@@ -38,20 +43,21 @@
         <h5 class="fw-bold mb-3">Tentukan Lokasi Pengantaran</h5>
         
         <!-- === INI FORM LOKASI LAMA ANDA === -->
-        <form action="{{ route('pelanggan.simpan-lokasi-peta') }}" method="POST" id="formLokasi">
-            @csrf 
-            <input type="hidden" name="latitude" id="input_latitude">
-            <input type="hidden" name="longitude" id="input_longitude">
-            <div class="mb-3 d-flex justify-content-between align-items-center">
-                <span class="text-muted small"><i>*Silakan klik pada peta</i></span>
-                <button type="submit" class="btn btn-primary px-4 py-2 shadow-sm">Simpan Lokasi Ini</button>
-            </div>
-        </form>
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <span class="text-muted small"><i>*Silakan klik pada peta untuk memilih lokasi pengantaran</i></span>
+        </div>
 
         <!-- === INI KANVAS MAP LAMA ANDA === -->
         <div id="map" class="w-100 rounded border border-2 shadow-sm" style="height: 50vh; min-height: 400px; z-index: 1;"></div>
         
     </div> <!-- /Penutup wadah_peta -->
+
+    <!-- Tombol Lanjut -->
+    <div class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn btn-primary px-4 py-2 shadow-sm">Lanjut</button>
+    </div>
+    
+    </form>
 
 </div>
 </div>
@@ -117,6 +123,34 @@
     // Pasang "sensor/telinga" perubahan pada kedua tombol radio tersebut
     radioAmbil.addEventListener('change', aturTampilanPeta);
     radioAntar.addEventListener('change', aturTampilanPeta);
+
+    // Validasi Form sebelum Lanjut
+    function validateForm() {
+        const tanggalAcara = document.getElementById('tanggal_acara').value;
+        const lat = document.getElementById('input_latitude').value;
+        const lng = document.getElementById('input_longitude').value;
+        const metodeAntar = radioAntar.checked;
+
+        if (!tanggalAcara) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Perhatian',
+                text: 'Silakan pilih Tanggal Acara terlebih dahulu.'
+            });
+            return false;
+        }
+
+        if (metodeAntar && (!lat || !lng)) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Perhatian',
+                text: 'Karena Anda memilih Di Antar ke Lokasi, silakan klik pada peta untuk menentukan lokasi pengantaran.'
+            });
+            return false;
+        }
+
+        return true;
+    }
 
   </script>
 

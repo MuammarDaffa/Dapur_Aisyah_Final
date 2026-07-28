@@ -68,6 +68,7 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
 
     // route pemesanan katering acara (peta + datepicker)
     Route::get('/katering-acara/lokasi-tanggal',[CustomerDashboard::class, 'lokasiTanggalAcara'])->name('acara.lokasi-tanggal');
+    Route::post('/katering-acara/lanjut',[CustomerDashboard::class, 'lanjutAcara'])->name('acara.lanjut');
 
         // Rute POST untuk menangkap kiriman data dari form peta
     Route::post('/simpan-lokasi-peta', [CustomerDashboard::class, 'simpanLokasi'])->name('simpan-lokasi-peta');
