@@ -12,16 +12,16 @@ class LandingController extends Controller
     {
         $services = Layanan::where('status', true)->get()->map(function($service) {
             if ($service->isHarian()) {
-                $service->base_price = $service->menuHarian()->min('harga') ?? 0;
+                $service->base_price = $service->menus()->min('harga') ?? 0;
             } else {
-                $service->base_price = \App\Models\IsiMenu::whereHas('menuAcara', function ($query) use ($service) {
+                $service->base_price = \App\Models\MenuItem::whereHas('menu', function ($query) use ($service) {
                     $query->where('layanan_id', $service->id);
                 })->min('harga') ?? 0;
             }
             return $service;
         });
 
-        $ulasan = Ulasan::with('user', 'pesanan.layanan')
+        $ulasan = Ulasan::with('user')
             ->latest()
             ->take(6)
             ->get();

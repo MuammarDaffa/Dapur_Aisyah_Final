@@ -108,10 +108,9 @@
                                     <p class="small text-secondary mb-0">{{ $ulasan->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
-                            @if($ulasan->comment)
-                                <p class="fs-6 text-secondary line-clamp-2 mt-1">{{ $ulasan->comment }}</p>
+                            @if($ulasan->komentar)
+                                <p class="fs-6 text-secondary line-clamp-2 mt-1">{{ $ulasan->komentar }}</p>
                             @endif
-                            <p class="small text-secondary mt-2 mb-0 fw-medium">Layanan: {{ $ulasan->pesanan->layanan->nama ?? '-' }}</p>
                         </div>
                     @endforeach
                 </div>

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pesanan;
-use App\Models\MenuHarian;
 use App\Models\Ulasan;
 use App\Models\User;
 use Carbon\Carbon;
@@ -30,7 +29,7 @@ class DashboardController extends Controller
             ->pluck('count', 'status')
             ->toArray();
 
-        $recentReviews = Ulasan::with(['user', 'pesanan.layanan'])
+        $recentReviews = Ulasan::with(['user'])
             ->latest()
             ->take(10)
             ->get();
@@ -51,11 +50,11 @@ class DashboardController extends Controller
 
     public function ulasan()
     {
-        $ulasan = Ulasan::with(['user', 'pesanan.layanan'])
+        $ulasan = Ulasan::with(['user'])
             ->latest()
             ->paginate(20);
 
-        return view('owner.ulasan', compact('ulasan'));
+        return view('owner.reviews', compact('ulasan'));
     }
 
     public function reports(Request $request)

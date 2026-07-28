@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Layanan;
-use App\Models\MenuHarian;
+use App\Models\Menu;
 use App\Models\JadwalMenu;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -16,7 +16,7 @@ class CateringHarianController extends Controller
     // File : app/Http/Controllers/Admin/CateringHarianController.php
     // Fungsi : Menampilkan halaman Manajemen Katering Harian (Card 1 & Card 2).
     // Dijalankan Kapan : Saat admin menekan tombol Manajemen Harian (ikon mata) di tabel katering.
-    // Data berasal dari mana : Model Layanan, MenuHarian, dan JadwalMenu.
+    // Data berasal dari mana : Model Layanan, Menu, dan JadwalMenu.
     // Data dikirim ke mana : View resources/views/admin/catering/harian.blade.php
     // =======================================
     public function index(Request $request, Layanan $layanan)
@@ -26,12 +26,12 @@ class CateringHarianController extends Controller
             return redirect()->route('admin.catering.index')->with('error', 'Layanan ini bukan tipe Harian.');
         }
 
-        // 1. Mengambil daftar menu harian milik katering ini (Untuk mengisi form dropdown jadwal dan Card 2)
-        $daftarMenu = MenuHarian::where('layanan_id', $layanan->id)->get();
+        // 1. Mengambil daftar menu milik katering ini (Untuk mengisi form dropdown jadwal dan Card 2)
+        $daftarMenu = Menu::where('layanan_id', $layanan->id)->get();
 
         // 2. Mengambil data jadwal menu yang sudah tersimpan sebelumnya (jika ada)
         $menuIds = $daftarMenu->pluck('id');
-        $jadwalTersimpan = JadwalMenu::with('extraHarian')->whereIn('menu_harian_id', $menuIds)->get()->keyBy(function ($item) {
+        $jadwalTersimpan = JadwalMenu::whereIn('menu_id', $menuIds)->get()->keyBy(function ($item) {
             return $item->tanggal->format('Y-m-d');
         });
 
@@ -54,7 +54,7 @@ class CateringHarianController extends Controller
             }
         } else {
             // Jika tidak ada request generate, baca tanggal yang sudah ada di database (Sumber Utama)
-            $jadwalTersimpanDates = JadwalMenu::whereIn('menu_harian_id', $menuIds)
+            $jadwalTersimpanDates = JadwalMenu::whereIn('menu_id', $menuIds)
                                         ->orderBy('tanggal', 'asc')
                                         ->pluck('tanggal')
                                         ->unique();
@@ -101,7 +101,7 @@ class CateringHarianController extends Controller
             // Jika hari tersebut dicentang aktif oleh admin
             if (isset($input['aktif']) && $input['aktif'] == '1') {
                 $tanggalInput = $input['tanggal'] ?? null;
-                $menuId = $input['menu_harian_id'] ?? null;
+                $menuId = $input['menu_id'] ?? null;
 
                 // Memastikan data tanggal dan menu diisi
                 if (!$tanggalInput || !$menuId) {
@@ -124,16 +124,16 @@ class CateringHarianController extends Controller
             $namaHari = Carbon::parse($keyTanggal)->translatedFormat('l');
 
             // Coba cari apakah sebelumnya jadwal hari ini sudah pernah dibuat
-            // Kita cari dari daftar menu harian milik layanan ini
-            $menuIds = MenuHarian::where('layanan_id', $layanan->id)->pluck('id');
-            $jadwalLama = JadwalMenu::whereIn('menu_harian_id', $menuIds)->where('tanggal', $keyTanggal)->first();
+            // Kita cari dari daftar menu milik layanan ini
+            $menuIds = Menu::where('layanan_id', $layanan->id)->pluck('id');
+            $jadwalLama = JadwalMenu::whereIn('menu_id', $menuIds)->where('tanggal', $keyTanggal)->first();
 
             if ($isAktif) {
                 // Jika aktif, kita update (jika ada) atau create (jika belum ada)
                 if ($jadwalLama) {
                     // Update data jadwal lama
                     $jadwalLama->update([
-                        'menu_harian_id' => $input['menu_harian_id'],
+                        'menu_id' => $input['menu_id'],
                         'tanggal' => $input['tanggal'],
                         'hari' => $namaHari,
                         'stok_awal' => $input['stok_awal'] ?? 0,
@@ -144,7 +144,7 @@ class CateringHarianController extends Controller
                 } else {
                     // Create data jadwal baru
                     $activeJadwal = JadwalMenu::create([
-                        'menu_harian_id' => $input['menu_harian_id'],
+                        'menu_id' => $input['menu_id'],
                         'hari' => $namaHari,
                         'tanggal' => $input['tanggal'],
                         'stok_awal' => $input['stok_awal'] ?? 0,
@@ -152,31 +152,9 @@ class CateringHarianController extends Controller
                         'aktif' => true
                     ]);
                 }
-
-                // --- Sinkronisasi Extra Harian ---
-                $submittedExtras = $input['extras'] ?? [];
                 
-                // Kumpulkan ID extra yang disubmit
-                $submittedIds = collect($submittedExtras)->pluck('id')->filter()->toArray();
-                
-                // Hapus extra yang ada di database tapi tidak ada di form submission (berarti dihapus oleh admin di modal)
-                $activeJadwal->extraHarian()->whereNotIn('id', $submittedIds)->delete();
-                
-                // Create atau Update extra yang disubmit
-                foreach ($submittedExtras as $extraInput) {
-                    if (isset($extraInput['id']) && $extraInput['id'] != '') {
-                        $activeJadwal->extraHarian()->where('id', $extraInput['id'])->update([
-                            'nama' => $extraInput['nama'],
-                            'harga' => $extraInput['harga']
-                        ]);
-                    } else {
-                        $activeJadwal->extraHarian()->create([
-                            'nama' => $extraInput['nama'],
-                            'harga' => $extraInput['harga']
-                        ]);
-                    }
-                }
-
+                // ExtraHarian was moved to MenuItem, handled independently from JadwalMenu now.
+                // So no extra syncing here!
             } else {
                 // Jika tidak aktif (tidak dicentang), berarti admin ingin meliburkan/menghapus jadwal hari tersebut
                 if ($jadwalLama) {

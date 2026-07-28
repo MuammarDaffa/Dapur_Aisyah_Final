@@ -77,17 +77,14 @@ class CateringController extends Controller
     public function show(Layanan $catering)
     {
         if ($catering->isAcara()) {
-            $catering->load(['menuAcara.isiMenu', 'minumanAcara']);
-            $menus = $catering->menuAcara;
-            $minumans = $catering->minumanAcara;
-            return view('admin.catering.show', compact('catering', 'menus', 'minumans'));
+            $catering->load(['menus.items']);
+            $menus = $catering->menus;
+            return view('admin.catering.show', compact('catering', 'menus'));
         }
 
         // Mengambil data satu katering dari database (melalui model Layanan) dan mengirimkannya ke file view.
         return view('admin.catering.show', compact('catering'));
     }
-
-
 
     /**
      * Proses pembaruan data katering.

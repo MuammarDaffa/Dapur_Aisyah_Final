@@ -41,7 +41,7 @@ class PesananController extends Controller
 
     public function show(Pesanan $pesanan)
     {
-        $pesanan->load(['user', 'items', 'layanan', 'tagihan']);
+        $pesanan->load(['user', 'menu', 'layanan']);
 
         return view('admin.pesanan.show', compact('pesanan'));
     }
@@ -73,14 +73,6 @@ class PesananController extends Controller
     public function destroy(Request $request, Pesanan $pesanan)
     {
         DB::transaction(function () use ($pesanan) {
-            // Hapus file PDF tagihan jika ada di storage agar tidak menyisakan orphan file
-            if ($pesanan->tagihan && $pesanan->tagihan->pdf_path && Storage::disk('public')->exists($pesanan->tagihan->pdf_path)) {
-                Storage::disk('public')->delete($pesanan->tagihan->pdf_path);
-            }
-
-            // Hapus data relasi langsung agar bersih
-            $pesanan->items()->delete();
-            $pesanan->tagihan()->delete();
             $pesanan->ulasan()->delete();
 
             // Hapus notifikasi di tabel notifications yang merujuk ke pesanan_id ini

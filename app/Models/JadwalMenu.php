@@ -14,7 +14,7 @@ class JadwalMenu extends Model
     protected $table = 'jadwal_menu';
 
     protected $fillable = [
-        'menu_harian_id',
+        'menu_id',
         'hari',
         'aktif',
         'tanggal',
@@ -32,18 +32,8 @@ class JadwalMenu extends Model
         ];
     }
 
-    public function menuHarian(): BelongsTo
+    public function menu(): BelongsTo
     {
-        return $this->belongsTo(MenuHarian::class, 'menu_harian_id');
-    }
-
-    public function extraHarian(): HasMany
-    {
-        return $this->hasMany(ExtraHarian::class, 'jadwal_menu_id');
-    }
-
-    public function detailPesanan(): HasMany
-    {
-        return $this->hasMany(DetailPesanan::class, 'jadwal_menu_id');
+        return $this->belongsTo(Menu::class, 'menu_id');
     }
 }

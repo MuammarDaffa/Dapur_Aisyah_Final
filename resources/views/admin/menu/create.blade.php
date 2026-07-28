@@ -1,30 +1,29 @@
 {{-- 
 =======================================
-File : resources/views/admin/menu-harian/create.blade.php
-Fungsi : Halaman untuk menambahkan menu harian baru.
-Dijalankan Kapan : Saat admin menekan tombol "Tambah Menu".
+File : resources/views/admin/menu/create.blade.php
+Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
 =======================================
 --}}
 
 @extends('layouts.admin')
 
-@section('title', 'Tambah Menu Harian')
+@section('title', 'Tambah Menu')
 
 @section('content')
 <div class="row">
     <div class="col-md-8">
         {{-- Tombol Batal/Kembali --}}
         <div class="mb-3">
-            <a href="{{ route('admin.catering.harian', $layanan->id) }}" class="text-decoration-none">
+            <a href="{{ $layanan->isHarian() ? route('admin.catering.harian', $layanan->id) : route('admin.catering.show', $layanan->id) }}" class="text-decoration-none">
                 <i class="bi bi-arrow-left"></i> Batal & Kembali
             </a>
         </div>
 
-        <form action="{{ route('admin.menu-harian.store', $layanan->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.menu.store', $layanan->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="card card-outline card-success">
                 <div class="card-header">
-                    <h3 class="card-title">Form Tambah Menu Harian</h3>
+                    <h3 class="card-title">Form Tambah Menu {{ $layanan->isHarian() ? 'Harian' : 'Acara' }}</h3>
                 </div>
                 <div class="card-body">
                     {{-- Nama Menu --}}
@@ -43,7 +42,7 @@ Dijalankan Kapan : Saat admin menekan tombol "Tambah Menu".
 
                     {{-- Harga --}}
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Harga per Porsi (Rp) <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Harga {{ $layanan->isHarian() ? 'per Porsi' : 'Dasar' }} (Rp) <span class="text-danger">*</span></label>
                         <input type="number" name="harga" class="form-control" value="{{ old('harga') }}" min="0" required>
                         @error('harga')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
@@ -68,7 +67,7 @@ Dijalankan Kapan : Saat admin menekan tombol "Tambah Menu".
                     <button type="submit" class="btn btn-success">
                         <i class="bi bi-save"></i> Simpan Menu
                     </button>
-                    <a href="{{ route('admin.catering.harian', $layanan->id) }}" class="btn btn-secondary">Batal</a>
+                    <a href="{{ $layanan->isHarian() ? route('admin.catering.harian', $layanan->id) : route('admin.catering.show', $layanan->id) }}" class="btn btn-secondary">Batal</a>
                 </div>
             </div>
         </form>

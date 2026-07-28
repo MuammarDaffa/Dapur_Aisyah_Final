@@ -9,7 +9,7 @@ class UlasanController extends Controller
 {
     public function index()
     {
-        $ulasan = Ulasan::with(['user', 'pesanan.layananKatering'])
+        $ulasan = Ulasan::with(['user'])
             ->latest()
             ->paginate(15);
 

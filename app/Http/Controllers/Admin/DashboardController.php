@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pesanan;
-use App\Models\MenuHarian;
+use App\Models\Menu;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -24,12 +24,12 @@ class DashboardController extends Controller
             'completed_orders' => Pesanan::completed()->count(),
         ];
 
-        $bestSellers = MenuHarian::withCount('detailPesanan')
-            ->orderByDesc('detail_pesanan_count')
+        $bestSellers = Menu::withCount('pesanan')
+            ->orderByDesc('pesanan_count')
             ->take(5)
             ->get();
 
-        $recentOrders = Pesanan::with(['user', 'layananKatering'])
+        $recentOrders = Pesanan::with(['user', 'layanan'])
             ->latest()
             ->take(10)
             ->get();

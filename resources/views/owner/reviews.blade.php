@@ -32,21 +32,13 @@
                 </div>
 
                 {{-- Comment --}}
-                @if($ulasan->comment)
+                @if($ulasan->komentar)
                     <p class="text-secondary fs-6 leading-relaxed bg-light rounded p-3 mt-2">
-                        "{{ $ulasan->comment }}"
+                        "{{ $ulasan->komentar }}"
                     </p>
                 @else
                     <p class="text-secondary fs-6 italic mt-2">Tanpa komentar</p>
                 @endif
-
-                {{-- Service Info --}}
-                <div class="mt-3 pt-3 border-t border border-secondary d-flex align-items-center g-3">
-                    <span class="small text-secondary">Layanan:</span>
-                    <span class="small fw-medium text-teal-600 bg-teal-50 px-2 py-0.5 rounded-pill">
-                        {{ $ulasan->pesanan->layananKatering->name ?? '-' }}
-                    </span>
-                </div>
             </div>
         @empty
             <div class="col-span-full text-center py-12">

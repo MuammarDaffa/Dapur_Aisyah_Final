@@ -12,9 +12,7 @@
                     <table class="table table-hover table-striped mb-0">
                         <thead>
                             <tr>
-                                <th>Pesanan</th>
                                 <th>Pelanggan</th>
-                                <th>Rating</th>
                                 <th>Komentar</th>
                                 <th>Tanggal</th>
                                 <th class="text-center">Aksi</th>
@@ -23,20 +21,8 @@
                         <tbody>
                             @forelse($ulasan as $r)
                             <tr>
-                                <td class="align-middle"><a href="{{ route('admin.pesanan.show', $r->pesanan) }}" class="text-decoration-none fw-bold">{{ $r->pesanan->nomor_pesanan }}</a></td>
                                 <td class="align-middle">{{ $r->user->name ?? '-' }}</td>
-                                <td class="align-middle">
-                                    <div class="text-warning">
-                                        @for($i=1; $i<=5; $i++)
-                                            @if($i <= $r->rating)
-                                                <i class="fa-solid fa-star"></i>
-                                            @else
-                                                <i class="fa-regular fa-star"></i>
-                                            @endif
-                                        @endfor
-                                    </div>
-                                </td>
-                                <td class="align-middle text-wrap">{{ $r->comment }}</td>
+                                <td class="align-middle text-wrap">{{ $r->komentar }}</td>
                                 <td class="align-middle text-muted">{{ $r->created_at->format('d M Y') }}</td>
                                 <td class="align-middle text-center">
                                     <form action="{{ route('admin.ulasan.destroy', $r) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Hapus ulasan ini?');">
@@ -47,7 +33,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">Belum ada ulasan.</td>
+                                <td colspan="4" class="text-center py-4 text-muted">Belum ada ulasan.</td>
                             </tr>
                             @endforelse
                         </tbody>

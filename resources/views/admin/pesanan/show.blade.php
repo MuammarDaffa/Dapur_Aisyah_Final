@@ -9,10 +9,10 @@
 
 <div class="row">
     <div class="col-lg-8">
-        <!-- Tagihan Layout -->
+        <!-- Detail Pesanan Layout -->
         <div class="card card-outline card-primary">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="card-title fw-bold">Tagihan: {{ $pesanan->nomor_pesanan }}</h3>
+                <h3 class="card-title fw-bold">Detail Pesanan: {{ $pesanan->nomor_pesanan }}</h3>
                 <div class="ms-auto">
                     <span class="badge {{ match($pesanan->status) { 'diproses'=>'text-bg-info','dikirim'=>'text-bg-primary','selesai'=>'text-bg-success','dibatalkan'=>'text-bg-danger',default=>'text-bg-secondary' } }}">
                         {{ $pesanan->status_label }}
@@ -20,8 +20,8 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="row tagihan-info mb-4">
-                    <div class="col-sm-4 tagihan-col">
+                <div class="row detail-info mb-4">
+                    <div class="col-sm-4 detail-col">
                         Pelanggan
                         <address>
                             <strong>{{ $pesanan->user->name }}</strong><br>
@@ -29,7 +29,7 @@
                             Email: {{ $pesanan->user->email }}
                         </address>
                     </div>
-                    <div class="col-sm-4 tagihan-col">
+                    <div class="col-sm-4 detail-col">
                         Detail Pesanan
                         <address>
                             <strong>{{ $pesanan->layanan->nama ?? '-' }}</strong> <small class="text-muted">({{ ucfirst($pesanan->layanan->tipe ?? '') }})</small><br>
@@ -41,7 +41,7 @@
                         </address>
                     </div>
                     @if($pesanan->metode_pengambilan === 'delivery')
-                    <div class="col-sm-4 tagihan-col">
+                    <div class="col-sm-4 detail-col">
                         Alamat Pengiriman
                         <address>
                             {{ $pesanan->detail_alamat ?: '-' }}<br>
@@ -78,15 +78,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($pesanan->items as $item)
+                            @if($pesanan->menu)
                             <tr>
-                                <td class="align-middle fw-medium">{{ $item->item_name }}</td>
+                                <td class="align-middle fw-medium">{{ $pesanan->menu->nama_menu }}</td>
                                 <td class="align-middle text-center">
-                                    {{ $item->jumlah }} x Rp {{ number_format($item->unit_price, 0, ',', '.') }}
+                                    {{ $pesanan->porsi }} x Rp {{ number_format($pesanan->menu->harga, 0, ',', '.') }}
                                 </td>
-                                <td class="align-middle text-end fw-bold">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                                <td class="align-middle text-end fw-bold">Rp {{ number_format($pesanan->subtotal, 0, ',', '.') }}</td>
                             </tr>
-                            @endforeach
+                            @else
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Data menu tidak ditemukan.</td>
+                            </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>

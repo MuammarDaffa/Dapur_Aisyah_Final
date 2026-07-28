@@ -60,23 +60,13 @@ class Layanan extends Model
 
     // === Relationships ===
 
-    public function menuHarian(): HasMany
+    public function menus(): HasMany
     {
-        return $this->hasMany(MenuHarian::class, 'layanan_id');
-    }
-
-    public function menuAcara(): HasMany
-    {
-        return $this->hasMany(MenuAcara::class, 'layanan_id');
+        return $this->hasMany(Menu::class, 'layanan_id');
     }
 
     public function pesanan(): HasMany
     {
         return $this->hasMany(Pesanan::class, 'layanan_id');
-    }
-
-    public function minumanAcara(): HasMany
-    {
-        return $this->hasMany(MinumanAcara::class, 'layanan_id');
     }
 }

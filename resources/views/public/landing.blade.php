@@ -244,10 +244,10 @@
                                     </div>
                                     <div class="ms-3">
                                         <h5 class="fw-bold text-dark mb-0 fs-6">{{ $ulasan->user->name ?? 'Pelanggan' }}</h5>
-                                        <small class="text-primary fw-medium">{{ $ulasan->pesanan->layanan->nama ?? 'Pelanggan Setia' }}</small>
+                                        <small class="text-primary fw-medium">Pelanggan Setia</small>
                                     </div>
                                 </div>
-                                <p class="card-text text-secondary mb-0" style="font-style: italic;">"{{ $ulasan->comment ?? 'Pelayanan sangat memuaskan!' }}"</p>
+                                <p class="card-text text-secondary mb-0" style="font-style: italic;">"{{ $ulasan->komentar ?? 'Pelayanan sangat memuaskan!' }}"</p>
                             </div>
                         </div>
                     </div>

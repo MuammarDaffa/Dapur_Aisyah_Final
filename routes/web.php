@@ -9,10 +9,10 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\PesananController as AdminPesananController;
 use App\Http\Controllers\Admin\CateringController;
 use App\Http\Controllers\Admin\CateringHarianController;
-use App\Http\Controllers\Admin\MenuHarianController;
-use App\Http\Controllers\Admin\ExtraHarianController;
-use App\Http\Controllers\Admin\MenuAcaraController;
-use App\Http\Controllers\Admin\IsiMenuController;
+    // =======================================
+    // Controllers for Catering/Menu
+    // =======================================
+
 use App\Http\Controllers\Admin\PelangganController as AdminPelangganController;
 use App\Http\Controllers\Admin\UlasanController as AdminUlasanController;
 use App\Http\Controllers\Admin\LaporanController;
@@ -96,44 +96,26 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('catering', CateringController::class)->only(['index', 'create', 'store', 'show', 'update', 'destroy']);
 
     // =======================================
-    // Rute Manajemen Katering Harian
+    // Rute Manajemen Katering Harian & Acara (Menu)
     // =======================================
-    // 1. Halaman Utama Manajemen Katering Harian
+    // 1. Halaman Utama Manajemen Katering Harian (Jadwal)
     Route::get('/catering/{layanan}/harian', [CateringHarianController::class, 'index'])->name('catering.harian');
     Route::post('/catering/{layanan}/harian/jadwal', [CateringHarianController::class, 'updateJadwal'])->name('catering.harian.jadwal');
 
-    // 2. CRUD Menu Harian
-    Route::get('/catering/{layanan}/menu/create', [MenuHarianController::class, 'create'])->name('menu-harian.create');
-    Route::post('/catering/{layanan}/menu', [MenuHarianController::class, 'store'])->name('menu-harian.store');
-    Route::get('/menu-harian/{menu}/edit', [MenuHarianController::class, 'edit'])->name('menu-harian.edit');
-    Route::put('/menu-harian/{menu}', [MenuHarianController::class, 'update'])->name('menu-harian.update');
-    Route::delete('/menu-harian/{menu}', [MenuHarianController::class, 'destroy'])->name('menu-harian.destroy');
+    // 2. CRUD Menu
+    Route::get('/catering/{layanan}/menu/create', [\App\Http\Controllers\Admin\MenuController::class, 'create'])->name('menu.create');
+    Route::post('/catering/{layanan}/menu', [\App\Http\Controllers\Admin\MenuController::class, 'store'])->name('menu.store');
+    Route::get('/menu/{menu}/edit', [\App\Http\Controllers\Admin\MenuController::class, 'edit'])->name('menu.edit');
+    Route::put('/menu/{menu}', [\App\Http\Controllers\Admin\MenuController::class, 'update'])->name('menu.update');
+    Route::delete('/menu/{menu}', [\App\Http\Controllers\Admin\MenuController::class, 'destroy'])->name('menu.destroy');
 
-    // 3. CRUD Extra Harian
-    Route::get('/jadwal-menu/{jadwal}/extra', [ExtraHarianController::class, 'index'])->name('extra-harian.index');
-    Route::get('/jadwal-menu/{jadwal}/extra/create', [ExtraHarianController::class, 'create'])->name('extra-harian.create');
-    Route::post('/jadwal-menu/{jadwal}/extra', [ExtraHarianController::class, 'store'])->name('extra-harian.store');
-    Route::get('/extra-harian/{extra}/edit', [ExtraHarianController::class, 'edit'])->name('extra-harian.edit');
-    Route::put('/extra-harian/{extra}', [ExtraHarianController::class, 'update'])->name('extra-harian.update');
-    Route::delete('/extra-harian/{extra}', [ExtraHarianController::class, 'destroy'])->name('extra-harian.destroy');
+    // 3. CRUD MenuItem (Isi Menu / Extra Harian)
+    Route::get('/menu/{menu}/items', [\App\Http\Controllers\Admin\MenuItemController::class, 'index'])->name('menu.items.index');
+    Route::post('/menu/{menu}/items', [\App\Http\Controllers\Admin\MenuItemController::class, 'store'])->name('menu.items.store');
+    Route::put('/menu-item/{item}', [\App\Http\Controllers\Admin\MenuItemController::class, 'update'])->name('menu.item.update');
+    Route::delete('/menu-item/{item}', [\App\Http\Controllers\Admin\MenuItemController::class, 'destroy'])->name('menu.item.destroy');
 
-    // =======================================
-    // Rute Manajemen Katering Acara
-    // =======================================
-
-    Route::post('/catering/{layanan}/acara/menu', [MenuAcaraController::class, 'storeMenu'])->name('menu-acara.store');
-    Route::put('/menu-acara/{menu}', [MenuAcaraController::class, 'updateMenu'])->name('menu-acara.update');
-    Route::delete('/menu-acara/{menu}', [MenuAcaraController::class, 'destroyMenu'])->name('menu-acara.destroy');
-
-    Route::post('/catering/{layanan}/acara/minuman', [MenuAcaraController::class, 'storeMinuman'])->name('minuman-acara.store');
-    Route::put('/minuman-acara/{minuman}', [MenuAcaraController::class, 'updateMinuman'])->name('minuman-acara.update');
-    Route::delete('/minuman-acara/{minuman}', [MenuAcaraController::class, 'destroyMinuman'])->name('minuman-acara.destroy');
-
-    // Isi Menu
-    Route::get('/menu-acara/{menu}/isi', [IsiMenuController::class, 'index'])->name('isi-menu.index');
-    Route::post('/menu-acara/{menu}/isi', [IsiMenuController::class, 'store'])->name('isi-menu.store');
-    Route::put('/isi-menu/{isi}', [IsiMenuController::class, 'update'])->name('isi-menu.update');
-    Route::delete('/isi-menu/{isi}', [IsiMenuController::class, 'destroy'])->name('isi-menu.destroy');
+    // 4. Hapus rute lama (minuman-acara, dsb) sudah tergabung di menu-item.
 
     Route::get('/customers', [AdminPelangganController::class, 'index'])->name('customers');
     Route::get('/ulasan', [AdminUlasanController::class, 'index'])->name('ulasan');

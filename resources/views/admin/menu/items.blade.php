@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Kelola Isi Menu')
+@section('title', 'Kelola Item Menu')
 
 @section('content')
 <div class="row mb-3">
     <div class="col-12">
-        <a href="{{ route('admin.catering.show', $menu->layanan_id) }}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Kembali ke Menu Acara
+        <a href="{{ $menu->layanan->isHarian() ? route('admin.catering.harian', $menu->layanan_id) : route('admin.catering.show', $menu->layanan_id) }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Menu {{ $menu->layanan->isHarian() ? 'Harian' : 'Acara' }}
         </a>
     </div>
 </div>
@@ -16,12 +16,12 @@
         <div class="card card-outline card-info">
             <div class="card-header d-flex align-items-center">
                 <div>
-                    <h3 class="card-title mb-0">Isi Menu</h3>
+                    <h3 class="card-title mb-0">Item Menu ({{ $menu->layanan->isHarian() ? 'Extra' : 'Isi Menu' }})</h3>
                     <p class="text-muted small mb-0">{{ $menu->nama_menu }}</p>
                 </div>
                 <div class="ms-auto">
                     <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambahIsi">
-                        Tambah Isi Menu
+                        Tambah Item
                     </button>
                 </div>
             </div>
@@ -31,22 +31,22 @@
                         <thead>
                             <tr>
                                 <th width="5%">No</th>
-                                <th>Nama Isi Menu</th>
+                                <th>Nama Item</th>
                                 <th>Harga</th>
                                 <th width="15%" class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($isiMenus as $index => $isi)
+                            @forelse($items as $index => $item)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $isi->nama }}</td>
-                                <td>Rp{{ number_format($isi->harga, 0, ',', '.') }}</td>
+                                <td>{{ $item->nama }}</td>
+                                <td>Rp{{ number_format($item->harga, 0, ',', '.') }}</td>
                                 <td class="text-center">
-                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditIsi{{ $isi->id }}">
+                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditIsi{{ $item->id }}">
                                         Edit
                                     </button>
-                                    <form action="{{ route('admin.isi-menu.destroy', $isi->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus isi menu ini?');">
+                                    <form action="{{ route('admin.menu.item.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus item ini?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
@@ -54,25 +54,25 @@
                                 </td>
                             </tr>
 
-                            <!-- Modal Edit Isi Menu -->
-                            <div class="modal fade" id="modalEditIsi{{ $isi->id }}" tabindex="-1" aria-hidden="true">
+                            <!-- Modal Edit Item -->
+                            <div class="modal fade" id="modalEditIsi{{ $item->id }}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
-                                    <form action="{{ route('admin.isi-menu.update', $isi->id) }}" method="POST">
+                                    <form action="{{ route('admin.menu.item.update', $item->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title">Edit Isi Menu</h5>
+                                                <h5 class="modal-title">Edit Item</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Nama Isi Menu</label>
-                                                    <input type="text" name="nama" class="form-control" value="{{ $isi->nama }}" required>
+                                                    <label class="form-label">Nama Item</label>
+                                                    <input type="text" name="nama" class="form-control" value="{{ $item->nama }}" required>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">Harga</label>
-                                                    <input type="number" name="harga" class="form-control" value="{{ $isi->harga }}" required min="0">
+                                                    <input type="number" name="harga" class="form-control" value="{{ $item->harga }}" required min="0">
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -85,7 +85,7 @@
                             </div>
                             @empty
                             <tr>
-                                <td colspan="4" class="text-center">Belum ada isi menu.</td>
+                                <td colspan="4" class="text-center">Belum ada item.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -96,19 +96,19 @@
     </div>
 </div>
 
-<!-- Modal Tambah Isi Menu -->
+<!-- Modal Tambah Item -->
 <div class="modal fade" id="modalTambahIsi" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <form action="{{ route('admin.isi-menu.store', $menu->id) }}" method="POST">
+        <form action="{{ route('admin.menu.items.store', $menu->id) }}" method="POST">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Tambah Isi Menu</h5>
+                    <h5 class="modal-title">Tambah Item</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Nama Isi Menu</label>
+                        <label class="form-label">Nama Item</label>
                         <input type="text" name="nama" class="form-control" required>
                     </div>
                     <div class="mb-3">
@@ -118,7 +118,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan Isi Menu</button>
+                    <button type="submit" class="btn btn-primary">Simpan Item</button>
                 </div>
             </div>
         </form>

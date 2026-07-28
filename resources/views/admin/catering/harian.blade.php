@@ -82,7 +82,6 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                 <th style="width: 30%;">Menu</th>
                                 <th style="width: 15%;">Stok Awal</th>
                                 <th style="width: 15%;">Sisa Stok</th>
-                                <th style="width: 10%;" class="text-center">Extra</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -108,10 +107,10 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                     </td>
                                     
                                     <td>
-                                        <select class="form-select input-menu" name="jadwal[{{ $tanggalStr }}][menu_harian_id]" {{ $isAktif ? '' : 'disabled' }} required>
+                                        <select class="form-select input-menu" name="jadwal[{{ $tanggalStr }}][menu_id]" {{ $isAktif ? '' : 'disabled' }} required>
                                             <option value="">-- Pilih Menu --</option>
                                             @foreach($daftarMenu as $menu)
-                                                <option value="{{ $menu->id }}" {{ $isAktif && $jadwal->menu_harian_id == $menu->id ? 'selected' : '' }}>
+                                                <option value="{{ $menu->id }}" {{ $isAktif && $jadwal->menu_id == $menu->id ? 'selected' : '' }}>
                                                     {{ $menu->nama_menu }}
                                                 </option>
                                             @endforeach
@@ -124,23 +123,6 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                     
                                     <td>
                                         <input type="text" class="form-control bg-light" value="{{ $isAktif ? $jadwal->stok_tersisa : '-' }}" readonly>
-                                    </td>
-                                    
-                                    <td class="text-center">
-                                        <div id="extra-container-{{ $tanggalStr }}">
-                                            @if($jadwal && $jadwal->extraHarian)
-                                                @foreach($jadwal->extraHarian as $idx => $ex)
-                                                    <div class="extra-item" data-index="{{ $idx }}">
-                                                        <input type="hidden" name="jadwal[{{ $tanggalStr }}][extras][{{ $idx }}][id]" value="{{ $ex->id }}" class="extra-id">
-                                                        <input type="hidden" name="jadwal[{{ $tanggalStr }}][extras][{{ $idx }}][nama]" value="{{ $ex->nama }}" class="extra-nama">
-                                                        <input type="hidden" name="jadwal[{{ $tanggalStr }}][extras][{{ $idx }}][harga]" value="{{ $ex->harga }}" class="extra-harga">
-                                                    </div>
-                                                @endforeach
-                                            @endif
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-outline-primary button-kelola w-100" onclick="openExtraModal('{{ $tanggalStr }}', '{{ $hariStr }}')" {{ $isAktif ? '' : 'disabled' }}>
-                                            <i class="bi bi-list-ul"></i> Kelola
-                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -172,7 +154,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
         <div class="card card-outline card-success">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title fw-bold m-0">Daftar Menu Harian</h3>
-                <a href="{{ route('admin.menu-harian.create', $layanan->id) }}" class="btn btn-sm btn-success">
+                <a href="{{ route('admin.menu.create', $layanan->id) }}" class="btn btn-sm btn-success">
                     <i class="bi bi-plus-lg"></i> Tambah Menu
                 </a>
             </div>
@@ -202,12 +184,15 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                 <td>Rp {{ number_format($menu->harga, 0, ',', '.') }}</td>
                                 <td>
                                     <div class="btn-group">
+                                        <a href="{{ route('admin.menu.items.index', $menu->id) }}" class="btn btn-sm btn-info text-white" title="Kelola Extra">
+                                            <i class="bi bi-list-ul"></i>
+                                        </a>
                                         {{-- Tombol Edit --}}
-                                        <a href="{{ route('admin.menu-harian.edit', $menu->id) }}" class="btn btn-sm btn-warning" title="Edit Menu">
+                                        <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-sm btn-warning" title="Edit Menu">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         {{-- Tombol Hapus --}}
-                                        <form action="{{ route('admin.menu-harian.destroy', $menu->id) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus menu ini?');">
+                                        <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus menu ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-danger" title="Hapus Menu">
@@ -229,162 +214,6 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
     </div>
 </div>
 
-{{-- Modal Kelola Extra --}}
-<div class="modal fade" id="modalKelolaExtra" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Kelola Extra - <span id="extraModalDateText"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="extraModalTanggal">
-                <div class="row mb-3">
-                    <div class="col-5">
-                        <input type="text" id="extraNama" class="form-control" placeholder="Nama Extra">
-                    </div>
-                    <div class="col-5">
-                        <input type="number" id="extraHarga" class="form-control" placeholder="Harga" min="0">
-                    </div>
-                    <div class="col-2">
-                        <button type="button" class="btn btn-primary w-100" onclick="addExtra()">+</button>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Nama Extra</th>
-                                <th>Harga</th>
-                                <th style="width: 50px;">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="extraTableBody">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@push('scripts')
-<script>
-// =======================================
-// Fungsi JavaScript: Mengaktifkan/Menonaktifkan input pada baris tabel Jadwal
-// Dijalankan Kapan : Saat admin meng-klik checkbox "Aktif" di suatu baris.
-// =======================================
-function toggleInputs(checkbox) {
-    const row = checkbox.closest('.jadwal-row');
-    const inputTanggal = row.querySelector('.input-tanggal');
-    const inputMenu = row.querySelector('.input-menu');
-    const inputStok = row.querySelector('.input-stok');
-    const btnKelola = row.querySelector('.button-kelola');
-    
-    const isChecked = checkbox.checked;
-    
-    inputTanggal.disabled = !isChecked;
-    inputMenu.disabled = !isChecked;
-    inputStok.disabled = !isChecked;
-    if (btnKelola) {
-        btnKelola.disabled = !isChecked;
-    }
-}
-
-let extraIndex = 1000;
-
-function openExtraModal(tanggalStr, hariStr) {
-    document.getElementById('extraModalDateText').innerText = `${hariStr}, ${tanggalStr}`;
-    document.getElementById('extraModalTanggal').value = tanggalStr;
-    
-    document.getElementById('extraNama').value = '';
-    document.getElementById('extraHarga').value = '';
-    
-    const container = document.getElementById('extra-container-' + tanggalStr);
-    const tableBody = document.getElementById('extraTableBody');
-    tableBody.innerHTML = '';
-    
-    const items = container.querySelectorAll('.extra-item');
-    items.forEach(item => {
-        const idInput = item.querySelector('.extra-id');
-        const namaInput = item.querySelector('.extra-nama');
-        const hargaInput = item.querySelector('.extra-harga');
-        const idx = item.getAttribute('data-index');
-        
-        const tr = document.createElement('tr');
-        tr.setAttribute('data-index', idx);
-        tr.innerHTML = `
-            <td>${namaInput.value}</td>
-            <td>Rp ${parseInt(hargaInput.value).toLocaleString('id-ID')}</td>
-            <td>
-                <button type="button" class="btn btn-sm btn-danger" onclick="removeExtra('${tanggalStr}', '${idx}')">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
-        tableBody.appendChild(tr);
-    });
-    
-    const modal = new bootstrap.Modal(document.getElementById('modalKelolaExtra'));
-    modal.show();
-}
-
-function addExtra() {
-    const tanggalStr = document.getElementById('extraModalTanggal').value;
-    const nama = document.getElementById('extraNama').value;
-    const harga = document.getElementById('extraHarga').value;
-    
-    if (!nama || !harga) {
-        Swal.fire('Error', 'Nama dan Harga Extra harus diisi.', 'error');
-        return;
-    }
-    
-    const idx = extraIndex++;
-    
-    const container = document.getElementById('extra-container-' + tanggalStr);
-    const div = document.createElement('div');
-    div.className = 'extra-item';
-    div.setAttribute('data-index', idx);
-    div.innerHTML = `
-        <input type="hidden" name="jadwal[${tanggalStr}][extras][${idx}][nama]" value="${nama}" class="extra-nama">
-        <input type="hidden" name="jadwal[${tanggalStr}][extras][${idx}][harga]" value="${harga}" class="extra-harga">
-    `;
-    container.appendChild(div);
-    
-    const tableBody = document.getElementById('extraTableBody');
-    const tr = document.createElement('tr');
-    tr.setAttribute('data-index', idx);
-    tr.innerHTML = `
-        <td>${nama}</td>
-        <td>Rp ${parseInt(harga).toLocaleString('id-ID')}</td>
-        <td>
-            <button type="button" class="btn btn-sm btn-danger" onclick="removeExtra('${tanggalStr}', '${idx}')">
-                <i class="bi bi-trash"></i>
-            </button>
-        </td>
-    `;
-    tableBody.appendChild(tr);
-    
-    document.getElementById('extraNama').value = '';
-    document.getElementById('extraHarga').value = '';
-}
-
-function removeExtra(tanggalStr, idx) {
-    const container = document.getElementById('extra-container-' + tanggalStr);
-    const item = container.querySelector('.extra-item[data-index="' + idx + '"]');
-    if (item) {
-        item.remove();
-    }
-    
-    const tableBody = document.getElementById('extraTableBody');
-    const tr = tableBody.querySelector('tr[data-index="' + idx + '"]');
-    if (tr) {
-        tr.remove();
-    }
-}
 </script>
 @endpush
 @endsection

@@ -14,8 +14,7 @@ class UlasanController extends Controller
 
         Ulasan::create([
             'user_id' => auth()->id(),
-            'pesanan_id' => $validated['pesanan_id'],
-            'comment' => $validated['comment'],
+            'komentar' => $validated['komentar'],
         ]);
 
         return back()->with('success', 'Terima kasih atas ulasan Anda!');

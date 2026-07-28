@@ -15,6 +15,7 @@ class Pesanan extends Model
         'nomor_pesanan',
         'user_id',
         'layanan_id',
+        'menu_id',
         'tanggal_pesanan',
         'event_start_time',
         'metode_pengambilan',
@@ -103,18 +104,8 @@ class Pesanan extends Model
         return $this->belongsTo(Layanan::class, 'layanan_id');
     }
 
-    public function items(): HasMany
+    public function menu(): BelongsTo
     {
-        return $this->hasMany(DetailPesanan::class, 'pesanan_id');
-    }
-
-    public function tagihan(): HasOne
-    {
-        return $this->hasOne(Tagihan::class, 'pesanan_id');
-    }
-
-    public function ulasan(): HasOne
-    {
-        return $this->hasOne(Ulasan::class, 'pesanan_id');
+        return $this->belongsTo(Menu::class, 'menu_id');
     }
 }
