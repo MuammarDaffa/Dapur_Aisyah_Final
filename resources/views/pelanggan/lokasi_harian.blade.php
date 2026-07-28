@@ -23,7 +23,7 @@
                 <i>*Silakan klik pada peta untuk menentukan titik pengiriman</i>
             </span>
             <button type="submit" class="btn btn-primary px-4 py-2 fw-bold shadow-sm">
-                Simpan Lokasi Ini
+                Lanjut
             </button>
         </div>
     </form>

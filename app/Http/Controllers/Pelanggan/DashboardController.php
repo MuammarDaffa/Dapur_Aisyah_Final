@@ -86,15 +86,12 @@ class DashboardController extends Controller
         // 1. Kenali siapa pelanggan yang sedang Login saat ini
         $user = auth()->user();
 
-        // 2. Masukkan koordinat baru ke dalam tabel pelanggan tersebut
-        $user->latitude = $lat;
-        $user->longitude = $lng;
+        // 2. KARENA ALUR DITUTUP, HANYA PLACEHOLDER TAMPILAN
+        // Koordinat latitude dan longitude tidak lagi disimpan ke tabel users.
+        // Data ini seharusnya akan diteruskan ke proses checkout dan disimpan di tabel pesanan.
         
-        // 3. Kunci dan simpan permanen ke Database MySQL
-        $user->save();
-
-        // 4. Kembalikan ke halaman peta dengan pesan sukses hijau
-        return back()->with('success', 'Lokasi pengiriman berhasil disimpan secara permanen!');
+        // 3. Kembalikan ke halaman peta dengan pesan sukses hijau
+        return back()->with('success', 'Lokasi pengiriman disetujui (Placeholder). Data siap diproses ke pesanan!');
     }
 
 }

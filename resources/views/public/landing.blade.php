@@ -179,21 +179,10 @@
                     <a href="{{ $serviceUrl }}" class="group position-relative bg-white rounded-2xl border border border-secondary hover:-translate-y-1 shadow-sm d-flex flex-column h-100 overflow-hidden text-decoration-none">
                         <div class="p-6 flex-grow-1 d-flex flex-column justify-content-between text-center">
                             <h3 class="fs-4 fw-bold text-secondary mb-3">{{ $service->nama }}</h3>
-                            <p class="fs-6 text-secondary mb-4 line-clamp-2">Layanan Katering {{ ucfirst($service->tipe) }}</p>
-                            <div class="d-flex align-items-center justify-content-between pt-4 border-top border-secondary mt-auto">
-                                <span class="fs-5 fw-bold text-primary">
-                                    @if($service->base_price > 0)
-                                        Mulai Rp {{ number_format($service->base_price, 0, ',', '.') }}
-                                    @else
-                                        Lihat Menu
-                                    @endif
-                                </span>
-                            </div>
                         </div>
                     </a>
                 @empty
                     <div class="col-12 text-center py-12">
-                        <span class="fs-1 d-block mb-3">🍽️</span>
                         <h3 class="fs-4 fw-medium text-secondary mb-2">Belum Ada Layanan</h3>
                         <p class="text-secondary">Mohon maaf, layanan katering saat ini sedang tidak tersedia.</p>
                     </div>
