@@ -71,14 +71,39 @@ class CateringController extends Controller
     // =======================================
     public function show(Layanan $catering)
     {
+        $kapasitas_porsi_per_minggu = $catering->kapasitas_porsi_per_minggu ?? 0;
+        $jumlah_porsi_terjual_minggu_ini = 0;
+        $sisa_porsi_minggu_ini = $kapasitas_porsi_per_minggu;
+
         if ($catering->isAcara()) {
             $catering->load(['menus.items']);
             $menus = $catering->menus;
-            return view('admin.catering.show', compact('catering', 'menus'));
+            
+            $jumlah_porsi_terjual_minggu_ini = (int) $catering->pesanan()
+                ->where('status', '!=', 'dibatalkan')
+                ->whereBetween('created_at', [
+                    now()->startOfWeek(),
+                    now()->endOfWeek()
+                ])
+                ->sum('porsi');
+                
+            $sisa_porsi_minggu_ini = max(0, $kapasitas_porsi_per_minggu - $jumlah_porsi_terjual_minggu_ini);
+            
+            return view('admin.catering.show', compact(
+                'catering', 
+                'menus', 
+                'kapasitas_porsi_per_minggu', 
+                'jumlah_porsi_terjual_minggu_ini', 
+                'sisa_porsi_minggu_ini'
+            ));
         }
 
-        // Mengambil data satu katering dari database (melalui model Layanan) dan mengirimkannya ke file view.
-        return view('admin.catering.show', compact('catering'));
+        return view('admin.catering.show', compact(
+            'catering',
+            'kapasitas_porsi_per_minggu',
+            'jumlah_porsi_terjual_minggu_ini',
+            'sisa_porsi_minggu_ini'
+        ));
     }
 
     /**

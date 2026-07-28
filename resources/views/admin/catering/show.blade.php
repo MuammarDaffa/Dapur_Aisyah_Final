@@ -17,14 +17,38 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                 <i class="bi bi-arrow-left"></i> Kembali ke Daftar Katering
             </a>
         </div>
-        
+        @if($catering->isAcara())
+        <div class="card card-outline card-info mb-4">
+            <div class="card-header">
+                <h3 class="card-title">Ringkasan Kapasitas Minggu Ini</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped mb-0 text-center">
+                        <thead>
+                            <tr>
+                                <th>Kapasitas Porsi per Minggu</th>
+                                <th>Jumlah Porsi Terjual Minggu Ini</th>
+                                <th>Sisa Porsi Minggu Ini</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ number_format($kapasitas_porsi_per_minggu, 0, ',', '.') }} Porsi</td>
+                                <td>{{ number_format($jumlah_porsi_terjual_minggu_ini, 0, ',', '.') }} Porsi</td>
+                                <td>{{ number_format($sisa_porsi_minggu_ini, 0, ',', '.') }} Porsi</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <form action="{{ route('admin.catering.update', $catering->id) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="card card-outline card-warning">
-                <div class="card-header">
-                    <h3 class="card-title">Edit Informasi Katering</h3>
-                </div>
                 <div class="card-body">
                     {{-- Nama --}}
                     <div class="mb-3">
