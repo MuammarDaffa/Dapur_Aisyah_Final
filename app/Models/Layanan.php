@@ -17,6 +17,7 @@ class Layanan extends Model
         'tipe',
         'kapasitas_porsi_per_minggu',
         'status',
+        'deskripsi',
     ];
 
     protected function casts(): array

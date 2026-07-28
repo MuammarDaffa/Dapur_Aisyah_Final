@@ -48,6 +48,7 @@ class CateringController extends Controller
             'tipe' => 'required|in:harian,acara',
             'kapasitas_porsi_per_minggu' => $isHarian ? 'nullable' : 'required|integer|min:1',
             'status' => 'boolean',
+            'deskripsi' => 'nullable|string',
         ]);
 
         $validated['status'] = $request->boolean('status');
@@ -118,6 +119,7 @@ class CateringController extends Controller
             'tipe' => 'required|in:harian,acara',
             'kapasitas_porsi_per_minggu' => $isHarian ? 'nullable' : 'required|integer|min:1',
             'status' => 'boolean',
+            'deskripsi' => 'nullable|string',
         ]);
 
         $validated['status'] = $request->boolean('status');

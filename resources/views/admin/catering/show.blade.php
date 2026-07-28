@@ -45,7 +45,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
         </div>
         @endif
 
-        <form action="{{ route('admin.catering.update', $catering->id) }}" method="POST">
+        <form id="form-update-katering" action="{{ route('admin.catering.update', $catering->id) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="card card-outline card-warning">
@@ -155,4 +155,42 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
     </div>
 </div>
 @endif
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card card-outline card-secondary">
+            <div class="card-header">
+                <h3 class="card-title">Deskripsi</h3>
+            </div>
+            <div class="card-body">
+                <textarea id="summernote" name="deskripsi" form="form-update-katering">{{ old('deskripsi', $catering->deskripsi) }}</textarea>
+                @error('deskripsi')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
+
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+@endpush
+
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#summernote').summernote({
+        placeholder: 'Tulis deskripsi layanan katering di sini...',
+        tabsize: 2,
+        height: 250,
+        toolbar: [
+            ['font', ['bold', 'italic', 'strikethrough']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link']],
+            ['misc', ['undo', 'redo', 'codeview']]
+        ]
+    });
+});
+</script>
+@endpush
