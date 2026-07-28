@@ -57,7 +57,6 @@ Route::middleware('unverified_customer_redirect')->prefix('dashboard')->name('pe
 });
 
 Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('pelanggan.')->group(function () {
-    Route::get('/', [CustomerDashboard::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfilController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfilController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');

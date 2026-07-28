@@ -7,14 +7,7 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
-    {
-        // Fitur riwayat pesanan (recentOrders) sudah diputus, 
-        // sehingga dashboard hanya menampilkan konten umum
-        $recentOrders = collect(); 
 
-        return view('pelanggan.dashboard', compact('recentOrders'));
-    }
 
     /**
      * Halaman produk - menampilkan produk dari Menu Mingguan.
@@ -29,9 +22,13 @@ class DashboardController extends Controller
      * Halaman pilih layanan acara (Cards)
      * KARENA ALUR PEMESANAN DITUTUP, HANYA MENAMPILKAN PLACEHOLDER.
      */
-    public function acaraService(\App\Models\Layanan $service)
+    public function acaraService(Request $request, \App\Models\Layanan $service)
     {
-        return view('pelanggan.lokasi_acara', compact('service'));
+        $pesanan = null;
+        if ($request->has('pesanan_id')) {
+            $pesanan = \App\Models\Pesanan::find($request->pesanan_id);
+        }
+        return view('pelanggan.lokasi_acara', compact('service', 'pesanan'));
     }
 
 
@@ -70,20 +67,30 @@ class DashboardController extends Controller
             ]);
         }
 
-        // Simpan data pesanan
-        $pesanan = \App\Models\Pesanan::create([
-            'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
-            'user_id' => auth()->id(),
-            'layanan_id' => $request->layanan_id,
-            'tanggal_pesanan' => $request->tanggal_acara,
-            'metode_pengambilan' => $request->metode_pengambilan,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'porsi' => 0,
-            'subtotal' => 0,
-            'total' => 0,
-            'status' => \App\Models\Pesanan::STATUS_BELUM_BAYAR,
-        ]);
+        if ($request->has('pesanan_id') && $request->pesanan_id) {
+            $pesanan = \App\Models\Pesanan::findOrFail($request->pesanan_id);
+            $pesanan->update([
+                'tanggal_pesanan' => $request->tanggal_acara,
+                'metode_pengambilan' => $request->metode_pengambilan,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+            ]);
+        } else {
+            // Simpan data pesanan baru
+            $pesanan = \App\Models\Pesanan::create([
+                'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
+                'user_id' => auth()->id(),
+                'layanan_id' => $request->layanan_id,
+                'tanggal_pesanan' => $request->tanggal_acara,
+                'metode_pengambilan' => $request->metode_pengambilan,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'porsi' => 0,
+                'subtotal' => 0,
+                'total' => 0,
+                'status' => \App\Models\Pesanan::STATUS_BELUM_BAYAR,
+            ]);
+        }
 
         return redirect()->route('pelanggan.acara.pilih_menu', $pesanan->id)
                          ->with('success', 'Lokasi dan tanggal berhasil disimpan. Silakan pilih menu Anda.');
@@ -183,7 +190,7 @@ class DashboardController extends Controller
             'total' => $totalHarga, // Total sama dengan subtotal (belum ada ongkir dll)
         ]);
 
-        return redirect()->route('pelanggan.dashboard')
+        return redirect()->route('landing')
                          ->with('success', 'Pesanan menu berhasil disimpan! Silakan lanjutkan ke pembayaran.');
     }
 

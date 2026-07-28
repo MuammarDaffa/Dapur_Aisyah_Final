@@ -5,15 +5,15 @@
             <div class="d-flex">
                 <!-- Logo -->
                 <div class="flex-shrink-0 d-flex align-items-center">
-                    <a href="{{ route('dashboard') }}">
+                    <a href="{{ route('landing') }}">
                         <x-application-logo style="height: 36px;" class="d-block w-auto fill-current text-secondary" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="d-none space-x-8 sm:-my-px sm:ms-10 sm:d-flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                    <x-nav-link :href="route('landing')" :active="request()->routeIs('landing')">
+                        {{ __('Beranda') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -67,8 +67,8 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'d-block': open, 'd-none': ! open}" class="d-none sm:d-none">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+            <x-responsive-nav-link :href="route('landing')" :active="request()->routeIs('landing')">
+                {{ __('Beranda') }}
             </x-responsive-nav-link>
         </div>
 
