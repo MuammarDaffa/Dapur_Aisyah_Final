@@ -68,8 +68,10 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     // Pemesanan Katering Acara
     Route::get('/katering-acara/lokasi-tanggal',[CustomerDashboard::class, 'lokasiTanggalAcara'])->name('acara.lokasi-tanggal');
     Route::post('/katering-acara/lanjut', [CustomerDashboard::class, 'lanjutAcara'])->name('acara.lanjut');
-    Route::get('/katering-acara/{pesanan}/pilih-menu', [CustomerDashboard::class, 'pilihMenuAcara'])->name('acara.pilih_menu');
-    Route::post('/katering-acara/{pesanan}/simpan-menu', [CustomerDashboard::class, 'simpanMenuAcara'])->name('acara.simpan_menu');
+    Route::get('/katering-acara/pilih-menu', [CustomerDashboard::class, 'pilihMenuAcara'])->name('acara.pilih_menu');
+    Route::post('/katering-acara/simpan-menu', [CustomerDashboard::class, 'simpanMenuAcara'])->name('acara.simpan_menu');
+    Route::get('/katering-acara/detail-pesanan', [CustomerDashboard::class, 'detailPesanan'])->name('acara.detail_pesanan');
+    Route::post('/katering-acara/bayar', [CustomerDashboard::class, 'prosesBayar'])->name('acara.bayar');
 
         // Rute POST untuk menangkap kiriman data dari form peta
     Route::post('/simpan-lokasi-peta', [CustomerDashboard::class, 'simpanLokasi'])->name('simpan-lokasi-peta');

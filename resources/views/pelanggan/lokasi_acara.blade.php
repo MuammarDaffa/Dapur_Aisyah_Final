@@ -10,23 +10,22 @@
 
     <form action="{{ route('pelanggan.acara.lanjut') }}" method="POST" id="formLanjutAcara" onsubmit="return validateForm()">
         @csrf
-        <input type="hidden" name="layanan_id" value="{{ isset($service) ? $service->id : '' }}">
-        <input type="hidden" name="pesanan_id" value="{{ isset($pesanan) ? $pesanan->id : '' }}">
-        <input type="hidden" name="latitude" id="input_latitude" value="{{ isset($pesanan) && $pesanan->latitude ? $pesanan->latitude : '' }}">
-        <input type="hidden" name="longitude" id="input_longitude" value="{{ isset($pesanan) && $pesanan->longitude ? $pesanan->longitude : '' }}">
+        <input type="hidden" name="layanan_id" value="{{ isset($service) ? $service->id : (isset($draft['layanan_id']) ? $draft['layanan_id'] : '') }}">
+        <input type="hidden" name="latitude" id="input_latitude" value="{{ isset($draft['latitude']) ? $draft['latitude'] : '' }}">
+        <input type="hidden" name="longitude" id="input_longitude" value="{{ isset($draft['longitude']) ? $draft['longitude'] : '' }}">
         
         <!-- Pilihan Radio Button -->
         <div class="mb-4">
             <label class="form-label fw-bold text-black">Pilih Metode Pengambilan:</label>
             <div class="form-check">
                 <!-- Kita atur Ambil Sendiri sebagai pilihan default (checked) -->
-                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_ambil" value="ambil_sendiri" {{ (!isset($pesanan) || $pesanan->metode_pengambilan == 'ambil_sendiri') ? 'checked' : '' }}>
+                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_ambil" value="ambil_sendiri" {{ (!isset($draft['metode_pengambilan']) || $draft['metode_pengambilan'] == 'ambil_sendiri') ? 'checked' : '' }}>
                 <label class="form-check-labe text-black" for="radio_ambil">
                     Ambil Sendiri 
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar_ke_tempat" {{ (isset($pesanan) && $pesanan->metode_pengambilan == 'diantar_ke_tempat') ? 'checked' : '' }}>
+                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar_ke_tempat" {{ (isset($draft['metode_pengambilan']) && $draft['metode_pengambilan'] == 'diantar_ke_tempat') ? 'checked' : '' }}>
                 <label class="form-check-label text-black" for="radio_antar">
                     Di Antar ke Lokasi  
                 </label>
@@ -36,7 +35,7 @@
         <!-- Input Datepicker Khusus Katering Acara (Selalu Tampil di bawah Radio) -->
         <div class="mb-4">
             <label class="form-label fw-bold text-black">Pilih Tanggal Acara</label>
-            <input type="date" name="tanggal_acara" id="tanggal_acara" class="form-control border-danger" required value="{{ isset($pesanan) ? \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->format('Y-m-d') : '' }}">
+            <input type="date" name="tanggal_acara" id="tanggal_acara" class="form-control border-danger" required value="{{ isset($draft['tanggal_acara']) ? \Carbon\Carbon::parse($draft['tanggal_acara'])->format('Y-m-d') : '' }}">
         </div>
 
     <!-- BUNGKUS SELURUH FORM & PETA KE DALAM KOTAK INI (Awalnya Disembunyikan) -->
@@ -70,8 +69,8 @@
  <!-- Script Peta kita -->
   <script>
     //angka 2 adalah zoom level (semakin besar semakin dekat, semakin kecil semakin jauh)
-    var initLat = {{ isset($pesanan) && $pesanan->latitude ? $pesanan->latitude : -0.03194 }};
-    var initLng = {{ isset($pesanan) && $pesanan->longitude ? $pesanan->longitude : 109.325 }};
+    var initLat = {{ isset($draft['latitude']) && $draft['latitude'] ? $draft['latitude'] : -0.03194 }};
+    var initLng = {{ isset($draft['longitude']) && $draft['longitude'] ? $draft['longitude'] : 109.325 }};
     var map = L.map('map').setView([initLat, initLng], 14);
 
     // Menambahkan Lapisan Ubin (Tile Layer) dari OpenStreetMap

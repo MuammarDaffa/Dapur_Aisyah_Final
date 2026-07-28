@@ -26,7 +26,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('pelanggan.acara.simpan_menu', $pesanan->id) }}" method="POST" id="formPilihMenu">
+            <form action="{{ route('pelanggan.acara.simpan_menu') }}" method="POST" id="formPilihMenu">
                 @csrf
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-body p-4">
@@ -85,6 +85,25 @@
                 </div>
 
                 @if($menus->count() > 0)
+                    <!-- Tipe Penyajian -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold text-dark mb-3">Tipe Penyajian</h5>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="tipe_penyajian" id="tipe_nasi_kotak" value="Nasi Kotak" {{ (isset($draft['tipe_penyajian']) && $draft['tipe_penyajian'] == 'Nasi Kotak') ? 'checked' : '' }} required>
+                                <label class="form-check-label text-dark" for="tipe_nasi_kotak">
+                                    Nasi Kotak
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipe_penyajian" id="tipe_prasmanan" value="Prasmanan" {{ (isset($draft['tipe_penyajian']) && $draft['tipe_penyajian'] == 'Prasmanan') ? 'checked' : '' }} required>
+                                <label class="form-check-label text-dark" for="tipe_prasmanan">
+                                    Prasmanan
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-end mb-5">
                         <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
                             Lanjut
@@ -92,7 +111,7 @@
                     </div>
                 @endif
                 <div class="d-flex justify-content-start mb-5">
-                    <a href="{{ route('pelanggan.acara.service', ['service' => $pesanan->layanan_id, 'pesanan_id' => $pesanan->id]) }}"
+                    <a href="{{ route('pelanggan.acara.service', ['service' => $layanan->id]) }}"
                        class="btn btn-secondary px-5 py-2 fw-bold shadow-sm">
                         Kembali
                     </a>

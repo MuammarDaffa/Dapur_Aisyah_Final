@@ -24,11 +24,8 @@ class DashboardController extends Controller
      */
     public function acaraService(Request $request, \App\Models\Layanan $service)
     {
-        $pesanan = null;
-        if ($request->has('pesanan_id')) {
-            $pesanan = \App\Models\Pesanan::find($request->pesanan_id);
-        }
-        return view('pelanggan.lokasi_acara', compact('service', 'pesanan'));
+        $draft = session('pesanan_sementara', []);
+        return view('pelanggan.lokasi_acara', compact('service', 'draft'));
     }
 
 
@@ -67,32 +64,16 @@ class DashboardController extends Controller
             ]);
         }
 
-        if ($request->has('pesanan_id') && $request->pesanan_id) {
-            $pesanan = \App\Models\Pesanan::findOrFail($request->pesanan_id);
-            $pesanan->update([
-                'tanggal_pesanan' => $request->tanggal_acara,
-                'metode_pengambilan' => $request->metode_pengambilan,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-            ]);
-        } else {
-            // Simpan data pesanan baru
-            $pesanan = \App\Models\Pesanan::create([
-                'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
-                'user_id' => auth()->id(),
-                'layanan_id' => $request->layanan_id,
-                'tanggal_pesanan' => $request->tanggal_acara,
-                'metode_pengambilan' => $request->metode_pengambilan,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-                'porsi' => 0,
-                'subtotal' => 0,
-                'total' => 0,
-                'status' => \App\Models\Pesanan::STATUS_BELUM_BAYAR,
-            ]);
-        }
+        $draft = session('pesanan_sementara', []);
+        $draft['layanan_id'] = $request->layanan_id;
+        $draft['metode_pengambilan'] = $request->metode_pengambilan;
+        $draft['tanggal_acara'] = $request->tanggal_acara;
+        $draft['latitude'] = $request->latitude;
+        $draft['longitude'] = $request->longitude;
 
-        return redirect()->route('pelanggan.acara.pilih_menu', $pesanan->id)
+        session(['pesanan_sementara' => $draft]);
+
+        return redirect()->route('pelanggan.acara.pilih_menu')
                          ->with('success', 'Lokasi dan tanggal berhasil disimpan. Silakan pilih menu Anda.');
     }
 
@@ -120,36 +101,32 @@ class DashboardController extends Controller
     /**
      * Halaman Pilih Menu Acara
      */
-    public function pilihMenuAcara($id)
+    public function pilihMenuAcara(Request $request)
     {
-        $pesanan = \App\Models\Pesanan::findOrFail($id);
-        
-        // Pastikan pesanan ini milik user yang login dan belum dibayar
-        if ($pesanan->user_id !== auth()->id() || $pesanan->status !== \App\Models\Pesanan::STATUS_BELUM_BAYAR) {
-            abort(403, 'Anda tidak memiliki akses ke pesanan ini.');
+        $draft = session('pesanan_sementara');
+        if (!$draft || !isset($draft['layanan_id'])) {
+            return redirect()->route('landing')->with('error', 'Sesi pesanan hilang, silakan mulai kembali.');
         }
 
-        $layanan = $pesanan->layanan;
-        // Ambil semua menu yang terkait dengan layanan ini beserta items-nya
+        $layanan = \App\Models\Layanan::findOrFail($draft['layanan_id']);
         $menus = $layanan->menus()->with('items')->get();
 
-        return view('pelanggan.pilih_menu_acara', compact('pesanan', 'layanan', 'menus'));
+        return view('pelanggan.pilih_menu_acara', compact('layanan', 'menus', 'draft'));
     }
 
     /**
      * Simpan Pilihan Menu Acara
      */
-    public function simpanMenuAcara(Request $request, $id)
+    public function simpanMenuAcara(Request $request)
     {
-        $pesanan = \App\Models\Pesanan::findOrFail($id);
-        
-        // Pastikan pesanan ini milik user yang login
-        if ($pesanan->user_id !== auth()->id() || $pesanan->status !== \App\Models\Pesanan::STATUS_BELUM_BAYAR) {
-            abort(403, 'Anda tidak memiliki akses ke pesanan ini.');
+        $draft = session('pesanan_sementara');
+        if (!$draft || !isset($draft['layanan_id'])) {
+            return redirect()->route('landing')->with('error', 'Sesi pesanan hilang, silakan mulai kembali.');
         }
 
         $request->validate([
             'menu_id' => 'required|exists:menu,id',
+            'tipe_penyajian' => 'required|in:Nasi Kotak,Prasmanan',
         ]);
 
         $menuId = $request->menu_id;
@@ -162,7 +139,6 @@ class DashboardController extends Controller
 
         $menu = \App\Models\Menu::findOrFail($menuId);
         
-        // Persiapkan data items yang dipilih (untuk disimpan di JSON item_menu)
         $selectedItems = [];
         $subtotalItems = 0;
         
@@ -178,20 +154,63 @@ class DashboardController extends Controller
             }
         }
 
-        // Hitung total: (harga menu + harga items) * porsi
         $hargaPerPorsi = $menu->harga + $subtotalItems;
         $totalHarga = $hargaPerPorsi * $porsi;
 
-        $pesanan->update([
-            'menu_id' => $menu->id,
-            'porsi' => $porsi,
-            'item_menu' => $selectedItems,
-            'subtotal' => $totalHarga,
-            'total' => $totalHarga, // Total sama dengan subtotal (belum ada ongkir dll)
+        $draft['menu_id'] = $menu->id;
+        $draft['porsi'] = $porsi;
+        $draft['item_menu'] = $selectedItems;
+        $draft['subtotal'] = $totalHarga;
+        $draft['total'] = $totalHarga;
+        $draft['tipe_penyajian'] = $request->tipe_penyajian;
+
+        session(['pesanan_sementara' => $draft]);
+
+        return redirect()->route('pelanggan.acara.detail_pesanan')
+                         ->with('success', 'Menu berhasil dipilih! Silakan periksa detail pesanan Anda.');
+    }
+
+    public function detailPesanan(Request $request)
+    {
+        $draft = session('pesanan_sementara');
+        if (!$draft || !isset($draft['layanan_id']) || !isset($draft['menu_id'])) {
+            return redirect()->route('landing')->with('error', 'Sesi pesanan tidak lengkap, silakan mulai kembali.');
+        }
+
+        $layanan = \App\Models\Layanan::find($draft['layanan_id']);
+        $menu = \App\Models\Menu::find($draft['menu_id']);
+
+        return view('pelanggan.detail_pesanan', compact('draft', 'layanan', 'menu'));
+    }
+
+    public function prosesBayar(Request $request)
+    {
+        $draft = session('pesanan_sementara');
+        if (!$draft || !isset($draft['layanan_id']) || !isset($draft['menu_id'])) {
+            return redirect()->route('landing')->with('error', 'Sesi pesanan tidak lengkap, silakan mulai kembali.');
+        }
+
+        $pesanan = \App\Models\Pesanan::create([
+            'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
+            'user_id' => auth()->id(),
+            'layanan_id' => $draft['layanan_id'],
+            'menu_id' => $draft['menu_id'],
+            'tanggal_pesanan' => $draft['tanggal_acara'],
+            'metode_pengambilan' => $draft['metode_pengambilan'],
+            'latitude' => $draft['latitude'],
+            'longitude' => $draft['longitude'],
+            'porsi' => $draft['porsi'],
+            'item_menu' => $draft['item_menu'],
+            'subtotal' => $draft['subtotal'],
+            'total' => $draft['total'],
+            'tipe_penyajian' => $draft['tipe_penyajian'],
+            'status' => \App\Models\Pesanan::STATUS_BELUM_BAYAR,
         ]);
 
+        session()->forget('pesanan_sementara');
+
         return redirect()->route('landing')
-                         ->with('success', 'Pesanan menu berhasil disimpan! Silakan lanjutkan ke pembayaran.');
+                         ->with('success', 'Pesanan berhasil dibuat! Silakan lanjutkan ke pembayaran.');
     }
 
 }
