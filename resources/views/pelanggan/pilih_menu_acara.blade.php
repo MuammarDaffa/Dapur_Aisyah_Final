@@ -34,53 +34,50 @@
                 @csrf
                 
                 @forelse($menus as $menu)
-                    <div class="card mb-4 shadow-sm border-0 border-top border-primary border-3 menu-card" data-menu-id="{{ $menu->id }}">
-                        <div class="card-header bg-white pb-0 border-0 pt-4 px-4 d-flex align-items-center">
-                            <div>
-                                <h4 class="card-title fw-bold mb-0">{{ $menu->nama_menu }}</h4>
-                                <p class="text-muted small mb-0">{{ $menu->deskripsi }}</p>
-                                @if($menu->harga > 0)
-                                    <span class="badge bg-primary mt-2">Rp {{ number_format($menu->harga, 0, ',', '.') }} / porsi dasar</span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="card-body p-4">
-                            
-                            @if($menu->items->count() > 0)
-                                <div class="mb-4">
-                                    <h6 class="fw-bold mb-3">Pilihan Item:</h6>
-                                    <ul class="list-group list-group-flush border rounded">
-                                        @foreach($menu->items as $item)
-                                            <li class="list-group-item px-3 d-flex justify-content-between align-items-center py-2">
-                                                <div class="form-check w-100 d-flex align-items-center mb-0">
-                                                    <input class="form-check-input me-3" type="checkbox" name="items_{{ $menu->id }}[]" value="{{ $item->id }}" id="item_{{ $item->id }}">
-                                                    <label class="form-check-label w-100 d-flex justify-content-between align-items-center mb-0" style="cursor: pointer;" for="item_{{ $item->id }}">
-                                                        <span>{{ $item->nama }}</span>
-                                                        <span class="text-muted">
-                                                            @if($item->harga > 0)
-                                                                Rp {{ number_format($item->harga, 0, ',', '.') }}
-                                                            @else
-                                                                <span class="text-success small">Gratis</span>
-                                                            @endif
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @else
-                                <div class="alert alert-light border text-center text-muted">
-                                    Belum ada pilihan item untuk menu ini.
-                                </div>
+                    <div class="menu-section mb-5" data-menu-id="{{ $menu->id }}">
+                        <h5 class="fw-bold mb-1">{{ $menu->nama_menu }}</h5>
+                        <p class="text-muted small mb-3">
+                            {{ $menu->deskripsi }}
+                            @if($menu->harga > 0)
+                                &bull; <span class="text-primary fw-bold">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span> / porsi dasar
                             @endif
-
-                            <div class="mb-4">
-                                <label for="porsi_{{ $menu->id }}" class="form-label fw-bold">Jumlah Porsi</label>
-                                <input type="number" class="form-control form-control-lg porsi-input" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" min="50" placeholder="Contoh: 150">
-                                <div class="form-text text-muted">Minimal pemesanan 50 porsi.</div>
+                        </p>
+                        
+                        @if($menu->items->count() > 0)
+                            <div class="mb-4 ps-2">
+                                @foreach($menu->items as $item)
+                                    <div class="form-check mb-2 d-flex justify-content-between align-items-center" style="max-width: 500px;">
+                                        <div>
+                                            <input class="form-check-input me-2" type="checkbox" name="items_{{ $menu->id }}[]" value="{{ $item->id }}" id="item_{{ $item->id }}">
+                                            <label class="form-check-label" style="cursor: pointer;" for="item_{{ $item->id }}">
+                                                {{ $item->nama }}
+                                            </label>
+                                        </div>
+                                        <span class="text-muted small">
+                                            @if($item->harga > 0)
+                                                Rp {{ number_format($item->harga, 0, ',', '.') }}
+                                            @else
+                                                <span class="text-success">Gratis</span>
+                                            @endif
+                                        </span>
+                                    </div>
+                                @endforeach
                             </div>
+                        @else
+                            <div class="text-muted small mb-4 font-italic">
+                                Belum ada pilihan item untuk menu ini.
+                            </div>
+                        @endif
+
+                        <div class="mb-2">
+                            <label for="porsi_{{ $menu->id }}" class="form-label fw-bold">Jumlah Porsi</label>
+                            <input type="number" class="form-control porsi-input" style="max-width: 300px;" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" min="50" placeholder="Contoh: 150">
+                            <div class="form-text text-muted">Minimal pemesanan 50 porsi.</div>
                         </div>
+
+                        @if(!$loop->last)
+                            <hr class="mt-5 border-secondary opacity-25">
+                        @endif
                     </div>
                 @empty
                     <div class="card shadow-sm border-0 text-center py-5">
@@ -113,7 +110,7 @@
         hiddenMenuId.id = 'hidden_menu_id';
         form.appendChild(hiddenMenuId);
 
-        const menuCards = document.querySelectorAll('.menu-card');
+        const menuCards = document.querySelectorAll('.menu-section');
         
         menuCards.forEach(card => {
             // Ketika ada interaksi (ketik/centang) di dalam card
