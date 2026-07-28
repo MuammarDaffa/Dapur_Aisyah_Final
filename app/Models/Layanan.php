@@ -15,9 +15,7 @@ class Layanan extends Model
     protected $fillable = [
         'nama',
         'tipe',
-        'kapasitas_total',
-        'kapasitas_tersisa',
-        'minimal_porsi',
+        'kapasitas_porsi_per_minggu',
         'status',
     ];
 
@@ -25,9 +23,7 @@ class Layanan extends Model
     {
         return [
             'status' => 'boolean',
-            'kapasitas_total' => 'integer',
-            'kapasitas_tersisa' => 'integer',
-            'minimal_porsi' => 'integer',
+            'kapasitas_porsi_per_minggu' => 'integer',
         ];
     }
 
@@ -56,6 +52,23 @@ class Layanan extends Model
     public function scopeAcara($query)
     {
         return $query->where('tipe', 'acara');
+    }
+
+    public function getKapasitasPorsiTersisaAttribute(): int
+    {
+        if (!$this->isAcara() || !$this->kapasitas_porsi_per_minggu) {
+            return 0; // Or null, but the type is int.
+        }
+
+        $totalPorsiPesananMingguIni = $this->pesanan()
+            ->whereNotIn('status', ['dibatalkan']) // Not cancelled
+            ->whereBetween('tanggal_pesanan', [
+                now()->startOfWeek()->format('Y-m-d'),
+                now()->endOfWeek()->format('Y-m-d')
+            ])
+            ->sum('porsi');
+
+        return max(0, $this->kapasitas_porsi_per_minggu - $totalPorsiPesananMingguIni);
     }
 
     // === Relationships ===

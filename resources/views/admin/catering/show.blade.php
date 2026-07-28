@@ -47,16 +47,9 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                      @if($catering->isAcara())
                         {{-- Kapasitas (Hanya Acara) --}}
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Kapasitas Total <span class="text-danger">*</span></label>
-                            <input type="number" name="kapasitas_total" value="{{ old('kapasitas_total', $catering->kapasitas_total) }}" min="1" step="1" class="form-control">
-                            @error('kapasitas_total')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                        </div>
-                        
-                        {{-- Minimal Porsi (Hanya Acara) --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Minimal Porsi Pemesanan <span class="text-danger">*</span></label>
-                            <input type="number" name="minimal_porsi" value="{{ old('minimal_porsi', $catering->minimal_porsi) }}" min="1" step="1" class="form-control">
-                            @error('minimal_porsi')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            <label class="form-label fw-bold">Kapasitas Porsi per Minggu <span class="text-danger">*</span></label>
+                            <input type="number" name="kapasitas_porsi_per_minggu" value="{{ old('kapasitas_porsi_per_minggu', $catering->kapasitas_porsi_per_minggu) }}" min="1" step="1" class="form-control">
+                            @error('kapasitas_porsi_per_minggu')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
                     @endif
 

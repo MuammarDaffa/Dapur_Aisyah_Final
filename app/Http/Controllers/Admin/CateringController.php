@@ -46,19 +46,14 @@ class CateringController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:150',
             'tipe' => 'required|in:harian,acara',
-            'kapasitas_total' => $isHarian ? 'nullable' : 'required|integer|min:1',
-            'minimal_porsi' => $isHarian ? 'nullable' : 'required|integer|min:1',
+            'kapasitas_porsi_per_minggu' => $isHarian ? 'nullable' : 'required|integer|min:1',
             'status' => 'boolean',
         ]);
 
         $validated['status'] = $request->boolean('status');
 
         if ($isHarian) {
-            $validated['kapasitas_total'] = null;
-            $validated['kapasitas_tersisa'] = null;
-            $validated['minimal_porsi'] = null;
-        } else {
-            $validated['kapasitas_tersisa'] = $validated['kapasitas_total'];
+            $validated['kapasitas_porsi_per_minggu'] = null;
         }
 
         Layanan::create($validated);
@@ -96,28 +91,14 @@ class CateringController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:150',
             'tipe' => 'required|in:harian,acara',
-            'kapasitas_total' => $isHarian ? 'nullable' : 'required|integer|min:1',
-            'minimal_porsi' => $isHarian ? 'nullable' : 'required|integer|min:1',
+            'kapasitas_porsi_per_minggu' => $isHarian ? 'nullable' : 'required|integer|min:1',
             'status' => 'boolean',
         ]);
 
         $validated['status'] = $request->boolean('status');
 
         if ($isHarian) {
-            $validated['kapasitas_total'] = null;
-            $validated['kapasitas_tersisa'] = null;
-            $validated['minimal_porsi'] = null;
-        } else {
-            // Hitung selisih jika kapasitas total diubah
-            if ($validated['kapasitas_total'] != $catering->kapasitas_total) {
-                $selisih = $validated['kapasitas_total'] - $catering->kapasitas_total;
-                $validated['kapasitas_tersisa'] = $catering->kapasitas_tersisa + $selisih;
-                
-                // Pastikan kapasitas tersisa tidak bocor/negatif
-                if ($validated['kapasitas_tersisa'] < 0) {
-                    return back()->withErrors(['kapasitas_total' => 'Kapasitas total tidak boleh lebih kecil dari pesanan aktif.'])->withInput();
-                }
-            }
+            $validated['kapasitas_porsi_per_minggu'] = null;
         }
 
         $catering->update($validated);

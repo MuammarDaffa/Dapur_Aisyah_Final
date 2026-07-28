@@ -214,6 +214,4 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
     </div>
 </div>
 
-</script>
-@endpush
 @endsection

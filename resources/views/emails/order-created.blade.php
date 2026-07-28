@@ -41,10 +41,7 @@
                     <span class="info-label">Total</span>
                     <span class="info-value">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</span>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">Metode Pembayaran</span>
-                    <span class="info-value">{{ ucfirst($pesanan->metode_pembayaran) }}</span>
-                </div>
+
                 <div class="info-row">
                     <span class="info-label">Status</span>
                     <span class="info-value">{{ $pesanan->status_label }}</span>

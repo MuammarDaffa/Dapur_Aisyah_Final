@@ -49,7 +49,7 @@ class PesananController extends Controller
     public function updateStatus(Request $request, Pesanan $pesanan)
     {
         $validated = $request->validate([
-            'status' => 'required|in:processing,on_delivery,completed,cancelled',
+            'status' => 'required|in:belum_bayar,dp,lunas,dibatalkan',
         ]);
 
         // Gunakan OrderService untuk update status + trigger notifikasi
@@ -64,8 +64,7 @@ class PesananController extends Controller
             'alasan_pembatalan' => 'required|string|max:500',
         ]);
 
-        // Admin bisa batalkan kapan saja
-        OrderService::updateStatus($pesanan, 'dibatalkan', $validated['alasan_pembatalan']);
+        OrderService::updateStatus($pesanan, Pesanan::STATUS_DIBATALKAN, $validated['alasan_pembatalan']);
 
         return back()->with('success', 'Pesanan berhasil dibatalkan.');
     }

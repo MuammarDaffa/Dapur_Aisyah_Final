@@ -12,7 +12,7 @@
                     <div class="col-md-2">
                         <select name="status" class="form-select">
                             <option value="">Semua Status</option>
-                            @foreach(['diproses'=>'Diproses','dikirim'=>'Dikirim','selesai'=>'Selesai','dibatalkan'=>'Dibatalkan'] as $k=>$v)
+                            @foreach(['belum_bayar'=>'Belum Bayar','dp'=>'DP','lunas'=>'Lunas','dibatalkan'=>'Dibatalkan'] as $k=>$v)
                                 <option value="{{ $k }}" {{ request('status')==$k?'selected':'' }}>{{ $v }}</option>
                             @endforeach
                         </select>
@@ -63,7 +63,7 @@
                                     </td>
                                     <td class="align-middle fw-bold text-success">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
                                     <td class="align-middle">
-                                        <span class="badge {{ match($p->status) { 'diproses'=>'text-bg-info','dikirim'=>'text-bg-primary','selesai'=>'text-bg-success','dibatalkan'=>'text-bg-danger', default=>'text-bg-secondary' } }}">
+                                        <span class="badge {{ match($p->status) { 'belum_bayar'=>'text-bg-warning','dp'=>'text-bg-info','lunas'=>'text-bg-success','dibatalkan'=>'text-bg-danger', default=>'text-bg-secondary' } }}">
                                             {{ $p->status_label }}
                                         </span>
                                     </td>

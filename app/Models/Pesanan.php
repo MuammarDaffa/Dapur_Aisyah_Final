@@ -11,6 +11,11 @@ class Pesanan extends Model
 {
     protected $table = 'pesanan';
 
+    public const STATUS_BELUM_BAYAR = 'belum_bayar';
+    public const STATUS_DP = 'dp';
+    public const STATUS_LUNAS = 'lunas';
+    public const STATUS_DIBATALKAN = 'dibatalkan';
+
     protected $fillable = [
         'nomor_pesanan',
         'user_id',
@@ -26,8 +31,6 @@ class Pesanan extends Model
         'porsi',
         'subtotal',
         'total',
-        'metode_pembayaran',
-        'status_pembayaran',
         'refund_status',
 
         'status',
@@ -49,11 +52,10 @@ class Pesanan extends Model
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
-            'menunggu_pembayaran' => 'Menunggu Pembayaran',
-            'diproses' => 'Diproses',
-            'dikirim' => 'Sedang Dikirim',
-            'selesai' => 'Selesai',
-            'dibatalkan' => 'Dibatalkan',
+            self::STATUS_BELUM_BAYAR => 'Belum Bayar',
+            self::STATUS_DP => 'DP',
+            self::STATUS_LUNAS => 'Lunas',
+            self::STATUS_DIBATALKAN => 'Dibatalkan',
             default => $this->status,
         };
     }
@@ -61,18 +63,17 @@ class Pesanan extends Model
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
-            'menunggu_pembayaran' => 'yellow',
-            'diproses' => 'blue',
-            'dikirim' => 'purple',
-            'selesai' => 'green',
-            'dibatalkan' => 'red',
+            self::STATUS_BELUM_BAYAR => 'yellow',
+            self::STATUS_DP => 'blue',
+            self::STATUS_LUNAS => 'green',
+            self::STATUS_DIBATALKAN => 'red',
             default => 'gray',
         };
     }
 
     public function scopeCompleted($query)
     {
-        return $query->where('status', 'selesai');
+        return $query->where('status', self::STATUS_LUNAS);
     }
 
     public static function generateOrderNumber(): string

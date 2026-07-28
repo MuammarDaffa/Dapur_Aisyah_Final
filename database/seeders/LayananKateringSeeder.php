@@ -32,36 +32,28 @@ class LayananKateringSeeder extends Seeder
         $wedding = Layanan::create([
             'nama' => 'Wedding',
             'tipe' => 'acara',
-            'kapasitas_total' => 500,
-            'kapasitas_tersisa' => 500,
-            'minimal_porsi' => 100,
+            'kapasitas_porsi_per_minggu' => 500,
             'status' => true,
         ]);
 
         $kantoran = Layanan::create([
             'nama' => 'Kantoran',
             'tipe' => 'acara',
-            'kapasitas_total' => 200,
-            'kapasitas_tersisa' => 200,
-            'minimal_porsi' => 20,
+            'kapasitas_porsi_per_minggu' => 200,
             'status' => true,
         ]);
 
         $seminar = Layanan::create([
             'nama' => 'Seminar',
             'tipe' => 'acara',
-            'kapasitas_total' => 300,
-            'kapasitas_tersisa' => 300,
-            'minimal_porsi' => 30,
+            'kapasitas_porsi_per_minggu' => 300,
             'status' => true,
         ]);
 
         $gathering = Layanan::create([
             'nama' => 'Gathering',
             'tipe' => 'acara',
-            'kapasitas_total' => 150,
-            'kapasitas_tersisa' => 150,
-            'minimal_porsi' => 15,
+            'kapasitas_porsi_per_minggu' => 150,
             'status' => true,
         ]);
 

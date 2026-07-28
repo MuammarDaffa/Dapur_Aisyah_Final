@@ -37,17 +37,12 @@
 
                     {{-- Kapasitas (Hanya Acara) --}}
                     <div class="mb-3 acara-field">
-                        <label class="form-label fw-bold">Kapasitas Total <span class="text-danger">*</span></label>
-                        <input type="number" name="kapasitas_total" value="{{ old('kapasitas_total') }}" min="1" step="1" class="form-control" placeholder="Kapasitas Total Porsi">
-                        @error('kapasitas_total')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        <label class="form-label fw-bold">Kapasitas Porsi per Minggu <span class="text-danger">*</span></label>
+                        <input type="number" name="kapasitas_porsi_per_minggu" value="{{ old('kapasitas_porsi_per_minggu') }}" min="1" step="1" class="form-control" placeholder="Kapasitas Porsi per Minggu (contoh: 500)">
+                        @error('kapasitas_porsi_per_minggu')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
                     
-                    {{-- Minimal Porsi (Hanya Acara) --}}
-                    <div class="mb-3 acara-field">
-                        <label class="form-label fw-bold">Minimal Porsi Pemesanan <span class="text-danger">*</span></label>
-                        <input type="number" name="minimal_porsi" value="{{ old('minimal_porsi') }}" min="1" step="1" class="form-control" placeholder="Minimal Porsi (contoh: 50)">
-                        @error('minimal_porsi')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                    </div>
+
 
                     {{-- Status --}}
                     <div class="form-check mt-3">

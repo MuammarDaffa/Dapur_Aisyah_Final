@@ -16,7 +16,7 @@
         <div class="card card-outline card-info">
             <div class="card-header d-flex align-items-center">
                 <div>
-                    <h3 class="card-title mb-0">Item Menu ({{ $menu->layanan->isHarian() ? 'Extra' : 'Isi Menu' }})</h3>
+                    <h3 class="card-title mb-0">Item Menu</h3>
                     <p class="text-muted small mb-0">{{ $menu->nama_menu }}</p>
                 </div>
                 <div class="ms-auto">

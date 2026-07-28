@@ -4,7 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\IsiMenu;
+use App\Models\MenuItem;
+use App\Models\Menu;
 
 class IsiMenuSeeder extends Seeder
 {
@@ -30,14 +31,14 @@ class IsiMenuSeeder extends Seeder
             'Kentang Mustofa',
         ];
 
-        // Ambil ID Menu Acara pertama yang ada di database, jika tidak ada fallback ke 1
-        $menuAcara = \App\Models\MenuAcara::first();
+        // Ambil ID Menu pertama yang ada di database, jika tidak ada fallback ke 1
+        $menuAcara = Menu::first();
         $menuAcaraId = $menuAcara ? $menuAcara->id : 1;
 
         foreach ($menus as $menu) {
-            IsiMenu::updateOrCreate(
+            MenuItem::updateOrCreate(
                 [
-                    'menu_acara_id' => $menuAcaraId,
+                    'menu_id' => $menuAcaraId,
                     'nama' => $menu,
                 ],
                 [

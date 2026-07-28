@@ -14,7 +14,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title fw-bold">Detail Pesanan: {{ $pesanan->nomor_pesanan }}</h3>
                 <div class="ms-auto">
-                    <span class="badge {{ match($pesanan->status) { 'diproses'=>'text-bg-info','dikirim'=>'text-bg-primary','selesai'=>'text-bg-success','dibatalkan'=>'text-bg-danger',default=>'text-bg-secondary' } }}">
+                    <span class="badge {{ match($pesanan->status) { 'belum_bayar'=>'text-bg-warning','dp'=>'text-bg-info','lunas'=>'text-bg-success','dibatalkan'=>'text-bg-danger',default=>'text-bg-secondary' } }}">
                         {{ $pesanan->status_label }}
                     </span>
                 </div>
@@ -112,8 +112,6 @@
                     <strong class="fs-5">Total</strong>
                     <strong class="fs-5 text-success">Rp {{ number_format($pesanan->total,0,',','.') }}</strong>
                 </div>
-                <p class="small text-muted mb-1">Metode: {{ ucfirst($pesanan->metode_pembayaran ?: 'Belum Dipilih') }}</p>
-                <p class="small text-muted mb-1">Status: {{ ucfirst(str_replace('_', ' ', $pesanan->status_pembayaran)) }}</p>
                 
                 @if($pesanan->refund_status && $pesanan->refund_status !== 'none')
                     <div class="alert alert-{{ $pesanan->refund_status === 'pending' ? 'warning' : 'success' }} py-2 mt-3 mb-0">
@@ -124,7 +122,7 @@
             </div>
         </div>
 
-        @if(!in_array($pesanan->status, ['selesai','dibatalkan']))
+        @if(!in_array($pesanan->status, [\App\Models\Pesanan::STATUS_LUNAS, \App\Models\Pesanan::STATUS_DIBATALKAN]))
         <div class="card card-outline card-warning">
             <div class="card-header">
                 <h3 class="card-title">Aksi Pesanan</h3>
@@ -136,7 +134,7 @@
                     <div class="form-group mb-3">
                         <label>Update Status</label>
                         <select name="status" class="form-select">
-                            @foreach(['menunggu_pembayaran'=>'Menunggu Pembayaran', 'diproses'=>'Diproses','dikirim'=>'Sedang Dikirim','selesai'=>'Selesai'] as $k=>$v)
+                            @foreach(['belum_bayar'=>'Belum Bayar', 'dp'=>'DP','lunas'=>'Lunas','dibatalkan'=>'Dibatalkan'] as $k=>$v)
                             <option value="{{ $k }}" {{ $pesanan->status==$k?'selected':'' }}>{{ $v }}</option>
                             @endforeach
                         </select>

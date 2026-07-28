@@ -41,7 +41,7 @@
  <!-- Script Peta kita -->
   <script>
     //angka 2 adalah zoom level (semakin besar semakin dekat, semakin kecil semakin jauh)
-    var map = L.map('map').setView([-0.03194, 109.325], 5);
+    var map = L.map('map').setView([-0.03194, 109.325], 14);
 
     // Menambahkan Lapisan Ubin (Tile Layer) dari OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
