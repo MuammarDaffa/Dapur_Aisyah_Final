@@ -32,20 +32,23 @@ class Pesanan extends Model
         'subtotal',
         'total',
         'refund_status',
-
         'status',
         'alasan_pembatalan',
         'dibatalkan_pada',
         'catatan',
+        'item_menu',
     ];
 
     protected function casts(): array
     {
         return [
             'tanggal_pesanan' => 'date',
-            'subtotal' => 'decimal:2',
-            'total' => 'decimal:2',
+            'subtotal' => 'integer',
+            'total' => 'integer',
             'dibatalkan_pada' => 'datetime',
+            'latitude' => 'decimal:8',
+            'longitude' => 'decimal:8',
+            'item_menu' => 'array',
         ];
     }
 

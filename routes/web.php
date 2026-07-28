@@ -66,9 +66,11 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     //route pemesanan katering harian map only
     Route::get('/katering-harian/lokasi',[CustomerDashboard::class, 'lokasiHarian'])->name('harian.lokasi');
 
-    // route pemesanan katering acara (peta + datepicker)
+    // Pemesanan Katering Acara
     Route::get('/katering-acara/lokasi-tanggal',[CustomerDashboard::class, 'lokasiTanggalAcara'])->name('acara.lokasi-tanggal');
-    Route::post('/katering-acara/lanjut',[CustomerDashboard::class, 'lanjutAcara'])->name('acara.lanjut');
+    Route::post('/katering-acara/lanjut', [CustomerDashboard::class, 'lanjutAcara'])->name('acara.lanjut');
+    Route::get('/katering-acara/{pesanan}/pilih-menu', [CustomerDashboard::class, 'pilihMenuAcara'])->name('acara.pilih_menu');
+    Route::post('/katering-acara/{pesanan}/simpan-menu', [CustomerDashboard::class, 'simpanMenuAcara'])->name('acara.simpan_menu');
 
         // Rute POST untuk menangkap kiriman data dari form peta
     Route::post('/simpan-lokasi-peta', [CustomerDashboard::class, 'simpanLokasi'])->name('simpan-lokasi-peta');

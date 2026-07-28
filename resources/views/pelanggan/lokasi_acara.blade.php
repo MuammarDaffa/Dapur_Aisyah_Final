@@ -10,6 +10,7 @@
 
     <form action="{{ route('pelanggan.acara.lanjut') }}" method="POST" id="formLanjutAcara" onsubmit="return validateForm()">
         @csrf
+        <input type="hidden" name="layanan_id" value="{{ isset($service) ? $service->id : '' }}">
         <input type="hidden" name="latitude" id="input_latitude">
         <input type="hidden" name="longitude" id="input_longitude">
         
@@ -24,7 +25,7 @@
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar">
+                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar_ke_tempat">
                 <label class="form-check-label text-black" for="radio_antar">
                     Di Antar ke Lokasi  
                 </label>
