@@ -70,32 +70,41 @@ class CateringController extends Controller
     // Data dikirim ke mana : Halaman resources/views/admin/catering/show.blade.php
     // Apa yang terjadi jika dihapus : Tombol detail akan error (method not found).
     // =======================================
-    public function show(Layanan $catering)
+    public function show(Request $request, Layanan $catering)
     {
         $kapasitas_porsi_per_minggu = $catering->kapasitas_porsi_per_minggu ?? 0;
         $jumlah_porsi_terjual_minggu_ini = 0;
         $sisa_porsi_minggu_ini = $kapasitas_porsi_per_minggu;
 
+        // Ambil tanggal filter dari request (default: hari ini)
+        $tanggal_filter = $request->input('tanggal', now()->format('Y-m-d'));
+        $startOfWeek = \Carbon\Carbon::parse($tanggal_filter)->startOfWeek()->format('Y-m-d');
+        $endOfWeek = \Carbon\Carbon::parse($tanggal_filter)->endOfWeek()->format('Y-m-d');
+
         if ($catering->isAcara()) {
-            $catering->load(['menus.items']);
+            $catering->load(['menus.items', 'minumans']);
             $menus = $catering->menus;
+            $minumans = $catering->minumans;
             
-            $jumlah_porsi_terjual_minggu_ini = (int) $catering->pesanan()
-                ->where('status_pesanan', '!=', 'dibatalkan')
-                ->whereBetween('created_at', [
-                    now()->startOfWeek(),
-                    now()->endOfWeek()
-                ])
-                ->sum('porsi');
+            // Perhatikan: Kita menghitung berdasar tanggal_pesanan (kapan acara berlangsung), bukan created_at
+            $jumlah_porsi_terjual_minggu_ini = (int) \App\Models\DetailPesanan::whereHas('pesanan', function($q) use ($catering, $startOfWeek, $endOfWeek) {
+                $q->where('layanan_id', $catering->id)
+                  ->where('status_pesanan', '!=', 'dibatalkan')
+                  ->whereBetween('tanggal_pesanan', [$startOfWeek, $endOfWeek]);
+            })->sum('porsi');
                 
             $sisa_porsi_minggu_ini = max(0, $kapasitas_porsi_per_minggu - $jumlah_porsi_terjual_minggu_ini);
             
             return view('admin.catering.show', compact(
                 'catering', 
-                'menus', 
+                'menus',
+                'minumans',
                 'kapasitas_porsi_per_minggu', 
                 'jumlah_porsi_terjual_minggu_ini', 
-                'sisa_porsi_minggu_ini'
+                'sisa_porsi_minggu_ini',
+                'tanggal_filter',
+                'startOfWeek',
+                'endOfWeek'
             ));
         }
 
@@ -103,7 +112,10 @@ class CateringController extends Controller
             'catering',
             'kapasitas_porsi_per_minggu',
             'jumlah_porsi_terjual_minggu_ini',
-            'sisa_porsi_minggu_ini'
+            'sisa_porsi_minggu_ini',
+            'tanggal_filter',
+            'startOfWeek',
+            'endOfWeek'
         ));
     }
 

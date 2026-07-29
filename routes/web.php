@@ -113,6 +113,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/menu/{menu}', [\App\Http\Controllers\Admin\MenuController::class, 'update'])->name('menu.update');
     Route::delete('/menu/{menu}', [\App\Http\Controllers\Admin\MenuController::class, 'destroy'])->name('menu.destroy');
 
+    // CRUD Minuman (Khusus Acara)
+    Route::post('/catering/{layanan}/minuman', [\App\Http\Controllers\Admin\MinumanController::class, 'store'])->name('minuman.store');
+    Route::put('/minuman/{minuman}', [\App\Http\Controllers\Admin\MinumanController::class, 'update'])->name('minuman.update');
+    Route::delete('/minuman/{minuman}', [\App\Http\Controllers\Admin\MinumanController::class, 'destroy'])->name('minuman.destroy');
+
+
     // 3. CRUD MenuItem (Isi Menu / Extra Harian)
     Route::get('/menu/{menu}/items', [\App\Http\Controllers\Admin\MenuItemController::class, 'index'])->name('menu.items.index');
     Route::post('/menu/{menu}/items', [\App\Http\Controllers\Admin\MenuItemController::class, 'store'])->name('menu.items.store');

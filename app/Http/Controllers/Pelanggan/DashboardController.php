@@ -13,7 +13,6 @@ class DashboardController extends Controller
 
     /**
      * Halaman produk - menampilkan produk dari Menu Mingguan.
-     * KARENA ALUR PEMESANAN DITUTUP, HANYA MENAMPILKAN PLACEHOLDER.
      */
     public function produk(Request $request)
     {
@@ -26,7 +25,8 @@ class DashboardController extends Controller
     public function acaraService(Request $request, \App\Models\Layanan $service)
     {
         $menus = $service->menus()->with('items')->get();
-        return view('pelanggan.pilih_menu_acara', compact('service', 'menus'));
+        $minumans = $service->minumans;
+        return view('pelanggan.pilih_menu_acara', compact('service', 'menus', 'minumans'));
     }
 
     /**
@@ -34,7 +34,7 @@ class DashboardController extends Controller
      */
     public function editPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::with('detailPesanans.menuItems')->findOrFail($id);
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menuItems', 'detailPesananMinumans'])->findOrFail($id);
         
         // Pastikan hanya bisa diedit jika belum_dibayar
         if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
@@ -43,8 +43,9 @@ class DashboardController extends Controller
 
         $service = \App\Models\Layanan::findOrFail($pesanan->layanan_id);
         $menus = $service->menus()->with('items')->get();
+        $minumans = $service->minumans;
 
-        return view('pelanggan.pilih_menu_acara', compact('pesanan', 'service', 'menus'));
+        return view('pelanggan.pilih_menu_acara', compact('pesanan', 'service', 'menus', 'minumans'));
     }
 
     /**
@@ -68,21 +69,42 @@ class DashboardController extends Controller
 
         $menusDipilih = [];
         $totalHargaKeseluruhan = 0;
+        $customErrors = [];
 
+        // Kumpulkan semua ID menu yang ada di request (dari porsi_ atau items_)
+        $menuIds = [];
         foreach ($request->all() as $key => $value) {
-            if (str_starts_with($key, 'porsi_') && $value >= 50) {
-                $menuId = str_replace('porsi_', '', $key);
-                $porsi = (int) $value;
-                $items = $request->input('items_' . $menuId, []);
+            if (str_starts_with($key, 'porsi_')) {
+                $menuIds[str_replace('porsi_', '', $key)] = true;
+            } elseif (str_starts_with($key, 'items_')) {
+                $menuIds[str_replace('items_', '', $key)] = true;
+            }
+        }
+
+        foreach (array_keys($menuIds) as $menuId) {
+            $porsiInput = $request->input('porsi_' . $menuId);
+            $items = $request->input('items_' . $menuId, []);
+
+            $hasPorsi = !empty($porsiInput) && is_numeric($porsiInput) && (int)$porsiInput > 0;
+            $hasItems = !empty($items) && count($items) > 0;
+
+            if ($hasPorsi && !$hasItems) {
+                $customErrors['items_' . $menuId] = "Pilih minimal satu item menu.";
+            } elseif ($hasItems && !$hasPorsi) {
+                $customErrors['porsi_' . $menuId] = "Jumlah porsi wajib diisi.";
+            } elseif ($hasPorsi && $hasItems) {
+                $porsi = (int) $porsiInput;
+                if ($porsi < 50) {
+                    $customErrors['porsi_' . $menuId] = "Minimal pemesanan 50 porsi.";
+                    continue;
+                }
 
                 $menu = \App\Models\Menu::find($menuId);
                 if ($menu) {
                     $subtotalItems = 0;
-                    if (!empty($items)) {
-                        $menuItems = \App\Models\MenuItem::whereIn('id', $items)->get();
-                        foreach ($menuItems as $item) {
-                            $subtotalItems += $item->harga;
-                        }
+                    $menuItems = \App\Models\MenuItem::whereIn('id', $items)->get();
+                    foreach ($menuItems as $item) {
+                        $subtotalItems += $item->harga;
                     }
 
                     $hargaPerPorsi = $menu->harga + $subtotalItems;
@@ -99,8 +121,57 @@ class DashboardController extends Controller
             }
         }
 
+        // Kumpulkan Minuman yang dipilih
+        $minumanDipilih = [];
+        foreach ($request->all() as $key => $value) {
+            if (str_starts_with($key, 'minuman_')) {
+                $minumanId = str_replace('minuman_', '', $key);
+                $jumlah = (int) $value;
+
+                if ($jumlah > 0) {
+                    $minuman = \App\Models\Minuman::find($minumanId);
+                    if ($minuman) {
+                        $subtotalMinuman = $minuman->harga * $jumlah;
+                        $totalHargaKeseluruhan += $subtotalMinuman;
+
+                        $minumanDipilih[] = [
+                            'minuman_id' => $minuman->id,
+                            'jumlah' => $jumlah,
+                            'subtotal' => $subtotalMinuman
+                        ];
+                    }
+                }
+            }
+        }
+
+        if (count($customErrors) > 0) {
+            return back()->withInput()->withErrors($customErrors);
+        }
+
         if (empty($menusDipilih)) {
-            return back()->withInput()->withErrors(['Silakan pilih minimal satu menu dengan porsi minimal 50 porsi.']);
+            return back()->withInput()->with('error', 'Silakan pilih minimal satu menu.');
+        }
+        
+        $totalPorsiBaru = collect($menusDipilih)->sum('porsi');
+        
+        // Validasi Kapasitas Porsi Mingguan
+        $layanan = \App\Models\Layanan::find($request->layanan_id);
+        if ($layanan && $layanan->isAcara() && $layanan->kapasitas_porsi_per_minggu > 0) {
+            $tanggalAcara = \Carbon\Carbon::parse($request->tanggal_acara);
+            
+            $totalPorsiSudahDipesan = \App\Models\DetailPesanan::whereHas('pesanan', function($q) use ($layanan, $tanggalAcara) {
+                $q->where('layanan_id', $layanan->id)
+                  ->whereNotNull('status_pesanan')
+                  ->where('status_pesanan', '!=', 'dibatalkan')
+                  ->whereBetween('tanggal_pesanan', [
+                      $tanggalAcara->copy()->startOfWeek()->format('Y-m-d'),
+                      $tanggalAcara->copy()->endOfWeek()->format('Y-m-d')
+                  ]);
+            })->sum('porsi');
+
+            if (($totalPorsiSudahDipesan + $totalPorsiBaru) > $layanan->kapasitas_porsi_per_minggu) {
+                return back()->withInput()->with('error', 'Mohon maaf, kuota pesanan untuk minggu pada tanggal tersebut sudah penuh. Silakan pilih tanggal acara di minggu lain.');
+            }
         }
 
         $jumlahDp = $totalHargaKeseluruhan * 0.5;
@@ -130,6 +201,7 @@ class DashboardController extends Controller
 
                 // Hapus detail lama untuk diganti yang baru
                 $pesanan->detailPesanans()->delete();
+                $pesanan->detailPesananMinumans()->delete();
             } else {
                 $pesanan = \App\Models\Pesanan::create([
                     'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
@@ -145,11 +217,11 @@ class DashboardController extends Controller
                     'sisa_pembayaran' => $sisaPembayaran,       
                     'tipe_penyajian' => $request->tipe_penyajian === 'Nasi Kotak' ? 'nasi_kotak' : 'prasmanan',
                     'status_pembayaran' => \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR,
-                    'status_pesanan' => \App\Models\Pesanan::PESANAN_DIPROSES,
+                    'status_pesanan' => null,
                 ]);
             }
 
-            // Simpan detail pesanan baru
+            // Simpan detail pesanan baru (Makanan)
             foreach ($menusDipilih as $menuDraft) {
                 $detail = $pesanan->detailPesanans()->create([
                     'menu_id' => $menuDraft['menu_id'],
@@ -159,6 +231,17 @@ class DashboardController extends Controller
 
                 if (!empty($menuDraft['menu_item_ids'])) {
                     $detail->menuItems()->attach($menuDraft['menu_item_ids']);
+                }
+            }
+
+            // Simpan detail minuman
+            if (!empty($minumanDipilih)) {
+                foreach ($minumanDipilih as $minumanDraft) {
+                    $pesanan->detailPesananMinumans()->create([
+                        'minuman_id' => $minumanDraft['minuman_id'],
+                        'jumlah' => $minumanDraft['jumlah'],
+                        'subtotal' => $minumanDraft['subtotal'],
+                    ]);
                 }
             }
 
@@ -176,7 +259,7 @@ class DashboardController extends Controller
 
     public function detailPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.menuItems', 'layanan'])->findOrFail($id);
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesananMinumans.minuman', 'layanan'])->findOrFail($id);
         
         if ($pesanan->user_id !== auth()->id()) {
             return redirect()->route('landing')->with('error', 'Anda tidak berhak melihat pesanan ini.');
@@ -200,7 +283,8 @@ class DashboardController extends Controller
 
         $params = array(
             'transaction_details' => array(
-                'order_id' => $pesanan->nomor_pesanan . '-DP', 
+                // PERHATIKAN: Kita menambahkan timestamp agar order_id selalu unik (menghindari error "order_id has already been taken")
+                'order_id' => $pesanan->nomor_pesanan . '-DP-' . time(), 
                 'gross_amount' => $pesanan->jumlah_dp,
             ),
             'customer_details' => array(
@@ -252,8 +336,8 @@ class DashboardController extends Controller
         // Siapkan parameter Midtrans khusus untuk PELUNASAN
         $params = array(
             'transaction_details' => array(
-                // PERHATIKAN: Kita menambahkan akhiran -PELUNASAN di sini
-                'order_id' => $pesanan->nomor_pesanan . '-PELUNASAN', 
+                // PERHATIKAN: Kita menambahkan akhiran -PELUNASAN dan timestamp di sini
+                'order_id' => $pesanan->nomor_pesanan . '-PELUNASAN-' . time(), 
                 // Gross amount-nya menggunakan kolom sisa_pembayaran
                 'gross_amount' => $pesanan->sisa_pembayaran,
             ),

@@ -92,11 +92,11 @@
                                 </p>
                                 
                                 @if($menu->items->count() > 0)
-                                    <div class="mb-3">
+                                    <div class="mb-3 checkbox-group">
                                         @foreach($menu->items as $item)
                                             <div class="form-check mb-2 d-flex justify-content-between align-items-center" style="max-width: 500px;">
                                                 <div>
-                                                    <input class="form-check-input me-2" type="checkbox" name="items_{{ $menu->id }}[]" value="{{ $item->id }}" id="item_{{ $item->id }}" {{ in_array($item->id, $selectedItems) ? 'checked' : '' }}>
+                                                    <input class="form-check-input me-2 item-checkbox" type="checkbox" name="items_{{ $menu->id }}[]" value="{{ $item->id }}" id="item_{{ $item->id }}" {{ in_array($item->id, $selectedItems) ? 'checked' : '' }}>
                                                     <label class="form-check-label text-dark" style="cursor: pointer;" for="item_{{ $item->id }}">
                                                         {{ $item->nama }}
                                                     </label>
@@ -110,6 +110,10 @@
                                                 </span>
                                             </div>
                                         @endforeach
+                                        <div class="invalid-feedback items-feedback d-none">Pilih minimal satu item menu.</div>
+                                        @error('items_'.$menu->id)
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 @else
                                     <div class="text-dark small mb-3 font-italic">
@@ -119,7 +123,11 @@
 
                                 <div class="mb-2">
                                     <label for="porsi_{{ $menu->id }}" class="form-label fw-semibold text-dark">Jumlah Porsi</label>
-                                    <input type="number" class="form-control porsi-input" style="max-width: 300px;" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" min="50" value="{{ $porsiValue }}">
+                                    <input type="number" class="form-control porsi-input @error('porsi_'.$menu->id) is-invalid @enderror" style="max-width: 300px;" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" value="{{ $porsiValue }}">
+                                    <div class="invalid-feedback porsi-feedback">Jumlah porsi wajib diisi.</div>
+                                    @error('porsi_'.$menu->id)
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                     <div class="form-text text-dark">Minimal pemesanan 50 porsi.</div>
                                 </div>
 
@@ -134,6 +142,46 @@
                         @endforelse
                     </div>
                 </div>
+
+                @if(isset($minumans) && $minumans->count() > 0)
+                <!-- Bagian Minuman -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4 bg-light rounded">
+                        <h4 class="fw-bold text-dark mb-1">Pilihan Minuman</h4>
+                        <p class="text-muted small mb-4">Minuman bersifat opsional. Tidak dihitung ke dalam kuota mingguan.</p>
+                        
+                        <div class="row g-3">
+                            @foreach($minumans as $minuman)
+                                @php
+                                    $minumanValue = '';
+                                    if(isset($pesanan) && $pesanan->detailPesananMinumans) {
+                                        $detailMinuman = $pesanan->detailPesananMinumans->where('minuman_id', $minuman->id)->first();
+                                        if($detailMinuman) {
+                                            $minumanValue = $detailMinuman->jumlah;
+                                        }
+                                    }
+                                @endphp
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card border border-secondary border-opacity-25 h-100">
+                                        <div class="card-body">
+                                            <h6 class="fw-bold text-dark mb-1">{{ $minuman->nama_minuman }}</h6>
+                                            <p class="text-primary fw-semibold mb-3">Rp {{ number_format($minuman->harga, 0, ',', '.') }}</p>
+                                            
+                                            <label for="minuman_{{ $minuman->id }}" class="form-label text-dark small fw-semibold">Jumlah Cup/Gelas</label>
+                                            <input type="number" class="form-control form-control-sm minuman-input" 
+                                                   name="minuman_{{ $minuman->id }}" 
+                                                   id="minuman_{{ $minuman->id }}" 
+                                                   value="{{ $minumanValue }}" 
+                                                   min="0" 
+                                                   placeholder="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 @if($menus->count() > 0)
                     <!-- Tipe Penyajian -->
@@ -213,19 +261,73 @@
         radioAntar.addEventListener('change', aturTampilanPeta);
 
         form.addEventListener('submit', function(e) {
-            let isAnyPorsiFilled = false;
-            document.querySelectorAll('.porsi-input').forEach(input => {
-                if (input.value && parseInt(input.value) >= 50) {
-                    isAnyPorsiFilled = true;
+            let isValid = true;
+            let isAnyMenuSelected = false;
+
+            // Reset validation state
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('.items-feedback').forEach(el => {
+                el.classList.remove('d-block');
+                el.classList.add('d-none');
+            });
+
+            document.querySelectorAll('.menu-section').forEach(section => {
+                const porsiInput = section.querySelector('.porsi-input');
+                const checkboxes = section.querySelectorAll('.item-checkbox');
+                
+                let hasPorsi = porsiInput.value && parseInt(porsiInput.value) > 0;
+                let hasItems = false;
+                
+                checkboxes.forEach(cb => {
+                    if (cb.checked) hasItems = true;
+                });
+
+                if (hasPorsi || hasItems) {
+                    isAnyMenuSelected = true;
+                }
+
+                if (hasPorsi && !hasItems) {
+                    // Show error on checkboxes
+                    section.querySelector('.checkbox-group').classList.add('is-invalid');
+                    const itemsFeedback = section.querySelector('.items-feedback');
+                    if (itemsFeedback) {
+                        itemsFeedback.classList.remove('d-none');
+                        itemsFeedback.classList.add('d-block');
+                    }
+                    isValid = false;
+                } else if (hasItems && !hasPorsi) {
+                    // Show error on porsi
+                    porsiInput.classList.add('is-invalid');
+                    isValid = false;
+                } else if (hasPorsi && hasItems) {
+                    // Check minimum portion
+                    if (parseInt(porsiInput.value) < 50) {
+                        porsiInput.classList.add('is-invalid');
+                        const porsiFeedback = section.querySelector('.porsi-feedback');
+                        if (porsiFeedback) {
+                            porsiFeedback.innerHTML = "Minimal pemesanan 50 porsi.";
+                        }
+                        isValid = false;
+                    }
                 }
             });
 
-            if (!isAnyPorsiFilled) {
+            if (!isValid) {
                 e.preventDefault();
                 Swal.fire({
                     icon: 'warning',
                     title: 'Perhatian',
-                    text: 'Silakan isi jumlah porsi pada minimal satu menu (minimal 50 porsi).'
+                    text: 'Terdapat kesalahan pada isian menu. Silakan periksa kembali pesan error yang muncul.'
+                });
+                return false;
+            }
+
+            if (!isAnyMenuSelected) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian',
+                    text: 'Silakan pilih minimal satu menu.'
                 });
                 return false;
             }

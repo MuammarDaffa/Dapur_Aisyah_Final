@@ -17,20 +17,30 @@ class MenuController extends Controller
 
     public function store(Request $request, Layanan $layanan)
     {
-        $validated = $request->validate([
-            'nama_menu' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'harga' => 'required|numeric|min:0',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'status' => 'boolean'
-        ]);
+        if ($layanan->isAcara()) {
+            $validated = $request->validate([
+                'nama_menu' => 'required|string|max:100|unique:menu,nama_menu,NULL,id,layanan_id,' . $layanan->id,
+            ]);
+            $validated['layanan_id'] = $layanan->id;
+            $validated['deskripsi'] = null;
+            $validated['harga'] = 0;
+            $validated['gambar'] = null;
+            $validated['status'] = true;
+        } else {
+            $validated = $request->validate([
+                'nama_menu' => 'required|string|max:255',
+                'deskripsi' => 'nullable|string',
+                'harga' => 'required|numeric|min:0',
+                'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'status' => 'boolean'
+            ]);
+            $validated['layanan_id'] = $layanan->id;
+            $validated['status'] = $request->boolean('status');
 
-        $validated['layanan_id'] = $layanan->id;
-        $validated['status'] = $request->boolean('status');
-
-        if ($request->hasFile('gambar')) {
-            $path = $request->file('gambar')->store('menu', 'public');
-            $validated['gambar'] = $path;
+            if ($request->hasFile('gambar')) {
+                $path = $request->file('gambar')->store('menu', 'public');
+                $validated['gambar'] = $path;
+            }
         }
 
         Menu::create($validated);
@@ -48,22 +58,28 @@ class MenuController extends Controller
 
     public function update(Request $request, Menu $menu)
     {
-        $validated = $request->validate([
-            'nama_menu' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'harga' => 'required|numeric|min:0',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'status' => 'boolean'
-        ]);
+        if ($menu->layanan->isAcara()) {
+            $validated = $request->validate([
+                'nama_menu' => 'required|string|max:100|unique:menu,nama_menu,' . $menu->id . ',id,layanan_id,' . $menu->layanan_id,
+            ]);
+            // we do not touch deskripsi, harga, gambar, status for Acara
+        } else {
+            $validated = $request->validate([
+                'nama_menu' => 'required|string|max:255',
+                'deskripsi' => 'nullable|string',
+                'harga' => 'required|numeric|min:0',
+                'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'status' => 'boolean'
+            ]);
+            $validated['status'] = $request->boolean('status');
 
-        $validated['status'] = $request->boolean('status');
-
-        if ($request->hasFile('gambar')) {
-            if ($menu->gambar) {
-                Storage::disk('public')->delete($menu->gambar);
+            if ($request->hasFile('gambar')) {
+                if ($menu->gambar) {
+                    Storage::disk('public')->delete($menu->gambar);
+                }
+                $path = $request->file('gambar')->store('menu', 'public');
+                $validated['gambar'] = $path;
             }
-            $path = $request->file('gambar')->store('menu', 'public');
-            $validated['gambar'] = $path;
         }
 
         $menu->update($validated);

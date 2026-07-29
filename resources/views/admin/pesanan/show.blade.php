@@ -76,23 +76,51 @@
                         <thead>
                             <tr>
                                 <th>Item</th>
-                                <th class="text-center">Kuantitas x Harga</th>
+                                <th class="text-center">Porsi x Subtotal</th>
                                 <th class="text-end">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if($pesanan->menu)
+                            @forelse($pesanan->detailPesanans as $detail)
                             <tr>
-                                <td class="align-middle fw-medium">{{ $pesanan->menu->nama_menu }}</td>
-                                <td class="align-middle text-center">
-                                    {{ $pesanan->porsi }} x Rp {{ number_format($pesanan->menu->harga, 0, ',', '.') }}
+                                <td class="align-middle fw-medium">
+                                    {{ $detail->menu->nama_menu }}
+                                    @if($detail->menuItems->count() > 0)
+                                        <ul class="mb-0 mt-1 ps-3 text-muted small">
+                                            @foreach($detail->menuItems as $item)
+                                                <li>{{ $item->nama }} (+Rp {{ number_format($item->harga, 0, ',', '.') }})</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
                                 </td>
-                                <td class="align-middle text-end fw-bold">Rp {{ number_format($pesanan->subtotal, 0, ',', '.') }}</td>
+                                <td class="align-middle text-center">
+                                    {{ $detail->porsi }} x Rp {{ number_format($detail->subtotal / $detail->porsi, 0, ',', '.') }}
+                                </td>
+                                <td class="align-middle text-end fw-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                             </tr>
-                            @else
+                            @empty
                             <tr>
                                 <td colspan="3" class="text-center text-muted">Data menu tidak ditemukan.</td>
                             </tr>
+                            @endforelse
+
+                            @if($pesanan->detailPesananMinumans && $pesanan->detailPesananMinumans->count() > 0)
+                                <tr>
+                                    <td colspan="3" class="bg-light fw-bold text-success">
+                                        <i class="fa-solid fa-mug-hot"></i> Minuman
+                                    </td>
+                                </tr>
+                                @foreach($pesanan->detailPesananMinumans as $minumanDetail)
+                                <tr>
+                                    <td class="align-middle fw-medium text-success">
+                                        {{ $minumanDetail->minuman->nama_minuman }}
+                                    </td>
+                                    <td class="align-middle text-center text-success">
+                                        {{ $minumanDetail->jumlah }} x Rp {{ number_format($minumanDetail->minuman->harga, 0, ',', '.') }}
+                                    </td>
+                                    <td class="align-middle text-end fw-bold text-success">Rp {{ number_format($minumanDetail->subtotal, 0, ',', '.') }}</td>
+                                </tr>
+                                @endforeach
                             @endif
                         </tbody>
                     </table>

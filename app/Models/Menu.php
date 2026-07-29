@@ -32,7 +32,7 @@ class Menu extends Model
 
     public function pesanan()
     {
-        return $this->hasMany(Pesanan::class);
+        return $this->belongsToMany(Pesanan::class, 'detail_pesanan');
     }
 
     public function jadwal()

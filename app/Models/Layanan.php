@@ -40,6 +40,11 @@ class Layanan extends Model
         return $this->tipe === 'acara';
     }
 
+    public function minumans(): HasMany
+    {
+        return $this->hasMany(Minuman::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', true);
@@ -61,13 +66,15 @@ class Layanan extends Model
             return 0; // Or null, but the type is int.
         }
 
-        $totalPorsiPesananMingguIni = $this->pesanan()
-            ->whereNotIn('status', ['dibatalkan']) // Not cancelled
-            ->whereBetween('tanggal_pesanan', [
-                now()->startOfWeek()->format('Y-m-d'),
-                now()->endOfWeek()->format('Y-m-d')
-            ])
-            ->sum('porsi');
+        $totalPorsiPesananMingguIni = \App\Models\DetailPesanan::whereHas('pesanan', function($q) {
+            $q->where('layanan_id', $this->id)
+              ->whereNotNull('status_pesanan') // Consider null as not valid if it relies on being processed
+              ->where('status_pesanan', '!=', 'dibatalkan')
+              ->whereBetween('tanggal_pesanan', [
+                  now()->startOfWeek()->format('Y-m-d'),
+                  now()->endOfWeek()->format('Y-m-d')
+              ]);
+        })->sum('porsi');
 
         return max(0, $this->kapasitas_porsi_per_minggu - $totalPorsiPesananMingguIni);
     }

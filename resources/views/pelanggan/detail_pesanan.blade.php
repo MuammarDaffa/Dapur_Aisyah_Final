@@ -2,6 +2,9 @@
 @section('title', 'Detail Pesanan')
 
 @section('content')
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
 <div class="container mx-auto px-4 py-8 mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -35,7 +38,9 @@
                         <tr>
                             <td class="text-muted" style="width: 200px;">Status Pesanan</td>
                             <td class="fw-bold">
-                                <span class="badge bg-{{ $pesanan->status_pesanan_color }} fs-6">{{ $pesanan->status_pesanan_label }}</span>
+                                @if(!is_null($pesanan->status_pesanan))
+                                    <span class="badge bg-{{ $pesanan->status_pesanan_color }} fs-6">{{ $pesanan->status_pesanan_label }}</span>
+                                @endif
                             </td>
                         </tr>
                         <tr>
@@ -71,6 +76,15 @@
                             </td>
                         </tr>
                     </table>
+
+                    @if($pesanan->metode_pengambilan == 'diantar_ke_tempat' && $pesanan->latitude && $pesanan->longitude)
+                        <hr class="my-4">
+                        <h6 class="fw-bold text-dark mb-3">Lokasi Pengantaran</h6>
+                        <div id="map" class="w-100 rounded border shadow-sm mb-3" style="height: 250px; z-index: 1;"></div>
+                        <!-- <a href="https://www.google.com/maps?q={{ $pesanan->latitude }},{{ $pesanan->longitude }}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold">
+                            <i class="bi bi-geo-alt-fill me-1"></i> Buka Rute di Google Maps
+                        </a> -->
+                    @endif
                 </div>
             </div>
 
@@ -106,6 +120,29 @@
                     </div>
                 </div>
             @endforeach
+
+            @if($pesanan->detailPesananMinumans && $pesanan->detailPesananMinumans->count() > 0)
+                <div class="card shadow-sm border-0 mb-4 bg-light">
+                    <div class="card-header bg-white fw-bold fs-5 text-success">
+                        <i class="bi bi-cup-straw me-2"></i> Pilihan Minuman
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush mb-0">
+                            @foreach($pesanan->detailPesananMinumans as $detailMinuman)
+                                <li class="list-group-item bg-transparent px-0">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-bold">{{ $detailMinuman->minuman->nama_minuman }}</span>
+                                        <span class="fw-bold text-success">Rp {{ number_format($detailMinuman->subtotal, 0, ',', '.') }}</span>
+                                    </div>
+                                    <div class="text-muted small">
+                                        {{ $detailMinuman->jumlah }} cup &times; Rp {{ number_format($detailMinuman->minuman->harga, 0, ',', '.') }}
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
 
            <div class="card shadow-sm border-0 mb-5 bg-light">
                 <div class="card-body p-4">
@@ -214,6 +251,28 @@
             btnBayar.disabled = false;
             alert('Gagal menghubungi server.');
         });
+    });
+</script>
+@endif
+
+@if($pesanan->metode_pengambilan == 'diantar_ke_tempat' && $pesanan->latitude && $pesanan->longitude)
+<!-- Memanggil javascript leaflet dari CDN -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var lat = {{ $pesanan->latitude }};
+        var lng = {{ $pesanan->longitude }};
+        var map = L.map('map').setView([lat, lng], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        L.marker([lat, lng])
+          .addTo(map)
+          .bindPopup("<b>Lokasi Pengantaran</b><br>Pesanan akan dikirim ke titik ini.")
+          .openPopup();
     });
 </script>
 @endif

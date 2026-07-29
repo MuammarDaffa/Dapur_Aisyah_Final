@@ -60,7 +60,7 @@ class Pesanan extends Model
     {
         return match ($this->status_pembayaran) {
             self::PEMBAYARAN_BELUM_DIBAYAR => 'Belum Dibayar',
-            self::PEMBAYARAN_DP => 'DP Dibayar',
+            self::PEMBAYARAN_DP => 'DP ',
             self::PEMBAYARAN_LUNAS => 'Lunas',
             default => $this->status_pembayaran,
         };
@@ -76,8 +76,12 @@ class Pesanan extends Model
         };
     }
 
-    public function getStatusPesananLabelAttribute(): string
+    public function getStatusPesananLabelAttribute(): ?string
     {
+        if (is_null($this->status_pesanan)) {
+            return null;
+        }
+
         return match ($this->status_pesanan) {
             self::PESANAN_DIPROSES => 'Diproses',
             self::PESANAN_DIBATALKAN => 'Dibatalkan',
@@ -86,8 +90,12 @@ class Pesanan extends Model
         };
     }
 
-    public function getStatusPesananColorAttribute(): string
+    public function getStatusPesananColorAttribute(): ?string
     {
+        if (is_null($this->status_pesanan)) {
+            return null;
+        }
+
         return match ($this->status_pesanan) {
             self::PESANAN_DIPROSES => 'info',
             self::PESANAN_DIBATALKAN => 'danger',
@@ -130,8 +138,13 @@ class Pesanan extends Model
         return $this->belongsTo(Layanan::class, 'layanan_id');
     }
 
-    public function detailPesanans(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function detailPesanans(): HasMany
     {
         return $this->hasMany(DetailPesanan::class);
+    }
+
+    public function detailPesananMinumans(): HasMany
+    {
+        return $this->hasMany(DetailPesananMinuman::class);
     }
 }

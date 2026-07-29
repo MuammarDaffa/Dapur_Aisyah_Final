@@ -44,7 +44,7 @@ class PesananController extends Controller
 
     public function show(Pesanan $pesanan)
     {
-        $pesanan->load(['user', 'menu', 'layanan']);
+        $pesanan->load(['user', 'detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesananMinumans.minuman', 'layanan']);
 
         return view('admin.pesanan.show', compact('pesanan'));
     }

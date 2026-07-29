@@ -14,8 +14,15 @@ class MidtransController extends Controller
 
         if ($hashed == $request->signature_key) {
             
-            // 1. Bersihkan akhiran -DP atau -PELUNASAN untuk mencari nomor pesanan asli di database
-            $nomorPesananAsli = str_replace(['-DP', '-PELUNASAN'], '', $request->order_id);
+            // 1. Ekstrak nomor pesanan asli dan jenis pembayaran
+            // Format order_id: ORD-20260729-0001-DP-1738201231
+            $parts = explode('-', $request->order_id);
+            if (count($parts) >= 4) {
+                $nomorPesananAsli = $parts[0] . '-' . $parts[1] . '-' . $parts[2];
+                $jenisPembayaran = $parts[3]; // DP atau PELUNASAN
+            } else {
+                return response()->json(['message' => 'Format order_id tidak valid'], 400);
+            }
             
             // 2. Cari pesanan di database kita
             $pesanan = Pesanan::where('nomor_pesanan', $nomorPesananAsli)->first();
@@ -25,13 +32,20 @@ class MidtransController extends Controller
                 if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
                     
                     // CEK APAKAH INI DP ATAU PELUNASAN?
-                    if (str_ends_with($request->order_id, '-DP')) {
+                    if ($jenisPembayaran === 'DP') {
                         // Jika DP, ubah status_pembayaran jadi DP
-                        $pesanan->update(['status_pembayaran' => Pesanan::PEMBAYARAN_DP]);
-                    } elseif (str_ends_with($request->order_id, '-PELUNASAN')) {
+                        $pesanan->status_pembayaran = Pesanan::PEMBAYARAN_DP;
+                    } elseif ($jenisPembayaran === 'PELUNASAN') {
                         // Jika Pelunasan, ubah status_pembayaran jadi LUNAS
-                        $pesanan->update(['status_pembayaran' => Pesanan::PEMBAYARAN_LUNAS]);
+                        $pesanan->status_pembayaran = Pesanan::PEMBAYARAN_LUNAS;
                     }
+
+                    // Jika status_pesanan masih null, ubah menjadi diproses
+                    if (is_null($pesanan->status_pesanan)) {
+                        $pesanan->status_pesanan = Pesanan::PESANAN_DIPROSES;
+                    }
+
+                    $pesanan->save();
                     
                 } 
                 // Jika dibatalkan atau kedaluwarsa
