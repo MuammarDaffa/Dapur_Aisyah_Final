@@ -2,11 +2,13 @@
 @section('title', 'Pilih Menu Acara')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<!-- memanggil CSS leaflet dari CDN -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<div class="container mx-auto px-4 py-8 mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="mb-4">
-                <h2 class="fs-3 fw-bold text-dark  mt-2 mb-1">Pilih Menu untuk {{ $layanan->nama }}</h2>
+                <h2 class="fs-3 fw-bold text-dark mt-2 mb-1">Pilih Menu untuk {{ $service->nama }}</h2>
             </div>
 
             @if(session('success'))
@@ -28,9 +30,58 @@
 
             <form action="{{ route('pelanggan.acara.simpan_menu') }}" method="POST" id="formPilihMenu">
                 @csrf
+                <input type="hidden" name="layanan_id" value="{{ $service->id }}">
+                @if(isset($pesanan))
+                    <input type="hidden" name="pesanan_id" value="{{ $pesanan->id }}">
+                @endif
+                <input type="hidden" name="latitude" id="input_latitude" value="{{ isset($pesanan) ? $pesanan->latitude : '' }}">
+                <input type="hidden" name="longitude" id="input_longitude" value="{{ isset($pesanan) ? $pesanan->longitude : '' }}">
+                
+                <!-- Pilihan Radio Button -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-black">Pilih Metode Pengambilan:</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_ambil" value="ambil_sendiri" {{ (!isset($pesanan) || $pesanan->metode_pengambilan == 'ambil_sendiri') ? 'checked' : '' }}>
+                                <label class="form-check-label text-black" for="radio_ambil">
+                                    Ambil Sendiri 
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar_ke_tempat" {{ (isset($pesanan) && $pesanan->metode_pengambilan == 'diantar_ke_tempat') ? 'checked' : '' }}>
+                                <label class="form-check-label text-black" for="radio_antar">
+                                    Di Antar ke Lokasi  
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Input Datepicker -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-black">Pilih Tanggal Acara</label>
+                            <input type="date" name="tanggal_acara" id="tanggal_acara" class="form-control border-danger" required value="{{ isset($pesanan) && $pesanan->tanggal_pesanan ? \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->format('Y-m-d') : '' }}">
+                        </div>
+
+                        <!-- Wadah Peta -->
+                        <div id="wadah_peta" style="display: none;">
+                            <hr class="my-4">
+                            <h5 class="fw-bold mb-3">Tentukan Lokasi Pengantaran</h5>
+                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                <span class="text-muted small"><i>*Silakan klik pada peta untuk memilih lokasi pengantaran</i></span>
+                            </div>
+                            <div id="map" class="w-100 rounded border border-2 shadow-sm" style="height: 50vh; min-height: 400px; z-index: 1;"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-body p-4">
                         @forelse($menus as $menu)
+                            @php
+                                $detail = isset($pesanan) ? $pesanan->detailPesanans->firstWhere('menu_id', $menu->id) : null;
+                                $porsiValue = $detail ? $detail->porsi : '';
+                                $selectedItems = $detail ? $detail->menuItems->pluck('id')->toArray() : [];
+                            @endphp
                             <div class="menu-section" data-menu-id="{{ $menu->id }}">
                                 <h5 class="fw-bold text-dark mb-1">{{ $menu->nama_menu }}</h5>
                                 <p class="text-dark small mb-3">
@@ -45,7 +96,7 @@
                                         @foreach($menu->items as $item)
                                             <div class="form-check mb-2 d-flex justify-content-between align-items-center" style="max-width: 500px;">
                                                 <div>
-                                                    <input class="form-check-input me-2" type="checkbox" name="items_{{ $menu->id }}[]" value="{{ $item->id }}" id="item_{{ $item->id }}">
+                                                    <input class="form-check-input me-2" type="checkbox" name="items_{{ $menu->id }}[]" value="{{ $item->id }}" id="item_{{ $item->id }}" {{ in_array($item->id, $selectedItems) ? 'checked' : '' }}>
                                                     <label class="form-check-label text-dark" style="cursor: pointer;" for="item_{{ $item->id }}">
                                                         {{ $item->nama }}
                                                     </label>
@@ -68,7 +119,7 @@
 
                                 <div class="mb-2">
                                     <label for="porsi_{{ $menu->id }}" class="form-label fw-semibold text-dark">Jumlah Porsi</label>
-                                    <input type="number" class="form-control porsi-input" style="max-width: 300px;" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" min="50" >
+                                    <input type="number" class="form-control porsi-input" style="max-width: 300px;" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" min="50" value="{{ $porsiValue }}">
                                     <div class="form-text text-dark">Minimal pemesanan 50 porsi.</div>
                                 </div>
 
@@ -90,13 +141,13 @@
                         <div class="card-body p-4">
                             <h5 class="fw-bold text-dark mb-3">Tipe Penyajian</h5>
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="tipe_penyajian" id="tipe_nasi_kotak" value="Nasi Kotak" {{ (isset($draft['tipe_penyajian']) && $draft['tipe_penyajian'] == 'Nasi Kotak') ? 'checked' : '' }} required>
+                                <input class="form-check-input" type="radio" name="tipe_penyajian" id="tipe_nasi_kotak" value="Nasi Kotak" {{ (!isset($pesanan) || $pesanan->tipe_penyajian == 'nasi_kotak') ? 'checked' : '' }} required>
                                 <label class="form-check-label text-dark" for="tipe_nasi_kotak">
                                     Nasi Kotak
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="tipe_penyajian" id="tipe_prasmanan" value="Prasmanan" {{ (isset($draft['tipe_penyajian']) && $draft['tipe_penyajian'] == 'Prasmanan') ? 'checked' : '' }} required>
+                                <input class="form-check-input" type="radio" name="tipe_penyajian" id="tipe_prasmanan" value="Prasmanan" {{ (isset($pesanan) && $pesanan->tipe_penyajian == 'prasmanan') ? 'checked' : '' }} required>
                                 <label class="form-check-label text-dark" for="tipe_prasmanan">
                                     Prasmanan
                                 </label>
@@ -106,35 +157,61 @@
 
                     <div class="d-flex justify-content-end mb-5">
                         <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
-                            Lanjut
+                            Lanjut ke Detail Pesanan
                         </button>
                     </div>
                 @endif
-                <div class="d-flex justify-content-start mb-5">
-                    <a href="{{ route('pelanggan.acara.service', ['service' => $layanan->id]) }}"
-                       class="btn btn-secondary px-5 py-2 fw-bold shadow-sm">
-                        Kembali
-                    </a>
-                </div>
             </form>
         </div>
     </div>
 </div>
 
+<!-- Memanggil javascript leaflet dari CDN -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('formPilihMenu');
         
-        // Tidak perlu hidden input menu_id tunggal lagi
+        var initLat = {{ isset($pesanan) && $pesanan->latitude ? $pesanan->latitude : -0.03194 }};
+        var initLng = {{ isset($pesanan) && $pesanan->longitude ? $pesanan->longitude : 109.325 }};
+        var map = L.map('map').setView([initLat, initLng], 14);
 
-        const menuCards = document.querySelectorAll('.menu-section');
-        
-        menuCards.forEach(card => {
-            // Ketika ada interaksi, kita bisa biarkan saja,
-            // validasi required porsi dilakukan saat submit jika tidak ada satupun yang diisi
-        });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
 
-        // Validasi saat submit jika belum ada menu yang diinteraksikan
+        var marker = L.marker([initLat, initLng])
+                      .addTo(map)
+                      .bindPopup("<b>Halo!</b><br>Pesanan akan diantar kesini.");
+
+        map.on('click', function(e){
+            var lokasiBaru = e.latlng;
+            marker.setLatLng(lokasiBaru);
+            document.getElementById('input_latitude').value = lokasiBaru.lat;
+            document.getElementById('input_longitude').value = lokasiBaru.lng;
+        }); 
+
+        const radioAmbil = document.getElementById('radio_ambil');
+        const radioAntar = document.getElementById('radio_antar');
+        const wadahPeta = document.getElementById('wadah_peta');
+
+        function aturTampilanPeta() {
+            if (radioAntar.checked) {
+                wadahPeta.style.display = 'block';
+                setTimeout(function(){ 
+                    map.invalidateSize(); 
+                }, 100);
+            } else {
+                wadahPeta.style.display = 'none';
+            }
+        }
+
+        aturTampilanPeta();
+
+        radioAmbil.addEventListener('change', aturTampilanPeta);
+        radioAntar.addEventListener('change', aturTampilanPeta);
+
         form.addEventListener('submit', function(e) {
             let isAnyPorsiFilled = false;
             document.querySelectorAll('.porsi-input').forEach(input => {
@@ -150,6 +227,20 @@
                     title: 'Perhatian',
                     text: 'Silakan isi jumlah porsi pada minimal satu menu (minimal 50 porsi).'
                 });
+                return false;
+            }
+
+            const lat = document.getElementById('input_latitude').value;
+            const lng = document.getElementById('input_longitude').value;
+            
+            if (radioAntar.checked && (!lat || !lng)) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian',
+                    text: 'Karena Anda memilih Di Antar ke Lokasi, silakan klik pada peta untuk menentukan lokasi pengantaran.'
+                });
+                return false;
             }
         });
     });

@@ -22,41 +22,41 @@ class DashboardController extends Controller
 
     /**
      * Halaman pilih layanan acara (Cards)
-     * KARENA ALUR PEMESANAN DITUTUP, HANYA MENAMPILKAN PLACEHOLDER.
      */
     public function acaraService(Request $request, \App\Models\Layanan $service)
     {
-        $draft = session('pesanan_sementara', []);
-        return view('pelanggan.lokasi_acara', compact('service', 'draft'));
-    }
-
-
-        /**
-     * Halaman Pilih Lokasi untuk Katering Harian (Tanpa Datepicker)
-     */
-    public function lokasiHarian()
-    {
-        return view('pelanggan.lokasi_harian');
+        $menus = $service->menus()->with('items')->get();
+        return view('pelanggan.pilih_menu_acara', compact('service', 'menus'));
     }
 
     /**
-     * Halaman Pilih Lokasi & Tanggal untuk Katering Acara (Dengan Datepicker)
+     * Halaman Edit Pesanan
      */
-    public function lokasiTanggalAcara()
+    public function editPesanan($id)
     {
-        return view('pelanggan.lokasi_acara');
+        $pesanan = \App\Models\Pesanan::with('detailPesanans.menuItems')->findOrFail($id);
+        
+        // Pastikan hanya bisa diedit jika belum_bayar
+        if ($pesanan->user_id !== auth()->id() || $pesanan->status !== \App\Models\Pesanan::STATUS_BELUM_BAYAR) {
+            return redirect()->route('pelanggan.riwayat')->with('error', 'Pesanan tidak valid atau sudah dibayar.');
+        }
+
+        $service = \App\Models\Layanan::findOrFail($pesanan->layanan_id);
+        $menus = $service->menus()->with('items')->get();
+
+        return view('pelanggan.pilih_menu_acara', compact('pesanan', 'service', 'menus'));
     }
 
     /**
-     * Placeholder action untuk tombol Lanjut di Halaman Acara
+     * Simpan Pilihan Menu Acara (Create / Update)
      */
-    public function lanjutAcara(Request $request)
+    public function simpanMenuAcara(Request $request)
     {
-        // Validasi backend sesuai permintaan (opsional, karena JS sudah menangani)
         $request->validate([
             'layanan_id' => 'required|exists:layanan,id',
             'metode_pengambilan' => 'required|in:ambil_sendiri,diantar_ke_tempat',
             'tanggal_acara' => 'required|date',
+            'tipe_penyajian' => 'required|in:Nasi Kotak,Prasmanan',
         ]);
 
         if ($request->metode_pengambilan === 'diantar_ke_tempat') {
@@ -65,70 +65,6 @@ class DashboardController extends Controller
                 'longitude' => 'required|numeric',
             ]);
         }
-
-        $draft = session('pesanan_sementara', []);
-        $draft['layanan_id'] = $request->layanan_id;
-        $draft['metode_pengambilan'] = $request->metode_pengambilan;
-        $draft['tanggal_acara'] = $request->tanggal_acara;
-        $draft['latitude'] = $request->latitude;
-        $draft['longitude'] = $request->longitude;
-
-        session(['pesanan_sementara' => $draft]);
-
-        return redirect()->route('pelanggan.acara.pilih_menu')
-                         ->with('success', 'Lokasi dan tanggal berhasil disimpan. Silakan pilih menu Anda.');
-    }
-
-
-        public function simpanLokasi(Request $request)
-    {
-        $lat = $request->input('latitude');
-        $lng = $request->input('longitude');
-
-        if (!$lat || !$lng) {
-            return back()->with('error', 'Silakan klik pada peta terlebih dahulu!');
-        }
-
-        // 1. Kenali siapa pelanggan yang sedang Login saat ini
-        $user = auth()->user();
-
-        // 2. KARENA ALUR DITUTUP, HANYA PLACEHOLDER TAMPILAN
-        // Koordinat latitude dan longitude tidak lagi disimpan ke tabel users.
-        // Data ini seharusnya akan diteruskan ke proses checkout dan disimpan di tabel pesanan.
-        
-        // 3. Kembalikan ke halaman peta dengan pesan sukses hijau
-        return back()->with('success', 'Lokasi pengiriman disetujui (Placeholder). Data siap diproses ke pesanan!');
-    }
-
-    /**
-     * Halaman Pilih Menu Acara
-     */
-    public function pilihMenuAcara(Request $request)
-    {
-        $draft = session('pesanan_sementara');
-        if (!$draft || !isset($draft['layanan_id'])) {
-            return redirect()->route('landing')->with('error', 'Sesi pesanan hilang, silakan mulai kembali.');
-        }
-
-        $layanan = \App\Models\Layanan::findOrFail($draft['layanan_id']);
-        $menus = $layanan->menus()->with('items')->get();
-
-        return view('pelanggan.pilih_menu_acara', compact('layanan', 'menus', 'draft'));
-    }
-
-    /**
-     * Simpan Pilihan Menu Acara
-     */
-    public function simpanMenuAcara(Request $request)
-    {
-        $draft = session('pesanan_sementara');
-        if (!$draft || !isset($draft['layanan_id'])) {
-            return redirect()->route('landing')->with('error', 'Sesi pesanan hilang, silakan mulai kembali.');
-        }
-
-        $request->validate([
-            'tipe_penyajian' => 'required|in:Nasi Kotak,Prasmanan',
-        ]);
 
         $menusDipilih = [];
         $totalHargaKeseluruhan = 0;
@@ -164,99 +100,107 @@ class DashboardController extends Controller
         }
 
         if (empty($menusDipilih)) {
-            return back()->withErrors(['Silakan pilih minimal satu menu dengan porsi minimal 50 porsi.']);
+            return back()->withInput()->withErrors(['Silakan pilih minimal satu menu dengan porsi minimal 50 porsi.']);
         }
 
-        $draft['menus'] = $menusDipilih;
-        $draft['total'] = $totalHargaKeseluruhan;
-        $draft['tipe_penyajian'] = $request->tipe_penyajian;
+        $jumlahDp = $totalHargaKeseluruhan * 0.5;
+        $sisaPembayaran = $totalHargaKeseluruhan - $jumlahDp;
 
-        session(['pesanan_sementara' => $draft]);
+        try {
+            \Illuminate\Support\Facades\DB::beginTransaction();
 
-        return redirect()->route('pelanggan.acara.detail_pesanan')
-                         ->with('success', 'Menu berhasil dipilih! Silakan periksa detail pesanan Anda.');
+            if ($request->has('pesanan_id') && !empty($request->pesanan_id)) {
+                $pesanan = \App\Models\Pesanan::findOrFail($request->pesanan_id);
+                
+                if ($pesanan->user_id !== auth()->id() || $pesanan->status !== \App\Models\Pesanan::STATUS_BELUM_BAYAR) {
+                    throw new \Exception('Pesanan tidak valid untuk diubah.');
+                }
+                
+                $pesanan->update([
+                    'tanggal_pesanan' => $request->tanggal_acara,
+                    'metode_pengambilan' => $request->metode_pengambilan,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                    'tipe_penyajian' => $request->tipe_penyajian === 'Nasi Kotak' ? 'nasi_kotak' : 'prasmanan',
+                    'subtotal' => $totalHargaKeseluruhan,
+                    'total' => $totalHargaKeseluruhan,
+                    'jumlah_dp' => $jumlahDp,
+                    'sisa_pembayaran' => $sisaPembayaran,
+                ]);
+
+                // Hapus detail lama untuk diganti yang baru
+                $pesanan->detailPesanans()->delete();
+            } else {
+                $pesanan = \App\Models\Pesanan::create([
+                    'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
+                    'user_id' => auth()->id(),
+                    'layanan_id' => $request->layanan_id,
+                    'tanggal_pesanan' => $request->tanggal_acara,
+                    'metode_pengambilan' => $request->metode_pengambilan,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                    'subtotal' => $totalHargaKeseluruhan, 
+                    'total' => $totalHargaKeseluruhan,
+                    'jumlah_dp' => $jumlahDp,                   
+                    'sisa_pembayaran' => $sisaPembayaran,       
+                    'tipe_penyajian' => $request->tipe_penyajian === 'Nasi Kotak' ? 'nasi_kotak' : 'prasmanan',
+                    'status' => \App\Models\Pesanan::STATUS_BELUM_BAYAR,
+                ]);
+            }
+
+            // Simpan detail pesanan baru
+            foreach ($menusDipilih as $menuDraft) {
+                $detail = $pesanan->detailPesanans()->create([
+                    'menu_id' => $menuDraft['menu_id'],
+                    'porsi' => $menuDraft['porsi'],
+                    'subtotal' => $menuDraft['subtotal'],
+                ]);
+
+                if (!empty($menuDraft['menu_item_ids'])) {
+                    $detail->menuItems()->attach($menuDraft['menu_item_ids']);
+                }
+            }
+
+            \Illuminate\Support\Facades\DB::commit();
+            session()->forget('pesanan_sementara');
+
+            return redirect()->route('pelanggan.acara.detail_pesanan', $pesanan->id)
+                             ->with('success', 'Pesanan berhasil disimpan, silakan periksa detail pesanan Anda.');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            return back()->withInput()->with('error', 'Terjadi kesalahan saat menyimpan pesanan: ' . $e->getMessage());
+        }
     }
 
-    public function detailPesanan()
+    public function detailPesanan($id)
     {
-        $draft = session('pesanan_sementara');
-        if (!$draft || !isset($draft['menus'])) {
-            return redirect()->route('landing')->with('error', 'Sesi pesanan hilang.');
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.menuItems', 'layanan'])->findOrFail($id);
+        
+        if ($pesanan->user_id !== auth()->id()) {
+            return redirect()->route('landing')->with('error', 'Anda tidak berhak melihat pesanan ini.');
         }
 
-        $layanan = \App\Models\Layanan::find($draft['layanan_id']);
-
-        $menusDetail = [];
-        foreach ($draft['menus'] as $menuDraft) {
-            $menu = \App\Models\Menu::find($menuDraft['menu_id']);
-            $selectedItems = collect();
-            if (!empty($menuDraft['menu_item_ids'])) {
-                $selectedItems = \App\Models\MenuItem::whereIn('id', $menuDraft['menu_item_ids'])->get();
-            }
-            $menusDetail[] = [
-                'menu' => $menu,
-                'porsi' => $menuDraft['porsi'],
-                'subtotal' => $menuDraft['subtotal'],
-                'selectedItems' => $selectedItems
-            ];
-        }
-
-        return view('pelanggan.detail_pesanan', compact('draft', 'layanan', 'menusDetail'));
+        return view('pelanggan.detail_pesanan', compact('pesanan'));
     }
 
-        public function prosesBayar(Request $request)
+    public function bayarDp($id)
     {
-        $draft = session('pesanan_sementara');
-        if (!$draft || !isset($draft['layanan_id']) || !isset($draft['menus'])) {
-            return redirect()->route('landing')->with('error', 'Sesi pesanan tidak lengkap, silakan mulai kembali.');
+        $pesanan = \App\Models\Pesanan::findOrFail($id);
+        
+        if ($pesanan->user_id !== auth()->id() || $pesanan->status !== \App\Models\Pesanan::STATUS_BELUM_BAYAR) {
+            return response()->json(['status' => 'error', 'message' => 'Pesanan tidak valid untuk dibayar'], 403);
         }
 
-        // 1. Asumsi DP 50% dari total harga
-        $totalHarga = $draft['total'];
-        $jumlahDp = $totalHarga * 0.5;
-        $sisaPembayaran = $totalHarga - $jumlahDp;
-
-        // 2. Simpan Data Pesanan ke Database
-        $pesanan = \App\Models\Pesanan::create([
-            'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
-            'user_id' => auth()->id(),
-            'layanan_id' => $draft['layanan_id'],
-            'tanggal_pesanan' => $draft['tanggal_acara'],
-            'metode_pengambilan' => $draft['metode_pengambilan'],
-            'latitude' => $draft['latitude'],
-            'longitude' => $draft['longitude'],
-            'subtotal' => $totalHarga, 
-            'total' => $totalHarga,                     // <- Ini sudah saya perbaiki
-            'jumlah_dp' => $jumlahDp,                   
-            'sisa_pembayaran' => $sisaPembayaran,       
-             'tipe_penyajian' => $draft['tipe_penyajian'] === 'Nasi Kotak' ? 'nasi_kotak' : 'prasmanan',
-            'status' => \App\Models\Pesanan::STATUS_BELUM_BAYAR,
-        ]);
-
-        // 3. Simpan Detail Menu (Keranjang)
-        foreach ($draft['menus'] as $menuDraft) {
-            $detail = $pesanan->detailPesanans()->create([
-                'menu_id' => $menuDraft['menu_id'],
-                'porsi' => $menuDraft['porsi'],
-                'subtotal' => $menuDraft['subtotal'],
-            ]);
-
-            if (!empty($menuDraft['menu_item_ids'])) {
-                $detail->menuItems()->attach($menuDraft['menu_item_ids']);
-            }
-        }
-
-        // 4. Konfigurasi Midtrans
         Config::$serverKey = config('midtrans.server_key');
         Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = true;
         Config::$is3ds = true;
 
-        // 5. Siapkan parameter pesanan DP ke Midtrans
         $params = array(
             'transaction_details' => array(
                 'order_id' => $pesanan->nomor_pesanan . '-DP', 
-                'gross_amount' => $jumlahDp,
+                'gross_amount' => $pesanan->jumlah_dp,
             ),
             'customer_details' => array(
                 'first_name' => auth()->user()->name,
@@ -264,19 +208,13 @@ class DashboardController extends Controller
             ),
         );
 
-        // 6. Dapatkan Snap Token dari Midtrans
         $snapToken = Snap::getSnapToken($params);
 
-        // 7. Hapus keranjang setelah token didapat
-        session()->forget('pesanan_sementara');
-
-            // 8. Karena kita menggunakan AJAX, kita kembalikan token-nya saja berupa JSON
-     return response()->json([
-         'status' => 'success',
-         'snap_token' => $snapToken,
-         'pesanan_id' => $pesanan->nomor_pesanan
-     ]);
-
+        return response()->json([
+            'status' => 'success',
+            'snap_token' => $snapToken,
+            'pesanan_id' => $pesanan->nomor_pesanan
+        ]);
     }
 
     public function riwayatPesanan()
@@ -333,5 +271,26 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function batalkanPesanan($id)
+    {
+        $pesanan = \App\Models\Pesanan::findOrFail($id);
+
+        if ($pesanan->user_id !== auth()->id()) {
+            return redirect()->route('pelanggan.riwayat')->with('error', 'Anda tidak memiliki akses ke pesanan ini.');
+        }
+
+        if ($pesanan->status === \App\Models\Pesanan::STATUS_LUNAS) {
+            return redirect()->route('pelanggan.riwayat')->with('error', 'Pesanan yang sudah lunas tidak dapat dibatalkan.');
+        }
+
+        if ($pesanan->status === \App\Models\Pesanan::STATUS_BATAL) {
+            return redirect()->route('pelanggan.riwayat')->with('info', 'Pesanan sudah berstatus dibatalkan.');
+        }
+
+        $pesanan->status = \App\Models\Pesanan::STATUS_BATAL;
+        $pesanan->save();
+
+        return redirect()->route('pelanggan.riwayat')->with('success', 'Pesanan berhasil dibatalkan.');
+    }
 
 }

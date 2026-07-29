@@ -67,12 +67,11 @@ Route::post('/pelunasan/{id}', [CustomerDashboard::class, 'prosesPelunasan'])->n
     Route::get('/katering-harian/lokasi',[CustomerDashboard::class, 'lokasiHarian'])->name('harian.lokasi');
 
     // Pemesanan Katering Acara
-    Route::get('/katering-acara/lokasi-tanggal',[CustomerDashboard::class, 'lokasiTanggalAcara'])->name('acara.lokasi-tanggal');
-    Route::post('/katering-acara/lanjut', [CustomerDashboard::class, 'lanjutAcara'])->name('acara.lanjut');
-    Route::get('/katering-acara/pilih-menu', [CustomerDashboard::class, 'pilihMenuAcara'])->name('acara.pilih_menu');
+    Route::get('/katering-acara/edit-pesanan/{id}', [CustomerDashboard::class, 'editPesanan'])->name('acara.edit_pesanan');
     Route::post('/katering-acara/simpan-menu', [CustomerDashboard::class, 'simpanMenuAcara'])->name('acara.simpan_menu');
-    Route::get('/katering-acara/detail-pesanan', [CustomerDashboard::class, 'detailPesanan'])->name('acara.detail_pesanan');
-    Route::post('/katering-acara/bayar', [CustomerDashboard::class, 'prosesBayar'])->name('acara.bayar');
+    Route::get('/katering-acara/detail-pesanan/{id}', [CustomerDashboard::class, 'detailPesanan'])->name('acara.detail_pesanan');
+    Route::post('/katering-acara/bayar-dp/{id}', [CustomerDashboard::class, 'bayarDp'])->name('acara.bayar_dp');
+    Route::post('/katering-acara/batalkan/{id}', [CustomerDashboard::class, 'batalkanPesanan'])->name('acara.batalkan');
 
         // Rute POST untuk menangkap kiriman data dari form peta
     Route::post('/simpan-lokasi-peta', [CustomerDashboard::class, 'simpanLokasi'])->name('simpan-lokasi-peta');

@@ -3,13 +3,32 @@
 @section('content')
 <div class="container py-5 mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-12">
             
             <h2 class="fw-bold mb-4 text-black">Riwayat Pesanan Saya</h2>
 
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+            @if(session('info'))
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ session('info') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             @if($riwayatPesanan->isEmpty())
                 <div class="alert alert-info text-center shadow-sm rounded-4 py-4">
-                    belum ada pesanan.
+                    Belum ada pesanan.
                 </div>
             @else
                 <div class="card shadow-sm border-0 rounded-4">
@@ -23,6 +42,7 @@
                                         <th class="py-3 text-end">Total</th>
                                         <th class="py-3 text-end">DP Dibayar</th>
                                         <th class="py-3 text-center">Status</th>
+                                        <th class="py-3 text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -34,21 +54,37 @@
                                         <td class="py-3 text-end">Rp {{ number_format($pesanan->jumlah_dp, 0, ',', '.') }}</td>
                                         <td class="py-3 text-center">
                                             @if($pesanan->status === 'belum_bayar')
-                                                <span class="badge bg-danger rounded-pill px-3 py-2">Belum Bayar</span>
+                                                <span class="badge bg-danger rounded-pill px-3 py-2">Belum Dibayar</span>
                                             @elseif($pesanan->status === 'dp')
-                                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">DP (Sudah Dibayar)</span>
-                                                 <!-- FORM TOMBOL PELUNASAN -->
-    <form class="form-pelunasan mt-1" action="{{ route('pelanggan.pelunasan', $pesanan->id) }}" method="POST">
-        @csrf
-        <button type="submit" class="btn btn-sm btn-primary rounded-pill w-100 fw-bold btn-pelunasan shadow-sm">
-            Bayar Pelunasan <br> (Rp {{ number_format($pesanan->sisa_pembayaran, 0, ',', '.') }})
-        </button>
-    </form>
+                                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">DP Dibayar</span>
                                             @elseif($pesanan->status === 'lunas')
                                                 <span class="badge bg-success rounded-pill px-3 py-2">Lunas</span>
+                                            @elseif($pesanan->status === 'dibatalkan')
+                                                <span class="badge bg-secondary rounded-pill px-3 py-2">Dibatalkan</span>
                                             @else
                                                 <span class="badge bg-secondary rounded-pill px-3 py-2">{{ ucfirst($pesanan->status) }}</span>
                                             @endif
+                                        </td>
+                                        <td class="py-3 text-center">
+                                            <div class="d-flex flex-column align-items-center gap-1">
+                                                <a href="{{ route('pelanggan.acara.detail_pesanan', $pesanan->id) }}" class="btn btn-sm btn-outline-primary rounded-pill w-100 fw-bold">Lihat</a>
+                                                
+                                                @if($pesanan->status === 'dp')
+                                                    <form class="form-pelunasan w-100" action="{{ route('pelanggan.pelunasan', $pesanan->id) }}" method="POST">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-success rounded-pill w-100 fw-bold btn-pelunasan shadow-sm">
+                                                            Pelunasan
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                                
+                                                <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" class="w-100" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill w-100 fw-bold" {{ $pesanan->status === 'lunas' || $pesanan->status === 'dibatalkan' ? 'disabled' : '' }}>
+                                                        Batalkan
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -69,7 +105,7 @@
 <script>
     document.querySelectorAll('.form-pelunasan').forEach(function(form) {
         form.addEventListener('submit', function(e){
-            e.preventDefault(); // Mencegah pindah halaman
+            e.preventDefault();
 
             const btnBayar = form.querySelector('.btn-pelunasan');
             const originalText = btnBayar.innerHTML;
@@ -94,7 +130,6 @@
                 btnBayar.disabled = false;
 
                 if(data.status === 'success'){
-                    // PANGGIL MIDTRANS SNAP
                     snap.pay(data.snap_token, {
                         onSuccess: function(result){
                             alert("Pelunasan berhasil!");
