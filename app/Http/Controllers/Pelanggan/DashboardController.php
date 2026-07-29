@@ -123,26 +123,32 @@ class DashboardController extends Controller
 
         // Kumpulkan Minuman yang dipilih
         $minumanDipilih = [];
-        foreach ($request->all() as $key => $value) {
-            if (str_starts_with($key, 'minuman_')) {
-                $minumanId = str_replace('minuman_', '', $key);
-                $jumlah = (int) $value;
+        $minumanIds = $request->input('minuman_ids', []);
+        $jumlahCup = $request->input('jumlah_cup_minuman');
+        
+        $hasMinuman = is_array($minumanIds) && count($minumanIds) > 0;
+        $hasJumlahCup = !empty($jumlahCup) && is_numeric($jumlahCup) && (int)$jumlahCup > 0;
 
-                if ($jumlah > 0) {
-                    $minuman = \App\Models\Minuman::find($minumanId);
-                    if ($minuman) {
-                        $subtotalMinuman = $minuman->harga * $jumlah;
-                        $totalHargaKeseluruhan += $subtotalMinuman;
+        if ($hasMinuman && !$hasJumlahCup) {
+            $customErrors['jumlah_cup_minuman'] = "Jumlah cup wajib diisi.";
+        } elseif ($hasJumlahCup && !$hasMinuman) {
+            $customErrors['minuman_ids'] = "Pilih minimal satu minuman.";
+        } elseif ($hasMinuman && $hasJumlahCup) {
+            $jumlahCupInt = (int) $jumlahCup;
+            $minumans = \App\Models\Minuman::whereIn('id', $minumanIds)->get();
+            
+            foreach ($minumans as $minuman) {
+                $subtotalMinuman = $minuman->harga * $jumlahCupInt;
+                $totalHargaKeseluruhan += $subtotalMinuman;
 
-                        $minumanDipilih[] = [
-                            'minuman_id' => $minuman->id,
-                            'jumlah' => $jumlah,
-                            'subtotal' => $subtotalMinuman
-                        ];
-                    }
-                }
+                $minumanDipilih[] = [
+                    'minuman_id' => $minuman->id,
+                    'jumlah' => $jumlahCupInt,
+                    'subtotal' => $subtotalMinuman
+                ];
             }
         }
+
 
         if (count($customErrors) > 0) {
             return back()->withInput()->withErrors($customErrors);

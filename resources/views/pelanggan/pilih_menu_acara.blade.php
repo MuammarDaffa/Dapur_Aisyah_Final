@@ -145,39 +145,59 @@
 
                 @if(isset($minumans) && $minumans->count() > 0)
                 <!-- Bagian Minuman -->
-                <div class="card shadow-sm border-0 mb-4">
+                <div class="card shadow-sm border-0 mb-4" id="minuman_section">
                     <div class="card-body p-4 bg-light rounded">
                         <h4 class="fw-bold text-dark mb-1">Pilihan Minuman</h4>
                         <p class="text-muted small mb-4">Minuman bersifat opsional. Tidak dihitung ke dalam kuota mingguan.</p>
                         
-                        <div class="row g-3">
+                        <div class="mb-4">
                             @foreach($minumans as $minuman)
                                 @php
+                                    $isChecked = false;
                                     $minumanValue = '';
-                                    if(isset($pesanan) && $pesanan->detailPesananMinumans) {
+                                    if (old('minuman_ids')) {
+                                        if (in_array($minuman->id, old('minuman_ids'))) {
+                                            $isChecked = true;
+                                        }
+                                    } elseif (isset($pesanan) && $pesanan->detailPesananMinumans) {
                                         $detailMinuman = $pesanan->detailPesananMinumans->where('minuman_id', $minuman->id)->first();
                                         if($detailMinuman) {
+                                            $isChecked = true;
                                             $minumanValue = $detailMinuman->jumlah;
                                         }
                                     }
                                 @endphp
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="card border border-secondary border-opacity-25 h-100">
-                                        <div class="card-body">
-                                            <h6 class="fw-bold text-dark mb-1">{{ $minuman->nama_minuman }}</h6>
-                                            <p class="text-primary fw-semibold mb-3">Rp {{ number_format($minuman->harga, 0, ',', '.') }}</p>
-                                            
-                                            <label for="minuman_{{ $minuman->id }}" class="form-label text-dark small fw-semibold">Jumlah Cup/Gelas</label>
-                                            <input type="number" class="form-control form-control-sm minuman-input" 
-                                                   name="minuman_{{ $minuman->id }}" 
-                                                   id="minuman_{{ $minuman->id }}" 
-                                                   value="{{ $minumanValue }}" 
-                                                   min="0" 
-                                                   placeholder="0">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input minuman-checkbox" type="checkbox" name="minuman_ids[]" value="{{ $minuman->id }}" id="minuman_{{ $minuman->id }}" {{ $isChecked ? 'checked' : '' }}>
+                                    <label class="form-check-label w-100 cursor-pointer text-dark" for="minuman_{{ $minuman->id }}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-medium fs-6">{{ $minuman->nama_minuman }}</span>
+                                            <span class="fw-semibold text-primary">Rp {{ number_format($minuman->harga, 0, ',', '.') }}</span>
                                         </div>
-                                    </div>
+                                    </label>
                                 </div>
                             @endforeach
+                            <div class="invalid-feedback minuman-feedback d-none">Pilih minimal satu minuman.</div>
+                            @error('minuman_ids')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <hr class="border-secondary opacity-25">
+
+                        <div class="mt-3">
+                            <label for="jumlah_cup_minuman" class="form-label fw-semibold text-dark">Jumlah Cup</label>
+                            <input type="number" class="form-control @error('jumlah_cup_minuman') is-invalid @enderror" 
+                                   style="max-width: 300px;" 
+                                   name="jumlah_cup_minuman" 
+                                   id="jumlah_cup_minuman" 
+                                   value="{{ old('jumlah_cup_minuman', $minumanValue ?: '') }}" 
+                                   min="1">
+                            <div class="invalid-feedback jumlah-cup-feedback d-none">Jumlah cup wajib diisi.</div>
+                            @error('jumlah_cup_minuman')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text text-dark">Minimal 1 cup (berlaku untuk semua minuman yang dipilih).</div>
                         </div>
                     </div>
                 </div>
@@ -266,7 +286,7 @@
 
             // Reset validation state
             document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-            document.querySelectorAll('.items-feedback').forEach(el => {
+            document.querySelectorAll('.items-feedback, .minuman-feedback, .jumlah-cup-feedback').forEach(el => {
                 el.classList.remove('d-block');
                 el.classList.add('d-none');
             });
@@ -311,6 +331,37 @@
                     }
                 }
             });
+
+            // Validasi Minuman
+            const minumanSection = document.getElementById('minuman_section');
+            if (minumanSection) {
+                const minumanCheckboxes = minumanSection.querySelectorAll('.minuman-checkbox');
+                const jumlahCupInput = document.getElementById('jumlah_cup_minuman');
+                
+                let isMinumanChecked = false;
+                minumanCheckboxes.forEach(cb => {
+                    if (cb.checked) isMinumanChecked = true;
+                });
+                
+                let hasJumlahCup = jumlahCupInput.value && parseInt(jumlahCupInput.value) > 0;
+
+                if (isMinumanChecked && !hasJumlahCup) {
+                    jumlahCupInput.classList.add('is-invalid');
+                    const cupFeedback = minumanSection.querySelector('.jumlah-cup-feedback');
+                    if (cupFeedback) {
+                        cupFeedback.classList.remove('d-none');
+                        cupFeedback.classList.add('d-block');
+                    }
+                    isValid = false;
+                } else if (hasJumlahCup && !isMinumanChecked) {
+                    const minumanFeedback = minumanSection.querySelector('.minuman-feedback');
+                    if (minumanFeedback) {
+                        minumanFeedback.classList.remove('d-none');
+                        minumanFeedback.classList.add('d-block');
+                    }
+                    isValid = false;
+                }
+            }
 
             if (!isValid) {
                 e.preventDefault();
