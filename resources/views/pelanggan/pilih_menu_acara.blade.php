@@ -147,9 +147,9 @@
                 <!-- Bagian Minuman -->
                 <div class="card shadow-sm border-0 mb-4" id="minuman_section">
                     <div class="card-body p-4">
-                        <h5 class="fw-bold text-dark mb-1">Pilihan Minuman</h5>
+                        <h5 class="fw-bold text-dark mb-1">Minuman</h5>
                         <p class="text-dark small mb-3">
-                            Minuman bersifat opsional. Tidak dihitung ke dalam kuota mingguan.
+                            <!-- Minuman bersifat opsional. Tidak dihitung ke dalam kuota mingguan. -->
                         </p>
                         
                         <div class="mb-3 checkbox-group">

@@ -88,12 +88,13 @@
                 </div>
             </div>
 
-            @foreach($pesanan->detailPesanans as $detail)
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white fw-bold fs-5">
-                        Detail Menu
-                    </div>
-                    <div class="card-body">
+            @if($pesanan->detailPesanans && $pesanan->detailPesanans->count() > 0)
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white fw-bold fs-5">
+                    Detail Menu
+                </div>
+                <div class="card-body">
+                    @foreach($pesanan->detailPesanans as $detail)
                         <h6 class="fw-bold mb-3">{{ $detail->menu->nama_menu }}</h6>
                         
                         @if($detail->menuItems->count() > 0)
@@ -117,9 +118,14 @@
                             <span class="text-muted">Subtotal Menu</span>
                             <span class="fw-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</span>
                         </div>
-                    </div>
+
+                        @if(!$loop->last)
+                            <hr class="my-4 border-secondary opacity-25">
+                        @endif
+                    @endforeach
                 </div>
-            @endforeach
+            </div>
+            @endif
 
             @if($pesanan->detailPesananMinumans && $pesanan->detailPesananMinumans->count() > 0)
                 <div class="card shadow-sm border-0 mb-4 bg-light">
