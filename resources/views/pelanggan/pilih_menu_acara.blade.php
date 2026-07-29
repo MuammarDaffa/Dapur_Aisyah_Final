@@ -146,11 +146,13 @@
                 @if(isset($minumans) && $minumans->count() > 0)
                 <!-- Bagian Minuman -->
                 <div class="card shadow-sm border-0 mb-4" id="minuman_section">
-                    <div class="card-body p-4 bg-light rounded">
-                        <h4 class="fw-bold text-dark mb-1">Pilihan Minuman</h4>
-                        <p class="text-muted small mb-4">Minuman bersifat opsional. Tidak dihitung ke dalam kuota mingguan.</p>
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold text-dark mb-1">Pilihan Minuman</h5>
+                        <p class="text-dark small mb-3">
+                            Minuman bersifat opsional. Tidak dihitung ke dalam kuota mingguan.
+                        </p>
                         
-                        <div class="mb-4">
+                        <div class="mb-3 checkbox-group">
                             @foreach($minumans as $minuman)
                                 @php
                                     $isChecked = false;
@@ -167,14 +169,16 @@
                                         }
                                     }
                                 @endphp
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input minuman-checkbox" type="checkbox" name="minuman_ids[]" value="{{ $minuman->id }}" id="minuman_{{ $minuman->id }}" {{ $isChecked ? 'checked' : '' }}>
-                                    <label class="form-check-label w-100 cursor-pointer text-dark" for="minuman_{{ $minuman->id }}">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="fw-medium fs-6">{{ $minuman->nama_minuman }}</span>
-                                            <span class="fw-semibold text-primary">Rp {{ number_format($minuman->harga, 0, ',', '.') }}</span>
-                                        </div>
-                                    </label>
+                                <div class="form-check mb-2 d-flex justify-content-between align-items-center" style="max-width: 500px;">
+                                    <div>
+                                        <input class="form-check-input me-2 minuman-checkbox" type="checkbox" name="minuman_ids[]" value="{{ $minuman->id }}" id="minuman_{{ $minuman->id }}" {{ $isChecked ? 'checked' : '' }}>
+                                        <label class="form-check-label text-dark" style="cursor: pointer;" for="minuman_{{ $minuman->id }}">
+                                            {{ $minuman->nama_minuman }}
+                                        </label>
+                                    </div>
+                                    <span class="text-dark small">
+                                        Rp {{ number_format($minuman->harga, 0, ',', '.') }}
+                                    </span>
                                 </div>
                             @endforeach
                             <div class="invalid-feedback minuman-feedback d-none">Pilih minimal satu minuman.</div>
@@ -183,9 +187,7 @@
                             @enderror
                         </div>
 
-                        <hr class="border-secondary opacity-25">
-
-                        <div class="mt-3">
+                        <div class="mb-2">
                             <label for="jumlah_cup_minuman" class="form-label fw-semibold text-dark">Jumlah Cup</label>
                             <input type="number" class="form-control @error('jumlah_cup_minuman') is-invalid @enderror" 
                                    style="max-width: 300px;" 
