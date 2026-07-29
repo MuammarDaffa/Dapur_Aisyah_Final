@@ -24,23 +24,16 @@ class MenuController extends Controller
             $validated['layanan_id'] = $layanan->id;
             $validated['deskripsi'] = null;
             $validated['harga'] = 0;
-            $validated['gambar'] = null;
             $validated['status'] = true;
         } else {
             $validated = $request->validate([
                 'nama_menu' => 'required|string|max:255',
                 'deskripsi' => 'nullable|string',
                 'harga' => 'required|numeric|min:0',
-                'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'status' => 'boolean'
             ]);
             $validated['layanan_id'] = $layanan->id;
             $validated['status'] = $request->boolean('status');
-
-            if ($request->hasFile('gambar')) {
-                $path = $request->file('gambar')->store('menu', 'public');
-                $validated['gambar'] = $path;
-            }
         }
 
         Menu::create($validated);
@@ -62,24 +55,15 @@ class MenuController extends Controller
             $validated = $request->validate([
                 'nama_menu' => 'required|string|max:100|unique:menu,nama_menu,' . $menu->id . ',id,layanan_id,' . $menu->layanan_id,
             ]);
-            // we do not touch deskripsi, harga, gambar, status for Acara
+            // we do not touch deskripsi, harga, status for Acara
         } else {
             $validated = $request->validate([
                 'nama_menu' => 'required|string|max:255',
                 'deskripsi' => 'nullable|string',
                 'harga' => 'required|numeric|min:0',
-                'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'status' => 'boolean'
             ]);
             $validated['status'] = $request->boolean('status');
-
-            if ($request->hasFile('gambar')) {
-                if ($menu->gambar) {
-                    Storage::disk('public')->delete($menu->gambar);
-                }
-                $path = $request->file('gambar')->store('menu', 'public');
-                $validated['gambar'] = $path;
-            }
         }
 
         $menu->update($validated);
@@ -92,10 +76,6 @@ class MenuController extends Controller
 
     public function destroy(Menu $menu)
     {
-        if ($menu->gambar) {
-            Storage::disk('public')->delete($menu->gambar);
-        }
-
         $layananId = $menu->layanan_id;
         $isHarian = $menu->layanan->isHarian();
         $menu->delete();

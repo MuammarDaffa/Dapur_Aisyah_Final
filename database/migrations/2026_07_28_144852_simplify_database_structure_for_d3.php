@@ -46,7 +46,6 @@ return new class extends Migration
                 'nama_menu'  => $ma->nama_menu,
                 'deskripsi'  => $ma->deskripsi,
                 'harga'      => 0, // default harga
-                'gambar'     => null,
                 'status'     => $ma->status,
                 'created_at' => $ma->created_at,
                 'updated_at' => $ma->updated_at,

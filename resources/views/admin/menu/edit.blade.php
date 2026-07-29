@@ -19,7 +19,7 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
             </a>
         </div>
 
-        <form action="{{ route('admin.menu.update', $menu->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.menu.update', $menu->id) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="card card-outline card-warning">
@@ -46,20 +46,6 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
                         <label class="form-label fw-bold">Harga {{ $menu->layanan->isHarian() ? 'per Porsi' : 'Dasar' }} (Rp) <span class="text-danger">*</span></label>
                         <input type="number" name="harga" class="form-control" value="{{ old('harga', $menu->harga) }}" min="0" required>
                         @error('harga')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
-                    </div>
-
-                    {{-- Upload Gambar --}}
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Upload Gambar Menu Baru (Opsional)</label>
-                        @if($menu->gambar)
-                            <div class="mb-2">
-                                <img src="{{ asset('storage/' . $menu->gambar) }}" alt="Gambar Saat Ini" style="max-height: 100px; border-radius: 5px;">
-                                <div class="small text-muted mt-1">Gambar saat ini.</div>
-                            </div>
-                        @endif
-                        <input type="file" name="gambar" class="form-control" accept="image/*">
-                        <small class="text-muted">Biarkan kosong jika tidak ingin mengubah gambar.</small>
-                        @error('gambar')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
 
                     {{-- Status Aktif --}}

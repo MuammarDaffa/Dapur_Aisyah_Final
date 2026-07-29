@@ -19,7 +19,7 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
             </a>
         </div>
 
-        <form action="{{ route('admin.menu.store', $layanan->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.menu.store', $layanan->id) }}" method="POST">
             @csrf
             <div class="card card-outline card-success">
                 <div class="card-header">
@@ -45,14 +45,6 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
                         <label class="form-label fw-bold">Harga {{ $layanan->isHarian() ? 'per Porsi' : 'Dasar' }} (Rp) <span class="text-danger">*</span></label>
                         <input type="number" name="harga" class="form-control" value="{{ old('harga') }}" min="0" required>
                         @error('harga')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
-                    </div>
-
-                    {{-- Upload Gambar --}}
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Upload Gambar Menu</label>
-                        <input type="file" name="gambar" class="form-control" accept="image/*">
-                        <small class="text-muted">Format: JPG/PNG, Maksimal: 2MB.</small>
-                        @error('gambar')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
 
                     {{-- Status Aktif --}}

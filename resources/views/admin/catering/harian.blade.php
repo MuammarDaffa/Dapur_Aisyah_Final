@@ -163,7 +163,6 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                     <thead class="table-light">
                         <tr>
                             <th style="width: 50px;">No</th>
-                            <th>Gambar</th>
                             <th>Nama Menu</th>
                             <th>Harga</th>
                             <th style="width: 150px;">Aksi</th>
@@ -173,13 +172,6 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                         @forelse($daftarMenu as $index => $menu)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>
-                                    @if($menu->gambar)
-                                        <img src="{{ asset('storage/' . $menu->gambar) }}" alt="Gambar Menu" width="50" height="50" style="object-fit: cover; border-radius: 5px;">
-                                    @else
-                                        <span class="text-muted"><i class="bi bi-image"></i></span>
-                                    @endif
-                                </td>
                                 <td>{{ $menu->nama_menu }}</td>
                                 <td>Rp {{ number_format($menu->harga, 0, ',', '.') }}</td>
                                 <td>
