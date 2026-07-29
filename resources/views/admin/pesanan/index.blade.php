@@ -10,10 +10,18 @@
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pesanan/nama..." class="form-control">
                     </div>
                     <div class="col-md-2">
-                        <select name="status" class="form-select">
-                            <option value="">Semua Status</option>
-                            @foreach(['belum_bayar'=>'Belum Bayar','dp'=>'DP','lunas'=>'Lunas','dibatalkan'=>'Dibatalkan'] as $k=>$v)
-                                <option value="{{ $k }}" {{ request('status')==$k?'selected':'' }}>{{ $v }}</option>
+                        <select name="status_pembayaran" class="form-select">
+                            <option value="">Semua Status Pembayaran</option>
+                            @foreach(['belum_dibayar'=>'Belum Dibayar','dp'=>'DP Dibayar','lunas'=>'Lunas'] as $k=>$v)
+                                <option value="{{ $k }}" {{ request('status_pembayaran')==$k?'selected':'' }}>{{ $v }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="status_pesanan" class="form-select">
+                            <option value="">Semua Status Pesanan</option>
+                            @foreach(['diproses'=>'Diproses','dibatalkan'=>'Dibatalkan','selesai'=>'Selesai'] as $k=>$v)
+                                <option value="{{ $k }}" {{ request('status_pesanan')==$k?'selected':'' }}>{{ $v }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -46,7 +54,8 @@
                                 <th>Pelanggan</th>
                                 <th>Layanan</th>
                                 <th>Total</th>
-                                <th>Status</th>
+                                <th>Status Pembayaran</th>
+                                <th>Status Pesanan</th>
                                 <th>Tgl Pesanan</th>
                                 <th>Tgl Pengiriman</th>
                                 <th class="text-center">Aksi</th>
@@ -63,8 +72,13 @@
                                     </td>
                                     <td class="align-middle fw-bold text-success">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
                                     <td class="align-middle">
-                                        <span class="badge {{ match($p->status) { 'belum_bayar'=>'text-bg-warning','dp'=>'text-bg-info','lunas'=>'text-bg-success','dibatalkan'=>'text-bg-danger', default=>'text-bg-secondary' } }}">
-                                            {{ $p->status_label }}
+                                        <span class="badge text-bg-{{ $p->status_pembayaran_color }} mb-1">
+                                            {{ $p->status_pembayaran_label }}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="badge text-bg-{{ $p->status_pesanan_color }}">
+                                            {{ $p->status_pesanan_label }}
                                         </span>
                                     </td>
                                     <td class="align-middle text-muted">{{ $p->created_at->format('d/m/Y') }}</td>

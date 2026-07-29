@@ -26,18 +26,18 @@ class MidtransController extends Controller
                     
                     // CEK APAKAH INI DP ATAU PELUNASAN?
                     if (str_ends_with($request->order_id, '-DP')) {
-                        // Jika DP, ubah status jadi DP
-                        $pesanan->update(['status' => Pesanan::STATUS_DP]);
+                        // Jika DP, ubah status_pembayaran jadi DP
+                        $pesanan->update(['status_pembayaran' => Pesanan::PEMBAYARAN_DP]);
                     } elseif (str_ends_with($request->order_id, '-PELUNASAN')) {
-                        // Jika Pelunasan, ubah status jadi LUNAS
-                        $pesanan->update(['status' => Pesanan::STATUS_LUNAS]);
+                        // Jika Pelunasan, ubah status_pembayaran jadi LUNAS
+                        $pesanan->update(['status_pembayaran' => Pesanan::PEMBAYARAN_LUNAS]);
                     }
                     
                 } 
                 // Jika dibatalkan atau kedaluwarsa
                 elseif ($request->transaction_status == 'cancel' || $request->transaction_status == 'deny' || $request->transaction_status == 'expire') {
                     $pesanan->update([
-                        'status' => Pesanan::STATUS_DIBATALKAN,
+                        'status_pesanan' => Pesanan::PESANAN_DIBATALKAN,
                     ]);
                 }
             }

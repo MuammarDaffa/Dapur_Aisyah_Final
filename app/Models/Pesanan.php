@@ -11,10 +11,13 @@ class Pesanan extends Model
 {
     protected $table = 'pesanan';
 
-    public const STATUS_BELUM_BAYAR = 'belum_bayar';
-    public const STATUS_DP = 'dp';
-    public const STATUS_LUNAS = 'lunas';
-    public const STATUS_DIBATALKAN = 'dibatalkan';
+    public const PEMBAYARAN_BELUM_DIBAYAR = 'belum_dibayar';
+    public const PEMBAYARAN_DP = 'dp';
+    public const PEMBAYARAN_LUNAS = 'lunas';
+
+    public const PESANAN_DIPROSES = 'diproses';
+    public const PESANAN_DIBATALKAN = 'dibatalkan';
+    public const PESANAN_SELESAI = 'selesai';
 
     protected $fillable = [
         'nomor_pesanan',
@@ -34,7 +37,8 @@ class Pesanan extends Model
         'jumlah_dp',
         'sisa_pembayaran',
         'refund_status',
-        'status',
+        'status_pembayaran',
+        'status_pesanan',
         'alasan_pembatalan',
         'dibatalkan_pada',
         'catatan',
@@ -52,31 +56,49 @@ class Pesanan extends Model
         ];
     }
 
-    public function getStatusLabelAttribute(): string
+    public function getStatusPembayaranLabelAttribute(): string
     {
-        return match ($this->status) {
-            self::STATUS_BELUM_BAYAR => 'Belum Bayar',
-            self::STATUS_DP => 'DP',
-            self::STATUS_LUNAS => 'Lunas',
-            self::STATUS_DIBATALKAN => 'Dibatalkan',
-            default => $this->status,
+        return match ($this->status_pembayaran) {
+            self::PEMBAYARAN_BELUM_DIBAYAR => 'Belum Dibayar',
+            self::PEMBAYARAN_DP => 'DP Dibayar',
+            self::PEMBAYARAN_LUNAS => 'Lunas',
+            default => $this->status_pembayaran,
         };
     }
 
-    public function getStatusColorAttribute(): string
+    public function getStatusPembayaranColorAttribute(): string
     {
-        return match ($this->status) {
-            self::STATUS_BELUM_BAYAR => 'yellow',
-            self::STATUS_DP => 'blue',
-            self::STATUS_LUNAS => 'green',
-            self::STATUS_DIBATALKAN => 'red',
-            default => 'gray',
+        return match ($this->status_pembayaran) {
+            self::PEMBAYARAN_BELUM_DIBAYAR => 'danger',
+            self::PEMBAYARAN_DP => 'warning text-dark',
+            self::PEMBAYARAN_LUNAS => 'success',
+            default => 'secondary',
+        };
+    }
+
+    public function getStatusPesananLabelAttribute(): string
+    {
+        return match ($this->status_pesanan) {
+            self::PESANAN_DIPROSES => 'Diproses',
+            self::PESANAN_DIBATALKAN => 'Dibatalkan',
+            self::PESANAN_SELESAI => 'Selesai',
+            default => $this->status_pesanan,
+        };
+    }
+
+    public function getStatusPesananColorAttribute(): string
+    {
+        return match ($this->status_pesanan) {
+            self::PESANAN_DIPROSES => 'info text-dark',
+            self::PESANAN_DIBATALKAN => 'secondary',
+            self::PESANAN_SELESAI => 'success',
+            default => 'secondary',
         };
     }
 
     public function scopeCompleted($query)
     {
-        return $query->where('status', self::STATUS_LUNAS);
+        return $query->where('status_pesanan', self::PESANAN_SELESAI);
     }
 
     public static function generateOrderNumber(): string

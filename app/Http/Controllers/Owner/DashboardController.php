@@ -24,9 +24,9 @@ class DashboardController extends Controller
         ];
 
         // Status pesanan untuk pie chart
-        $orderStatuses = Pesanan::selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
+        $orderStatuses = Pesanan::selectRaw('status_pesanan, COUNT(*) as count')
+            ->groupBy('status_pesanan')
+            ->pluck('count', 'status_pesanan')
             ->toArray();
 
         $recentReviews = Ulasan::with(['user'])

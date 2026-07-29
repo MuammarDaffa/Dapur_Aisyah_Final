@@ -12,8 +12,11 @@ class LaporanController extends Controller
     {
         $query = Pesanan::query();
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        if ($request->filled('status_pembayaran')) {
+            $query->where('status_pembayaran', $request->status_pembayaran);
+        }
+        if ($request->filled('status_pesanan')) {
+            $query->where('status_pesanan', $request->status_pesanan);
         }
 
         if ($request->filled('period')) {
@@ -38,8 +41,8 @@ class LaporanController extends Controller
         // Hitung summary sebelum paginate agar query builder tidak termodifikasi
         $summary = [
             'total_orders' => (clone $query)->count(),
-            'total_revenue' => (clone $query)->where('status', 'selesai')->sum('total'),
-            'average_order' => (clone $query)->where('status', 'selesai')->avg('total') ?? 0,
+            'total_revenue' => (clone $query)->where('status_pesanan', 'selesai')->sum('total'),
+            'average_order' => (clone $query)->where('status_pesanan', 'selesai')->avg('total') ?? 0,
         ];
 
         $pesanan = $query->with(['user', 'layananKatering'])->latest()->paginate(20);

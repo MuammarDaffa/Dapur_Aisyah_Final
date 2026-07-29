@@ -47,7 +47,7 @@
                 <div class="small-box-icon">
                     <i class="fa-solid fa-spinner"></i>
                 </div>
-                <a href="{{ route('admin.pesanan') }}?status=processing" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
+                <a href="{{ route('admin.pesanan') }}?status_pesanan=diproses" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
                     Kelola pesanan <i class="fa-solid fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -63,7 +63,7 @@
                 <div class="small-box-icon">
                     <i class="fa-solid fa-check-circle"></i>
                 </div>
-                <a href="{{ route('admin.pesanan') }}?status=selesai" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                <a href="{{ route('admin.pesanan') }}?status_pesanan=selesai" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
                     Lihat pesanan <i class="fa-solid fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -100,8 +100,11 @@
                                         <td class="align-middle">{{ $pesanan->user->name ?? '-' }}</td>
                                         <td class="align-middle">{{ $pesanan->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="align-middle">
-                                            <span class="badge {{ match($pesanan->status) { 'menunggu_pembayaran' => 'text-bg-warning', 'diproses' => 'text-bg-info', 'dikirim' => 'text-bg-primary', 'selesai' => 'text-bg-success', 'dibatalkan' => 'text-bg-danger', default => 'text-bg-secondary' } }}">
-                                                {{ $pesanan->status_label }}
+                                            <span class="badge text-bg-{{ $pesanan->status_pembayaran_color }} mb-1">
+                                                {{ $pesanan->status_pembayaran_label }}
+                                            </span>
+                                            <span class="badge text-bg-{{ $pesanan->status_pesanan_color }}">
+                                                {{ $pesanan->status_pesanan_label }}
                                             </span>
                                         </td>
                                         <td class="align-middle">

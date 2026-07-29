@@ -20,7 +20,7 @@ class DashboardController extends Controller
                 ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                 ->sum('total'),
             'total_orders' => Pesanan::count(),
-            'processing_orders' => Pesanan::where('status', 'diproses')->count(),
+            'processing_orders' => Pesanan::where('status_pesanan', 'diproses')->count(),
             'completed_orders' => Pesanan::completed()->count(),
         ];
 

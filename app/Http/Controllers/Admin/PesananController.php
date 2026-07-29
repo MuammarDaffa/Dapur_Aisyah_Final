@@ -17,8 +17,11 @@ class PesananController extends Controller
         $query = Pesanan::with(['user', 'layanan'])
             ->orderBy('created_at', 'desc');
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        if ($request->filled('status_pembayaran')) {
+            $query->where('status_pembayaran', $request->status_pembayaran);
+        }
+        if ($request->filled('status_pesanan')) {
+            $query->where('status_pesanan', $request->status_pesanan);
         }
         if ($request->filled('service')) {
             $query->where('layanan_id', $request->service);
@@ -49,11 +52,11 @@ class PesananController extends Controller
     public function updateStatus(Request $request, Pesanan $pesanan)
     {
         $validated = $request->validate([
-            'status' => 'required|in:belum_bayar,dp,lunas,dibatalkan',
+            'status_pembayaran' => 'nullable|in:belum_dibayar,dp,lunas',
+            'status_pesanan' => 'nullable|in:diproses,dibatalkan,selesai',
         ]);
 
-        // Gunakan OrderService untuk update status + trigger notifikasi
-        OrderService::updateStatus($pesanan, $validated['status']);
+        OrderService::updateStatus($pesanan, $validated['status_pembayaran'] ?? null, $validated['status_pesanan'] ?? null);
 
         return back()->with('success', 'Status pesanan berhasil diperbarui.');
     }
@@ -64,7 +67,7 @@ class PesananController extends Controller
             'alasan_pembatalan' => 'required|string|max:500',
         ]);
 
-        OrderService::updateStatus($pesanan, Pesanan::STATUS_DIBATALKAN, $validated['alasan_pembatalan']);
+        OrderService::updateStatus($pesanan, null, Pesanan::PESANAN_DIBATALKAN, $validated['alasan_pembatalan']);
 
         return back()->with('success', 'Pesanan berhasil dibatalkan.');
     }

@@ -81,7 +81,7 @@ class CateringController extends Controller
             $menus = $catering->menus;
             
             $jumlah_porsi_terjual_minggu_ini = (int) $catering->pesanan()
-                ->where('status', '!=', 'dibatalkan')
+                ->where('status_pesanan', '!=', 'dibatalkan')
                 ->whereBetween('created_at', [
                     now()->startOfWeek(),
                     now()->endOfWeek()

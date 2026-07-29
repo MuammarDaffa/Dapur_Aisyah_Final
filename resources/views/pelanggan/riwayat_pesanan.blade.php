@@ -53,23 +53,15 @@
                                         <td class="py-3 text-end">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
                                         <td class="py-3 text-end">Rp {{ number_format($pesanan->jumlah_dp, 0, ',', '.') }}</td>
                                         <td class="py-3 text-center">
-                                            @if($pesanan->status === 'belum_bayar')
-                                                <span class="badge bg-danger rounded-pill px-3 py-2">Belum Dibayar</span>
-                                            @elseif($pesanan->status === 'dp')
-                                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">DP Dibayar</span>
-                                            @elseif($pesanan->status === 'lunas')
-                                                <span class="badge bg-success rounded-pill px-3 py-2">Lunas</span>
-                                            @elseif($pesanan->status === 'dibatalkan')
-                                                <span class="badge bg-secondary rounded-pill px-3 py-2">Dibatalkan</span>
-                                            @else
-                                                <span class="badge bg-secondary rounded-pill px-3 py-2">{{ ucfirst($pesanan->status) }}</span>
-                                            @endif
+                                            <span class="badge bg-{{ $pesanan->status_pembayaran_color }} rounded-pill px-3 py-2 mb-1">{{ $pesanan->status_pembayaran_label }}</span>
+                                            <br>
+                                            <span class="badge bg-{{ $pesanan->status_pesanan_color }} rounded-pill px-3 py-2">{{ $pesanan->status_pesanan_label }}</span>
                                         </td>
                                         <td class="py-3 text-center">
                                             <div class="d-flex flex-column align-items-center gap-1">
                                                 <a href="{{ route('pelanggan.acara.detail_pesanan', $pesanan->id) }}" class="btn btn-sm btn-outline-primary rounded-pill w-100 fw-bold">Lihat</a>
                                                 
-                                                @if($pesanan->status === 'dp')
+                                                @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_DP)
                                                     <form class="form-pelunasan w-100" action="{{ route('pelanggan.pelunasan', $pesanan->id) }}" method="POST">
                                                         @csrf
                                                         <button type="submit" class="btn btn-sm btn-success rounded-pill w-100 fw-bold btn-pelunasan shadow-sm">
@@ -80,7 +72,7 @@
                                                 
                                                 <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" class="w-100" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill w-100 fw-bold" {{ $pesanan->status === 'lunas' || $pesanan->status === 'dibatalkan' ? 'disabled' : '' }}>
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill w-100 fw-bold" {{ $pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS || $pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIBATALKAN ? 'disabled' : '' }}>
                                                         Batalkan
                                                     </button>
                                                 </form>

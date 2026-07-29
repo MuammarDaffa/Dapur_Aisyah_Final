@@ -144,7 +144,8 @@ class DashboardController extends Controller
                     'jumlah_dp' => $jumlahDp,                   
                     'sisa_pembayaran' => $sisaPembayaran,       
                     'tipe_penyajian' => $request->tipe_penyajian === 'Nasi Kotak' ? 'nasi_kotak' : 'prasmanan',
-                    'status' => \App\Models\Pesanan::STATUS_BELUM_BAYAR,
+                    'status_pembayaran' => \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR,
+                    'status_pesanan' => \App\Models\Pesanan::PESANAN_DIPROSES,
                 ]);
             }
 
@@ -188,7 +189,7 @@ class DashboardController extends Controller
     {
         $pesanan = \App\Models\Pesanan::findOrFail($id);
         
-        if ($pesanan->user_id !== auth()->id() || $pesanan->status !== \App\Models\Pesanan::STATUS_BELUM_BAYAR) {
+        if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
             return response()->json(['status' => 'error', 'message' => 'Pesanan tidak valid untuk dibayar'], 403);
         }
 
@@ -235,7 +236,7 @@ class DashboardController extends Controller
         $pesanan = \App\Models\Pesanan::findOrFail($id);
         
         // Keamanan: Pastikan pesanan ini benar milik pelanggan yang sedang login & statusnya DP
-        if ($pesanan->user_id !== auth()->id() || $pesanan->status !== \App\Models\Pesanan::STATUS_DP) {
+        if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_DP) {
             return response()->json([
                 'status' => 'error', 
                 'message' => 'Pesanan tidak valid untuk dilunasi'
@@ -279,15 +280,15 @@ class DashboardController extends Controller
             return redirect()->route('pelanggan.riwayat')->with('error', 'Anda tidak memiliki akses ke pesanan ini.');
         }
 
-        if ($pesanan->status === \App\Models\Pesanan::STATUS_LUNAS) {
+        if ($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS) {
             return redirect()->route('pelanggan.riwayat')->with('error', 'Pesanan yang sudah lunas tidak dapat dibatalkan.');
         }
 
-        if ($pesanan->status === \App\Models\Pesanan::STATUS_BATAL) {
+        if ($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIBATALKAN) {
             return redirect()->route('pelanggan.riwayat')->with('info', 'Pesanan sudah berstatus dibatalkan.');
         }
 
-        $pesanan->status = \App\Models\Pesanan::STATUS_BATAL;
+        $pesanan->status_pesanan = \App\Models\Pesanan::PESANAN_DIBATALKAN;
         $pesanan->save();
 
         return redirect()->route('pelanggan.riwayat')->with('success', 'Pesanan berhasil dibatalkan.');

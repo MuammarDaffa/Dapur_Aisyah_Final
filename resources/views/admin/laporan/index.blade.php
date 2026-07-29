@@ -22,12 +22,12 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label fw-bold">Status</label>
-                        <select name="status" class="form-select">
-                            <option value="">Semua Status</option>
-                            <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                            <option value="dibatalkan" {{ request('status') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
-                            <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
+                        <label class="form-label fw-bold">Status Pesanan</label>
+                        <select name="status_pesanan" class="form-select">
+                            <option value="">Semua Status Pesanan</option>
+                            <option value="selesai" {{ request('status_pesanan') == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                            <option value="dibatalkan" {{ request('status_pesanan') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+                            <option value="diproses" {{ request('status_pesanan') == 'diproses' ? 'selected' : '' }}>Diproses</option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -56,7 +56,8 @@
                                 <th>Pelanggan</th>
                                 <th>Layanan</th>
                                 <th>Total</th>
-                                <th class="text-center">Status</th>
+                                <th class="text-center">Status Pembayaran</th>
+                                <th class="text-center">Status Pesanan</th>
                                 <th>Tanggal</th>
                             </tr>
                         </thead>
@@ -68,8 +69,13 @@
                                     <td class="align-middle">{{ $pesanan->layananKatering->name ?? '-' }}</td>
                                     <td class="align-middle fw-bold text-success">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
                                     <td class="align-middle text-center">
-                                        <span class="badge {{ match($pesanan->status) { 'menunggu_pembayaran' => 'text-bg-warning', 'diproses' => 'text-bg-info', 'dikirim' => 'text-bg-primary', 'selesai' => 'text-bg-success', 'dibatalkan' => 'text-bg-danger', default => 'text-bg-secondary' } }}">
-                                            {{ $pesanan->status_label }}
+                                        <span class="badge text-bg-{{ $pesanan->status_pembayaran_color }} mb-1">
+                                            {{ $pesanan->status_pembayaran_label }}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="badge text-bg-{{ $pesanan->status_pesanan_color }}">
+                                            {{ $pesanan->status_pesanan_label }}
                                         </span>
                                     </td>
                                     <td class="align-middle">{{ $pesanan->created_at->format('d M Y') }}</td>

@@ -117,12 +117,12 @@
                             <p class="text-muted mb-0">DP yang Harus Dibayar (50%)</p>
                             <h3 class="fw-bold text-success mb-0">Rp {{ number_format($pesanan->jumlah_dp, 0, ',', '.') }}</h3>
                         </div>
-                        @if($pesanan->status === \App\Models\Pesanan::STATUS_BELUM_BAYAR)
+                        @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
                             <form id="form-bayar" action="{{ route('pelanggan.acara.bayar_dp', $pesanan->id) }}" method="POST">
                                 @csrf
                                 <button id="btn-bayar" type="submit" class="btn btn-primary btn-lg px-5 shadow-sm fw-bold">Bayar DP Sekarang</button>
                             </form>
-                        @elseif($pesanan->status === \App\Models\Pesanan::STATUS_DP)
+                        @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_DP)
                             <div class="text-end">
                                 <button disabled class="btn btn-secondary btn-lg px-5 shadow-sm fw-bold">Bayar DP Sekarang</button>
                                 <div class="text-muted small mt-1">DP sudah dibayarkan.</div>
@@ -133,7 +133,7 @@
             </div>
 
             <div class="d-flex justify-content-start mb-5 gap-3">
-                @if($pesanan->status === \App\Models\Pesanan::STATUS_BELUM_BAYAR)
+                @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
                     <a href="{{ route('pelanggan.acara.edit_pesanan', $pesanan->id) }}" class="btn btn-secondary px-5 py-2 fw-bold shadow-sm">
                         Kembali
                     </a>

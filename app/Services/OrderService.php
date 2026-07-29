@@ -94,9 +94,9 @@ class OrderService
     public static function validateCancellation(Pesanan $pesanan): void
     {
         // Pesanan yang sudah dikirim atau selesai tidak bisa dibatalkan
-        if (in_array($pesanan->status, [Pesanan::STATUS_LUNAS, Pesanan::STATUS_DIBATALKAN])) {
+        if (in_array($pesanan->status_pesanan, [Pesanan::PESANAN_SELESAI, Pesanan::PESANAN_DIBATALKAN]) || $pesanan->status_pembayaran === Pesanan::PEMBAYARAN_LUNAS) {
             throw ValidationException::withMessages([
-                'status' => 'Pesanan dengan status "' . $pesanan->status . '" tidak dapat dibatalkan.',
+                'status' => 'Pesanan dengan status pesanan "' . $pesanan->status_pesanan . '" dan pembayaran "' . $pesanan->status_pembayaran . '" tidak dapat dibatalkan.',
             ]);
         }
 
@@ -123,16 +123,22 @@ class OrderService
     /**
      * Update status pesanan.
      */
-    public static function updateStatus(Pesanan $pesanan, string $newStatus, ?string $cancellationReason = null): Pesanan
+    public static function updateStatus(Pesanan $pesanan, ?string $newStatusPembayaran = null, ?string $newStatusPesanan = null, ?string $cancellationReason = null): Pesanan
     {
-        $data = ['status' => $newStatus];
+        $data = [];
+        if ($newStatusPembayaran) {
+            $data['status_pembayaran'] = $newStatusPembayaran;
+        }
+        if ($newStatusPesanan) {
+            $data['status_pesanan'] = $newStatusPesanan;
+        }
 
-        if ($newStatus === Pesanan::STATUS_DIBATALKAN) {
+        if ($newStatusPesanan === Pesanan::PESANAN_DIBATALKAN) {
             $data['dibatalkan_pada'] = now();
             $data['alasan_pembatalan'] = $cancellationReason;
 
-            // Jika pesanan sudah dilunasi, set refund_status = 'pending'
-            if ($pesanan->status === Pesanan::STATUS_LUNAS) {
+            // Jika pesanan sudah dilunasi atau ada DP, set refund_status = 'pending'
+            if (in_array($pesanan->status_pembayaran, [Pesanan::PEMBAYARAN_LUNAS, Pesanan::PEMBAYARAN_DP])) {
                 $data['refund_status'] = 'pending';
             }
         }
