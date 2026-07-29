@@ -61,7 +61,9 @@
                                             <span class="badge bg-{{ $pesanan->status_pembayaran_color }}">{{ $pesanan->status_pembayaran_label }}</span>
                                         </td>
                                         <td class="py-3 text-center">
-                                            <span class="badge bg-{{ $pesanan->status_pesanan_color }}">{{ $pesanan->status_pesanan_label }}</span>
+                                            @if($pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
+                                                <span class="badge bg-{{ $pesanan->status_pesanan_color }}">{{ $pesanan->status_pesanan_label }}</span>
+                                            @endif
                                         </td>
                                         <td class="py-3 text-center">
                                             <div class="d-flex gap-2 justify-content-center">
