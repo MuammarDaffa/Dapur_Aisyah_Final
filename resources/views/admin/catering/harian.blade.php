@@ -162,33 +162,33 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                 <table class="table table-bordered table-striped align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 50px;">No</th>
-                            <th>Nama Menu</th>
-                            <th>Harga</th>
-                            <th style="width: 150px;">Aksi</th>
+                            <th class="text-center" style="width: 5%;">No</th>
+                            <th class="text-start" style="width: 50%;">Nama Menu</th>
+                            <th class="text-start" style="width: 20%;">Harga</th>
+                            <th class="text-center" style="width: 25%;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($daftarMenu as $index => $menu)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $menu->nama_menu }}</td>
-                                <td>Rp {{ number_format($menu->harga, 0, ',', '.') }}</td>
+                                <td class="text-center">{{ $index + 1 }}</td>
+                                <td class="text-start">{{ $menu->nama_menu }}</td>
+                                <td class="text-start">Rp {{ number_format($menu->harga, 0, ',', '.') }}</td>
                                 <td>
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.menu.items.index', $menu->id) }}" class="btn btn-sm btn-info text-white" title="Kelola Extra">
-                                            <i class="bi bi-list-ul"></i>
+                                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                                        <a href="{{ route('admin.menu.items.index', $menu->id) }}" class="btn btn-sm btn-info text-white">
+                                            Kelola Item Menu
                                         </a>
                                         {{-- Tombol Edit --}}
-                                        <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-sm btn-warning" title="Edit Menu">
-                                            <i class="bi bi-pencil"></i>
+                                        <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-sm btn-warning">
+                                            Edit
                                         </a>
                                         {{-- Tombol Hapus --}}
                                         <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus menu ini?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Hapus Menu">
-                                                <i class="bi bi-trash"></i>
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                Hapus
                                             </button>
                                         </form>
                                     </div>
@@ -196,7 +196,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted">Belum ada menu yang didaftarkan.</td>
+                                <td colspan="4" class="text-center text-muted">Belum ada menu yang didaftarkan.</td>
                             </tr>
                         @endforelse
                     </tbody>
