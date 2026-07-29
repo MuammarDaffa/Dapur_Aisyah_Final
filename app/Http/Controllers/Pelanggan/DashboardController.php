@@ -36,8 +36,8 @@ class DashboardController extends Controller
     {
         $pesanan = \App\Models\Pesanan::with('detailPesanans.menuItems')->findOrFail($id);
         
-        // Pastikan hanya bisa diedit jika belum_bayar
-        if ($pesanan->user_id !== auth()->id() || $pesanan->status !== \App\Models\Pesanan::STATUS_BELUM_BAYAR) {
+        // Pastikan hanya bisa diedit jika belum_dibayar
+        if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
             return redirect()->route('pelanggan.riwayat')->with('error', 'Pesanan tidak valid atau sudah dibayar.');
         }
 
@@ -112,7 +112,7 @@ class DashboardController extends Controller
             if ($request->has('pesanan_id') && !empty($request->pesanan_id)) {
                 $pesanan = \App\Models\Pesanan::findOrFail($request->pesanan_id);
                 
-                if ($pesanan->user_id !== auth()->id() || $pesanan->status !== \App\Models\Pesanan::STATUS_BELUM_BAYAR) {
+                if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
                     throw new \Exception('Pesanan tidak valid untuk diubah.');
                 }
                 
@@ -278,10 +278,6 @@ class DashboardController extends Controller
 
         if ($pesanan->user_id !== auth()->id()) {
             return redirect()->route('pelanggan.riwayat')->with('error', 'Anda tidak memiliki akses ke pesanan ini.');
-        }
-
-        if ($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS) {
-            return redirect()->route('pelanggan.riwayat')->with('error', 'Pesanan yang sudah lunas tidak dapat dibatalkan.');
         }
 
         if ($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIBATALKAN) {

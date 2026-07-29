@@ -27,9 +27,15 @@
                 <div class="card-body">
                     <table class="table table-borderless mb-0">
                         <tr>
-                            <td class="text-muted" style="width: 200px;">Status</td>
+                            <td class="text-muted" style="width: 200px;">Status Pembayaran</td>
                             <td class="fw-bold">
-                                <span class="badge bg-{{ $pesanan->status_color }} fs-6">{{ $pesanan->status_label }}</span>
+                                <span class="badge bg-{{ $pesanan->status_pembayaran_color }} fs-6">{{ $pesanan->status_pembayaran_label }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted" style="width: 200px;">Status Pesanan</td>
+                            <td class="fw-bold">
+                                <span class="badge bg-{{ $pesanan->status_pesanan_color }} fs-6">{{ $pesanan->status_pesanan_label }}</span>
                             </td>
                         </tr>
                         <tr>
@@ -127,6 +133,10 @@
                                 <button disabled class="btn btn-secondary btn-lg px-5 shadow-sm fw-bold">Bayar DP Sekarang</button>
                                 <div class="text-muted small mt-1">DP sudah dibayarkan.</div>
                             </div>
+                        @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
+                            <div class="text-end">
+                                <button disabled class="btn btn-secondary btn-lg px-5 shadow-sm fw-bold">Bayar DP Sekarang</button>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -149,7 +159,7 @@
 </div>
 
 <!-- Script Snap Midtrans -->
-@if($pesanan->status === \App\Models\Pesanan::STATUS_BELUM_BAYAR)
+@if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 <script>
     document.getElementById('form-bayar').addEventListener('submit', function(e){

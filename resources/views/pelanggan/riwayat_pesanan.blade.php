@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+@endpush
+
 @section('content')
 <div class="container py-5 mt-5">
     <div class="row justify-content-center">
@@ -33,15 +37,16 @@
             @else
                 <div class="card shadow-sm border-0 rounded-4">
                     <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
+                        <div class="table-responsive p-3">
+                            <table class="table table-hover align-middle mb-0 w-100" id="tabelRiwayat">
                                 <thead class="table-light">
                                     <tr>
                                         <th class="py-3 px-4">No. Pesanan</th>
                                         <th class="py-3">Tanggal Dibuat</th>
                                         <th class="py-3 text-end">Total</th>
                                         <th class="py-3 text-end">DP Dibayar</th>
-                                        <th class="py-3 text-center">Status</th>
+                                        <th class="py-3 text-center">Status Pembayaran</th>
+                                        <th class="py-3 text-center">Status Pesanan</th>
                                         <th class="py-3 text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -53,29 +58,28 @@
                                         <td class="py-3 text-end">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
                                         <td class="py-3 text-end">Rp {{ number_format($pesanan->jumlah_dp, 0, ',', '.') }}</td>
                                         <td class="py-3 text-center">
-                                            <span class="badge bg-{{ $pesanan->status_pembayaran_color }} rounded-pill px-3 py-2 mb-1">{{ $pesanan->status_pembayaran_label }}</span>
-                                            <br>
-                                            <span class="badge bg-{{ $pesanan->status_pesanan_color }} rounded-pill px-3 py-2">{{ $pesanan->status_pesanan_label }}</span>
+                                            <span class="badge bg-{{ $pesanan->status_pembayaran_color }}">{{ $pesanan->status_pembayaran_label }}</span>
                                         </td>
                                         <td class="py-3 text-center">
-                                            <div class="d-flex flex-column align-items-center gap-1">
-                                                <a href="{{ route('pelanggan.acara.detail_pesanan', $pesanan->id) }}" class="btn btn-sm btn-outline-primary rounded-pill w-100 fw-bold">Lihat</a>
+                                            <span class="badge bg-{{ $pesanan->status_pesanan_color }}">{{ $pesanan->status_pesanan_label }}</span>
+                                        </td>
+                                        <td class="py-3 text-center">
+                                            <div class="d-flex gap-2 justify-content-center">
+                                                <a href="{{ route('pelanggan.acara.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
                                                 
-                                                @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_DP)
-                                                    <form class="form-pelunasan w-100" action="{{ route('pelanggan.pelunasan', $pesanan->id) }}" method="POST">
+                                                @if($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIPROSES)
+                                                    @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_DP)
+                                                        <form class="form-pelunasan" action="{{ route('pelanggan.pelunasan', $pesanan->id) }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-success btn-sm btn-pelunasan">Pelunasan</button>
+                                                        </form>
+                                                    @endif
+                                                    
+                                                    <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
                                                         @csrf
-                                                        <button type="submit" class="btn btn-sm btn-success rounded-pill w-100 fw-bold btn-pelunasan shadow-sm">
-                                                            Pelunasan
-                                                        </button>
+                                                        <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
                                                     </form>
                                                 @endif
-                                                
-                                                <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" class="w-100" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill w-100 fw-bold" {{ $pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS || $pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIBATALKAN ? 'disabled' : '' }}>
-                                                        Batalkan
-                                                    </button>
-                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -93,6 +97,7 @@
 </div>
 
 <!-- Script Snap Midtrans -->
+@push('scripts')
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 <script>
     document.querySelectorAll('.form-pelunasan').forEach(function(form) {
@@ -151,4 +156,22 @@
         });
     });
 </script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#tabelRiwayat').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json',
+            },
+            responsive: true,
+            order: [[1, 'desc']], // Urutkan berdasarkan tanggal dibuat (terbaru)
+            columnDefs: [
+                { orderable: false, targets: 6 } // Disable sorting on Action column
+            ]
+        });
+    });
+</script>
+@endpush
 @endsection

@@ -89,8 +89,8 @@ class Pesanan extends Model
     public function getStatusPesananColorAttribute(): string
     {
         return match ($this->status_pesanan) {
-            self::PESANAN_DIPROSES => 'info text-dark',
-            self::PESANAN_DIBATALKAN => 'secondary',
+            self::PESANAN_DIPROSES => 'info',
+            self::PESANAN_DIBATALKAN => 'danger',
             self::PESANAN_SELESAI => 'success',
             default => 'secondary',
         };

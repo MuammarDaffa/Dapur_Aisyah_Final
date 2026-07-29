@@ -94,9 +94,9 @@ class OrderService
     public static function validateCancellation(Pesanan $pesanan): void
     {
         // Pesanan yang sudah dikirim atau selesai tidak bisa dibatalkan
-        if (in_array($pesanan->status_pesanan, [Pesanan::PESANAN_SELESAI, Pesanan::PESANAN_DIBATALKAN]) || $pesanan->status_pembayaran === Pesanan::PEMBAYARAN_LUNAS) {
+        if (in_array($pesanan->status_pesanan, [Pesanan::PESANAN_SELESAI, Pesanan::PESANAN_DIBATALKAN])) {
             throw ValidationException::withMessages([
-                'status' => 'Pesanan dengan status pesanan "' . $pesanan->status_pesanan . '" dan pembayaran "' . $pesanan->status_pembayaran . '" tidak dapat dibatalkan.',
+                'status' => 'Pesanan dengan status pesanan "' . $pesanan->status_pesanan . '" tidak dapat dibatalkan.',
             ]);
         }
 

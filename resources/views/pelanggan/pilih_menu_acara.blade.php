@@ -157,7 +157,7 @@
 
                     <div class="d-flex justify-content-end mb-5">
                         <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
-                            Lanjut ke Detail Pesanan
+                            Buat Pesanan
                         </button>
                     </div>
                 @endif
