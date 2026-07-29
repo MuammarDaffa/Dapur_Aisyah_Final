@@ -21,4 +21,9 @@ class MenuItem extends Model
     {
         return $this->belongsTo(Menu::class);
     }
+
+    public function detailPesanans()
+    {
+        return $this->belongsToMany(DetailPesanan::class, 'detail_pesanan_menu_item');
+    }
 }

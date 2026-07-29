@@ -31,12 +31,13 @@ class Pesanan extends Model
         'porsi',
         'subtotal',
         'total',
+        'jumlah_dp',
+        'sisa_pembayaran',
         'refund_status',
         'status',
         'alasan_pembatalan',
         'dibatalkan_pada',
         'catatan',
-        'item_menu',
     ];
 
     protected function casts(): array
@@ -48,7 +49,6 @@ class Pesanan extends Model
             'dibatalkan_pada' => 'datetime',
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
-            'item_menu' => 'array',
         ];
     }
 
@@ -108,8 +108,8 @@ class Pesanan extends Model
         return $this->belongsTo(Layanan::class, 'layanan_id');
     }
 
-    public function menu(): BelongsTo
+    public function detailPesanans(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->belongsTo(Menu::class, 'menu_id');
+        return $this->hasMany(DetailPesanan::class);
     }
 }

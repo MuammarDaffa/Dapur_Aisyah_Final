@@ -52,51 +52,64 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-white fw-bold fs-5">
-                    Detail Menu
-                </div>
-                <div class="card-body">
-                    <h6 class="fw-bold mb-3">{{ $menu->nama_menu }}</h6>
-                    
-                    @if(count($draft['item_menu']) > 0)
-                        <ul class="list-group list-group-flush mb-3">
-                            @foreach($draft['item_menu'] as $item)
-                                <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
-                                    <span>&bull; {{ $item['nama'] }}</span>
-                                    @if($item['harga'] > 0)
-                                        <span class="text-muted">+ Rp {{ number_format($item['harga'], 0, ',', '.') }}</span>
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ul>
-                    @endif
-
-                    <table class="table table-borderless mb-0">
-                        <tr>
-                            <td class="text-muted" style="width: 200px;">Jumlah Porsi</td>
-                            <td class="fw-semibold">{{ $draft['porsi'] }} porsi</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Harga per Porsi</td>
-                            <td class="fw-semibold">Rp {{ number_format($draft['subtotal'] / $draft['porsi'], 0, ',', '.') }}</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card shadow-sm border-0 mb-5 bg-light">
-                <div class="card-body p-4 d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="text-muted mb-0">Total Pembayaran</p>
-                        <h3 class="fw-bold text-primary mb-0">Rp {{ number_format($draft['total'], 0, ',', '.') }}</h3>
+            @foreach($menusDetail as $detail)
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white fw-bold fs-5">
+                        Detail Menu
                     </div>
-                    <form action="{{ route('pelanggan.acara.bayar') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm fw-bold">Bayar</button>
-                    </form>
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">{{ $detail['menu']->nama_menu }}</h6>
+                        
+                        @if($detail['selectedItems']->count() > 0)
+                            <ul class="list-group list-group-flush mb-3">
+                                @foreach($detail['selectedItems'] as $item)
+                                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                        <span>&bull; {{ $item->nama }}</span>
+                                        @if($item->harga > 0)
+                                            <span class="text-muted">+ Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+
+                        <div class="d-flex justify-content-between text-dark mb-2">
+                            <span class="text-muted">Jumlah Porsi</span>
+                            <span class="fw-bold">{{ $detail['porsi'] }} porsi</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-dark">
+                            <span class="text-muted">Subtotal Menu</span>
+                            <span class="fw-bold">Rp {{ number_format($detail['subtotal'], 0, ',', '.') }}</span>
+                        </div>
+                    </div>
                 </div>
+            @endforeach
+
+           <div class="card shadow-sm border-0 mb-5 bg-light">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Total Keseluruhan</span>
+            <span class="fw-bold fs-5">Rp {{ number_format($draft['total'], 0, ',', '.') }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Sisa Pelunasan (Dibayar Nanti)</span>
+            <span class="fw-bold fs-5 text-danger">Rp {{ number_format($draft['total'] * 0.5, 0, ',', '.') }}</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+                <p class="text-muted mb-0">DP yang Harus Dibayar (50%)</p>
+                <h3 class="fw-bold text-success mb-0">Rp {{ number_format($draft['total'] * 0.5, 0, ',', '.') }}</h3>
             </div>
+                   <form id="form-bayar" action="{{ route('pelanggan.acara.bayar') }}" method="POST">
+             @csrf
+             <button id="btn-bayar" type="submit" class="btn btn-primary btn-lg px-5 shadow-sm fw-bold">Bayar DP Sekarang</button>
+         </form>
+
+        </div>
+    </div>
+</div>
+
 
             <div class="d-flex justify-content-start mb-5">
                 <a href="{{ route('pelanggan.acara.pilih_menu') }}" class="btn btn-secondary px-5 py-2 fw-bold shadow-sm">
@@ -107,4 +120,67 @@
         </div>
     </div>
 </div>
+
+<!-- Script Snap Midtrans -->
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+<script>
+    document.getElementById('form-bayar').addEventListener('submit', function(e){
+        e.preventDefault(); // Mencegah browser pindah halaman
+
+        const form = this;
+        const btnBayar = document.getElementById('btn-bayar');
+        const url = form.action;
+        const csrfToken = form.querySelector('input[name="_token"]').value;
+
+        // Ubah tombol jadi loading
+        btnBayar.innerHTML = 'Memproses...';
+        btnBayar.disabled = true;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({}) 
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Kembalikan tombol seperti semula
+            btnBayar.innerHTML = 'Bayar DP Sekarang';
+            btnBayar.disabled = false;
+
+            if(data.status === 'success'){
+                // PANGGIL MIDTRANS SNAP
+                snap.pay(data.snap_token, {
+                    onSuccess: function(result){
+                        alert("Pembayaran berhasil!");
+                        window.location.href = "{{ route('landing') }}"; 
+                    },
+                    onPending: function(result){
+                        alert("Menunggu pembayaran Anda!");
+                        window.location.href = "{{ route('landing') }}";
+                    },
+                    onError: function(result){
+                        alert("Pembayaran gagal!");
+                    },
+                    onClose: function(){
+                        alert('Anda menutup jendela pembayaran tanpa menyelesaikan pembayaran.');
+                    }
+                });
+            } else {
+                alert('Terjadi kesalahan sistem.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            btnBayar.innerHTML = 'Bayar DP Sekarang';
+            btnBayar.disabled = false;
+            alert('Gagal menghubungi server.');
+        });
+    });
+</script>
+
+
 @endsection

@@ -125,42 +125,30 @@
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('formPilihMenu');
         
-        // Buat hidden input untuk menu_id
-        const hiddenMenuId = document.createElement('input');
-        hiddenMenuId.type = 'hidden';
-        hiddenMenuId.name = 'menu_id';
-        hiddenMenuId.id = 'hidden_menu_id';
-        form.appendChild(hiddenMenuId);
+        // Tidak perlu hidden input menu_id tunggal lagi
 
         const menuCards = document.querySelectorAll('.menu-section');
         
         menuCards.forEach(card => {
-            // Ketika ada interaksi (ketik/centang) di dalam card
-            card.addEventListener('input', function() {
-                const menuId = this.dataset.menuId;
-                hiddenMenuId.value = menuId;
-                
-                // Hilangkan required di semua porsi
-                document.querySelectorAll('.porsi-input').forEach(input => {
-                    input.required = false;
-                });
-                
-                // Jadikan porsi di card ini wajib diisi
-                const activePorsi = document.getElementById('porsi_' + menuId);
-                if(activePorsi) {
-                    activePorsi.required = true;
-                }
-            });
+            // Ketika ada interaksi, kita bisa biarkan saja,
+            // validasi required porsi dilakukan saat submit jika tidak ada satupun yang diisi
         });
 
         // Validasi saat submit jika belum ada menu yang diinteraksikan
         form.addEventListener('submit', function(e) {
-            if (!hiddenMenuId.value) {
+            let isAnyPorsiFilled = false;
+            document.querySelectorAll('.porsi-input').forEach(input => {
+                if (input.value && parseInt(input.value) >= 50) {
+                    isAnyPorsiFilled = true;
+                }
+            });
+
+            if (!isAnyPorsiFilled) {
                 e.preventDefault();
                 Swal.fire({
                     icon: 'warning',
                     title: 'Perhatian',
-                    text: 'Silakan isi jumlah porsi pada salah satu menu terlebih dahulu.'
+                    text: 'Silakan isi jumlah porsi pada minimal satu menu (minimal 50 porsi).'
                 });
             }
         });

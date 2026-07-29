@@ -61,7 +61,8 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     Route::put('/profile', [ProfilController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/ulasan', [CustomerUlasanController::class, 'store'])->name('ulasan.store');
-
+    Route::get('/riwayat-pesanan', [CustomerDashboard::class, 'riwayatPesanan'])->name('riwayat');
+Route::post('/pelunasan/{id}', [CustomerDashboard::class, 'prosesPelunasan'])->name('pelunasan');
     //route pemesanan katering harian map only
     Route::get('/katering-harian/lokasi',[CustomerDashboard::class, 'lokasiHarian'])->name('harian.lokasi');
 
@@ -138,3 +139,10 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::get('/ulasan', [OwnerDashboard::class, 'ulasan'])->name('ulasan');
     Route::get('/laporan', [OwnerDashboard::class, 'reports'])->name('reports');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Webhook Midtrans
+|--------------------------------------------------------------------------
+*/
+Route::post('/payment/callback', [\App\Http\Controllers\MidtransController::class, 'callback']);

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Pelanggan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class DashboardController extends Controller
 {
@@ -125,43 +127,48 @@ class DashboardController extends Controller
         }
 
         $request->validate([
-            'menu_id' => 'required|exists:menu,id',
             'tipe_penyajian' => 'required|in:Nasi Kotak,Prasmanan',
         ]);
 
-        $menuId = $request->menu_id;
-        $porsi = $request->input('porsi_' . $menuId);
-        $items = $request->input('items_' . $menuId, []);
+        $menusDipilih = [];
+        $totalHargaKeseluruhan = 0;
 
-        if (!$porsi || $porsi < 50) {
-            return back()->withErrors(['Jumlah porsi untuk menu yang dipilih minimal 50 porsi.']);
-        }
+        foreach ($request->all() as $key => $value) {
+            if (str_starts_with($key, 'porsi_') && $value >= 50) {
+                $menuId = str_replace('porsi_', '', $key);
+                $porsi = (int) $value;
+                $items = $request->input('items_' . $menuId, []);
 
-        $menu = \App\Models\Menu::findOrFail($menuId);
-        
-        $selectedItems = [];
-        $subtotalItems = 0;
-        
-        if (!empty($items)) {
-            $menuItems = \App\Models\MenuItem::whereIn('id', $items)->get();
-            foreach ($menuItems as $item) {
-                $selectedItems[] = [
-                    'id' => $item->id,
-                    'nama' => $item->nama,
-                    'harga' => $item->harga,
-                ];
-                $subtotalItems += $item->harga;
+                $menu = \App\Models\Menu::find($menuId);
+                if ($menu) {
+                    $subtotalItems = 0;
+                    if (!empty($items)) {
+                        $menuItems = \App\Models\MenuItem::whereIn('id', $items)->get();
+                        foreach ($menuItems as $item) {
+                            $subtotalItems += $item->harga;
+                        }
+                    }
+
+                    $hargaPerPorsi = $menu->harga + $subtotalItems;
+                    $subtotal = $hargaPerPorsi * $porsi;
+                    $totalHargaKeseluruhan += $subtotal;
+
+                    $menusDipilih[] = [
+                        'menu_id' => $menu->id,
+                        'porsi' => $porsi,
+                        'menu_item_ids' => $items,
+                        'subtotal' => $subtotal
+                    ];
+                }
             }
         }
 
-        $hargaPerPorsi = $menu->harga + $subtotalItems;
-        $totalHarga = $hargaPerPorsi * $porsi;
+        if (empty($menusDipilih)) {
+            return back()->withErrors(['Silakan pilih minimal satu menu dengan porsi minimal 50 porsi.']);
+        }
 
-        $draft['menu_id'] = $menu->id;
-        $draft['porsi'] = $porsi;
-        $draft['item_menu'] = $selectedItems;
-        $draft['subtotal'] = $totalHarga;
-        $draft['total'] = $totalHarga;
+        $draft['menus'] = $menusDipilih;
+        $draft['total'] = $totalHargaKeseluruhan;
         $draft['tipe_penyajian'] = $request->tipe_penyajian;
 
         session(['pesanan_sementara' => $draft]);
@@ -170,47 +177,161 @@ class DashboardController extends Controller
                          ->with('success', 'Menu berhasil dipilih! Silakan periksa detail pesanan Anda.');
     }
 
-    public function detailPesanan(Request $request)
+    public function detailPesanan()
     {
         $draft = session('pesanan_sementara');
-        if (!$draft || !isset($draft['layanan_id']) || !isset($draft['menu_id'])) {
-            return redirect()->route('landing')->with('error', 'Sesi pesanan tidak lengkap, silakan mulai kembali.');
+        if (!$draft || !isset($draft['menus'])) {
+            return redirect()->route('landing')->with('error', 'Sesi pesanan hilang.');
         }
 
         $layanan = \App\Models\Layanan::find($draft['layanan_id']);
-        $menu = \App\Models\Menu::find($draft['menu_id']);
 
-        return view('pelanggan.detail_pesanan', compact('draft', 'layanan', 'menu'));
+        $menusDetail = [];
+        foreach ($draft['menus'] as $menuDraft) {
+            $menu = \App\Models\Menu::find($menuDraft['menu_id']);
+            $selectedItems = collect();
+            if (!empty($menuDraft['menu_item_ids'])) {
+                $selectedItems = \App\Models\MenuItem::whereIn('id', $menuDraft['menu_item_ids'])->get();
+            }
+            $menusDetail[] = [
+                'menu' => $menu,
+                'porsi' => $menuDraft['porsi'],
+                'subtotal' => $menuDraft['subtotal'],
+                'selectedItems' => $selectedItems
+            ];
+        }
+
+        return view('pelanggan.detail_pesanan', compact('draft', 'layanan', 'menusDetail'));
     }
 
-    public function prosesBayar(Request $request)
+        public function prosesBayar(Request $request)
     {
         $draft = session('pesanan_sementara');
-        if (!$draft || !isset($draft['layanan_id']) || !isset($draft['menu_id'])) {
+        if (!$draft || !isset($draft['layanan_id']) || !isset($draft['menus'])) {
             return redirect()->route('landing')->with('error', 'Sesi pesanan tidak lengkap, silakan mulai kembali.');
         }
 
+        // 1. Asumsi DP 50% dari total harga
+        $totalHarga = $draft['total'];
+        $jumlahDp = $totalHarga * 0.5;
+        $sisaPembayaran = $totalHarga - $jumlahDp;
+
+        // 2. Simpan Data Pesanan ke Database
         $pesanan = \App\Models\Pesanan::create([
             'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
             'user_id' => auth()->id(),
             'layanan_id' => $draft['layanan_id'],
-            'menu_id' => $draft['menu_id'],
             'tanggal_pesanan' => $draft['tanggal_acara'],
             'metode_pengambilan' => $draft['metode_pengambilan'],
             'latitude' => $draft['latitude'],
             'longitude' => $draft['longitude'],
-            'porsi' => $draft['porsi'],
-            'item_menu' => $draft['item_menu'],
-            'subtotal' => $draft['subtotal'],
-            'total' => $draft['total'],
-            'tipe_penyajian' => $draft['tipe_penyajian'],
+            'subtotal' => $totalHarga, 
+            'total' => $totalHarga,                     // <- Ini sudah saya perbaiki
+            'jumlah_dp' => $jumlahDp,                   
+            'sisa_pembayaran' => $sisaPembayaran,       
+             'tipe_penyajian' => $draft['tipe_penyajian'] === 'Nasi Kotak' ? 'nasi_kotak' : 'prasmanan',
             'status' => \App\Models\Pesanan::STATUS_BELUM_BAYAR,
         ]);
 
+        // 3. Simpan Detail Menu (Keranjang)
+        foreach ($draft['menus'] as $menuDraft) {
+            $detail = $pesanan->detailPesanans()->create([
+                'menu_id' => $menuDraft['menu_id'],
+                'porsi' => $menuDraft['porsi'],
+                'subtotal' => $menuDraft['subtotal'],
+            ]);
+
+            if (!empty($menuDraft['menu_item_ids'])) {
+                $detail->menuItems()->attach($menuDraft['menu_item_ids']);
+            }
+        }
+
+        // 4. Konfigurasi Midtrans
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+
+        // 5. Siapkan parameter pesanan DP ke Midtrans
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => $pesanan->nomor_pesanan . '-DP', 
+                'gross_amount' => $jumlahDp,
+            ),
+            'customer_details' => array(
+                'first_name' => auth()->user()->name,
+                'email' => auth()->user()->email,
+            ),
+        );
+
+        // 6. Dapatkan Snap Token dari Midtrans
+        $snapToken = Snap::getSnapToken($params);
+
+        // 7. Hapus keranjang setelah token didapat
         session()->forget('pesanan_sementara');
 
-        return redirect()->route('landing')
-                         ->with('success', 'Pesanan berhasil dibuat! Silakan lanjutkan ke pembayaran.');
+            // 8. Karena kita menggunakan AJAX, kita kembalikan token-nya saja berupa JSON
+     return response()->json([
+         'status' => 'success',
+         'snap_token' => $snapToken,
+         'pesanan_id' => $pesanan->nomor_pesanan
+     ]);
+
     }
+
+    public function riwayatPesanan()
+    {
+        // 1. Ambil data pesanan milik pelanggan yang sedang login (user_id = auth()->id())
+        // 2. Urutkan dari yang terbaru (latest)
+        // 3. Ambil datanya (get)
+        $riwayatPesanan = \App\Models\Pesanan::where('user_id', auth()->id())
+                                             ->latest()
+                                             ->get();
+
+        // 4. Arahkan ke halaman riwayat dan bawa data tersebut
+        return view('pelanggan.riwayat_pesanan', compact('riwayatPesanan'));
+    }
+
+        public function prosesPelunasan($id)
+    {
+        $pesanan = \App\Models\Pesanan::findOrFail($id);
+        
+        // Keamanan: Pastikan pesanan ini benar milik pelanggan yang sedang login & statusnya DP
+        if ($pesanan->user_id !== auth()->id() || $pesanan->status !== \App\Models\Pesanan::STATUS_DP) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Pesanan tidak valid untuk dilunasi'
+            ], 403);
+        }
+
+        // Konfigurasi Midtrans
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+
+        // Siapkan parameter Midtrans khusus untuk PELUNASAN
+        $params = array(
+            'transaction_details' => array(
+                // PERHATIKAN: Kita menambahkan akhiran -PELUNASAN di sini
+                'order_id' => $pesanan->nomor_pesanan . '-PELUNASAN', 
+                // Gross amount-nya menggunakan kolom sisa_pembayaran
+                'gross_amount' => $pesanan->sisa_pembayaran,
+            ),
+            'customer_details' => array(
+                'first_name' => auth()->user()->name,
+                'email' => auth()->user()->email,
+            ),
+        );
+
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+        // Kembalikan token ini ke halaman Riwayat Pesanan
+        return response()->json([
+            'status' => 'success',
+            'snap_token' => $snapToken
+        ]);
+    }
+
 
 }
