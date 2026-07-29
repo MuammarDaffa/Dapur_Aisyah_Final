@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
-use App\Http\Controllers\Pelanggan\DashboardController as CustomerDashboard;
+use App\Http\Controllers\Pelanggan\KateringHarianController;
+use App\Http\Controllers\Pelanggan\KateringAcaraController;
 use App\Http\Controllers\Pelanggan\ProfilController;
 use App\Http\Controllers\Pelanggan\UlasanController as CustomerUlasanController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
@@ -52,8 +53,7 @@ Route::post('/session/clear-notification', function (\Illuminate\Http\Request $r
 |--------------------------------------------------------------------------
 */
 Route::middleware('unverified_customer_redirect')->prefix('dashboard')->name('pelanggan.')->group(function () {
-    Route::get('/produk', [CustomerDashboard::class, 'produk'])->name('produk');
-    Route::get('/acara/{service}', [CustomerDashboard::class, 'acaraService'])->name('acara.service');
+    Route::get('/acara/{service}', [KateringAcaraController::class, 'acaraService'])->name('acara.service');
 });
 
 Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('pelanggan.')->group(function () {
@@ -61,20 +61,22 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     Route::put('/profile', [ProfilController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/ulasan', [CustomerUlasanController::class, 'store'])->name('ulasan.store');
-    Route::get('/riwayat-pesanan', [CustomerDashboard::class, 'riwayatPesanan'])->name('riwayat');
-Route::post('/pelunasan/{id}', [CustomerDashboard::class, 'prosesPelunasan'])->name('pelunasan');
-    //route pemesanan katering harian map only
-    Route::get('/katering-harian/lokasi',[CustomerDashboard::class, 'lokasiHarian'])->name('harian.lokasi');
+    Route::get('/riwayat-pesanan/harian', [KateringHarianController::class, 'riwayatHarian'])->name('riwayat.harian');
+    Route::get('/riwayat-pesanan/acara', [KateringAcaraController::class, 'riwayatAcara'])->name('riwayat.acara');
+    Route::post('/pelunasan/{id}', [KateringAcaraController::class, 'prosesPelunasan'])->name('pelunasan');
+    // Pemesanan Katering Harian
+    Route::get('/katering-harian/pesan', [KateringHarianController::class, 'pesanHarian'])->name('harian.pesan');
+    Route::post('/katering-harian/simpan', [KateringHarianController::class, 'simpanPesananHarian'])->name('harian.simpan');
+    Route::post('/katering-harian/reschedule', [KateringHarianController::class, 'rescheduleHarian'])->name('harian.reschedule');
+    Route::get('/katering-harian/detail-pesanan/{id}', [KateringHarianController::class, 'detailPesanan'])->name('harian.detail_pesanan');
+    Route::post('/katering-harian/batalkan/{id}', [KateringHarianController::class, 'batalkanPesanan'])->name('harian.batalkan');
 
     // Pemesanan Katering Acara
-    Route::get('/katering-acara/edit-pesanan/{id}', [CustomerDashboard::class, 'editPesanan'])->name('acara.edit_pesanan');
-    Route::post('/katering-acara/simpan-menu', [CustomerDashboard::class, 'simpanMenuAcara'])->name('acara.simpan_menu');
-    Route::get('/katering-acara/detail-pesanan/{id}', [CustomerDashboard::class, 'detailPesanan'])->name('acara.detail_pesanan');
-    Route::post('/katering-acara/bayar-dp/{id}', [CustomerDashboard::class, 'bayarDp'])->name('acara.bayar_dp');
-    Route::post('/katering-acara/batalkan/{id}', [CustomerDashboard::class, 'batalkanPesanan'])->name('acara.batalkan');
-
-        // Rute POST untuk menangkap kiriman data dari form peta
-    Route::post('/simpan-lokasi-peta', [CustomerDashboard::class, 'simpanLokasi'])->name('simpan-lokasi-peta');
+    Route::get('/katering-acara/edit-pesanan/{id}', [KateringAcaraController::class, 'editPesanan'])->name('acara.edit_pesanan');
+    Route::post('/katering-acara/simpan-menu', [KateringAcaraController::class, 'simpanMenuAcara'])->name('acara.simpan_menu');
+    Route::get('/katering-acara/detail-pesanan/{id}', [KateringAcaraController::class, 'detailPesanan'])->name('acara.detail_pesanan');
+    Route::post('/katering-acara/bayar-dp/{id}', [KateringAcaraController::class, 'bayarDp'])->name('acara.bayar_dp');
+    Route::post('/katering-acara/batalkan/{id}', [KateringAcaraController::class, 'batalkanPesanan'])->name('acara.batalkan');
 
 });
 
@@ -97,7 +99,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Fungsi : Mengatur rute URL untuk Katering.
     // Penambahan 'show' berguna untuk membuka rute halaman detail katering.
     // =======================================
-    Route::resource('catering', CateringController::class)->only(['index', 'create', 'store', 'show', 'update', 'destroy']);
+    Route::resource('catering', CateringController::class)->except(['show']);
 
     // =======================================
     // Rute Manajemen Katering Harian & Acara (Menu)
@@ -105,6 +107,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // 1. Halaman Utama Manajemen Katering Harian (Jadwal)
     Route::get('/catering/{layanan}/harian', [CateringHarianController::class, 'index'])->name('catering.harian');
     Route::post('/catering/{layanan}/harian/jadwal', [CateringHarianController::class, 'updateJadwal'])->name('catering.harian.jadwal');
+
+    // 2. Halaman Detail Katering Acara (Menu dan Minuman)
+    Route::get('/catering/{layanan}/acara', [App\Http\Controllers\Admin\CateringAcaraController::class, 'index'])->name('catering.acara');
 
     // 2. CRUD Menu
     Route::get('/catering/{layanan}/menu/create', [\App\Http\Controllers\Admin\MenuController::class, 'create'])->name('menu.create');

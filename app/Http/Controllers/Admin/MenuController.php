@@ -41,7 +41,7 @@ class MenuController extends Controller
         if ($layanan->isHarian()) {
             return redirect()->route('admin.catering.harian', $layanan->id)->with('success', 'Menu berhasil ditambahkan!');
         }
-        return redirect()->route('admin.catering.show', $layanan->id)->with('success', 'Menu berhasil ditambahkan!');
+        return redirect()->route('admin.catering.acara', $layanan->id)->with('success', 'Menu berhasil ditambahkan!');
     }
 
     public function edit(Menu $menu)
@@ -71,7 +71,7 @@ class MenuController extends Controller
         if ($menu->layanan->isHarian()) {
             return redirect()->route('admin.catering.harian', $menu->layanan_id)->with('success', 'Menu berhasil diupdate!');
         }
-        return redirect()->route('admin.catering.show', $menu->layanan_id)->with('success', 'Menu berhasil diupdate!');
+        return redirect()->route('admin.catering.acara', $menu->layanan_id)->with('success', 'Menu berhasil diupdate!');
     }
 
     public function destroy(Menu $menu)
@@ -83,6 +83,6 @@ class MenuController extends Controller
         if ($isHarian) {
             return redirect()->route('admin.catering.harian', $layananId)->with('success', 'Menu berhasil dihapus!');
         }
-        return redirect()->route('admin.catering.show', $layananId)->with('success', 'Menu berhasil dihapus!');
+        return redirect()->route('admin.catering.acara', $layananId)->with('success', 'Menu berhasil dihapus!');
     }
 }

@@ -14,7 +14,7 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
     <div class="col-md-8">
         {{-- Tombol Batal/Kembali --}}
         <div class="mb-3">
-            <a href="{{ $layanan->isHarian() ? route('admin.catering.harian', $layanan->id) : route('admin.catering.show', $layanan->id) }}" class="text-decoration-none">
+            <a href="{{ $layanan->isHarian() ? route('admin.catering.harian', $layanan->id) : route('admin.catering.acara', $layanan->id) }}" class="text-decoration-none">
                 <i class="bi bi-arrow-left"></i> Batal & Kembali
             </a>
         </div>
@@ -59,7 +59,7 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
                     <button type="submit" class="btn btn-success">
                         <i class="bi bi-save"></i> Simpan Menu
                     </button>
-                    <a href="{{ $layanan->isHarian() ? route('admin.catering.harian', $layanan->id) : route('admin.catering.show', $layanan->id) }}" class="btn btn-secondary">Batal</a>
+                    <a href="{{ $layanan->isHarian() ? route('admin.catering.harian', $layanan->id) : route('admin.catering.acara', $layanan->id) }}" class="btn btn-secondary">Batal</a>
                 </div>
             </div>
         </form>

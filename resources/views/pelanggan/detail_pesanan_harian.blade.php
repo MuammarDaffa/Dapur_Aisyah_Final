@@ -52,26 +52,12 @@
                             <td class="fw-semibold">{{ $pesanan->layanan->nama }}</td>
                         </tr>
                         <tr>
-                            <td class="text-muted">Tanggal Acara</td>
-                            <td class="fw-semibold">{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->translatedFormat('d F Y') }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Metode Pengambilan</td>
+                            <td class="text-muted">Metode Pengiriman</td>
                             <td class="fw-semibold">
                                 @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
                                     Di Antar ke Lokasi
                                 @else
                                     Ambil Sendiri
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Tipe Penyajian</td>
-                            <td class="fw-semibold">
-                                @if($pesanan->tipe_penyajian == 'nasi_kotak')
-                                    Nasi Kotak
-                                @else
-                                    Prasmanan
                                 @endif
                             </td>
                         </tr>
@@ -119,6 +105,53 @@
                             <span class="fw-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</span>
                         </div>
 
+                        @if($pesanan->layanan->isHarian() && in_array($pesanan->status_pembayaran, [\App\Models\Pesanan::PEMBAYARAN_DP, \App\Models\Pesanan::PEMBAYARAN_LUNAS]))
+                            <div class="mt-3">
+                                @php
+                                    $tanggalPengiriman = \Carbon\Carbon::parse($detail->tanggal_pengiriman);
+                                    $isHMinus1 = $tanggalPengiriman->copy()->subDay()->endOfDay()->isFuture();
+                                @endphp
+                                <p class="mb-1 text-muted small">Jadwal Pengiriman: <strong>{{ $tanggalPengiriman->translatedFormat('d F Y') }}</strong></p>
+                                
+                                @if($detail->is_rescheduled)
+                                    <span class="badge bg-secondary"><i class="bi bi-info-circle"></i> Sudah Diganti Tanggal</span>
+                                @elseif(!$isHMinus1)
+                                    <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> Lewat Batas H-1</span>
+                                @else
+                                    <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
+                                        <i class="bi bi-calendar-event"></i> Ganti Tanggal
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="rescheduleModal{{ $detail->id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Ganti Tanggal Pengiriman</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form action="{{ route('pelanggan.harian.reschedule') }}" method="POST">
+                                                    @csrf
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="detail_id" value="{{ $detail->id }}">
+                                                        <p class="small text-muted mb-3">Ganti tanggal hanya bisa dilakukan 1x dan harus pada hari kerja (Senin - Jumat).</p>
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Pilih Tanggal Baru</label>
+                                                            <input type="date" name="tanggal_baru" class="form-control" required min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+
                         @if(!$loop->last)
                             <hr class="my-4 border-secondary opacity-25">
                         @endif
@@ -156,29 +189,22 @@
                         <span class="text-muted">Total Keseluruhan</span>
                         <span class="fw-bold fs-5">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">Sisa Pelunasan (Dibayar Nanti)</span>
-                        <span class="fw-bold fs-5 text-danger">Rp {{ number_format($pesanan->sisa_pembayaran, 0, ',', '.') }}</span>
-                    </div>
                     <hr>
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div>
-                            <p class="text-muted mb-0">DP yang Harus Dibayar (50%)</p>
-                            <h3 class="fw-bold text-success mb-0">Rp {{ number_format($pesanan->jumlah_dp, 0, ',', '.') }}</h3>
+                            <p class="text-muted mb-0">Total Pembayaran (Lunas)</p>
+                            <h3 class="fw-bold text-success mb-0">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</h3>
                         </div>
                         @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
                             <form id="form-bayar" action="{{ route('pelanggan.acara.bayar_dp', $pesanan->id) }}" method="POST">
                                 @csrf
-                                <button id="btn-bayar" type="submit" class="btn btn-primary btn-lg px-5 shadow-sm fw-bold">Bayar DP Sekarang</button>
+                                <button id="btn-bayar" type="submit" class="btn btn-primary btn-lg px-5 shadow-sm fw-bold">
+                                    Bayar Sekarang
+                                </button>
                             </form>
-                        @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_DP)
-                            <div class="text-end">
-                                <button disabled class="btn btn-secondary btn-lg px-5 shadow-sm fw-bold">Bayar DP Sekarang</button>
-                                <div class="text-muted small mt-1">DP sudah dibayarkan.</div>
-                            </div>
                         @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
                             <div class="text-end">
-                                <button disabled class="btn btn-secondary btn-lg px-5 shadow-sm fw-bold">Bayar DP Sekarang</button>
+                                <button disabled class="btn btn-secondary btn-lg px-5 shadow-sm fw-bold">Lunas</button>
                             </div>
                         @endif
                     </div>
@@ -191,7 +217,7 @@
                         Kembali
                     </a>
                 @else
-                    <a href="{{ route('pelanggan.riwayat') }}" class="btn btn-secondary px-5 py-2 fw-bold shadow-sm">
+                    <a href="{{ route('pelanggan.riwayat.harian') }}" class="btn btn-secondary px-5 py-2 fw-bold shadow-sm">
                         Kembali ke Riwayat
                     </a>
                 @endif
@@ -234,11 +260,11 @@
                 snap.pay(data.snap_token, {
                     onSuccess: function(result){
                         alert("Pembayaran berhasil!");
-                        window.location.href = "{{ route('pelanggan.riwayat') }}"; 
+                        window.location.href = "{{ route('pelanggan.riwayat.harian') }}"; 
                     },
                     onPending: function(result){
                         alert("Menunggu pembayaran Anda!");
-                        window.location.href = "{{ route('pelanggan.riwayat') }}";
+                        window.location.href = "{{ route('pelanggan.riwayat.harian') }}";
                     },
                     onError: function(result){
                         alert("Pembayaran gagal!");

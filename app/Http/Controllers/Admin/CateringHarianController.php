@@ -37,16 +37,33 @@ class CateringHarianController extends Controller
 
         // Mengambil rentang tanggal dari request (jika ada)
         $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
         
         $daftarTanggal = [];
         Carbon::setLocale('id');
 
-        if ($startDate && $endDate) {
-            // Jika ada request generate, buat rentang tanggal menggunakan CarbonPeriod
-            $period = CarbonPeriod::create($startDate, $endDate);
+        if ($startDate) {
+            // Jika ada request generate, set end date ke hari Jumat di minggu tersebut (start_date + 4 hari)
+            // Asumsi admin memilih hari Senin. Jika tidak, akan tetap mentok hingga 5 hari ke depan.
+            // Lebih baik mencari hari jumat di minggu tersebut.
+            $start = Carbon::parse($startDate);
+            // Mencari hari Jumat terdekat di minggu yang sama (atau minggu depan jika start_date weekend, dsb).
+            // Untuk D3 simple: Jika ini Senin, maka Jumat adalah start + 4 hari. 
+            // Kita bisa menggunakan logic: $start->copy()->next(Carbon::FRIDAY) jika ingin strict, 
+            // tapi yang paling aman secara visual: admin pilih hari apapun, batas akhirnya adalah hari Jumat terdekat di siklus itu.
+            // Atau cukup: $end = $start->copy()->endOfWeek(Carbon::FRIDAY);
+            // endOfWeek() bisa dikonfigurasi, tapi defaultnya $start->copy()->next(Carbon::FRIDAY) jika start bukan Jumat.
+            // Paling simple dan aman:
+            $endDate = $start->copy()->next(Carbon::FRIDAY);
+            if ($start->isFriday()) {
+                $endDate = $start->copy();
+            }
+
+            $period = CarbonPeriod::create($start, $endDate);
             
             foreach ($period as $date) {
+                // Jangan buat jadwal untuk Sabtu/Minggu jika tidak sengaja terlewat
+                if ($date->isSaturday() || $date->isSunday()) continue;
+
                 $daftarTanggal[] = [
                     'tanggal' => $date->format('Y-m-d'),
                     'hari' => $date->translatedFormat('l')
@@ -68,7 +85,7 @@ class CateringHarianController extends Controller
             }
         }
 
-        return view('admin.catering.harian', compact('layanan', 'daftarMenu', 'jadwalTersimpan', 'daftarTanggal', 'startDate', 'endDate'));
+        return view('admin.catering.harian', compact('layanan', 'daftarMenu', 'jadwalTersimpan', 'daftarTanggal', 'startDate'));
     }
 
     // =======================================
@@ -80,18 +97,24 @@ class CateringHarianController extends Controller
     public function updateJadwal(Request $request, Layanan $layanan)
     {
         $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
         $jadwalInput = $request->input('jadwal', []);
 
-        if (!$startDate || !$endDate) {
-            return back()->with('error', 'Rentang tanggal tidak ditemukan, silakan generate ulang.');
+        if (!$startDate) {
+            return back()->with('error', 'Tanggal mulai tidak ditemukan, silakan generate ulang.');
         }
 
         Carbon::setLocale('id');
-        $period = CarbonPeriod::create($startDate, $endDate);
+        $start = Carbon::parse($startDate);
+        $endDate = $start->copy()->next(Carbon::FRIDAY);
+        if ($start->isFriday()) {
+            $endDate = $start->copy();
+        }
+
+        $period = CarbonPeriod::create($start, $endDate);
         
         $daftarTanggal = [];
         foreach ($period as $date) {
+            if ($date->isSaturday() || $date->isSunday()) continue;
             $daftarTanggal[] = $date->format('Y-m-d');
         }
 
@@ -166,8 +189,7 @@ class CateringHarianController extends Controller
         // Kembali ke halaman sebelumnya dengan parameter pencarian dan pesan sukses
         return redirect()->route('admin.catering.harian', [
             'layanan' => $layanan->id,
-            'start_date' => $startDate,
-            'end_date' => $endDate
+            'start_date' => $startDate
         ])->with('success', 'Jadwal Menu berhasil diperbarui.');
     }
 }

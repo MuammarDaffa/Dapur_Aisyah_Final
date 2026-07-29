@@ -60,7 +60,7 @@
                                                 Lihat
                                             </a>
                                         @else
-                                            <a href="{{ route('admin.catering.show', $c->id) }}" class="btn btn-sm btn-info text-white" title="Detail Acara">
+                                            <a href="{{ route('admin.catering.acara', $c->id) }}" class="btn btn-sm btn-info text-white" title="Detail Acara">
                                                 <!-- <i class="bi bi-eye"></i> -->
                                                  Lihat
                                             </a>

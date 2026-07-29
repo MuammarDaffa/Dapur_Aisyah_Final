@@ -9,7 +9,7 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             
-            <h2 class="fw-bold mb-4 text-black">Riwayat Pesanan Saya</h2>
+            <h2 class="fw-bold mb-4 text-black">Riwayat Pesanan Katering Acara</h2>
 
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">

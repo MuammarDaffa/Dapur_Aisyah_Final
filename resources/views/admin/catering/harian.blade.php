@@ -44,20 +44,15 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                 {{-- Form Generate Tanggal --}}
                 <form action="{{ route('admin.catering.harian', $layanan->id) }}" method="GET" class="mb-4">
                     <div class="row align-items-end">
-                        <div class="col-md-4">
-                            <label for="start_date" class="form-label">Tanggal Mulai</label>
+                        <div class="col-md-6">
+                            <label for="start_date" class="form-label">Pilih Tanggal Mulai (Senin)</label>
                             <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date') }}" required>
                         </div>
-                        <div class="col-md-4">
-                            <label for="end_date" class="form-label">Tanggal Selesai</label>
-                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ request('end_date') }}" required>
-                        </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <button type="submit" class="btn btn-success">
-                                <!-- <i class="bi bi-gear"></i> -->
-                                 Generate
+                                 Generate Jadwal 1 Minggu
                             </button>
-                            @if(request('start_date') && request('end_date'))
+                            @if(request('start_date'))
                                 <a href="{{ route('admin.catering.harian', $layanan->id) }}" class="btn btn-secondary">
                                     Reset
                                 </a>
@@ -71,7 +66,6 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
             <form action="{{ route('admin.catering.harian.jadwal', $layanan->id) }}" method="POST" id="formJadwal">
                 @csrf
                 <input type="hidden" name="start_date" value="{{ request('start_date') }}">
-                <input type="hidden" name="end_date" value="{{ request('end_date') }}">
                 <div class="card-body pt-0 table-responsive">
                     <table class="table table-bordered table-hover align-middle text-nowrap">
                         <thead class="table-light">
@@ -207,3 +201,27 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    function toggleInputs(checkbox) {
+        // Cari baris <tr> terdekat
+        const row = checkbox.closest('.jadwal-row');
+        // Cari input menu (select), stok_awal, dan tanggal di dalam baris tersebut
+        const inputMenu = row.querySelector('.input-menu');
+        const inputStok = row.querySelector('.input-stok');
+        const inputTanggal = row.querySelector('.input-tanggal');
+        
+        // Jika checkbox dicentang, aktifkan input; jika tidak, nonaktifkan
+        if (checkbox.checked) {
+            inputMenu.removeAttribute('disabled');
+            inputStok.removeAttribute('disabled');
+            if (inputTanggal) inputTanggal.removeAttribute('disabled');
+        } else {
+            inputMenu.setAttribute('disabled', 'disabled');
+            inputStok.setAttribute('disabled', 'disabled');
+            if (inputTanggal) inputTanggal.setAttribute('disabled', 'disabled');
+        }
+    }
+</script>
+@endpush

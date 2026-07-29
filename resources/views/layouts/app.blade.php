@@ -71,7 +71,8 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item {{ request()->routeIs('pelanggan.profile.edit') ? 'active' : '' }}" href="{{ route('pelanggan.profile.edit') }}">Profil Saya</a></li>
-                            <li><a class="dropdown-item {{ request()->routeIs('pelanggan.riwayat') ? 'active' : '' }}" href="{{ route('pelanggan.riwayat') }}">Riwayat Pesanan</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('pelanggan.riwayat.harian') ? 'active' : '' }}" href="{{ route('pelanggan.riwayat.harian') }}">Riwayat Katering Harian</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('pelanggan.riwayat.acara') ? 'active' : '' }}" href="{{ route('pelanggan.riwayat.acara') }}">Riwayat Katering Acara</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop" class="m-0">

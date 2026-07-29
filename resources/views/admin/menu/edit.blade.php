@@ -14,7 +14,7 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
     <div class="col-md-8">
         {{-- Tombol Batal/Kembali --}}
         <div class="mb-3">
-            <a href="{{ $menu->layanan->isHarian() ? route('admin.catering.harian', $menu->layanan_id) : route('admin.catering.show', $menu->layanan_id) }}" class="text-decoration-none">
+            <a href="{{ $menu->layanan->isHarian() ? route('admin.catering.harian', $menu->layanan_id) : route('admin.catering.acara', $menu->layanan_id) }}" class="text-decoration-none">
                 <i class="bi bi-arrow-left"></i> Batal & Kembali
             </a>
         </div>
@@ -60,7 +60,7 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
                     <button type="submit" class="btn btn-warning">
                         <i class="bi bi-save"></i> Update Menu
                     </button>
-                    <a href="{{ $menu->layanan->isHarian() ? route('admin.catering.harian', $menu->layanan_id) : route('admin.catering.show', $menu->layanan_id) }}" class="btn btn-secondary">Batal</a>
+                    <a href="{{ $menu->layanan->isHarian() ? route('admin.catering.harian', $menu->layanan_id) : route('admin.catering.acara', $menu->layanan_id) }}" class="btn btn-secondary">Batal</a>
                 </div>
             </div>
         </form>

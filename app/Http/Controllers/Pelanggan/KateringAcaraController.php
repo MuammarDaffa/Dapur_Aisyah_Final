@@ -7,17 +7,10 @@ use Illuminate\Http\Request;
 use Midtrans\Config;
 use Midtrans\Snap;
 
-class DashboardController extends Controller
+class KateringAcaraController extends Controller
 {
 
 
-    /**
-     * Halaman produk - menampilkan produk dari Menu Mingguan.
-     */
-    public function produk(Request $request)
-    {
-        return view('pelanggan.lokasi_harian');
-    }
 
     /**
      * Halaman pilih layanan acara (Cards)
@@ -26,7 +19,7 @@ class DashboardController extends Controller
     {
         $menus = $service->menus()->with('items')->get();
         $minumans = $service->minumans;
-        return view('pelanggan.pilih_menu_acara', compact('service', 'menus', 'minumans'));
+        return view('pelanggan.katering_acara', compact('service', 'menus', 'minumans'));
     }
 
     /**
@@ -45,7 +38,7 @@ class DashboardController extends Controller
         $menus = $service->menus()->with('items')->get();
         $minumans = $service->minumans;
 
-        return view('pelanggan.pilih_menu_acara', compact('pesanan', 'service', 'menus', 'minumans'));
+        return view('pelanggan.katering_acara', compact('pesanan', 'service', 'menus', 'minumans'));
     }
 
     /**
@@ -271,7 +264,7 @@ class DashboardController extends Controller
             return redirect()->route('landing')->with('error', 'Anda tidak berhak melihat pesanan ini.');
         }
 
-        return view('pelanggan.detail_pesanan', compact('pesanan'));
+        return view('pelanggan.detail_pesanan_acara', compact('pesanan'));
     }
 
     public function bayarDp($id)
@@ -287,10 +280,12 @@ class DashboardController extends Controller
         Config::$isSanitized = true;
         Config::$is3ds = true;
 
+        $tipePembayaran = ($pesanan->jumlah_dp == $pesanan->total) ? 'PELUNASAN' : 'DP';
+
         $params = array(
             'transaction_details' => array(
                 // PERHATIKAN: Kita menambahkan timestamp agar order_id selalu unik (menghindari error "order_id has already been taken")
-                'order_id' => $pesanan->nomor_pesanan . '-DP-' . time(), 
+                'order_id' => $pesanan->nomor_pesanan . '-' . $tipePembayaran . '-' . time(), 
                 'gross_amount' => $pesanan->jumlah_dp,
             ),
             'customer_details' => array(
@@ -308,17 +303,18 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function riwayatPesanan()
-    {
-        // 1. Ambil data pesanan milik pelanggan yang sedang login (user_id = auth()->id())
-        // 2. Urutkan dari yang terbaru (latest)
-        // 3. Ambil datanya (get)
-        $riwayatPesanan = \App\Models\Pesanan::where('user_id', auth()->id())
-                                             ->latest()
-                                             ->get();
 
-        // 4. Arahkan ke halaman riwayat dan bawa data tersebut
-        return view('pelanggan.riwayat_pesanan', compact('riwayatPesanan'));
+
+    public function riwayatAcara()
+    {
+        $riwayatPesanan = \App\Models\Pesanan::where('user_id', auth()->id())
+            ->whereHas('layanan', function ($query) {
+                $query->where('tipe', 'acara');
+            })
+            ->latest()
+            ->get();
+
+        return view('pelanggan.riwayat_pesanan_acara', compact('riwayatPesanan'));
     }
 
         public function prosesPelunasan($id)
@@ -379,5 +375,7 @@ class DashboardController extends Controller
 
         return redirect()->route('pelanggan.riwayat')->with('success', 'Pesanan berhasil dibatalkan.');
     }
+
+
 
 }

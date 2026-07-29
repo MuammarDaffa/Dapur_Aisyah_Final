@@ -38,8 +38,12 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
-                        <x-dropdown-link :href="route('pelanggan.riwayat')">
-                         Riwayat Pesanan
+                        <x-dropdown-link :href="route('pelanggan.riwayat.harian')">
+                         Riwayat Harian
+                     </x-dropdown-link>
+
+                     <x-dropdown-link :href="route('pelanggan.riwayat.acara')">
+                         Riwayat Acara
                      </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -88,8 +92,12 @@
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
-                <x-dropdown-link :href="route('pelanggan.riwayat')">
-    Riwayat Pesanan
+                <x-dropdown-link :href="route('pelanggan.riwayat.harian')">
+    Riwayat Harian
+</x-dropdown-link>
+
+<x-dropdown-link :href="route('pelanggan.riwayat.acara')">
+    Riwayat Acara
 </x-dropdown-link>
 
                 <!-- Authentication -->

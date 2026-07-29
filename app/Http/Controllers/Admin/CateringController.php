@@ -62,62 +62,7 @@ class CateringController extends Controller
         return redirect()->route('admin.catering.index')->with('success', 'Layanan Katering berhasil ditambahkan.');
     }
 
-    // =======================================
-    // File : app/Http/Controllers/Admin/CateringController.php
-    // Fungsi : Menampilkan halaman detail spesifik dari satu katering.
-    // Dijalankan Kapan : Ketika admin menekan tombol ikon mata (Detail) di halaman daftar katering.
-    // Data berasal dari mana : Model Layanan berdasarkan ID yang diklik.
-    // Data dikirim ke mana : Halaman resources/views/admin/catering/show.blade.php
-    // Apa yang terjadi jika dihapus : Tombol detail akan error (method not found).
-    // =======================================
-    public function show(Request $request, Layanan $catering)
-    {
-        $kapasitas_porsi_per_minggu = $catering->kapasitas_porsi_per_minggu ?? 0;
-        $jumlah_porsi_terjual_minggu_ini = 0;
-        $sisa_porsi_minggu_ini = $kapasitas_porsi_per_minggu;
 
-        // Ambil tanggal filter dari request (default: hari ini)
-        $tanggal_filter = $request->input('tanggal', now()->format('Y-m-d'));
-        $startOfWeek = \Carbon\Carbon::parse($tanggal_filter)->startOfWeek()->format('Y-m-d');
-        $endOfWeek = \Carbon\Carbon::parse($tanggal_filter)->endOfWeek()->format('Y-m-d');
-
-        if ($catering->isAcara()) {
-            $catering->load(['menus.items', 'minumans']);
-            $menus = $catering->menus;
-            $minumans = $catering->minumans;
-            
-            // Perhatikan: Kita menghitung berdasar tanggal_pesanan (kapan acara berlangsung), bukan created_at
-            $jumlah_porsi_terjual_minggu_ini = (int) \App\Models\DetailPesanan::whereHas('pesanan', function($q) use ($catering, $startOfWeek, $endOfWeek) {
-                $q->where('layanan_id', $catering->id)
-                  ->where('status_pesanan', '!=', 'dibatalkan')
-                  ->whereBetween('tanggal_pesanan', [$startOfWeek, $endOfWeek]);
-            })->sum('porsi');
-                
-            $sisa_porsi_minggu_ini = max(0, $kapasitas_porsi_per_minggu - $jumlah_porsi_terjual_minggu_ini);
-            
-            return view('admin.catering.show', compact(
-                'catering', 
-                'menus',
-                'minumans',
-                'kapasitas_porsi_per_minggu', 
-                'jumlah_porsi_terjual_minggu_ini', 
-                'sisa_porsi_minggu_ini',
-                'tanggal_filter',
-                'startOfWeek',
-                'endOfWeek'
-            ));
-        }
-
-        return view('admin.catering.show', compact(
-            'catering',
-            'kapasitas_porsi_per_minggu',
-            'jumlah_porsi_terjual_minggu_ini',
-            'sisa_porsi_minggu_ini',
-            'tanggal_filter',
-            'startOfWeek',
-            'endOfWeek'
-        ));
-    }
 
     /**
      * Proses pembaruan data katering.
@@ -142,7 +87,11 @@ class CateringController extends Controller
 
         $catering->update($validated);
 
-        return redirect()->route('admin.catering.show', $catering->id)->with('success', 'Layanan Katering berhasil diperbarui.');
+        if ($catering->isHarian()) {
+            return redirect()->route('admin.catering.harian', $catering->id)->with('success', 'Layanan Katering berhasil diperbarui.');
+        } else {
+            return redirect()->route('admin.catering.acara', $catering->id)->with('success', 'Layanan Katering berhasil diperbarui.');
+        }
     }
 
 
