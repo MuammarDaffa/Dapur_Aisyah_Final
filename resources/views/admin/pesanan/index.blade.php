@@ -55,7 +55,7 @@
                                 <th>Total</th>
                                 <th>Status Pembayaran</th>
                                 <th>Status Pesanan</th>
-                                <th>Tgl Pesanan</th>
+                                <th>Tgl Transaksi</th>
                                 <th>Tgl Pengiriman</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
