@@ -5,11 +5,6 @@
 @endpush
 
 @section('content')
-@php
-    // Sesuai instruksi untuk tidak merubah controller/query/route, 
-    // kita load seluruh pesanan (Harian & Acara) di sini untuk disatukan dalam 1 tabel.
-    $semuaPesanan = \App\Models\Pesanan::with('layanan')->where('user_id', auth()->id())->latest()->get();
-@endphp
 <div class="container py-5 mt-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -35,7 +30,7 @@
                 </div>
             @endif
 
-            @if($semuaPesanan->isEmpty())
+            @if($riwayatPesanan->isEmpty())
                 <div class="alert alert-info text-center shadow-sm rounded-4 py-4">
                     Belum ada pesanan.
                 </div>
@@ -56,7 +51,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($semuaPesanan as $pesanan)
+                                    @foreach($riwayatPesanan as $pesanan)
                                     @php
                                         // Deteksi tipe katering
                                         $tipeLayanan = $pesanan->layanan ? ucfirst(strtolower($pesanan->layanan->tipe)) : 'Acara';

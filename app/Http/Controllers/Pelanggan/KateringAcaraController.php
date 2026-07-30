@@ -314,17 +314,7 @@ class KateringAcaraController extends Controller
 
 
 
-    public function riwayatAcara()
-    {
-        $riwayatPesanan = \App\Models\Pesanan::where('user_id', auth()->id())
-            ->whereHas('layanan', function ($query) {
-                $query->where('tipe', 'acara');
-            })
-            ->latest()
-            ->get();
 
-        return view('pelanggan.riwayat_pesanan_acara', compact('riwayatPesanan'));
-    }
 
         public function prosesPelunasan($id)
     {

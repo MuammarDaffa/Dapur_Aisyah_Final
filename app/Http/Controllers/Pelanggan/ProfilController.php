@@ -26,4 +26,10 @@ class ProfilController extends Controller
 
         return back()->with('success', 'Profil berhasil diperbarui.');
     }
+
+    public function riwayatPesanan()
+    {
+        $riwayatPesanan = \App\Models\Pesanan::with('layanan')->where('user_id', auth()->id())->latest()->get();
+        return view('pelanggan.riwayat_pesanan', compact('riwayatPesanan'));
+    }
 }

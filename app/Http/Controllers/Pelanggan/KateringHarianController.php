@@ -25,34 +25,24 @@ class KateringHarianController extends Controller
         return view('pelanggan.detail_pesanan_harian', compact('pesanan'));
     }
 
-    public function riwayatHarian()
-    {
-        $riwayatPesanan = \App\Models\Pesanan::where('user_id', auth()->id())
-            ->whereHas('layanan', function ($query) {
-                $query->where('tipe', 'harian');
-            })
-            ->latest()
-            ->get();
 
-        return view('pelanggan.riwayat_pesanan_harian', compact('riwayatPesanan'));
-    }
 
     public function batalkanPesanan($id)
     {
         $pesanan = \App\Models\Pesanan::findOrFail($id);
 
         if ($pesanan->user_id !== auth()->id()) {
-            return redirect()->route('pelanggan.riwayat.harian')->with('error', 'Anda tidak memiliki akses ke pesanan ini.');
+            return redirect()->route('pelanggan.riwayat')->with('error', 'Anda tidak memiliki akses ke pesanan ini.');
         }
 
         if ($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIBATALKAN) {
-            return redirect()->route('pelanggan.riwayat.harian')->with('info', 'Pesanan sudah berstatus dibatalkan.');
+            return redirect()->route('pelanggan.riwayat')->with('info', 'Pesanan sudah berstatus dibatalkan.');
         }
 
         $pesanan->status_pesanan = \App\Models\Pesanan::PESANAN_DIBATALKAN;
         $pesanan->save();
 
-        return redirect()->route('pelanggan.riwayat.harian')->with('success', 'Pesanan berhasil dibatalkan.');
+        return redirect()->route('pelanggan.riwayat')->with('success', 'Pesanan berhasil dibatalkan.');
     }
 
     // ==========================================
@@ -85,7 +75,7 @@ class KateringHarianController extends Controller
         
         // Pastikan hanya bisa diedit jika belum_dibayar
         if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
-            return redirect()->route('pelanggan.riwayat.harian')->with('error', 'Pesanan tidak valid atau sudah dibayar.');
+            return redirect()->route('pelanggan.riwayat')->with('error', 'Pesanan tidak valid atau sudah dibayar.');
         }
 
         $service = \App\Models\Layanan::findOrFail($pesanan->layanan_id);

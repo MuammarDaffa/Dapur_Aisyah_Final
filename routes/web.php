@@ -61,8 +61,7 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     Route::put('/profile', [ProfilController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/ulasan', [CustomerUlasanController::class, 'store'])->name('ulasan.store');
-    Route::get('/riwayat-pesanan/harian', [KateringHarianController::class, 'riwayatHarian'])->name('riwayat.harian');
-    Route::get('/riwayat-pesanan/acara', [KateringAcaraController::class, 'riwayatAcara'])->name('riwayat.acara');
+    Route::get('/riwayat-pesanan', [ProfilController::class, 'riwayatPesanan'])->name('riwayat');
     Route::post('/pelunasan/{id}', [KateringAcaraController::class, 'prosesPelunasan'])->name('pelunasan');
     // Pemesanan Katering Harian
     Route::get('/katering-harian/pesan', [KateringHarianController::class, 'pesanHarian'])->name('harian.pesan');
