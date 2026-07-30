@@ -14,7 +14,7 @@
                             <tr>
                                 <th>Nama</th>
                                 <th>Email</th>
-                                <th>Total Pesanan</th>
+                                <!-- <th>Total Pesanan</th> -->
                                 <th>Terdaftar Pada</th>
                             </tr>
                         </thead>
@@ -23,14 +23,14 @@
                             <tr>
                                 <td class="align-middle fw-medium">{{ $c->name }}</td>
                                 <td class="align-middle">{{ $c->email }}</td>
-                                <td class="align-middle">
+                                <!-- <td class="align-middle">
                                     <span class="badge text-bg-info">{{ $c->pesanan_count }} Pesanan</span>
-                                </td>
+                                </td> -->
                                 <td class="align-middle text-muted">{{ $c->created_at->format('d M Y') }}</td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">Belum ada pelanggan terdaftar.</td>
+                                <td colspan="4" class="text-center py-4 text-muted">Belum aa pelanggan terdaftar.</td>
                             </tr>
                             @endforelse
                         </tbody>

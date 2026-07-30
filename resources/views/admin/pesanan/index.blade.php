@@ -51,7 +51,6 @@
                         <thead>
                             <tr>
                                 <th>Pesanan</th>
-                                <th>Pelanggan</th>
                                 <th>Layanan</th>
                                 <th>Total</th>
                                 <th>Status Pembayaran</th>
@@ -65,7 +64,6 @@
                             @forelse($pesanan as $p)
                                 <tr>
                                     <td class="align-middle fw-medium">{{ $p->nomor_pesanan }}</td>
-                                    <td class="align-middle">{{ $p->user->name ?? '-' }}</td>
                                     <td class="align-middle">
                                         <span class="d-block">{{ $p->layanan->nama ?? '-' }}</span>
                                         <small class="text-muted">{{ ucfirst($p->layanan->tipe ?? '') }}</small>
