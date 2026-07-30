@@ -161,11 +161,11 @@
                                         if (in_array($minuman->id, old('minuman_ids'))) {
                                             $isChecked = true;
                                         }
-                                    } elseif (isset($pesanan) && $pesanan->detailPesananMinumans) {
-                                        $detailMinuman = $pesanan->detailPesananMinumans->where('minuman_id', $minuman->id)->first();
+                                    } elseif (isset($pesanan) && $pesanan->detailPesanans) {
+                                        $detailMinuman = $pesanan->detailPesanans->where('minuman_id', $minuman->id)->first();
                                         if($detailMinuman) {
                                             $isChecked = true;
-                                            $minumanValue = $detailMinuman->jumlah;
+                                            $minumanValue = $detailMinuman->porsi;
                                         }
                                     }
                                 @endphp

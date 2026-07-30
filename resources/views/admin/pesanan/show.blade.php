@@ -104,19 +104,19 @@
                             </tr>
                             @endforelse
 
-                            @if($pesanan->detailPesananMinumans && $pesanan->detailPesananMinumans->count() > 0)
+                            @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
                                 <tr>
                                     <td colspan="3" class="bg-light fw-bold text-success">
                                         <i class="fa-solid fa-mug-hot"></i> Minuman
                                     </td>
                                 </tr>
-                                @foreach($pesanan->detailPesananMinumans as $minumanDetail)
+                                @foreach($pesanan->detailPesanans->whereNotNull('minuman_id') as $minumanDetail)
                                 <tr>
                                     <td class="align-middle fw-medium text-success">
                                         {{ $minumanDetail->minuman->nama_minuman }}
                                     </td>
                                     <td class="align-middle text-center text-success">
-                                        {{ $minumanDetail->jumlah }} x Rp {{ number_format($minumanDetail->minuman->harga, 0, ',', '.') }}
+                                        {{ $minumanDetail->porsi }} x Rp {{ number_format($minumanDetail->minuman->harga, 0, ',', '.') }}
                                     </td>
                                     <td class="align-middle text-end fw-bold text-success">Rp {{ number_format($minumanDetail->subtotal, 0, ',', '.') }}</td>
                                 </tr>

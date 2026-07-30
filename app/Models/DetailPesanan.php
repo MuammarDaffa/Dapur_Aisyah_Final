@@ -16,8 +16,11 @@ class DetailPesanan extends Model
     protected $fillable = [
         'pesanan_id',
         'menu_id',
+        'minuman_id',
         'porsi',
         'subtotal',
+        'tanggal_pengiriman',
+        'is_rescheduled'
     ];
 
     public function pesanan(): BelongsTo
@@ -33,5 +36,10 @@ class DetailPesanan extends Model
     public function menuItems(): BelongsToMany
     {
         return $this->belongsToMany(MenuItem::class, 'detail_pesanan_menu_item');
+    }
+
+    public function minuman(): BelongsTo
+    {
+        return $this->belongsTo(Minuman::class);
     }
 }

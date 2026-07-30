@@ -18,43 +18,6 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
             </a>
         </div>
 
-        <form id="form-update-katering" action="{{ route('admin.catering.update', $catering->id) }}" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="card card-outline card-warning">
-                <div class="card-body">
-                    {{-- Nama --}}
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Nama Katering <span class="text-danger">*</span></label>
-                        <input type="text" name="nama" required value="{{ old('nama', $catering->nama) }}" class="form-control">
-                        @error('nama')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                    </div>
-
-            
-                {{-- Tipe Katering (Dikunci) --}}
-                    <div class="mb-3">
-                        <label class="form-label fw-bold d-block">Tipe Katering</label>
-                        <input type="text" class="form-control bg-light" value="{{ ucfirst($catering->tipe) }}" readonly>
-                        {{-- Hidden input agar data tipe tetap terkirim ke controller --}}
-                        <input type="hidden" name="tipe" value="{{ $catering->tipe }}">
-                       
-                    </div>
-
-
-
-                    {{-- Status --}}
-                    <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" name="status" value="1" {{ old('status', $catering->status) ? 'checked' : '' }} id="statusCheck">
-                        <label class="form-check-label fw-bold" for="statusCheck">
-                            Aktif
-                        </label>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-warning">Perbarui Katering</button>
-                </div>
-            </div>
-        </form>
     </div>
 </div>
 

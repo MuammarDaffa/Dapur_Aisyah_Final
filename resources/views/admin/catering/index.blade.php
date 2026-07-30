@@ -66,6 +66,10 @@
                                             </a>
                                         @endif
 
+                                        {{-- Tombol Edit Modal --}}
+                                        <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ $c->id }}" title="Edit">
+                                            Edit
+                                        </button>
 
                                         <form action="{{ route('admin.catering.destroy', $c) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Yakin ingin menghapus layanan ini?');">
                                             @csrf 
@@ -81,6 +85,54 @@
 
 
                             </tr>
+
+                            {{-- Modal Edit Katering --}}
+                            <div class="modal fade" id="editModal{{ $c->id }}" tabindex="-1" aria-labelledby="editModalLabel{{ $c->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <form action="{{ route('admin.catering.update', $c->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editModalLabel{{ $c->id }}">Edit Katering</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body text-start">
+                                                {{-- Nama --}}
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Nama Katering <span class="text-danger">*</span></label>
+                                                    <input type="text" name="nama" required value="{{ $c->nama }}" class="form-control">
+                                                </div>
+
+                                                {{-- Tipe Katering (Read Only / Disabled via radio) --}}
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold d-block">Tipe Katering</label>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" value="harian" {{ $c->isHarian() ? 'checked' : '' }} disabled>
+                                                        <label class="form-check-label">Harian</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" value="acara" {{ $c->isAcara() ? 'checked' : '' }} disabled>
+                                                        <label class="form-check-label">Acara</label>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Status --}}
+                                                <div class="form-check mt-3">
+                                                    <input class="form-check-input" type="checkbox" name="status" value="1" {{ $c->status ? 'checked' : '' }} id="statusCheck{{ $c->id }}">
+                                                    <label class="form-check-label fw-bold" for="statusCheck{{ $c->id }}">
+                                                        Aktif
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-warning">Simpan Perubahan</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                             @empty
                             <tr>
                                 <td colspan="4" class="text-center py-5">

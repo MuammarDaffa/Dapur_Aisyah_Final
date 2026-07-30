@@ -143,8 +143,4 @@ class Pesanan extends Model
         return $this->hasMany(DetailPesanan::class);
     }
 
-    public function detailPesananMinumans(): HasMany
-    {
-        return $this->hasMany(DetailPesananMinuman::class);
-    }
 }

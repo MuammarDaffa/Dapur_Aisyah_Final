@@ -16,7 +16,7 @@ class KateringHarianController extends Controller
 
     public function detailPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesananMinumans.minuman', 'layanan'])->findOrFail($id);
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesanans.minuman', 'layanan'])->findOrFail($id);
         
         if ($pesanan->user_id !== auth()->id()) {
             return redirect()->route('landing')->with('error', 'Anda tidak berhak melihat pesanan ini.');

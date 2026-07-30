@@ -129,21 +129,21 @@
             </div>
             @endif
 
-            @if($pesanan->detailPesananMinumans && $pesanan->detailPesananMinumans->count() > 0)
+            @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
                 <div class="card shadow-sm border-0 mb-4 bg-light">
                     <div class="card-header bg-white fw-bold fs-5 text-success">
                         <i class="bi bi-cup-straw me-2"></i> Pilihan Minuman
                     </div>
                     <div class="card-body">
                         <ul class="list-group list-group-flush mb-0">
-                            @foreach($pesanan->detailPesananMinumans as $detailMinuman)
+                            @foreach($pesanan->detailPesanans->whereNotNull('minuman_id') as $detailMinuman)
                                 <li class="list-group-item bg-transparent px-0">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="fw-bold">{{ $detailMinuman->minuman->nama_minuman }}</span>
                                         <span class="fw-bold text-success">Rp {{ number_format($detailMinuman->subtotal, 0, ',', '.') }}</span>
                                     </div>
                                     <div class="text-muted small">
-                                        {{ $detailMinuman->jumlah }} cup &times; Rp {{ number_format($detailMinuman->minuman->harga, 0, ',', '.') }}
+                                        {{ $detailMinuman->porsi }} cup &times; Rp {{ number_format($detailMinuman->minuman->harga, 0, ',', '.') }}
                                     </div>
                                 </li>
                             @endforeach

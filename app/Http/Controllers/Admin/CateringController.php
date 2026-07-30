@@ -64,24 +64,16 @@ class CateringController extends Controller
      */
     public function update(Request $request, Layanan $catering)
     {
-        $isHarian = $request->input('tipe') === 'harian';
-        
         $validated = $request->validate([
             'nama' => 'required|string|max:150',
-            'tipe' => 'required|in:harian,acara',
             'status' => 'boolean',
-            'deskripsi' => 'nullable|string',
         ]);
 
         $validated['status'] = $request->boolean('status');
 
         $catering->update($validated);
 
-        if ($catering->isHarian()) {
-            return redirect()->route('admin.catering.harian', $catering->id)->with('success', 'Layanan Katering berhasil diperbarui.');
-        } else {
-            return redirect()->route('admin.catering.acara', $catering->id)->with('success', 'Layanan Katering berhasil diperbarui.');
-        }
+        return redirect()->route('admin.catering.index')->with('success', 'Layanan Katering berhasil diperbarui.');
     }
 
 

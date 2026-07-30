@@ -27,7 +27,7 @@ class KateringAcaraController extends Controller
      */
     public function editPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menuItems', 'detailPesananMinumans'])->findOrFail($id);
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menuItems', 'detailPesanans.minuman'])->findOrFail($id);
         
         // Pastikan hanya bisa diedit jika belum_dibayar
         if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
@@ -182,7 +182,6 @@ class KateringAcaraController extends Controller
 
                 // Hapus detail lama untuk diganti yang baru
                 $pesanan->detailPesanans()->delete();
-                $pesanan->detailPesananMinumans()->delete();
             } else {
                 $pesanan = \App\Models\Pesanan::create([
                     'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
@@ -218,9 +217,9 @@ class KateringAcaraController extends Controller
             // Simpan detail minuman
             if (!empty($minumanDipilih)) {
                 foreach ($minumanDipilih as $minumanDraft) {
-                    $pesanan->detailPesananMinumans()->create([
+                    $pesanan->detailPesanans()->create([
                         'minuman_id' => $minumanDraft['minuman_id'],
-                        'jumlah' => $minumanDraft['jumlah'],
+                        'porsi' => $minumanDraft['jumlah'],
                         'subtotal' => $minumanDraft['subtotal'],
                     ]);
                 }
@@ -240,7 +239,7 @@ class KateringAcaraController extends Controller
 
     public function detailPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesananMinumans.minuman', 'layanan'])->findOrFail($id);
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesanans.minuman', 'layanan'])->findOrFail($id);
         
         if ($pesanan->user_id !== auth()->id()) {
             return redirect()->route('landing')->with('error', 'Anda tidak berhak melihat pesanan ini.');
