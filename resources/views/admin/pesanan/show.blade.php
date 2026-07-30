@@ -166,7 +166,6 @@
             </div>
         </div> -->
 
-        @if(!in_array($pesanan->status_pesanan, [\App\Models\Pesanan::PESANAN_SELESAI, \App\Models\Pesanan::PESANAN_DIBATALKAN]) && $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_LUNAS)
         <div class="card card-outline card-warning">
             <div class="card-header">
                 <h3 class="card-title">Aksi Pesanan</h3>
@@ -189,7 +188,6 @@
 
             </div>
         </div>
-        @endif
     </div>
 </div>
 
