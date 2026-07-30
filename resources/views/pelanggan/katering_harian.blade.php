@@ -38,9 +38,10 @@
 
             <form action="{{ route('pelanggan.harian.simpan') }}" method="POST" id="formPilihMenu">
                 @csrf
+                <input type="hidden" name="pesanan_id" value="{{ isset($pesanan) ? $pesanan->id : '' }}">
                 <input type="hidden" name="layanan_id" value="{{ $service->id }}">
-                <input type="hidden" name="latitude" id="input_latitude" value="">
-                <input type="hidden" name="longitude" id="input_longitude" value="">
+                <input type="hidden" name="latitude" id="input_latitude" value="{{ isset($pesanan) ? $pesanan->latitude : '' }}">
+                <input type="hidden" name="longitude" id="input_longitude" value="{{ isset($pesanan) ? $pesanan->longitude : '' }}">
                 
                 <!-- Pilihan Radio Button -->
                 <div class="card shadow-sm border-0 mb-4">
@@ -48,13 +49,13 @@
                         <div class="mb-4">
                             <label class="form-label fw-bold text-black">Pilih Metode Pengambilan:</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_ambil" value="ambil_sendiri" checked>
+                                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_ambil" value="ambil_sendiri" {{ (!isset($pesanan) || $pesanan->metode_pengambilan === 'ambil_sendiri') ? 'checked' : '' }}>
                                 <label class="form-check-label text-black" for="radio_ambil">
                                     Ambil Sendiri 
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar_ke_tempat">
+                                <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar_ke_tempat" {{ (isset($pesanan) && $pesanan->metode_pengambilan === 'diantar_ke_tempat') ? 'checked' : '' }}>
                                 <label class="form-check-label text-black" for="radio_antar">
                                     Di Antar ke Lokasi  
                                 </label>
@@ -73,12 +74,25 @@
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <h4 class="fw-bold mb-4">Daftar Jadwal Menu Harian</h4>
-                    
-                    <div>
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                        <h4 class="fw-bold mb-0">Daftar Jadwal Menu Harian</h4>
+                    </div>
+                    <div class="card-body p-4">
                         @forelse($jadwals as $jadwal)
-                            <div class="jadwal-section mb-4" data-jadwal-id="{{ $jadwal->id }}">
+                            @php
+                                $porsiValue = 1;
+                                $detailLama = null;
+                                if (isset($pesanan)) {
+                                    $detailLama = $pesanan->detailPesanans->where('tanggal_pengiriman', $jadwal->tanggal)->first();
+                                    if ($detailLama) {
+                                        $porsiValue = $detailLama->porsi;
+                                    } else {
+                                        $porsiValue = 0; 
+                                    }
+                                }
+                            @endphp
+                            <div class="jadwal-section" data-jadwal-id="{{ $jadwal->id }}">
                                 <input type="hidden" name="jadwal_ids[]" value="{{ $jadwal->id }}">
                                 
                                 <h5 class="fw-bold text-dark mb-3">{{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l, d F Y') }}</h5>
@@ -105,12 +119,18 @@
                                     <span class="fw-semibold d-block mb-2">Tambahan :</span>
                                     @if($jadwal->menu->items->count() > 0)
                                         @foreach($jadwal->menu->items as $item)
+                                            @php
+                                                $itemCount = 0;
+                                                if ($detailLama && $detailLama->menuItems) {
+                                                    $itemCount = $detailLama->menuItems->where('id', $item->id)->count();
+                                                }
+                                            @endphp
                                             <div class="d-flex justify-content-between align-items-center mb-2 ms-2" style="max-width: 300px;">
                                                 <div>
                                                     <span class="d-block">{{ $item->nama }}</span>
                                                     <span class="text-dark small">Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
                                                 </div>
-                                                <input type="number" class="form-control form-control-sm text-center" name="items_{{ $jadwal->id }}[{{ $item->id }}]" value="0" min="0" style="width: 70px;">
+                                                <input type="number" class="form-control form-control-sm text-center" name="items_{{ $jadwal->id }}[{{ $item->id }}]" value="{{ $itemCount }}" min="0" style="width: 70px;">
                                             </div>
                                         @endforeach
                                     @else
@@ -120,14 +140,16 @@
                                 
                                 <div class="mb-3">
                                     <span class="fw-semibold d-block mb-2">Jumlah</span>
-                                    <input type="number" class="form-control form-control-sm text-center ms-2" name="porsi_{{ $jadwal->id }}" value="1" min="1" style="width: 100px;">
+                                    <input type="number" class="form-control form-control-sm text-center ms-2" name="porsi_{{ $jadwal->id }}" value="{{ $porsiValue }}" min="0" style="width: 100px;">
                                 </div>
                                 
-                                <div class="mb-4">
+                                <div class="mb-2">
                                     <span class="text-dark">Stok : {{ $jadwal->stok_tersisa }} Porsi</span>
                                 </div>
                                 
-                                <hr class="border-secondary opacity-25 my-4">
+                                @if(!$loop->last)
+                                    <hr class="border-secondary opacity-25 my-4">
+                                @endif
                             </div>
                         @empty
                             <div class="text-center py-5">
@@ -167,8 +189,8 @@
                 inputLng.setAttribute('required', 'required');
                 
                 if (!map) {
-                    var initLat = -0.03194;
-                    var initLng = 109.325;
+                    var initLat = {{ isset($pesanan) && $pesanan->latitude ? $pesanan->latitude : -0.03194 }};
+                    var initLng = {{ isset($pesanan) && $pesanan->longitude ? $pesanan->longitude : 109.325 }};
                     map = L.map('map').setView([initLat, initLng], 14);
                     
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -180,9 +202,11 @@
                         .addTo(map)
                         .bindPopup("<b>Halo!</b><br>Pesanan akan diantar kesini.");
 
-                    // Default input values
-                    inputLat.value = initLat;
-                    inputLng.value = initLng;
+                    // Default input values if empty
+                    if (!inputLat.value) {
+                        inputLat.value = initLat;
+                        inputLng.value = initLng;
+                    }
 
                     map.on('click', function(e) {
                         const lat = e.latlng.lat;

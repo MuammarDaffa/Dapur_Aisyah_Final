@@ -76,6 +76,33 @@ class KateringHarianController extends Controller
         return view('pelanggan.katering_harian', compact('service', 'jadwals'));
     }
 
+    /**
+     * Halaman Edit Pesanan Harian
+     */
+    public function editPesanan($id)
+    {
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menuItems', 'layanan'])->findOrFail($id);
+        
+        // Pastikan hanya bisa diedit jika belum_dibayar
+        if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
+            return redirect()->route('pelanggan.riwayat.harian')->with('error', 'Pesanan tidak valid atau sudah dibayar.');
+        }
+
+        $service = \App\Models\Layanan::findOrFail($pesanan->layanan_id);
+        
+        $besok = \Carbon\Carbon::tomorrow()->toDateString();
+        $jadwals = \App\Models\JadwalMenu::with(['menu', 'menu.items'])
+            ->where('tanggal', '>=', $besok)
+            ->where('aktif', true)
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
+        return view('pelanggan.katering_harian', compact('pesanan', 'service', 'jadwals'));
+    }
+
+    /**
+     * Simpan Pilihan Menu Harian (Create/Update)
+     */
     public function simpanPesananHarian(Request $request)
     {
         $request->validate([
@@ -152,23 +179,45 @@ class KateringHarianController extends Controller
         try {
             \Illuminate\Support\Facades\DB::beginTransaction();
 
-            $nomorPesanan = \App\Models\Pesanan::generateOrderNumber();
+            if ($request->has('pesanan_id') && !empty($request->pesanan_id)) {
+                $pesanan = \App\Models\Pesanan::findOrFail($request->pesanan_id);
+                
+                if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
+                    throw new \Exception('Pesanan tidak valid untuk diubah.');
+                }
+                
+                $pesanan->update([
+                    'metode_pengambilan' => $request->metode_pengambilan,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                    'subtotal' => $totalHargaKeseluruhan,
+                    'total' => $totalHargaKeseluruhan,
+                    'jumlah_dp' => $jumlahDp,
+                    'sisa_pembayaran' => $sisaPembayaran,
+                ]);
 
-            $pesanan = \App\Models\Pesanan::create([
-                'user_id' => auth()->id(),
-                'layanan_id' => $request->layanan_id,
-                'nomor_pesanan' => $nomorPesanan,
-                'tanggal_pesanan' => now()->toDateString(), // Just today's date for record
-                'metode_pengambilan' => $request->metode_pengambilan,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-                'subtotal' => $totalHargaKeseluruhan,
-                'total' => $totalHargaKeseluruhan,
-                'tipe_penyajian' => 'nasi_kotak',
-                'jumlah_dp' => $jumlahDp,
-                'sisa_pembayaran' => $sisaPembayaran,
-                'status_pembayaran' => \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR,
-            ]);
+                // Hapus detail lama untuk diganti yang baru
+                $pesanan->detailPesanans()->delete();
+            } else {
+                $nomorPesanan = \App\Models\Pesanan::generateOrderNumber();
+
+                $pesanan = \App\Models\Pesanan::create([
+                    'user_id' => auth()->id(),
+                    'layanan_id' => $request->layanan_id,
+                    'nomor_pesanan' => $nomorPesanan,
+                    'tanggal_pesanan' => now()->toDateString(), 
+                    'metode_pengambilan' => $request->metode_pengambilan,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                    'subtotal' => $totalHargaKeseluruhan,
+                    'total' => $totalHargaKeseluruhan,
+                    'tipe_penyajian' => 'nasi_kotak',
+                    'jumlah_dp' => $jumlahDp,
+                    'sisa_pembayaran' => $sisaPembayaran,
+                    'status_pembayaran' => \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR,
+                    'status_pesanan' => null,
+                ]);
+            }
 
             foreach ($menusDipilih as $menuData) {
                 $detail = \App\Models\DetailPesanan::create([
@@ -186,8 +235,12 @@ class KateringHarianController extends Controller
 
             \Illuminate\Support\Facades\DB::commit();
 
+            $pesanSukses = $request->has('pesanan_id') && !empty($request->pesanan_id) 
+                ? 'Pesanan Harian berhasil diperbarui! Silakan selesaikan pembayaran.' 
+                : 'Pesanan Harian berhasil dibuat! Silakan selesaikan pembayaran.';
+
             return redirect()->route('pelanggan.harian.detail_pesanan', $pesanan->id)
-                             ->with('success', 'Pesanan Harian berhasil dibuat! Silakan bayar DP.');
+                             ->with('success', $pesanSukses);
 
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();

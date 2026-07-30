@@ -70,6 +70,7 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     Route::post('/katering-harian/reschedule', [KateringHarianController::class, 'rescheduleHarian'])->name('harian.reschedule');
     Route::get('/katering-harian/detail-pesanan/{id}', [KateringHarianController::class, 'detailPesanan'])->name('harian.detail_pesanan');
     Route::post('/katering-harian/batalkan/{id}', [KateringHarianController::class, 'batalkanPesanan'])->name('harian.batalkan');
+    Route::get('/katering-harian/edit-pesanan/{id}', [KateringHarianController::class, 'editPesanan'])->name('harian.edit_pesanan');
 
     // Pemesanan Katering Acara
     Route::get('/katering-acara/edit-pesanan/{id}', [KateringAcaraController::class, 'editPesanan'])->name('acara.edit_pesanan');
