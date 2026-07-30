@@ -201,7 +201,7 @@
                         Kembali
                     </a>
                 @else
-                    <a href="{{ route('pelanggan.riwayat.acara') }}" class="btn btn-secondary px-5 py-2 fw-bold shadow-sm">
+                    <a href="{{ route('pelanggan.riwayat') }}" class="btn btn-secondary px-5 py-2 fw-bold shadow-sm">
                         Kembali ke Riwayat
                     </a>
                 @endif
@@ -244,11 +244,11 @@
                 snap.pay(data.snap_token, {
                     onSuccess: function(result){
                         alert("Pembayaran berhasil!");
-                        window.location.href = "{{ route('pelanggan.riwayat.acara') }}"; 
+                        window.location.href = "{{ route('pelanggan.riwayat') }}"; 
                     },
                     onPending: function(result){
                         alert("Menunggu pembayaran Anda!");
-                        window.location.href = "{{ route('pelanggan.riwayat.acara') }}";
+                        window.location.href = "{{ route('pelanggan.riwayat') }}";
                     },
                     onError: function(result){
                         alert("Pembayaran gagal!");

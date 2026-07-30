@@ -38,7 +38,7 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
-                        <x-dropdown-link :href="route('pelanggan.riwayat.acara')">
+                        <x-dropdown-link :href="route('pelanggan.riwayat')">
                             Riwayat Pesanan
                         </x-dropdown-link>
 
@@ -88,7 +88,7 @@
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
-                <x-dropdown-link :href="route('pelanggan.riwayat.acara')">
+                <x-dropdown-link :href="route('pelanggan.riwayat')">
                     Riwayat Pesanan
                 </x-dropdown-link>
 

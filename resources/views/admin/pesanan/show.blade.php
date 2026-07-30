@@ -130,7 +130,7 @@
     </div>
 
     <div class="col-lg-4">
-        <div class="card card-outline card-success mb-4">
+        <!-- <div class="card card-outline card-success mb-4">
             <div class="card-header">
                 <h3 class="card-title">Pembayaran</h3>
             </div>
@@ -151,7 +151,7 @@
                     </div>
                 @endif
             </div>
-        </div>
+        </div> -->
 
         @if(!in_array($pesanan->status_pesanan, [\App\Models\Pesanan::PESANAN_SELESAI, \App\Models\Pesanan::PESANAN_DIBATALKAN]) && $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_LUNAS)
         <div class="card card-outline card-warning">
