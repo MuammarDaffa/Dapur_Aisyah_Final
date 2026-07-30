@@ -73,58 +73,61 @@
                     </div>
                 </div>
 
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-                        <h4 class="fw-bold mb-0">Daftar Jadwal Menu Harian</h4>
-                    </div>
-                    <div class="card-body p-4">
+                <div class="mb-4">
+                    <h4 class="fw-bold mb-4">Daftar Jadwal Menu Harian</h4>
+                    
+                    <div>
                         @forelse($jadwals as $jadwal)
-                            <div class="jadwal-section mb-4 p-3 border rounded" data-jadwal-id="{{ $jadwal->id }}">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input jadwal-checkbox" type="checkbox" name="jadwal_ids[]" value="{{ $jadwal->id }}" id="jadwal_{{ $jadwal->id }}" style="transform: scale(1.5); margin-right: 10px; margin-top: 5px;">
-                                        <label class="form-check-label" for="jadwal_{{ $jadwal->id }}">
-                                            <h5 class="fw-bold text-dark mb-0">{{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l, d F Y') }}</h5>
-                                            <span class="text-primary fw-semibold fs-5">{{ $jadwal->menu->nama_menu }}</span>
-                                        </label>
-                                    </div>
-                                    <div class="text-end">
-                                        <span class="badge bg-success">Tersedia: {{ $jadwal->stok_tersisa }} Porsi</span>
-                                    </div>
+                            <div class="jadwal-section mb-4" data-jadwal-id="{{ $jadwal->id }}">
+                                <input type="hidden" name="jadwal_ids[]" value="{{ $jadwal->id }}">
+                                
+                                <h5 class="fw-bold text-dark mb-3">{{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l, d F Y') }}</h5>
+                                
+                                <div class="mb-3">
+                                    <span class="fw-semibold d-block">Menu :</span>
+                                    <span class="text-dark">{{ $jadwal->menu->nama_menu }}</span>
                                 </div>
                                 
-                                <p class="text-dark small ms-4 ps-2 mb-3">
-                                    Terdiri dari: {{ $jadwal->menu->deskripsi }}
-                                    <br>
-                                    <strong>Rp {{ number_format($jadwal->menu->harga, 0, ',', '.') }}</strong> / porsi dasar
-                                </p>
+                                <div class="mb-3">
+                                    <span class="fw-semibold d-block">Terdiri dari :</span>
+                                    <ul class="list-unstyled mb-0 ms-2">
+                                        @if($jadwal->menu->items->count() > 0)
+                                            @foreach($jadwal->menu->items as $item)
+                                                <li>- {{ $item->nama }}</li>
+                                            @endforeach
+                                        @else
+                                            <li>- {{ $jadwal->menu->deskripsi }}</li>
+                                        @endif
+                                    </ul>
+                                </div>
                                 
-                                <div class="ms-4 ps-2 extras-container" style="display: none;">
-                                    <h6 class="fw-bold small">Menu Tambahan (Opsional)</h6>
+                                <div class="mb-3">
+                                    <span class="fw-semibold d-block mb-2">Tambahan :</span>
                                     @if($jadwal->menu->items->count() > 0)
                                         @foreach($jadwal->menu->items as $item)
-                                            <div class="row mb-2 align-items-center">
-                                                <div class="col-6">
-                                                    <span class="text-dark small">{{ $item->nama }}</span>
-                                                    <span class="text-dark small d-block">Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
+                                            <div class="d-flex justify-content-between align-items-center mb-2 ms-2" style="max-width: 300px;">
+                                                <div>
+                                                    <span class="d-block">{{ $item->nama }}</span>
+                                                    <span class="text-dark small">Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
                                                 </div>
-                                                <div class="col-6">
-                                                    <div class="input-group input-group-sm" style="max-width: 120px;">
-                                                        <span class="input-group-text">Jml</span>
-                                                        <input type="number" class="form-control" name="items_{{ $jadwal->id }}[{{ $item->id }}]" value="0" min="0">
-                                                    </div>
-                                                </div>
+                                                <input type="number" class="form-control form-control-sm text-center" name="items_{{ $jadwal->id }}[{{ $item->id }}]" value="0" min="0" style="width: 70px;">
                                             </div>
                                         @endforeach
                                     @else
-                                        <p class="text-muted small">Tidak ada menu tambahan.</p>
+                                        <p class="text-muted small ms-2 mb-0">Tidak ada menu tambahan.</p>
                                     @endif
-                                    
-                                    <div class="mt-3">
-                                        <label class="form-label fw-semibold small">Jumlah Paket Utama</label>
-                                        <input type="number" class="form-control form-control-sm" style="max-width: 120px;" name="porsi_{{ $jadwal->id }}" value="1" min="1">
-                                    </div>
                                 </div>
+                                
+                                <div class="mb-3">
+                                    <span class="fw-semibold d-block mb-2">Jumlah</span>
+                                    <input type="number" class="form-control form-control-sm text-center ms-2" name="porsi_{{ $jadwal->id }}" value="1" min="1" style="width: 100px;">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <span class="text-dark">Stok : {{ $jadwal->stok_tersisa }} Porsi</span>
+                                </div>
+                                
+                                <hr class="border-secondary opacity-25 my-4">
                             </div>
                         @empty
                             <div class="text-center py-5">
@@ -205,23 +208,6 @@
         radioAntar.addEventListener('change', togglePeta);
         togglePeta();
 
-        // Tampilkan/sembunyikan extras saat checkbox jadwal diubah
-        const jadwalCheckboxes = document.querySelectorAll('.jadwal-checkbox');
-        jadwalCheckboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                const section = this.closest('.jadwal-section');
-                const extrasContainer = section.querySelector('.extras-container');
-                if (this.checked) {
-                    extrasContainer.style.display = 'block';
-                } else {
-                    extrasContainer.style.display = 'none';
-                    // Reset inputs
-                    const numberInputs = extrasContainer.querySelectorAll('input[type="number"]');
-                    numberInputs.forEach(i => i.value = (i.name.startsWith('porsi') ? '1' : '0'));
-                }
-            });
-        });
-
         document.getElementById('formPilihMenu').addEventListener('submit', function(e) {
             if (radioAntar.checked && (!inputLat.value || !inputLng.value)) {
                 e.preventDefault();
@@ -229,11 +215,11 @@
                 return;
             }
 
-            // Validasi minimal 1 jadwal dipilih
-            const anyChecked = document.querySelectorAll('.jadwal-checkbox:checked').length > 0;
-            if(!anyChecked) {
+            // Validasi minimal ada input hidden jadwal
+            const anyJadwal = document.querySelectorAll('input[name="jadwal_ids[]"]').length > 0;
+            if(!anyJadwal) {
                 e.preventDefault();
-                alert('Silakan pilih minimal 1 jadwal Katering Harian.');
+                alert('Belum ada jadwal Katering Harian yang tersedia.');
                 return;
             }
         });
