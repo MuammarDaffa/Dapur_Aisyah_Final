@@ -133,15 +133,15 @@ class OrderService
             $data['status_pesanan'] = $newStatusPesanan;
         }
 
-        if ($newStatusPesanan === Pesanan::PESANAN_DIBATALKAN) {
-            $data['dibatalkan_pada'] = now();
-            $data['alasan_pembatalan'] = $cancellationReason;
+        // if ($newStatusPesanan === Pesanan::PESANAN_DIBATALKAN) {
+        //     $data['dibatalkan_pada'] = now();
+        //     $data['alasan_pembatalan'] = $cancellationReason;
 
-            // Jika pesanan sudah dilunasi atau ada DP, set refund_status = 'pending'
-            if (in_array($pesanan->status_pembayaran, [Pesanan::PEMBAYARAN_LUNAS, Pesanan::PEMBAYARAN_DP])) {
-                $data['refund_status'] = 'pending';
-            }
-        }
+        //     // Jika pesanan sudah dilunasi atau ada DP, set refund_status = 'pending'
+        //     if (in_array($pesanan->status_pembayaran, [Pesanan::PEMBAYARAN_LUNAS, Pesanan::PEMBAYARAN_DP])) {
+        //         $data['refund_status'] = 'pending';
+        //     }
+        // }
         
         $pesanan->update($data);
 

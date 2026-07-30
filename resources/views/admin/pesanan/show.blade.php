@@ -163,13 +163,6 @@
                 <form id="statusForm" action="{{ route('admin.pesanan.status', $pesanan) }}" method="POST">
                     @csrf @method('PUT')
                     <div class="form-group mb-3">
-                        <label>Status Pembayaran</label>
-                        <select name="status_pembayaran" class="form-select mb-3">
-                            @foreach(['belum_dibayar'=>'Belum Dibayar', 'dp'=>'DP Dibayar','lunas'=>'Lunas'] as $k=>$v)
-                            <option value="{{ $k }}" {{ $pesanan->status_pembayaran==$k?'selected':'' }}>{{ $v }}</option>
-                            @endforeach
-                        </select>
-
                         <label>Status Pesanan</label>
                         <select name="status_pesanan" class="form-select">
                             @foreach(['diproses'=>'Diproses','dibatalkan'=>'Dibatalkan','selesai'=>'Selesai'] as $k=>$v)
@@ -180,45 +173,11 @@
                     <button type="submit" class="btn btn-primary w-100 mb-3"><i class="fa-solid fa-sync"></i> Update Status</button>
                 </form>
 
-                {{-- Tombol Batalkan --}}
-                <form id="cancelForm" action="{{ route('admin.pesanan.cancel', $pesanan) }}" method="POST">
-                    @csrf @method('PUT')
-                    <input type="hidden" name="alasan_pembatalan" id="cancelReasonInput">
-                    <button type="button" onclick="confirmCancel()" class="btn btn-outline-danger w-100">
-                        <i class="fa-solid fa-times"></i> Batalkan Pesanan
-                    </button>
-                </form>
+
             </div>
         </div>
         @endif
     </div>
 </div>
-@push('scripts')
-<script>
-function confirmCancel() {
-    Swal.fire({
-        title: 'Batalkan Pesanan?',
-        text: 'Masukkan alasan pembatalan pesanan ini:',
-        input: 'textarea',
-        inputPlaceholder: 'Tulis alasan pembatalan...',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Ya, Batalkan',
-        cancelButtonText: 'Batal',
-        inputValidator: (value) => {
-            if (!value || value.trim().length < 5) {
-                return 'Alasan pembatalan harus diisi (minimal 5 karakter).';
-            }
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('cancelReasonInput').value = result.value;
-            document.getElementById('cancelForm').submit();
-        }
-    });
-}
-</script>
-@endpush
+
 @endsection
