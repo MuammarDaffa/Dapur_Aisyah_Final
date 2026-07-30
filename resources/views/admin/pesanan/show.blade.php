@@ -38,7 +38,7 @@
                             <strong>{{ $pesanan->layanan->nama ?? '-' }}</strong> <small class="text-muted">({{ ucfirst($pesanan->layanan->tipe ?? '') }})</small><br>
                             Tgl Kirim: {{ $pesanan->tanggal_pesanan->format('d M Y') }}<br>
                             Metode: {{ ucfirst($pesanan->metode_pengambilan) }}
-                            @if($pesanan->tipe_penyajian)
+                            @if($pesanan->tipe_penyajian && !$pesanan->layanan->isHarian())
                                 <br>Penyajian: {{ $pesanan->tipe_penyajian }}
                             @endif
                         </address>
@@ -75,6 +75,9 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                @if($pesanan->layanan->isHarian())
+                                <th>Tanggal Pengiriman</th>
+                                @endif
                                 <th>Item</th>
                                 <th class="text-center">Porsi x Subtotal</th>
                                 <th class="text-end">Subtotal</th>
@@ -83,8 +86,13 @@
                         <tbody>
                             @forelse($pesanan->detailPesanans as $detail)
                             <tr>
+                                @if($pesanan->layanan->isHarian())
+                                <td class="align-middle text-muted">
+                                    {{ \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('d F Y') }}
+                                </td>
+                                @endif
                                 <td class="align-middle fw-medium">
-                                    {{ $detail->menu->nama_menu }}
+                                    {{ $detail->menu->nama_menu ?? 'Menu Menyusul (Sesuai Jadwal Admin)' }}
                                     @if($detail->menuItems->count() > 0)
                                         <ul class="mb-0 mt-1 ps-3 text-muted small">
                                             @foreach($detail->menuItems as $item)
@@ -100,18 +108,23 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="3" class="text-center text-muted">Data menu tidak ditemukan.</td>
+                                <td colspan="{{ $pesanan->layanan->isHarian() ? '4' : '3' }}" class="text-center text-muted">Data menu tidak ditemukan.</td>
                             </tr>
                             @endforelse
 
                             @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
                                 <tr>
-                                    <td colspan="3" class="bg-light fw-bold text-success">
+                                    <td colspan="{{ $pesanan->layanan->isHarian() ? '4' : '3' }}" class="bg-light fw-bold text-success">
                                         <i class="fa-solid fa-mug-hot"></i> Minuman
                                     </td>
                                 </tr>
                                 @foreach($pesanan->detailPesanans->whereNotNull('minuman_id') as $minumanDetail)
                                 <tr>
+                                    @if($pesanan->layanan->isHarian())
+                                    <td class="align-middle text-muted">
+                                        {{ \Carbon\Carbon::parse($minumanDetail->tanggal_pengiriman)->translatedFormat('d F Y') }}
+                                    </td>
+                                    @endif
                                     <td class="align-middle fw-medium text-success">
                                         {{ $minumanDetail->minuman->nama_minuman }}
                                     </td>

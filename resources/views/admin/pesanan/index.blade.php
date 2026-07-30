@@ -25,14 +25,13 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <select name="date_type" class="form-select">
-                            <option value="tanggal_pesanan" {{ request('date_type') == 'tanggal_pesanan' ? 'selected' : '' }}>Tgl Pengiriman</option>
-                            <option value="created_at" {{ request('date_type') == 'created_at' ? 'selected' : '' }}>Tgl Pesanan</option>
-                        </select>
-                    </div>
                     <div class="col-md-3">
-                        <input type="date" name="filter_date" value="{{ request('filter_date') }}" class="form-control">
+                        <select name="service" class="form-select">
+                            <option value="">Semua Layanan</option>
+                            @foreach(\App\Models\Layanan::all() as $layanan)
+                                <option value="{{ $layanan->id }}" {{ request('service') == $layanan->id ? 'selected' : '' }}>{{ $layanan->nama }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-search"></i> Filter</button>
@@ -56,7 +55,6 @@
                                 <th>Status Pembayaran</th>
                                 <th>Status Pesanan</th>
                                 <th>Tgl Transaksi</th>
-                                <th>Tgl Pengiriman</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -80,7 +78,6 @@
                                         </span>
                                     </td>
                                     <td class="align-middle text-muted">{{ $p->created_at->format('d/m/Y') }}</td>
-                                    <td class="align-middle fw-medium text-primary">{{ \Carbon\Carbon::parse($p->tanggal_pesanan)->format('d/m/Y') }}</td>
                                     <td class="align-middle text-center">
                                         <div class="btn-group">
                                             <a href="{{ route('admin.pesanan.show', $p) }}" class="btn btn-sm btn-info text-white" title="Lihat Detail Pesanan">
@@ -97,7 +94,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="8" class="text-center py-4 text-muted">Tidak ada pesanan.</td></tr>
+                                <tr><td colspan="7" class="text-center py-4 text-muted">Tidak ada pesanan.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
