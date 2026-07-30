@@ -38,13 +38,9 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
-                        <x-dropdown-link :href="route('pelanggan.riwayat.harian')">
-                         Riwayat Harian
-                     </x-dropdown-link>
-
-                     <x-dropdown-link :href="route('pelanggan.riwayat.acara')">
-                         Riwayat Acara
-                     </x-dropdown-link>
+                        <x-dropdown-link :href="route('pelanggan.riwayat.acara')">
+                            Riwayat Pesanan
+                        </x-dropdown-link>
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
@@ -92,13 +88,9 @@
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
-                <x-dropdown-link :href="route('pelanggan.riwayat.harian')">
-    Riwayat Harian
-</x-dropdown-link>
-
-<x-dropdown-link :href="route('pelanggan.riwayat.acara')">
-    Riwayat Acara
-</x-dropdown-link>
+                <x-dropdown-link :href="route('pelanggan.riwayat.acara')">
+                    Riwayat Pesanan
+                </x-dropdown-link>
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">

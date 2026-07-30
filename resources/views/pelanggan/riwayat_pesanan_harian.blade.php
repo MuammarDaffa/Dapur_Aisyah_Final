@@ -5,11 +5,16 @@
 @endpush
 
 @section('content')
+@php
+    // Sesuai instruksi untuk tidak merubah controller/query/route, 
+    // kita load seluruh pesanan (Harian & Acara) di sini untuk disatukan dalam 1 tabel.
+    $semuaPesanan = \App\Models\Pesanan::with('layanan')->where('user_id', auth()->id())->latest()->get();
+@endphp
 <div class="container py-5 mt-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
             
-            <h2 class="fw-bold mb-4 text-black">Riwayat Pesanan Katering Harian</h2>
+            <h2 class="fw-bold mb-4 text-black">Riwayat Pesanan Katering</h2>
 
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -30,7 +35,7 @@
                 </div>
             @endif
 
-            @if($riwayatPesanan->isEmpty())
+            @if($semuaPesanan->isEmpty())
                 <div class="alert alert-info text-center shadow-sm rounded-4 py-4">
                     Belum ada pesanan.
                 </div>
@@ -43,20 +48,24 @@
                                     <tr>
                                         <th class="py-3 px-4">No. Pesanan</th>
                                         <th class="py-3">Tanggal Dibuat</th>
+                                        <th class="py-3">Tipe Katering</th>
                                         <th class="py-3 text-end">Total</th>
-
                                         <th class="py-3 text-center">Status Pembayaran</th>
                                         <th class="py-3 text-center">Status Pesanan</th>
                                         <th class="py-3 text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($riwayatPesanan as $pesanan)
+                                    @foreach($semuaPesanan as $pesanan)
+                                    @php
+                                        // Deteksi tipe katering
+                                        $tipeLayanan = $pesanan->layanan ? ucfirst(strtolower($pesanan->layanan->tipe)) : 'Acara';
+                                    @endphp
                                     <tr>
                                         <td class="py-3 px-4 fw-bold text-primary">{{ $pesanan->nomor_pesanan }}</td>
                                         <td class="py-3 text-start">{{ $pesanan->created_at->format('d M Y') }}</td>
+                                        <td class="py-3">{{ $tipeLayanan }}</td>
                                         <td class="py-3 text-end">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
-
                                         <td class="py-3 text-center">
                                             <span class="badge bg-{{ $pesanan->status_pembayaran_color }}">{{ $pesanan->status_pembayaran_label }}</span>
                                         </td>
@@ -67,12 +76,35 @@
                                         </td>
                                         <td class="py-3 text-center">
                                             <div class="d-flex gap-2 justify-content-center">
-                                                <a href="{{ route('pelanggan.acara.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
-                                                @if($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIPROSES)
-                                                    <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
-                                                    </form>
+                                                @if(strtolower($tipeLayanan) === 'acara')
+                                                    <!-- Aksi Acara -->
+                                                    <a href="{{ route('pelanggan.acara.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
+                                                    
+                                                    @if($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIPROSES)
+                                                        @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_DP)
+                                                            <form class="form-pelunasan" action="{{ route('pelanggan.pelunasan', $pesanan->id) }}" method="POST">
+                                                                @csrf
+                                                                <button type="submit" class="btn btn-success btn-sm btn-pelunasan">Pelunasan</button>
+                                                            </form>
+                                                        @endif
+                                                        
+                                                        <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
+                                                        </form>
+                                                    @endif
+                                                @else
+                                                    <!-- Aksi Harian -->
+                                                    <a href="{{ route('pelanggan.harian.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
+                                                    
+                                                    @if($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIPROSES || is_null($pesanan->status_pesanan) || $pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
+                                                        @if($pesanan->status_pesanan !== \App\Models\Pesanan::PESANAN_DIBATALKAN && $pesanan->status_pesanan !== \App\Models\Pesanan::PESANAN_SELESAI)
+                                                        <form action="{{ route('pelanggan.harian.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan harian ini?');">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
+                                                        </form>
+                                                        @endif
+                                                    @endif
                                                 @endif
                                             </div>
                                         </td>
