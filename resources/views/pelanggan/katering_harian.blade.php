@@ -81,10 +81,13 @@
                     <div class="card-body p-4">
                         @forelse($jadwals as $jadwal)
                             @php
-                                $porsiValue = 1;
+                                $porsiValue = 0;
                                 $detailLama = null;
                                 if (isset($pesanan)) {
-                                    $detailLama = $pesanan->detailPesanans->where('tanggal_pengiriman', $jadwal->tanggal)->first();
+                                    $tanggalJadwalStr = \Carbon\Carbon::parse($jadwal->tanggal)->format('Y-m-d');
+                                    $detailLama = $pesanan->detailPesanans->first(function ($detail) use ($tanggalJadwalStr) {
+                                        return \Carbon\Carbon::parse($detail->tanggal_pengiriman)->format('Y-m-d') === $tanggalJadwalStr;
+                                    });
                                     if ($detailLama) {
                                         $porsiValue = $detailLama->porsi;
                                     } else {
@@ -239,11 +242,43 @@
                 return;
             }
 
-            // Validasi minimal ada input hidden jadwal
-            const anyJadwal = document.querySelectorAll('input[name="jadwal_ids[]"]').length > 0;
-            if(!anyJadwal) {
+            // Validasi minimal ada input hidden jadwal dan total porsi > 0
+            let totalPorsi = 0;
+            let hasTambahanWithoutPorsi = false;
+            let firstInvalidDate = "";
+
+            const jadwalSections = document.querySelectorAll('.jadwal-section');
+            jadwalSections.forEach(section => {
+                const jadwalId = section.getAttribute('data-jadwal-id');
+                const porsiInput = section.querySelector(`input[name="porsi_${jadwalId}"]`);
+                const porsi = parseInt(porsiInput.value) || 0;
+                
+                totalPorsi += porsi;
+                
+                const itemsInputs = section.querySelectorAll(`input[name^="items_${jadwalId}"]`);
+                let totalItems = 0;
+                itemsInputs.forEach(input => {
+                    totalItems += parseInt(input.value) || 0;
+                });
+                
+                if (totalItems > 0 && porsi === 0) {
+                    hasTambahanWithoutPorsi = true;
+                    const dateEl = section.querySelector('h5.text-dark');
+                    if (dateEl && !firstInvalidDate) {
+                        firstInvalidDate = dateEl.innerText.trim();
+                    }
+                }
+            });
+
+            if (hasTambahanWithoutPorsi) {
                 e.preventDefault();
-                alert('Belum ada jadwal Katering Harian yang tersedia.');
+                alert(`Anda memesan menu tambahan pada jadwal ${firstInvalidDate || 'tertentu'}, namun belum mengisi jumlah porsi utamanya. Silakan isi jumlah porsi utama minimal 1.`);
+                return;
+            }
+            
+            if (totalPorsi === 0) {
+                e.preventDefault();
+                alert('Silakan masukkan jumlah porsi utama (minimal 1) pada jadwal katering yang Anda inginkan.');
                 return;
             }
         });

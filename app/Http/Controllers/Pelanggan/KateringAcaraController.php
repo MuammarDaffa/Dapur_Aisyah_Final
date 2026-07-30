@@ -257,8 +257,7 @@ class KateringAcaraController extends Controller
             \Illuminate\Support\Facades\DB::commit();
             session()->forget('pesanan_sementara');
 
-            return redirect()->route('pelanggan.acara.detail_pesanan', $pesanan->id)
-                             ->with('success', 'Pesanan berhasil disimpan, silakan periksa detail pesanan Anda.');
+            return redirect()->route('pelanggan.acara.detail_pesanan', $pesanan->id);
 
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();

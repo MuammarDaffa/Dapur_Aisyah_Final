@@ -126,8 +126,22 @@ class KateringHarianController extends Controller
             $jadwal = \App\Models\JadwalMenu::with('menu')->find($jadwalId);
             if (!$jadwal || !$jadwal->menu) continue;
 
-            $porsi = (int) $request->input('porsi_' . $jadwalId, 1);
-            if ($porsi < 1) $porsi = 1;
+            $porsi = (int) $request->input('porsi_' . $jadwalId, 0);
+            
+            $items = $request->input('items_' . $jadwalId, []); // Array of menu_item_id => quantity
+            
+            $totalItemsQty = 0;
+            if (is_array($items)) {
+                foreach ($items as $itemId => $qty) {
+                    $totalItemsQty += (int) $qty;
+                }
+            }
+
+            if ($porsi < 1 && $totalItemsQty > 0) {
+                return back()->withInput()->with('error', 'Anda memesan menu tambahan, namun tidak mengisi jumlah porsi utama untuk tanggal ' . \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('d F Y') . '.');
+            }
+
+            if ($porsi < 1) continue;
 
             $items = $request->input('items_' . $jadwalId, []); // Array of menu_item_id => quantity
             
@@ -169,7 +183,7 @@ class KateringHarianController extends Controller
         }
 
         if (empty($menusDipilih)) {
-            return back()->withInput()->with('error', 'Terjadi kesalahan saat memproses jadwal.');
+            return back()->withInput()->with('error', 'Silakan pilih minimal satu jadwal dengan jumlah porsi utama lebih dari 0.');
         }
 
         // Untuk Katering Harian, pembayaran langsung lunas, tidak ada potongan DP (100% dibayar)
@@ -235,12 +249,7 @@ class KateringHarianController extends Controller
 
             \Illuminate\Support\Facades\DB::commit();
 
-            $pesanSukses = $request->has('pesanan_id') && !empty($request->pesanan_id) 
-                ? 'Pesanan Harian berhasil diperbarui! Silakan selesaikan pembayaran.' 
-                : 'Pesanan Harian berhasil dibuat! Silakan selesaikan pembayaran.';
-
-            return redirect()->route('pelanggan.harian.detail_pesanan', $pesanan->id)
-                             ->with('success', $pesanSukses);
+            return redirect()->route('pelanggan.harian.detail_pesanan', $pesanan->id);
 
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();
