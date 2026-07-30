@@ -46,16 +46,11 @@ class CateringController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:150',
             'tipe' => 'required|in:harian,acara',
-            'kapasitas_porsi_per_minggu' => $isHarian ? 'nullable' : 'required|integer|min:1',
             'status' => 'boolean',
             'deskripsi' => 'nullable|string',
         ]);
 
         $validated['status'] = $request->boolean('status');
-
-        if ($isHarian) {
-            $validated['kapasitas_porsi_per_minggu'] = null;
-        }
 
         Layanan::create($validated);
 
@@ -74,16 +69,11 @@ class CateringController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:150',
             'tipe' => 'required|in:harian,acara',
-            'kapasitas_porsi_per_minggu' => $isHarian ? 'nullable' : 'required|integer|min:1',
             'status' => 'boolean',
             'deskripsi' => 'nullable|string',
         ]);
 
         $validated['status'] = $request->boolean('status');
-
-        if ($isHarian) {
-            $validated['kapasitas_porsi_per_minggu'] = null;
-        }
 
         $catering->update($validated);
 

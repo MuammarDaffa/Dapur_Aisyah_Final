@@ -25,23 +25,16 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold d-block">Tipe Katering <span class="text-danger">*</span></label>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tipe" id="tipeHarian" value="harian" {{ old('tipe', 'harian') === 'harian' ? 'checked' : '' }} onchange="toggleCateringTypeFields()">
+                            <input class="form-check-input" type="radio" name="tipe" id="tipeHarian" value="harian" {{ old('tipe') === 'harian' ? 'checked' : '' }}>
                             <label class="form-check-label" for="tipeHarian">Harian</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tipe" id="tipeAcara" value="acara" {{ old('tipe') === 'acara' ? 'checked' : '' }} onchange="toggleCateringTypeFields()">
+                            <input class="form-check-input" type="radio" name="tipe" id="tipeAcara" value="acara" {{ old('tipe') === 'acara' ? 'checked' : '' }}>
                             <label class="form-check-label" for="tipeAcara">Acara</label>
                         </div>
                         @error('tipe')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
-                    {{-- Kapasitas (Hanya Acara) --}}
-                    <div class="mb-3 acara-field">
-                        <label class="form-label fw-bold">Kapasitas Porsi per Minggu <span class="text-danger">*</span></label>
-                        <input type="number" name="kapasitas_porsi_per_minggu" value="{{ old('kapasitas_porsi_per_minggu') }}" min="1" step="1" class="form-control" placeholder="Kapasitas Porsi per Minggu (contoh: 500)">
-                        @error('kapasitas_porsi_per_minggu')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                    </div>
-                    
 
 
                     {{-- Status --}}
@@ -60,27 +53,5 @@
     </div>
 </div>
 
-@push('scripts')
-<script>
-function toggleCateringTypeFields() {
-    const typeRadio = document.querySelector('input[name="tipe"]:checked');
-    const isAcara = typeRadio && typeRadio.value === 'acara';
 
-    const acaraFields = document.querySelectorAll('.acara-field');
-
-    acaraFields.forEach(field => {
-        field.style.display = isAcara ? 'block' : 'none';
-        const input = field.querySelector('input');
-        if (input) {
-            input.disabled = !isAcara;
-            if (!isAcara) input.value = '';
-        }
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    toggleCateringTypeFields();
-});
-</script>
-@endpush
 @endsection

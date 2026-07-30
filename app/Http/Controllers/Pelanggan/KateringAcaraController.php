@@ -153,25 +153,7 @@ class KateringAcaraController extends Controller
         
         $totalPorsiBaru = collect($menusDipilih)->sum('porsi');
         
-        // Validasi Kapasitas Porsi Mingguan
-        $layanan = \App\Models\Layanan::find($request->layanan_id);
-        if ($layanan && $layanan->isAcara() && $layanan->kapasitas_porsi_per_minggu > 0) {
-            $tanggalAcara = \Carbon\Carbon::parse($request->tanggal_acara);
-            
-            $totalPorsiSudahDipesan = \App\Models\DetailPesanan::whereHas('pesanan', function($q) use ($layanan, $tanggalAcara) {
-                $q->where('layanan_id', $layanan->id)
-                  ->whereNotNull('status_pesanan')
-                  ->where('status_pesanan', '!=', 'dibatalkan')
-                  ->whereBetween('tanggal_pesanan', [
-                      $tanggalAcara->copy()->startOfWeek()->format('Y-m-d'),
-                      $tanggalAcara->copy()->endOfWeek()->format('Y-m-d')
-                  ]);
-            })->sum('porsi');
 
-            if (($totalPorsiSudahDipesan + $totalPorsiBaru) > $layanan->kapasitas_porsi_per_minggu) {
-                return back()->withInput()->with('error', 'Mohon maaf, kuota pesanan untuk minggu pada tanggal tersebut sudah penuh. Silakan pilih tanggal acara di minggu lain.');
-            }
-        }
 
         $jumlahDp = $totalHargaKeseluruhan * 0.5;
         $sisaPembayaran = $totalHargaKeseluruhan - $jumlahDp;

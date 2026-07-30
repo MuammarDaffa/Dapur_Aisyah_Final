@@ -15,7 +15,6 @@ class Layanan extends Model
     protected $fillable = [
         'nama',
         'tipe',
-        'kapasitas_porsi_per_minggu',
         'status',
         'deskripsi',
     ];
@@ -24,7 +23,6 @@ class Layanan extends Model
     {
         return [
             'status' => 'boolean',
-            'kapasitas_porsi_per_minggu' => 'integer',
         ];
     }
 
@@ -60,24 +58,7 @@ class Layanan extends Model
         return $query->where('tipe', 'acara');
     }
 
-    public function getKapasitasPorsiTersisaAttribute(): int
-    {
-        if (!$this->isAcara() || !$this->kapasitas_porsi_per_minggu) {
-            return 0; // Or null, but the type is int.
-        }
 
-        $totalPorsiPesananMingguIni = \App\Models\DetailPesanan::whereHas('pesanan', function($q) {
-            $q->where('layanan_id', $this->id)
-              ->whereNotNull('status_pesanan') // Consider null as not valid if it relies on being processed
-              ->where('status_pesanan', '!=', 'dibatalkan')
-              ->whereBetween('tanggal_pesanan', [
-                  now()->startOfWeek()->format('Y-m-d'),
-                  now()->endOfWeek()->format('Y-m-d')
-              ]);
-        })->sum('porsi');
-
-        return max(0, $this->kapasitas_porsi_per_minggu - $totalPorsiPesananMingguIni);
-    }
 
     // === Relationships ===
 

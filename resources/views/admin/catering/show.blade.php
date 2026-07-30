@@ -17,43 +17,6 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                 <i class="bi bi-arrow-left"></i> Kembali ke Daftar Katering
             </a>
         </div>
-        @if($catering->isAcara())
-        <div class="card card-outline card-info mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="card-title mb-0">
-                    Ringkasan Kapasitas Mingguan 
-                    <small class="text-muted">
-                        ({{ \Carbon\Carbon::parse($startOfWeek)->isoFormat('D MMM Y') }} - {{ \Carbon\Carbon::parse($endOfWeek)->isoFormat('D MMM Y') }})
-                    </small>
-                </h3>
-                <form action="{{ route('admin.catering.show', $catering->id) }}" method="GET" class="d-flex align-items-center">
-                    <label for="tanggal_filter" class="me-2 mb-0 fw-normal">Pilih Tanggal:</label>
-                    <input type="date" name="tanggal" id="tanggal_filter" class="form-control form-control-sm me-2" value="{{ $tanggal_filter }}">
-                    <button type="submit" class="btn btn-sm btn-primary">Cek Kapasitas</button>
-                </form>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped mb-0 text-center">
-                        <thead>
-                            <tr>
-                                <th>Kapasitas Porsi per Minggu</th>
-                                <th>Jumlah Porsi Terjual </th>
-                                <th>Sisa Porsi  </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{{ number_format($kapasitas_porsi_per_minggu, 0, ',', '.') }} Porsi</td>
-                                <td>{{ number_format($jumlah_porsi_terjual_minggu_ini, 0, ',', '.') }} Porsi</td>
-                                <td>{{ number_format($sisa_porsi_minggu_ini, 0, ',', '.') }} Porsi</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        @endif
 
         <form id="form-update-katering" action="{{ route('admin.catering.update', $catering->id) }}" method="POST">
             @csrf
@@ -78,14 +41,6 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                     </div>
 
 
-                     @if($catering->isAcara())
-                        {{-- Kapasitas (Hanya Acara) --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Kapasitas Porsi per Minggu <span class="text-danger">*</span></label>
-                            <input type="number" name="kapasitas_porsi_per_minggu" value="{{ old('kapasitas_porsi_per_minggu', $catering->kapasitas_porsi_per_minggu) }}" min="1" step="1" class="form-control">
-                            @error('kapasitas_porsi_per_minggu')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                        </div>
-                    @endif
 
                     {{-- Status --}}
                     <div class="form-check mt-3">

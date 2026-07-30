@@ -5,21 +5,6 @@
 @section('content')
     <!-- Small Boxes (Stat box) -->
     <div class="row">
-        <!-- Pendapatan Bulan Ini -->
-        <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-info">
-                <div class="inner">
-                    <h4 class="fw-bold">Rp {{ number_format($stats['monthly_sales'], 0, ',', '.') }}</h4>
-                    <p>Pendapatan Bulan Ini</p>
-                </div>
-                <div class="small-box-icon">
-                    <i class="fa-solid fa-chart-bar"></i>
-                </div>
-                <a href="{{ route('admin.reports') }}" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
-                    Lihat detail <i class="fa-solid fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
 
         <!-- Total Pesanan -->
         <div class="col-lg-3 col-6">
@@ -64,6 +49,22 @@
                     <i class="fa-solid fa-check-circle"></i>
                 </div>
                 <a href="{{ route('admin.pesanan') }}?status_pesanan=selesai" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                    Lihat pesanan <i class="fa-solid fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Pesanan Batal -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box text-bg-danger">
+                <div class="inner">
+                    <h4 class="fw-bold">{{ $stats['canceled_orders'] }}</h4>
+                    <p>Pesanan Batal</p>
+                </div>
+                <div class="small-box-icon">
+                    <i class="fa-solid fa-times-circle"></i>
+                </div>
+                <a href="{{ route('admin.pesanan') }}?status_pesanan=dibatalkan" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
                     Lihat pesanan <i class="fa-solid fa-arrow-circle-right"></i>
                 </a>
             </div>

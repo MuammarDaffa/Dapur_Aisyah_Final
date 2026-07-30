@@ -22,6 +22,7 @@ class DashboardController extends Controller
             'total_orders' => Pesanan::count(),
             'processing_orders' => Pesanan::where('status_pesanan', 'diproses')->count(),
             'completed_orders' => Pesanan::completed()->count(),
+            'canceled_orders' => Pesanan::where('status_pesanan', 'dibatalkan')->count(),
         ];
 
         $bestSellers = Menu::withCount('pesanan')
