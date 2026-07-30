@@ -153,7 +153,36 @@ class KateringAcaraController extends Controller
         
         $totalPorsiBaru = collect($menusDipilih)->sum('porsi');
         
+        // Cek Kuota Porsi per Minggu (Maks 200) khusus Katering Acara
+        $tanggalAcara = \Carbon\Carbon::parse($request->tanggal_acara);
+        $startOfWeek = $tanggalAcara->copy()->startOfWeek();
+        $endOfWeek = $tanggalAcara->copy()->endOfWeek();
 
+        $pesananQuery = \App\Models\Pesanan::whereHas('layanan', function ($q) {
+                $q->where('tipe', 'acara');
+            })
+            ->whereBetween('tanggal_pesanan', [$startOfWeek->toDateString(), $endOfWeek->toDateString()])
+            ->where(function ($q) {
+                $q->whereNull('status_pesanan')
+                  ->orWhere('status_pesanan', '!=', \App\Models\Pesanan::PESANAN_DIBATALKAN);
+            });
+
+        if ($request->has('pesanan_id') && !empty($request->pesanan_id)) {
+            $pesananQuery->where('id', '!=', $request->pesanan_id);
+        }
+
+        $pesananTerkonfirmasi = $pesananQuery->get();
+
+        $porsiTelahDipesan = 0;
+        foreach ($pesananTerkonfirmasi as $p) {
+            $porsiTelahDipesan += $p->detailPesanans->whereNotNull('menu_id')->sum('porsi');
+        }
+
+        if (($porsiTelahDipesan + $totalPorsiBaru) > 200) {
+            $sisaKuota = max(0, 200 - $porsiTelahDipesan);
+            $pesanError = 'Maaf, sisa kuota Katering Acara untuk minggu tersebut (' . $startOfWeek->translatedFormat('d M') . ' - ' . $endOfWeek->translatedFormat('d M Y') . ') tidak mencukupi. Sisa kuota minggu itu: ' . $sisaKuota . ' porsi.';
+            return back()->withInput()->with('error', $pesanError);
+        }
 
         $jumlahDp = $totalHargaKeseluruhan * 0.5;
         $sisaPembayaran = $totalHargaKeseluruhan - $jumlahDp;

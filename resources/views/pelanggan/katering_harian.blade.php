@@ -164,11 +164,22 @@
                 inputLng.setAttribute('required', 'required');
                 
                 if (!map) {
-                    map = L.map('map').setView([-0.8971, 119.8707], 13);
+                    var initLat = -0.03194;
+                    var initLng = 109.325;
+                    map = L.map('map').setView([initLat, initLng], 14);
+                    
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         maxZoom: 19,
-                        attribution: '© OpenStreetMap contributors'
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     }).addTo(map);
+
+                    marker = L.marker([initLat, initLng])
+                        .addTo(map)
+                        .bindPopup("<b>Halo!</b><br>Pesanan akan diantar kesini.");
+
+                    // Default input values
+                    inputLat.value = initLat;
+                    inputLng.value = initLng;
 
                     map.on('click', function(e) {
                         const lat = e.latlng.lat;
@@ -177,11 +188,7 @@
                         inputLat.value = lat;
                         inputLng.value = lng;
 
-                        if (marker) {
-                            marker.setLatLng(e.latlng);
-                        } else {
-                            marker = L.marker(e.latlng).addTo(map);
-                        }
+                        marker.setLatLng(e.latlng);
                     });
                 }
                 setTimeout(() => map.invalidateSize(), 100);
