@@ -12,13 +12,12 @@ use Carbon\CarbonPeriod;
 
 class CateringHarianController extends Controller
 {
-    // =======================================
-    // File : app/Http/Controllers/Admin/CateringHarianController.php
+
     // Fungsi : Menampilkan halaman Manajemen Katering Harian (Card 1 & Card 2).
     // Dijalankan Kapan : Saat admin menekan tombol Manajemen Harian (ikon mata) di tabel katering.
     // Data berasal dari mana : Model Layanan, Menu, dan JadwalMenu.
     // Data dikirim ke mana : View resources/views/admin/catering/harian.blade.php
-    // =======================================
+
     public function index(Request $request, Layanan $layanan)
     {
         // Memastikan katering yang dibuka benar-benar tipe harian

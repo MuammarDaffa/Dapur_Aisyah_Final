@@ -92,9 +92,9 @@
                                                     <!-- Aksi Harian -->
                                                     <a href="{{ route('pelanggan.harian.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
                                                     
-                                                    @if($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIPROSES || is_null($pesanan->status_pesanan) || $pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
+                                                    @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
                                                         @if($pesanan->status_pesanan !== \App\Models\Pesanan::PESANAN_DIBATALKAN && $pesanan->status_pesanan !== \App\Models\Pesanan::PESANAN_SELESAI)
-                                                        <form action="{{ route('pelanggan.harian.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan harian ini?');">
+                                                        <form action="{{ route('pelanggan.harian.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin membatalkan seluruh pesanan ini?');">
                                                             @csrf
                                                             <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
                                                         </form>

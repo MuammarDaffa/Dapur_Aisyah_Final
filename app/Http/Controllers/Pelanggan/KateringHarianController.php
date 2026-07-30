@@ -244,45 +244,6 @@ class KateringHarianController extends Controller
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();
             return back()->withInput()->with('error', 'Gagal memproses pesanan: ' . $e->getMessage());
-        }
     }
-
-    public function rescheduleHarian(Request $request)
-    {
-        $request->validate([
-            'detail_id' => 'required|exists:detail_pesanan,id',
-            'tanggal_baru' => 'required|date|after:today',
-        ]);
-
-        $detail = \App\Models\DetailPesanan::with('pesanan')->findOrFail($request->detail_id);
-
-        if ($detail->pesanan->user_id !== auth()->id()) {
-            return back()->with('error', 'Unauthorized.');
-        }
-
-        if ($detail->is_rescheduled) {
-            return back()->with('error', 'Jadwal ini sudah pernah diganti. Ganti tanggal hanya berlaku 1x.');
-        }
-
-        // H-1 Validation
-        $tanggalLama = \Carbon\Carbon::parse($detail->tanggal_pengiriman);
-        $besok = \Carbon\Carbon::tomorrow();
-
-        if ($tanggalLama->lt($besok)) {
-            return back()->with('error', 'Gagal. Ganti tanggal hanya bisa dilakukan maksimal H-1.');
-        }
-
-        // Hari baru harus Senin-Jumat
-        $tanggalBaru = \Carbon\Carbon::parse($request->tanggal_baru);
-        if ($tanggalBaru->isSaturday() || $tanggalBaru->isSunday()) {
-            return back()->with('error', 'Gagal. Pengiriman katering hanya untuk hari Senin s/d Jumat.');
-        }
-
-        $detail->tanggal_pengiriman = $request->tanggal_baru;
-        $detail->is_rescheduled = true;
-        $detail->save();
-
-        return back()->with('success', 'Berhasil ganti tanggal pengiriman!');
     }
-
 }

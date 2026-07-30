@@ -105,50 +105,9 @@
                             <span class="fw-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</span>
                         </div>
 
-                        @if($pesanan->layanan->isHarian() && in_array($pesanan->status_pembayaran, [\App\Models\Pesanan::PEMBAYARAN_DP, \App\Models\Pesanan::PEMBAYARAN_LUNAS]))
-                            <div class="mt-3">
-                                @php
-                                    $tanggalPengiriman = \Carbon\Carbon::parse($detail->tanggal_pengiriman);
-                                    $isHMinus1 = $tanggalPengiriman->copy()->subDay()->endOfDay()->isFuture();
-                                @endphp
-                                <p class="mb-1 text-muted small">Jadwal Pengiriman: <strong>{{ $tanggalPengiriman->translatedFormat('d F Y') }}</strong></p>
-                                
-                                @if($detail->is_rescheduled)
-                                    <span class="badge bg-secondary"><i class="bi bi-info-circle"></i> Sudah Diganti Tanggal</span>
-                                @elseif(!$isHMinus1)
-                                    <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> Lewat Batas H-1</span>
-                                @else
-                                    <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
-                                        <i class="bi bi-calendar-event"></i> Ganti Tanggal
-                                    </button>
-
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="rescheduleModal{{ $detail->id }}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Ganti Tanggal Pengiriman</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <form action="{{ route('pelanggan.harian.reschedule') }}" method="POST">
-                                                    @csrf
-                                                    <div class="modal-body">
-                                                        <input type="hidden" name="detail_id" value="{{ $detail->id }}">
-                                                        <p class="small text-muted mb-3">Ganti tanggal hanya bisa dilakukan 1x dan harus pada hari kerja (Senin - Jumat).</p>
-                                                        <div class="mb-3">
-                                                            <label class="form-label fw-bold">Pilih Tanggal Baru</label>
-                                                            <input type="date" name="tanggal_baru" class="form-control" required min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
+                        @if($pesanan->layanan->isHarian() && $detail->tanggal_pengiriman)
+                            <div class="mt-2 mb-3">
+                                <p class="mb-1 text-muted small">Jadwal Pengiriman: <strong>{{ \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('d F Y') }}</strong></p>
                             </div>
                         @endif
 

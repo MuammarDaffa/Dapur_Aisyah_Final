@@ -36,7 +36,9 @@
                         Detail Pesanan
                         <address>
                             <strong>{{ $pesanan->layanan->nama ?? '-' }}</strong> <small class="text-muted">({{ ucfirst($pesanan->layanan->tipe ?? '') }})</small><br>
-                            Tgl Kirim: {{ $pesanan->tanggal_pesanan->format('d M Y') }}<br>
+                            @if(!$pesanan->layanan->isHarian())
+                                Tgl Kirim: {{ $pesanan->tanggal_pesanan->format('d M Y') }}<br>
+                            @endif
                             Metode: {{ ucfirst($pesanan->metode_pengambilan) }}
                             @if($pesanan->tipe_penyajian && !$pesanan->layanan->isHarian())
                                 <br>Penyajian: {{ $pesanan->tipe_penyajian }}
@@ -92,7 +94,7 @@
                                 </td>
                                 @endif
                                 <td class="align-middle fw-medium">
-                                    {{ $detail->menu->nama_menu ?? 'Menu Menyusul (Sesuai Jadwal Admin)' }}
+                                    {{ $detail->menu->nama_menu }}
                                     @if($detail->menuItems->count() > 0)
                                         <ul class="mb-0 mt-1 ps-3 text-muted small">
                                             @foreach($detail->menuItems as $item)

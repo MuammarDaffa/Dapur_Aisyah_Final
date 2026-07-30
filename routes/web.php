@@ -66,7 +66,6 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     // Pemesanan Katering Harian
     Route::get('/katering-harian/pesan', [KateringHarianController::class, 'pesanHarian'])->name('harian.pesan');
     Route::post('/katering-harian/simpan', [KateringHarianController::class, 'simpanPesananHarian'])->name('harian.simpan');
-    Route::post('/katering-harian/reschedule', [KateringHarianController::class, 'rescheduleHarian'])->name('harian.reschedule');
     Route::get('/katering-harian/detail-pesanan/{id}', [KateringHarianController::class, 'detailPesanan'])->name('harian.detail_pesanan');
     Route::post('/katering-harian/batalkan/{id}', [KateringHarianController::class, 'batalkanPesanan'])->name('harian.batalkan');
     Route::get('/katering-harian/edit-pesanan/{id}', [KateringHarianController::class, 'editPesanan'])->name('harian.edit_pesanan');
