@@ -66,7 +66,7 @@
                                 <tr>
                                     <td class="align-middle fw-medium">{{ $pesanan->nomor_pesanan }}</td>
                                     <td class="align-middle">{{ $pesanan->user->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $pesanan->layananKatering->name ?? '-' }}</td>
+                                    <td class="align-middle">{{ $pesanan->layanan->nama ?? '-' }}</td>
                                     <td class="align-middle fw-bold text-success">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
                                     <td class="align-middle text-center">
                                         <span class="badge text-bg-{{ $pesanan->status_pembayaran_color }} mb-1">
