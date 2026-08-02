@@ -173,8 +173,8 @@
                 @forelse($services as $service)
                     @php
                         $serviceUrl = $service->isAcara()
-                            ? route('pelanggan.acara.service', $service)
-                            : route('pelanggan.harian.pesan');
+                            ? route('pelanggan.acara.lokasi')
+                            : route('pelanggan.harian.lokasi');
                     @endphp
                     <a href="{{ $serviceUrl }}" class="group position-relative bg-white rounded-2xl border border border-secondary hover:-translate-y-1 shadow-sm d-flex flex-column h-100 overflow-hidden text-decoration-none">
                         <div class="p-6 flex-grow-1 d-flex flex-column justify-content-between text-center">
@@ -252,7 +252,7 @@
             <h2 class="fs-2 md:fs-1 fw-bold text-white mb-4">Siap Memesan Katering?</h2>
             <p class="text-primary fs-5 mb-8">Pesan sekarang dan nikmati kemudahan layanan katering online kami.</p>
             @auth
-                <a href="{{ route('pelanggan.harian.pesan') }}" class="d-inline-block px-10 py-4 bg-white text-primary fw-bold rounded-pill shadow-lg hover:shadow-2xl">
+                <a href="{{ route('pelanggan.harian.lokasi') }}" class="d-inline-block px-10 py-4 bg-white text-primary fw-bold rounded-pill shadow-lg hover:shadow-2xl">
                     Lihat Menu & Pesan →
                 </a>
             @else

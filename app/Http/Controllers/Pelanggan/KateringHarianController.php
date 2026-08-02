@@ -49,8 +49,45 @@ class KateringHarianController extends Controller
     // KATERING HARIAN (NEW FLOW)
     // ==========================================
 
-    public function pesanHarian()
+    public function showFormLokasi()
     {
+        return view('pelanggan.harian-form');
+    }
+
+    public function storeSessionLokasi(Request $request)
+    {
+        $request->validate([
+            'metode_pengambilan' => 'required|in:ambil_sendiri,diantar_ke_tempat',
+        ]);
+
+        if ($request->metode_pengambilan === 'diantar_ke_tempat') {
+            $request->validate([
+                'latitude' => 'required|numeric',
+                'longitude' => 'required|numeric',
+            ]);
+            
+            session([
+                'harian_metode_pengambilan' => $request->metode_pengambilan,
+                'harian_latitude' => $request->latitude,
+                'harian_longitude' => $request->longitude,
+            ]);
+        } else {
+            session([
+                'harian_metode_pengambilan' => $request->metode_pengambilan,
+            ]);
+            session()->forget(['harian_latitude', 'harian_longitude']);
+        }
+
+        return redirect()->route('pelanggan.harian.menu');
+    }
+
+    public function showMenu()
+    {
+        // Pastikan session lokasi sudah ada
+        if (!session()->has('harian_metode_pengambilan')) {
+            return redirect()->route('pelanggan.harian.lokasi')->with('error', 'Silakan pilih metode pengambilan terlebih dahulu.');
+        }
+
         $service = \App\Models\Layanan::harian()->active()->first();
         if (!$service) {
             return redirect()->route('landing')->with('error', 'Layanan Katering Harian tidak tersedia saat ini.');
@@ -63,7 +100,7 @@ class KateringHarianController extends Controller
             ->orderBy('tanggal', 'asc')
             ->get();
 
-        return view('pelanggan.katering_harian', compact('service', 'jadwals'));
+        return view('pelanggan.menu-harian', compact('service', 'jadwals'));
     }
 
     /**
@@ -87,25 +124,33 @@ class KateringHarianController extends Controller
             ->orderBy('tanggal', 'asc')
             ->get();
 
-        return view('pelanggan.katering_harian', compact('pesanan', 'service', 'jadwals'));
+        // Populate session dengan data pesanan agar bisa dipakai di form dan saat simpan
+        session([
+            'harian_metode_pengambilan' => $pesanan->metode_pengambilan,
+            'harian_latitude' => $pesanan->latitude,
+            'harian_longitude' => $pesanan->longitude,
+        ]);
+
+        return view('pelanggan.menu-harian', compact('pesanan', 'service', 'jadwals'));
     }
 
     /**
      * Simpan Pilihan Menu Harian (Create/Update)
      */
-    public function simpanPesananHarian(Request $request)
+    public function storePesanan(Request $request)
     {
         $request->validate([
             'layanan_id' => 'required|exists:layanan,id',
-            'metode_pengambilan' => 'required|in:ambil_sendiri,diantar_ke_tempat',
             'jadwal_ids' => 'required|array|min:1',
         ]);
 
-        if ($request->metode_pengambilan === 'diantar_ke_tempat') {
-            $request->validate([
-                'latitude' => 'required|numeric',
-                'longitude' => 'required|numeric',
-            ]);
+        // Ambil data lokasi dari session
+        $metode_pengambilan = session('harian_metode_pengambilan');
+        $latitude = session('harian_latitude', null);
+        $longitude = session('harian_longitude', null);
+
+        if (!$metode_pengambilan) {
+            return redirect()->route('pelanggan.harian.lokasi')->with('error', 'Sesi Anda telah habis. Silakan isi kembali metode pengambilan.');
         }
 
         $jadwalIds = $request->input('jadwal_ids', []);
@@ -191,9 +236,9 @@ class KateringHarianController extends Controller
                 }
                 
                 $pesanan->update([
-                    'metode_pengambilan' => $request->metode_pengambilan,
-                    'latitude' => $request->latitude,
-                    'longitude' => $request->longitude,
+                    'metode_pengambilan' => $metode_pengambilan,
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
                     'subtotal' => $totalHargaKeseluruhan,
                     'total' => $totalHargaKeseluruhan,
                     'jumlah_dp' => $jumlahDp,
@@ -210,9 +255,9 @@ class KateringHarianController extends Controller
                     'layanan_id' => $request->layanan_id,
                     'nomor_pesanan' => $nomorPesanan,
                     'tanggal_pesanan' => now()->toDateString(), 
-                    'metode_pengambilan' => $request->metode_pengambilan,
-                    'latitude' => $request->latitude,
-                    'longitude' => $request->longitude,
+                    'metode_pengambilan' => $metode_pengambilan,
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
                     'subtotal' => $totalHargaKeseluruhan,
                     'total' => $totalHargaKeseluruhan,
                     'tipe_penyajian' => 'nasi_kotak',
@@ -238,6 +283,9 @@ class KateringHarianController extends Controller
             }
 
             \Illuminate\Support\Facades\DB::commit();
+
+            // Bersihkan session setelah berhasil masuk database
+            session()->forget(['harian_metode_pengambilan', 'harian_latitude', 'harian_longitude']);
 
             return redirect()->route('pelanggan.harian.detail_pesanan', $pesanan->id);
 
