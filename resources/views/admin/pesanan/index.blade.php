@@ -67,7 +67,7 @@
                                         <small class="text-muted">{{ ucfirst($p->layanan->tipe ?? '') }}</small>
                                     </td>
                                     <td class="align-middle fw-bold text-success">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
-                                    <td class="align-middle">
+                                    <td class="align-middle ">
                                         <span class="badge text-bg-{{ $p->status_pembayaran_color }} mb-1">
                                             {{ $p->status_pembayaran_label }}
                                         </span>
@@ -79,18 +79,26 @@
                                     </td>
                                     <td class="align-middle text-muted">{{ $p->created_at->format('d/m/Y') }}</td>
                                     <td class="align-middle text-center">
-                                        <div class="btn-group">
-                                            <a href="{{ route('admin.pesanan.show', $p) }}" class="btn btn-sm btn-info text-white" title="Lihat Detail Pesanan">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </a>
-                                            <form action="{{ route('admin.pesanan.destroy', $p) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus pesanan ini?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Hapus Pesanan">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
+                                        <div class="d-flex gap-2 justify-content-center">
+    <a href="{{ route('admin.pesanan.show', $p) }}"
+       class="btn btn-sm btn-info text-white"
+       title="Lihat Detail Pesanan">
+        Lihat
+    </a>
+
+    <form action="{{ route('admin.pesanan.destroy', $p) }}"
+          method="POST"
+          onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus pesanan ini?');">
+        @csrf
+        @method('DELETE')
+
+        <button type="submit"
+                class="btn btn-sm btn-danger"
+                title="Hapus Pesanan">
+            Hapus
+        </button>
+    </form>
+</div>
                                     </td>
                                 </tr>
                             @empty

@@ -42,7 +42,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th class="py-3 px-4">No. Pesanan</th>
-                                        <th class="py-3">Tanggal Dibuat</th>
+                                        <th class="py-3">Tanggal Pesanan</th>
                                         <th class="py-3">Tipe Katering</th>
                                         <th class="py-3 text-end">Total</th>
                                         <th class="py-3 text-center">Status Pembayaran</th>
@@ -58,7 +58,7 @@
                                     @endphp
                                     <tr>
                                         <td class="py-3 px-4 fw-bold text-primary">{{ $pesanan->nomor_pesanan }}</td>
-                                        <td class="py-3 text-start">{{ $pesanan->created_at->format('d M Y') }}</td>
+                                        <td class="py-3 text-start" data-sort="{{ $pesanan->created_at->format('YmdHis') }}">{{ $pesanan->created_at->format('d M Y') }}</td>
                                         <td class="py-3">{{ $tipeLayanan }}</td>
                                         <td class="py-3 text-end">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
                                         <td class="py-3 text-center">

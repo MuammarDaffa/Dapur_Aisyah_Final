@@ -62,23 +62,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($pesanan as $pesanan)
+                            @forelse($pesanan as $p)
                                 <tr>
-                                    <td class="align-middle fw-medium">{{ $pesanan->nomor_pesanan }}</td>
-                                    <td class="align-middle">{{ $pesanan->user->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $pesanan->layanan->nama ?? '-' }}</td>
-                                    <td class="align-middle fw-bold text-success">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
+                                    <td class="align-middle fw-medium">{{ $p->nomor_pesanan }}</td>
+                                    <td class="align-middle">{{ $p->user->name ?? '-' }}</td>
+                                    <td class="align-middle">{{ $p->layanan->nama ?? '-' }}</td>
+                                    <td class="align-middle fw-bold text-success">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
                                     <td class="align-middle text-center">
-                                        <span class="badge text-bg-{{ $pesanan->status_pembayaran_color }} mb-1">
-                                            {{ $pesanan->status_pembayaran_label }}
+                                        <span class="badge text-bg-{{ $p->status_pembayaran_color }} mb-1">
+                                            {{ $p->status_pembayaran_label }}
                                         </span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <span class="badge text-bg-{{ $pesanan->status_pesanan_color }}">
-                                            {{ $pesanan->status_pesanan_label }}
+                                        <span class="badge text-bg-{{ $p->status_pesanan_color }}">
+                                            {{ $p->status_pesanan_label }}
                                         </span>
                                     </td>
-                                    <td class="align-middle">{{ $pesanan->created_at->format('d M Y') }}</td>
+                                    <td class="align-middle">{{ $p->created_at->format('d M Y') }}</td>
                                 </tr>
                             @empty
                                 <tr>

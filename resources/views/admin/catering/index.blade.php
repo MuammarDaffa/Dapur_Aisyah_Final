@@ -50,8 +50,9 @@
                                         {{ $c->status ? 'Aktif' : 'Nonaktif' }}
                                     </span>
                                 </td>
+                                <!-- kolom aksi -->
                                 <td class="align-middle text-center">
-                                    <div class="btn-group">
+                                    <div class="d-flex gap-2 justify-content-center">
                                         {{-- Tombol untuk melihat detail/manajemen katering --}}
                                         {{-- Jika tipe harian, arahkan ke manajemen harian. Jika acara, tetap ke show --}}
                                         @if($c->isHarian())
