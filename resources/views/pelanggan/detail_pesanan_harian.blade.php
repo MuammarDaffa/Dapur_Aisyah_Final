@@ -6,7 +6,7 @@
 
 <div class="container mx-auto px-4 py-8 mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-12 col-xl-10">
             <h2 class="fs-3 fw-bold text-dark mt-2 mb-4">Detail Pesanan Anda ({{ $pesanan->nomor_pesanan }})</h2>
 
             @if(session('success'))
@@ -22,74 +22,22 @@
                 </div>
             @endif
 
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-white fw-bold fs-5">
-                    Ringkasan Menu
-                </div>
-                <div class="card-body">
-                    <table class="table table-borderless mb-0">
-                        <tr>
-                            <td class="text-muted" style="width: 200px;">Status Pembayaran</td>
-                            <td class="fw-bold">
-                                <span class="badge bg-{{ $pesanan->status_pembayaran_color }} fs-6">{{ $pesanan->status_pembayaran_label }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted" style="width: 200px;">Status Pesanan</td>
-                            <td class="fw-bold">
-                                @if(!is_null($pesanan->status_pesanan))
-                                    <span class="badge bg-{{ $pesanan->status_pesanan_color }} fs-6">{{ $pesanan->status_pesanan_label }}</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Tanggal Dibuat</td>
-                            <td class="fw-semibold">{{ \Carbon\Carbon::parse($pesanan->created_at)->translatedFormat('d F Y H:i') }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Layanan Katering</td>
-                            <td class="fw-semibold">Katering {{ ucfirst($pesanan->tipe_layanan) }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Metode Pengiriman</td>
-                            <td class="fw-semibold">
-                                @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
-                                    Di Antar ke Lokasi
-                                @else
-                                    Ambil Sendiri
-                                @endif
-                            </td>
-                        </tr>
-                    </table>
 
-                    @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
-                        <hr class="my-4">
-                        <h6 class="fw-bold text-dark mb-3">Lokasi Pengantaran</h6>
-                        <div class="bg-light p-3 rounded border">
-                            @if($pesanan->alamat_lengkap)
-                                <p class="mb-0 text-dark">{{ $pesanan->alamat_lengkap }}</p>
-                            @else
-                                <p class="mb-0 text-muted fst-italic">Alamat belum tersedia.</p>
-                            @endif
-                        </div>
-                    @endif
-                </div>
-            </div>
 
             @if($pesanan->detailPesanans && $pesanan->detailPesanans->count() > 0)
             <div class="mb-4">
-                <h5 class="fw-bold mb-3">Detail Menu</h5>
+                
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle">
                         <thead class="table-light text-center">
                             <tr>
-                                <th>Tgl Pengiriman</th>
-                                <th>Menu</th>
-                                <th>Porsi</th>
-                                <th>Tambahan</th>
-                                <th>Jumlah</th>
-                                <th>Total</th>
-                                <th>Opsi</th>
+                                <th style="width: 20%;">Tanggal Pengiriman</th>
+                                <th style="width: 20%;">Menu</th>
+                                <th style="width: 8%;">Porsi</th>
+                                <th style="width: 22%;">Tambahan</th>
+                                <th style="width: 10%;">Jumlah</th>
+                                <th style="width: 10%;">Total</th>
+                                <th style="width: 10%;">Opsi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -176,6 +124,34 @@
                 </div>
             </div>
             @endif
+
+            <div class="card shadow-sm border-0 mb-4">
+             
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tr>
+                            <td class="text-muted" style="width: 200px;">Metode Pengiriman : </td>
+                            <td class="fw-semibold">
+                                @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
+                                    Di Antar ke Lokasi
+                                @else
+                                    Ambil Sendiri
+                                @endif
+                            </td>
+                        </tr>
+                    </table>
+
+                    @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
+                        <hr class="my-4">
+                        <h6 class="fw-bold text-dark mb-3">Lokasi Pengantaran</h6>
+                            @if($pesanan->alamat_lengkap)
+                                <p class="mb-0 text-dark">{{ $pesanan->alamat_lengkap }}</p>
+                            @else
+                                <p class="mb-0 text-muted fst-italic">Alamat belum tersedia.</p>
+                            @endif
+                    @endif
+                </div>
+            </div>
 
             @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
                 <div class="card shadow-sm border-0 mb-4 bg-light">
