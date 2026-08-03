@@ -66,10 +66,10 @@
                         <hr class="my-4">
                         <h6 class="fw-bold text-dark mb-3">Lokasi Pengantaran</h6>
                         <div class="bg-light p-3 rounded border">
-                            @if($pesanan->detail_alamat)
-                                <p class="mb-0 text-dark">{{ $pesanan->detail_alamat }}</p>
+                            @if($pesanan->alamat_lengkap)
+                                <p class="mb-0 text-dark">{{ $pesanan->alamat_lengkap }}</p>
                             @else
-                                <p class="mb-0 text-muted fst-italic">Alamat belum tersedia. Anda dapat melihat koordinat berikut: {{ $pesanan->latitude }}, {{ $pesanan->longitude }}</p>
+                                <p class="mb-0 text-muted fst-italic">Alamat belum tersedia.</p>
                             @endif
                         </div>
                     @endif

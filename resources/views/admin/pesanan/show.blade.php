@@ -39,20 +39,13 @@
                             @if($pesanan->tipe_layanan !== 'harian')
                                 Tgl Kirim: {{ $pesanan->tanggal_pesanan->format('d M Y') }}<br>
                             @endif
-                            Metode: {{ ucfirst($pesanan->metode_pengambilan) }}
-                        </address>
-                    </div>
-                    @if($pesanan->metode_pengambilan === 'delivery')
-                    <div class="col-sm-4 detail-col">
-                        Alamat Pengiriman
-                        <address>
-                            {{ $pesanan->detail_alamat ?: '-' }}<br>
-                            @if($pesanan->latitude && $pesanan->longitude)
-                                Koordinat: {{ $pesanan->latitude }}, {{ $pesanan->longitude }}
+                            <strong>Metode:</strong>{{ ucfirst($pesanan->metode_pengambilan) }}<br>
+                            @if($pesanan->metode_pengambilan === 'diantar_ke_tempat')
+                                <strong>Lokasi:</strong> {{ $pesanan->alamat_lengkap ?? '-' }}
                             @endif
                         </address>
                     </div>
-                    @endif
+
                 </div>
 
                 @if($pesanan->catatan)

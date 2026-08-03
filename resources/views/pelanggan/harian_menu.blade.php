@@ -70,18 +70,15 @@
                                     <span class="text-dark">{{ $jadwal->menu->nama_menu }}</span>
                                 </div>
                                 
-                                <div class="mb-3">
-                                    <span class="fw-semibold d-block">Terdiri dari :</span>
-                                    <ul class="list-unstyled mb-0 ms-2">
-                                        @if($jadwal->menu->items->count() > 0)
-                                            @foreach($jadwal->menu->items as $item)
-                                                <li>- {{ $item->nama }}</li>
-                                            @endforeach
-                                        @else
-                                            <li>- {{ $jadwal->menu->deskripsi }}</li>
-                                        @endif
-                                    </ul>
-                                </div>
+                               <div class="mb-3">
+    <span class="fw-semibold d-block">Terdiri dari :</span>
+
+    @if($jadwal->menu->items->count() > 0)
+        {{ $jadwal->menu->items->pluck('nama')->implode(', ') }}
+    @else
+        {{ $jadwal->menu->deskripsi }}
+    @endif
+</div>
                                 
                                 <div class="mb-3">
                                     <span class="fw-semibold d-block mb-2">Tambahan :</span>

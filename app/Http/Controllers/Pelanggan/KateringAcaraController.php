@@ -31,6 +31,8 @@ class KateringAcaraController extends Controller
             $request->validate([
                 'latitude' => 'required|numeric',
                 'longitude' => 'required|numeric',
+                'alamat_satelit' => 'nullable|string',
+                'nomor_rumah' => 'required|string',
             ]);
             
             session([
@@ -38,13 +40,15 @@ class KateringAcaraController extends Controller
                 'acara_metode_pengambilan' => $request->metode_pengambilan,
                 'acara_latitude' => $request->latitude,
                 'acara_longitude' => $request->longitude,
+                'acara_alamat_satelit' => $request->alamat_satelit,
+                'acara_nomor_rumah' => $request->nomor_rumah,
             ]);
         } else {
             session([
                 'acara_tanggal_acara' => $request->tanggal_acara,
                 'acara_metode_pengambilan' => $request->metode_pengambilan,
             ]);
-            session()->forget(['acara_latitude', 'acara_longitude']);
+            session()->forget(['acara_latitude', 'acara_longitude', 'acara_alamat_satelit', 'acara_nomor_rumah']);
         }
 
         return redirect()->route('pelanggan.acara.menu');
@@ -98,13 +102,20 @@ class KateringAcaraController extends Controller
     {
         // layanan_id validation removed
 
-        $tanggal_acara = session('acara_tanggal_acara');
+        $tanggalAcara = session('acara_tanggal_acara');
         $metode_pengambilan = session('acara_metode_pengambilan');
         $latitude = session('acara_latitude', null);
         $longitude = session('acara_longitude', null);
+        $alamat_satelit = session('acara_alamat_satelit', null);
+        $nomor_rumah = session('acara_nomor_rumah', null);
 
-        if (!$tanggal_acara || !$metode_pengambilan) {
-            return redirect()->route('pelanggan.acara.lokasi')->with('error', 'Sesi Anda telah habis. Silakan isi kembali form lokasi dan tanggal.');
+        if (!$tanggalAcara || !$metode_pengambilan) {
+            return redirect()->route('pelanggan.acara.lokasi')->with('error', 'Sesi Anda telah habis. Silakan isi kembali tanggal acara dan metode pengambilan.');
+        }
+
+        $alamat_lengkap = null;
+        if ($metode_pengambilan === 'diantar_ke_tempat') {
+            $alamat_lengkap = $nomor_rumah ? "$nomor_rumah, $alamat_satelit" : $alamat_satelit;
         }
 
         $menusDipilih = [];
@@ -195,7 +206,7 @@ class KateringAcaraController extends Controller
         $totalPorsiBaru = collect($menusDipilih)->sum('porsi');
         
         // Cek Kuota Porsi per Minggu (Maks 200) khusus Katering Acara
-        $tanggalAcaraObj = \Carbon\Carbon::parse($tanggal_acara);
+        $tanggalAcaraObj = \Carbon\Carbon::parse($tanggalAcara);
         $startOfWeek = $tanggalAcaraObj->copy()->startOfWeek();
         $endOfWeek = $tanggalAcaraObj->copy()->endOfWeek();
 
@@ -237,10 +248,10 @@ class KateringAcaraController extends Controller
                 }
                 
                 $pesanan->update([
-                    'tanggal_pesanan' => $tanggal_acara,
+                    'tanggal_pesanan' => $tanggalAcara,
+                    'event_start_time' => $tanggalAcara . ' 08:00:00', // Default jam jika diperlukan
                     'metode_pengambilan' => $metode_pengambilan,
-                    'latitude' => $latitude,
-                    'longitude' => $longitude,
+                    'alamat_lengkap' => $alamat_lengkap,
                     'tipe_penyajian' => null, // removed global tipe_penyajian
                     'subtotal' => $totalHargaKeseluruhan,
                     'total' => $totalHargaKeseluruhan,
@@ -252,17 +263,17 @@ class KateringAcaraController extends Controller
                 $pesanan->detailPesanans()->delete();
             } else {
                 $pesanan = \App\Models\Pesanan::create([
-                    'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
                     'user_id' => auth()->id(),
                     'tipe_layanan' => 'acara',
-                    'tanggal_pesanan' => $tanggal_acara,
+                    'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
+                    'tanggal_pesanan' => $tanggalAcara,
+                    'event_start_time' => $tanggalAcara . ' 08:00:00',
                     'metode_pengambilan' => $metode_pengambilan,
-                    'latitude' => $latitude,
-                    'longitude' => $longitude,
-                    'subtotal' => $totalHargaKeseluruhan, 
+                    'alamat_lengkap' => $alamat_lengkap,
+                    'subtotal' => $totalHargaKeseluruhan,
                     'total' => $totalHargaKeseluruhan,
-                    'jumlah_dp' => $jumlahDp,                   
-                    'sisa_pembayaran' => $sisaPembayaran,       
+                    'jumlah_dp' => $jumlahDp,
+                    'sisa_pembayaran' => $sisaPembayaran,
                     'tipe_penyajian' => null, // removed global tipe_penyajian
                     'status_pembayaran' => \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR,
                     'status_pesanan' => null,
@@ -291,7 +302,7 @@ class KateringAcaraController extends Controller
             }
 
             \Illuminate\Support\Facades\DB::commit();
-            session()->forget(['pesanan_sementara', 'acara_tanggal_acara', 'acara_metode_pengambilan', 'acara_latitude', 'acara_longitude']);
+            session()->forget(['pesanan_sementara', 'acara_tanggal_acara', 'acara_metode_pengambilan', 'acara_latitude', 'acara_longitude', 'acara_alamat_satelit', 'acara_nomor_rumah']);
 
             return redirect()->route('pelanggan.acara.detail_pesanan', $pesanan->id);
 

@@ -156,9 +156,9 @@ class KateringHarianController extends Controller
             return redirect()->route('pelanggan.harian.lokasi')->with('error', 'Sesi Anda telah habis. Silakan isi kembali metode pengambilan.');
         }
 
-        $detail_alamat = null;
+        $alamat_lengkap = null;
         if ($metode_pengambilan === 'diantar_ke_tempat') {
-            $detail_alamat = $nomor_rumah ? "$nomor_rumah, $alamat_satelit" : $alamat_satelit;
+            $alamat_lengkap = $nomor_rumah ? "$nomor_rumah, $alamat_satelit" : $alamat_satelit;
         }
 
         $jadwalIds = $request->input('jadwal_ids', []);
@@ -245,9 +245,7 @@ class KateringHarianController extends Controller
                 
                 $pesanan->update([
                     'metode_pengambilan' => $metode_pengambilan,
-                    'detail_alamat' => $detail_alamat,
-                    'latitude' => $latitude,
-                    'longitude' => $longitude,
+                    'alamat_lengkap' => $alamat_lengkap,
                     'subtotal' => $totalHargaKeseluruhan,
                     'total' => $totalHargaKeseluruhan,
                     'jumlah_dp' => $jumlahDp,
@@ -265,9 +263,7 @@ class KateringHarianController extends Controller
                     'nomor_pesanan' => $nomorPesanan,
                     'tanggal_pesanan' => now()->toDateString(), 
                     'metode_pengambilan' => $metode_pengambilan,
-                    'detail_alamat' => $detail_alamat,
-                    'latitude' => $latitude,
-                    'longitude' => $longitude,
+                    'alamat_lengkap' => $alamat_lengkap,
                     'subtotal' => $totalHargaKeseluruhan,
                     'total' => $totalHargaKeseluruhan,
                     'tipe_penyajian' => 'nasi_kotak',

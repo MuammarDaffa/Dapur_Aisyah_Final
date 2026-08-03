@@ -27,9 +27,7 @@ class Pesanan extends Model
         'tanggal_pesanan',
         'event_start_time',
         'metode_pengambilan',
-        'detail_alamat',
-        'latitude',
-        'longitude',
+        'alamat_lengkap',
         'tipe_penyajian',
         'porsi',
         'subtotal',
@@ -51,8 +49,6 @@ class Pesanan extends Model
             'subtotal' => 'integer',
             'total' => 'integer',
             'dibatalkan_pada' => 'datetime',
-            'latitude' => 'decimal:8',
-            'longitude' => 'decimal:8',
         ];
     }
 
