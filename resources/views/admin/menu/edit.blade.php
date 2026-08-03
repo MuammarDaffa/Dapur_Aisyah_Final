@@ -34,6 +34,13 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
                         @error('nama_menu')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- Deskripsi Menu --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Deskripsi Menu <span class="text-danger">*</span></label>
+                        <textarea name="deskripsi" class="form-control" rows="3" placeholder="Contoh: Nasi Putih, Semur Daging, Tempe Goreng, Sambal, Kerupuk" required>{{ old('deskripsi', $menu->deskripsi) }}</textarea>
+                        @error('deskripsi')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                    </div>
+
                     {{-- Gambar Menu --}}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Gambar Menu</label>
@@ -80,7 +87,7 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-warning">
-                        <i class="bi bi-save"></i> Update Menu
+                        <i></i> Update Menu
                     </button>
                     <a href="{{ $menu->tipe_layanan === 'harian' ? route('admin.catering.harian', 'harian') : route('admin.catering.acara', 'acara') }}" class="btn btn-secondary">Batal</a>
                 </div>

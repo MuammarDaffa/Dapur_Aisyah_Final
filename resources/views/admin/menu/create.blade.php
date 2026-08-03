@@ -33,6 +33,13 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
                         @error('nama_menu')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- Deskripsi Menu --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Deskripsi Menu <span class="text-danger">*</span></label>
+                        <textarea name="deskripsi" class="form-control" rows="3" placeholder="Contoh: Nasi Putih, Semur Daging, Tempe Goreng, Sambal, Kerupuk" required>{{ old('deskripsi') }}</textarea>
+                        @error('deskripsi')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                    </div>
+
                     {{-- Gambar Menu --}}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Gambar Menu <span class="text-danger">*</span></label>
