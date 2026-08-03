@@ -71,34 +71,34 @@
                                         </td>
                                         <td class="py-3 text-center">
                                             <div class="d-flex gap-2 justify-content-center">
-                                                @if(strtolower($tipeLayanan) === 'acara')
-                                                    <!-- Aksi Acara -->
-                                                    <a href="{{ route('pelanggan.acara.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
-                                                    
-                                                    @if($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIPROSES)
-                                                        @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_DP)
-                                                            <form class="form-pelunasan" action="{{ route('pelanggan.pelunasan', $pesanan->id) }}" method="POST">
+                                                @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
+                                                    <a href="{{ route(strtolower($tipeLayanan) === 'acara' ? 'pelanggan.acara.detail_pesanan' : 'pelanggan.harian.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
+                                                    <form action="{{ route('pelanggan.pesanan.hapus', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                                    </form>
+                                                @else
+                                                    @if(strtolower($tipeLayanan) === 'acara')
+                                                        <!-- Aksi Acara -->
+                                                        <a href="{{ route('pelanggan.acara.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
+                                                        
+                                                        @if($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIPROSES)
+                                                            @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_DP)
+                                                                <form class="form-pelunasan" action="{{ route('pelanggan.pelunasan', $pesanan->id) }}" method="POST">
+                                                                    @csrf
+                                                                    <button type="submit" class="btn btn-success btn-sm btn-pelunasan">Pelunasan</button>
+                                                                </form>
+                                                            @endif
+                                                            
+                                                            <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
                                                                 @csrf
-                                                                <button type="submit" class="btn btn-success btn-sm btn-pelunasan">Pelunasan</button>
+                                                                <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
                                                             </form>
                                                         @endif
-                                                        
-                                                        <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
-                                                        </form>
-                                                    @endif
-                                                @else
-                                                    <!-- Aksi Harian -->
-                                                    <a href="{{ route('pelanggan.harian.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
-                                                    
-                                                    @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
-                                                        @if($pesanan->status_pesanan !== \App\Models\Pesanan::PESANAN_DIBATALKAN && $pesanan->status_pesanan !== \App\Models\Pesanan::PESANAN_SELESAI)
-                                                        <form action="{{ route('pelanggan.harian.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin membatalkan seluruh pesanan ini?');">
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
-                                                        </form>
-                                                        @endif
+                                                    @else
+                                                        <!-- Aksi Harian -->
+                                                        <a href="{{ route('pelanggan.harian.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
                                                     @endif
                                                 @endif
                                             </div>

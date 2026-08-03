@@ -72,6 +72,7 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/ulasan', [CustomerUlasanController::class, 'store'])->name('ulasan.store');
     Route::get('/riwayat-pesanan', [ProfilController::class, 'riwayatPesanan'])->name('riwayat');
+    Route::delete('/pesanan/{id}/hapus', [ProfilController::class, 'hapusPesanan'])->name('pesanan.hapus');
     Route::post('/pelunasan/{id}', [KateringAcaraController::class, 'prosesPelunasan'])->name('pelunasan');
     // Pemesanan Katering Harian
     Route::post('/katering-harian/simpan', [KateringHarianController::class, 'storePesanan'])->name('harian.simpan');
