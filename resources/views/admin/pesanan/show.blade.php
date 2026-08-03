@@ -62,7 +62,7 @@
                 </div>
                 @endif
 
-                <h4 class="mb-3">Item Pesanan</h4>
+                <h4 class="mb-3">Detail Pesanan</h4>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -70,8 +70,9 @@
                                 @if($pesanan->tipe_layanan === 'harian')
                                 <th>Tanggal Pengiriman</th>
                                 @endif
-                                <th>Item</th>
-                                <th class="text-center">Porsi x Subtotal</th>
+                                <th>Menu</th>
+                                <th>Tambahan</th>
+                                <th class="text-center">Porsi</th>
                                 <th class="text-end">Subtotal</th>
                             </tr>
                         </thead>
@@ -88,28 +89,33 @@
                                     @if($detail->tipe_penyajian)
                                         <br><small class="text-muted">Kemasan: {{ $detail->tipe_penyajian }}</small>
                                     @endif
+                                </td>
+                                <td class="align-middle text-muted small">
                                     @if($detail->menuItems && $detail->menuItems->count() > 0)
-                                        <ul class="mb-0 mt-1 ps-3 text-muted small">
-                                            @foreach($detail->menuItems as $item)
-                                                <li>{{ $item->nama }} (+Rp {{ number_format($item->harga, 0, ',', '.') }})</li>
-                                            @endforeach
-                                        </ul>
+                                        @php
+                                            $groupedTambahan = $detail->menuItems->groupBy('id')->map(function ($items) {
+                                                return $items->first()->nama . ' (' . $items->count() . ')';
+                                            })->implode(', ');
+                                        @endphp
+                                        {{ $groupedTambahan }}
+                                    @else
+                                        -
                                     @endif
                                 </td>
                                 <td class="align-middle text-center">
-                                    {{ $detail->porsi }} x Rp {{ number_format($detail->subtotal / $detail->porsi, 0, ',', '.') }}
+                                    {{ $detail->porsi }}
                                 </td>
                                 <td class="align-middle text-end fw-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '4' : '3' }}" class="text-center text-muted">Data menu tidak ditemukan.</td>
+                                <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '5' : '4' }}" class="text-center text-muted">Data menu tidak ditemukan.</td>
                             </tr>
                             @endforelse
 
                             @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
                                 <tr>
-                                    <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '4' : '3' }}" class="bg-light fw-bold text-success">
+                                    <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '5' : '4' }}" class="bg-light fw-bold text-success">
                                         <i class="fa-solid fa-mug-hot"></i> Minuman
                                     </td>
                                 </tr>
@@ -123,8 +129,9 @@
                                     <td class="align-middle fw-medium text-success">
                                         {{ $minumanDetail->minuman->nama_minuman }}
                                     </td>
+                                    <td class="align-middle text-muted text-center">-</td>
                                     <td class="align-middle text-center text-success">
-                                        {{ $minumanDetail->porsi }} x Rp {{ number_format($minumanDetail->minuman->harga, 0, ',', '.') }}
+                                        {{ $minumanDetail->porsi }} Porsi
                                     </td>
                                     <td class="align-middle text-end fw-bold text-success">Rp {{ number_format($minumanDetail->subtotal, 0, ',', '.') }}</td>
                                 </tr>
