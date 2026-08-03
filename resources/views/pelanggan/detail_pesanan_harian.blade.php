@@ -24,7 +24,7 @@
 
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-white fw-bold fs-5">
-                    Ringkasan Acara
+                    Ringkasan Menu
                 </div>
                 <div class="card-body">
                     <table class="table table-borderless mb-0">
@@ -77,91 +77,102 @@
             </div>
 
             @if($pesanan->detailPesanans && $pesanan->detailPesanans->count() > 0)
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-white fw-bold fs-5">
-                    Detail Menu
-                </div>
-                <div class="card-body">
-                    @foreach($pesanan->detailPesanans as $detail)
-                        @if($detail->menu)
-                            <h6 class="fw-bold mb-3">{{ $detail->menu->nama_menu }}</h6>
-                        @else
-                            <h6 class="fw-bold mb-3 text-warning"><i class="bi bi-clock-history"></i> Menunggu Jadwal Admin</h6>
-                        @endif
-                        
-                        @if($detail->menuItems->count() > 0)
-                            @php
-                                $groupedItems = $detail->menuItems->groupBy('id')->map(function ($items) {
-                                    $first = $items->first();
-                                    return (object) [
-                                        'nama' => $first->nama,
-                                        'harga' => $first->harga,
-                                        'jumlah' => $items->count()
-                                    ];
-                                });
-                            @endphp
-                            <ul class="list-group list-group-flush mb-3">
-                                @foreach($groupedItems as $item)
-                                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
-                                        <span>&bull; {{ $item->nama }} ({{ $item->jumlah }})</span>
-                                        @if($item->harga > 0)
-                                            <span class="text-muted">+ Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
-                                        @endif
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
+            <div class="mb-4">
+                <h5 class="fw-bold mb-3">Detail Menu</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th>Tgl Pengiriman</th>
+                                <th>Menu</th>
+                                <th>Porsi</th>
+                                <th>Tambahan</th>
+                                <th>Jumlah</th>
+                                <th>Total</th>
+                                <th>Opsi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($pesanan->detailPesanans as $detail)
+                                @php
+                                    $groupedItems = null;
+                                    $rowspan = 1;
+                                    if ($detail->menuItems && $detail->menuItems->count() > 0) {
+                                        $groupedItems = $detail->menuItems->groupBy('id')->map(function ($items) {
+                                            return (object) [
+                                                'nama' => $items->first()->nama,
+                                                'jumlah' => $items->count()
+                                            ];
+                                        })->values();
+                                        $rowspan = $groupedItems->count();
+                                    }
+                                    
+                                    $menuName = $detail->menu ? $detail->menu->nama_menu : '<span class="text-warning"><i class="bi bi-clock-history"></i> Menunggu Jadwal Admin</span>';
+                                    $formattedDate = $detail->tanggal_pengiriman ? \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('l, d M Y') : '-';
+                                @endphp
 
-                        <div class="d-flex justify-content-between text-dark mb-2">
-                            <span class="text-muted">Jumlah Porsi</span>
-                            <span class="fw-bold">{{ $detail->porsi }} porsi</span>
-                        </div>
-                        <div class="d-flex justify-content-between text-dark">
-                            <span class="text-muted">Subtotal Menu</span>
-                            <span class="fw-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</span>
-                        </div>
+                                <tr>
+                                    <td class="text-center" rowspan="{{ $rowspan }}">{{ $formattedDate }}</td>
+                                    <td rowspan="{{ $rowspan }}">{!! $menuName !!}</td>
+                                    <td class="text-center" rowspan="{{ $rowspan }}">{{ $detail->porsi }}</td>
+                                    
+                                    @if($groupedItems)
+                                        <td>{{ $groupedItems[0]->nama }}</td>
+                                        <td class="text-center">{{ $groupedItems[0]->jumlah }}</td>
+                                    @else
+                                        <td class="text-center text-muted">-</td>
+                                        <td class="text-center text-muted">-</td>
+                                    @endif
+                                    
+                                    <td class="text-end fw-bold" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                                    <td class="text-center" rowspan="{{ $rowspan }}">
+                                        @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS && $detail->tanggal_pengiriman && \Carbon\Carbon::now()->startOfDay()->lt(\Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay()))
+                                            <button type="button" class="btn btn-sm btn-outline-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
+                                                Ubah Tanggal
+                                            </button>
 
-                        @if($pesanan->tipe_layanan === 'harian' && $detail->tanggal_pengiriman)
-                            <div class="mt-2 mb-3 d-flex justify-content-between align-items-center">
-                                <p class="mb-1 text-muted small">Jadwal Pengiriman: <strong>{{ \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('l, d F Y') }}</strong></p>
-                                @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS && \Carbon\Carbon::now()->startOfDay()->lt(\Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay()))
-                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
-                                        Ubah Tanggal
-                                    </button>
-
-                                    <!-- Modal Reschedule -->
-                                    <div class="modal fade" id="rescheduleModal{{ $detail->id }}" tabindex="-1" aria-hidden="true">
-                                      <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                          <form action="{{ route('pelanggan.harian.reschedule', $detail->id) }}" method="POST">
-                                              @csrf
-                                              <div class="modal-header">
-                                                <h5 class="modal-title">Ubah Tanggal Pengiriman</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                              </div>
-                                              <div class="modal-body text-start">
-                                                <p class="mb-3 text-muted">Pilih tanggal pengiriman yang baru. <strong>Catatan:</strong> Jika Anda mengubah tanggal, menu tambahan yang sudah Anda pilih akan hangus, dan menu utama akan disesuaikan dengan ketersediaan dari Dapur Aisyah.</p>
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Tanggal Baru</label>
-                                                    <input type="date" class="form-control" name="new_date" min="{{ \Carbon\Carbon::now()->addDays(1)->format('Y-m-d') }}" required>
+                                            <!-- Modal Reschedule -->
+                                            <div class="modal fade text-start" id="rescheduleModal{{ $detail->id }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <form action="{{ route('pelanggan.harian.reschedule', $detail->id) }}" method="POST">
+                                                        @csrf
+                                                        <div class="modal-header">
+                                                        <h5 class="modal-title">Ubah Tanggal Pengiriman</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body text-start">
+                                                        <p class="mb-3 text-muted text-wrap" style="white-space: normal;">Pilih tanggal pengiriman yang baru. <strong>Catatan:</strong> Jika Anda mengubah tanggal, menu tambahan yang sudah Anda pilih akan hangus, dan menu utama akan disesuaikan dengan ketersediaan dari Dapur Aisyah.</p>
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Tanggal Baru</label>
+                                                            <input type="date" class="form-control" name="new_date" min="{{ \Carbon\Carbon::now()->addDays(1)->format('Y-m-d') }}" required>
+                                                        </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                        <button type="submit" class="btn btn-primary">Simpan Tanggal</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
-                                              </div>
-                                              <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                <button type="submit" class="btn btn-primary">Simpan Tanggal</button>
-                                              </div>
-                                          </form>
-                                        </div>
-                                      </div>
-                                    </div>
-                                @endif
-                            </div>
-                        @endif
+                                                </div>
+                                            </div>
+                                        @else
+                                            <span class="text-muted small">-</span>
+                                        @endif
+                                    </td>
+                                </tr>
 
-                        @if(!$loop->last)
-                            <hr class="my-4 border-secondary opacity-25">
-                        @endif
-                    @endforeach
+                                @if($groupedItems && $groupedItems->count() > 1)
+                                    @for($i = 1; $i < $rowspan; $i++)
+                                        <tr>
+                                            <td>{{ $groupedItems[$i]->nama }}</td>
+                                            <td class="text-center">{{ $groupedItems[$i]->jumlah }}</td>
+                                        </tr>
+                                    @endfor
+                                @endif
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
             @endif
