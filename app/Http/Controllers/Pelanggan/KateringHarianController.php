@@ -64,18 +64,22 @@ class KateringHarianController extends Controller
             $request->validate([
                 'latitude' => 'required|numeric',
                 'longitude' => 'required|numeric',
+                'alamat_satelit' => 'nullable|string',
+                'nomor_rumah' => 'required|string',
             ]);
             
             session([
                 'harian_metode_pengambilan' => $request->metode_pengambilan,
                 'harian_latitude' => $request->latitude,
                 'harian_longitude' => $request->longitude,
+                'harian_alamat_satelit' => $request->alamat_satelit,
+                'harian_nomor_rumah' => $request->nomor_rumah,
             ]);
         } else {
             session([
                 'harian_metode_pengambilan' => $request->metode_pengambilan,
             ]);
-            session()->forget(['harian_latitude', 'harian_longitude']);
+            session()->forget(['harian_latitude', 'harian_longitude', 'harian_alamat_satelit', 'harian_nomor_rumah']);
         }
 
         return redirect()->route('pelanggan.harian.menu');
@@ -145,9 +149,16 @@ class KateringHarianController extends Controller
         $metode_pengambilan = session('harian_metode_pengambilan');
         $latitude = session('harian_latitude', null);
         $longitude = session('harian_longitude', null);
+        $alamat_satelit = session('harian_alamat_satelit', null);
+        $nomor_rumah = session('harian_nomor_rumah', null);
 
         if (!$metode_pengambilan) {
             return redirect()->route('pelanggan.harian.lokasi')->with('error', 'Sesi Anda telah habis. Silakan isi kembali metode pengambilan.');
+        }
+
+        $detail_alamat = null;
+        if ($metode_pengambilan === 'diantar_ke_tempat') {
+            $detail_alamat = $nomor_rumah ? "$nomor_rumah, $alamat_satelit" : $alamat_satelit;
         }
 
         $jadwalIds = $request->input('jadwal_ids', []);
@@ -234,6 +245,7 @@ class KateringHarianController extends Controller
                 
                 $pesanan->update([
                     'metode_pengambilan' => $metode_pengambilan,
+                    'detail_alamat' => $detail_alamat,
                     'latitude' => $latitude,
                     'longitude' => $longitude,
                     'subtotal' => $totalHargaKeseluruhan,
@@ -253,6 +265,7 @@ class KateringHarianController extends Controller
                     'nomor_pesanan' => $nomorPesanan,
                     'tanggal_pesanan' => now()->toDateString(), 
                     'metode_pengambilan' => $metode_pengambilan,
+                    'detail_alamat' => $detail_alamat,
                     'latitude' => $latitude,
                     'longitude' => $longitude,
                     'subtotal' => $totalHargaKeseluruhan,
