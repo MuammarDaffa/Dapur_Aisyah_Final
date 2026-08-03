@@ -146,14 +146,14 @@
 
            <div class="card shadow-sm border-0 mb-5 bg-light">
                 <div class="card-body p-4">
-                    <div class="d-flex justify-content-between mb-2">
+                    <!-- <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">Total Keseluruhan</span>
                         <span class="fw-bold fs-5">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</span>
                     </div>
-                    <hr>
+                    <hr> -->
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div>
-                            <p class="text-muted mb-0">Total Pembayaran (Lunas)</p>
+                            <p class="text-muted mb-0">Total Pembayaran</p>
                             <h3 class="fw-bold text-success mb-0">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</h3>
                         </div>
                         @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)

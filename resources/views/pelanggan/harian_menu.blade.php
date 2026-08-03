@@ -6,8 +6,10 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="mb-4">
-                <h2 class="fs-3 fw-bold text-dark mt-2 mb-1">Pilih Jadwal Katering Harian</h2>
-                <p class="text-muted">Pilih jadwal pengantaran yang tersedia mulai besok ke depan.</p>
+                <h2 class="fs-3 fw-bold text-dark mt-2 mb-1 text-center">
+    Pilih Jadwal Katering Harian
+</h2>
+                <!-- <p class="text-muted">Pilih jadwal pengantaran yang tersedia mulai besok ke depan.</p> -->
             </div>
 
             @if(session('success'))
@@ -40,9 +42,9 @@
 
                 
                 <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                    <!-- <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
                         <h4 class="fw-bold mb-0">Daftar Jadwal Menu Harian</h4>
-                    </div>
+                    </div> -->
                     <div class="card-body p-4">
                         @forelse($jadwals as $jadwal)
                             @php

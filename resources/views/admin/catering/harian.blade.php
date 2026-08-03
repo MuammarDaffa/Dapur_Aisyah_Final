@@ -150,10 +150,11 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                     <thead class="table-light">
                         <tr>
                             <th class="text-center" style="width: 5%;">No</th>
-                            <th class="text-start" style="width: 35%;">Nama Menu</th>
+                            <th class="text-start" style="width: 20%;">Nama Menu</th>
                             <th class="text-center" style="width: 15%;">Gambar</th>
-                            <th class="text-start" style="width: 20%;">Harga</th>
-                            <th class="text-center" style="width: 25%;">Aksi</th>
+                            <th class="text-start" style="width: 25%;">Deskripsi</th>
+                            <th class="text-start" style="width: 15%;">Harga</th>
+                            <th class="text-center" style="width: 20%;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -168,15 +169,16 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                         <span class="text-muted small">Belum ada gambar</span>
                                     @endif
                                 </td>
+                                <td class="text-start">{{ $menu->deskripsi }}</td>
                                 <td class="text-start">Rp {{ number_format($menu->harga, 0, ',', '.') }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap justify-content-center gap-2">
-                                        <a href="{{ route('admin.menu.items.index', $menu->id) }}" class="btn btn-sm btn-info text-white">
-                                            Kelola Item Menu
-                                        </a>
                                         {{-- Tombol Edit --}}
                                         <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-sm btn-warning">
                                             Edit
+                                        </a>
+                                        <a href="{{ route('admin.menu.items.index', $menu->id) }}" class="btn btn-sm btn-info text-white">
+                                            Tambahan Menu
                                         </a>
                                         {{-- Tombol Hapus --}}
                                         <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus menu ini?');">

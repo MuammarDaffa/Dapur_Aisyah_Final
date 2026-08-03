@@ -70,7 +70,7 @@
 
 <!-- Menampilkan Hasil Peta -->
 <div class="mt-3 p-3 bg-light border rounded">
-    <label class="form-label fw-bold text-secondary">Alamat Lengkap (Satelit):</label>
+    <label class="form-label fw-bold text-secondary">Alamat yang ditandai</label>
     <textarea name="alamat_satelit" id="alamat_satelit" class="form-control mb-3" rows="2" readonly placeholder="Alamat otomatis akan muncul di sini..."></textarea>
     
     <label class="form-label fw-bold text-secondary">Nomor Rumah <span class="text-danger">*</span></label>
