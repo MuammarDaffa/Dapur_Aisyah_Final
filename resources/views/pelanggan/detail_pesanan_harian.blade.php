@@ -75,8 +75,7 @@
                                     <td class="text-end fw-bold" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                                     <td class="text-center" rowspan="{{ $rowspan }}">
                                         @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS && $detail->tanggal_pengiriman && \Carbon\Carbon::now()->startOfDay()->lt(\Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay()))
-                                            <button type="button" class="btn btn-sm btn-jadi harusnya di card pengaturan jadwal menu ini ada button reset yang akan menghapus jadwal menu juga di tabel jadwal karena ketika saya sudah mengatur tanggal mulai lalu generate itu kan harusnya jadwal yang lama terhapus di database diganti dengan jadwal yang baru saya atur ini karena saat ini sistem itu masih menyimpan jadwal menu yang lama dan menambahkan ke jadwal yang baru, jadi harus ada button reset yang akan menghapus jadwal menu itu 
-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
+                                            <button type="button" class="btn btn-sm btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
                                                 Ubah Tanggal
                                             </button>
 

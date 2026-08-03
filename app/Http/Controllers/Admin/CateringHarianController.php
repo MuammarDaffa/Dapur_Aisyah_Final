@@ -195,4 +195,12 @@ class CateringHarianController extends Controller
             'start_date' => $startDate
         ])->with('success', 'Jadwal berhasil disimpan!');
     }
+
+    public function resetJadwal()
+    {
+        // Menghapus seluruh data dari tabel jadwal_menus
+        JadwalMenu::truncate();
+
+        return redirect()->route('admin.catering.harian')->with('success', 'Semua jadwal berhasil di-reset (dihapus).');
+    }
 }

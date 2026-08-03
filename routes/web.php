@@ -118,6 +118,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // 1. Halaman Utama Manajemen Katering Harian (Jadwal)
     Route::get('/catering/harian', [CateringHarianController::class, 'index'])->name('catering.harian');
     Route::post('/catering/harian/jadwal', [CateringHarianController::class, 'updateJadwal'])->name('catering.harian.jadwal');
+    Route::delete('/catering/harian/reset', [CateringHarianController::class, 'resetJadwal'])->name('catering.harian.reset');
 
     // 2. Halaman Detail Katering Acara (Menu dan Minuman)
     Route::get('/catering/acara', [App\Http\Controllers\Admin\CateringAcaraController::class, 'index'])->name('catering.acara');

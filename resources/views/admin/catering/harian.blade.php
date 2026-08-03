@@ -116,12 +116,39 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                         </tbody>
                     </table>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer d-flex justify-content-between">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-save"></i> Simpan Jadwal
                     </button>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#resetJadwalModal">
+                        <i class="bi bi-trash"></i> Reset Semua Jadwal
+                    </button>
                 </div>
             </form>
+
+            <!-- Modal Reset Jadwal -->
+            <div class="modal fade text-start" id="resetJadwalModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form action="{{ route('admin.catering.harian.reset') }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <div class="modal-header">
+                                <h5 class="modal-title text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Reset Seluruh Jadwal</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="mb-0">Apakah Anda yakin ingin <strong>menghapus seluruh jadwal menu katering harian</strong> di database?</p>
+                                <p class="text-muted small mt-2">Catatan: Tindakan ini tidak bisa dibatalkan, namun pesanan pelanggan lama tidak akan terdampak.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-danger">Ya, Reset Jadwal</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             @else
                 <div class="card-body pt-0">
                     <div class="alert alert-info mb-0">
