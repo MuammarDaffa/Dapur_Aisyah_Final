@@ -17,7 +17,7 @@ class KateringAcaraController extends Controller
 
     public function showFormLokasi()
     {
-        return view('pelanggan.acara-form');
+        return view('pelanggan.acara_lokasi');
     }
 
     public function storeSessionLokasi(Request $request)
@@ -61,7 +61,7 @@ class KateringAcaraController extends Controller
         $menus = \App\Models\Menu::where('tipe_layanan', 'acara')->get();
         $minumans = \App\Models\Minuman::where('tipe_layanan', 'acara')->get();
         
-        return view('pelanggan.menu-acara', compact('service', 'menus', 'minumans'));
+        return view('pelanggan.acara_menu', compact('service', 'menus', 'minumans'));
     }
 
     /**
@@ -88,7 +88,7 @@ class KateringAcaraController extends Controller
             'acara_longitude' => $pesanan->longitude,
         ]);
 
-        return view('pelanggan.menu-acara', compact('pesanan', 'service', 'menus', 'minumans'));
+        return view('pelanggan.acara_menu', compact('pesanan', 'service', 'menus', 'minumans'));
     }
 
     /**

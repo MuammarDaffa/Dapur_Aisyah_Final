@@ -51,7 +51,7 @@ class KateringHarianController extends Controller
 
     public function showFormLokasi()
     {
-        return view('pelanggan.harian-form');
+        return view('pelanggan.harian_lokasi');
     }
 
     public function storeSessionLokasi(Request $request)
@@ -98,7 +98,7 @@ class KateringHarianController extends Controller
             ->orderBy('tanggal', 'asc')
             ->get();
 
-        return view('pelanggan.menu-harian', compact('service', 'jadwals'));
+        return view('pelanggan.harian_menu', compact('service', 'jadwals'));
     }
 
     /**
@@ -129,7 +129,7 @@ class KateringHarianController extends Controller
             'harian_longitude' => $pesanan->longitude,
         ]);
 
-        return view('pelanggan.menu-harian', compact('pesanan', 'service', 'jadwals'));
+        return view('pelanggan.harian_menu', compact('pesanan', 'service', 'jadwals'));
     }
 
     /**

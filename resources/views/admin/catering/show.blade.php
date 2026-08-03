@@ -7,7 +7,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
 
 @extends('layouts.admin')
 
-@section('title', 'Lihat Katering')
+@section('title', 'Katering Acara Kantor    ')
 
 @section('content')
 

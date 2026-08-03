@@ -9,7 +9,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
 
 @extends('layouts.admin')
 
-@section('title', 'Manajemen Katering Harian')
+@section('title', 'Katering Harian')
 
 @section('content')
 
