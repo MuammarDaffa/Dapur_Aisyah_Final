@@ -86,10 +86,20 @@
                         <h6 class="fw-bold mb-3">{{ $detail->menu->nama_menu }}</h6>
                         
                         @if($detail->menuItems->count() > 0)
+                            @php
+                                $groupedItems = $detail->menuItems->groupBy('id')->map(function ($items) {
+                                    $first = $items->first();
+                                    return (object) [
+                                        'nama' => $first->nama,
+                                        'harga' => $first->harga,
+                                        'jumlah' => $items->count()
+                                    ];
+                                });
+                            @endphp
                             <ul class="list-group list-group-flush mb-3">
-                                @foreach($detail->menuItems as $item)
+                                @foreach($groupedItems as $item)
                                     <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
-                                        <span>&bull; {{ $item->nama }}</span>
+                                        <span>&bull; {{ $item->nama }} ({{ $item->jumlah }})</span>
                                         @if($item->harga > 0)
                                             <span class="text-muted">+ Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
                                         @endif
