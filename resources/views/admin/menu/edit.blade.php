@@ -14,7 +14,7 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
     <div class="col-md-8">
         {{-- Tombol Batal/Kembali --}}
         <div class="mb-3">
-            <a href="{{ $menu->layanan->isHarian() ? route('admin.catering.harian', $menu->layanan_id) : route('admin.catering.acara', $menu->layanan_id) }}" class="text-decoration-none">
+            <a href="{{ $menu->tipe_layanan === 'harian' ? route('admin.catering.harian', 'harian') : route('admin.catering.acara', 'acara') }}" class="text-decoration-none">
                 <i class="bi bi-arrow-left"></i> Batal & Kembali
             </a>
         </div>
@@ -24,7 +24,7 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
             @method('PUT')
             <div class="card card-outline card-warning">
                 <div class="card-header">
-                    <h3 class="card-title">Form Edit Menu {{ $menu->layanan->isHarian() ? 'Harian' : 'Acara' }}</h3>
+                    <h3 class="card-title">Form Edit Menu {{ $menu->tipe_layanan === 'harian' ? 'Harian' : 'Acara' }}</h3>
                 </div>
                 <div class="card-body">
                     {{-- Nama Menu --}}
@@ -43,10 +43,23 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
 
                     {{-- Harga --}}
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Harga {{ $menu->layanan->isHarian() ? 'per Porsi' : 'Dasar' }} (Rp) <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Harga {{ $menu->tipe_layanan === 'harian' ? 'per Porsi' : 'Dasar' }} (Rp) <span class="text-danger">*</span></label>
                         <input type="number" name="harga" class="form-control" value="{{ old('harga', $menu->harga) }}" min="0" required>
                         @error('harga')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
+
+                    @if($menu->tipe_layanan !== 'harian')
+                    {{-- Kategori Penyajian --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kategori Menu Acara <span class="text-danger">*</span></label>
+                        <select name="kategori_penyajian" class="form-select" required>
+                            <option value="bisa_pilih" {{ old('kategori_penyajian', $menu->kategori_penyajian) == 'bisa_pilih' ? 'selected' : '' }}>Menu Utama (Bisa Pilih Nasi Kotak / Prasmanan)</option>
+                            <option value="prasmanan_saja" {{ old('kategori_penyajian', $menu->kategori_penyajian) == 'prasmanan_saja' ? 'selected' : '' }}>Menu Pondokan / Gubukan (Otomatis Prasmanan)</option>
+                        </select>
+                        @error('kategori_penyajian')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                        <div class="form-text">Pilih kategori ini untuk menentukan bagaimana pelanggan memilih menu ini di halaman pemesanan.</div>
+                    </div>
+                    @endif
 
                     {{-- Status Aktif --}}
                     <div class="form-check mt-3">
@@ -60,7 +73,7 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
                     <button type="submit" class="btn btn-warning">
                         <i class="bi bi-save"></i> Update Menu
                     </button>
-                    <a href="{{ $menu->layanan->isHarian() ? route('admin.catering.harian', $menu->layanan_id) : route('admin.catering.acara', $menu->layanan_id) }}" class="btn btn-secondary">Batal</a>
+                    <a href="{{ $menu->tipe_layanan === 'harian' ? route('admin.catering.harian', 'harian') : route('admin.catering.acara', 'acara') }}" class="btn btn-secondary">Batal</a>
                 </div>
             </div>
         </form>

@@ -4,44 +4,36 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Layanan;
+// Layanan removed
 use App\Models\Menu;
 use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
-    public function create(Layanan $layanan)
+    public function create(string $tipe_layanan)
     {
-        return view('admin.menu.create', compact('layanan'));
+        return view('admin.menu.create', compact('tipe_layanan'));
     }
 
-    public function store(Request $request, Layanan $layanan)
+    public function store(Request $request, string $tipe_layanan)
     {
-        if ($layanan->isAcara()) {
-            $validated = $request->validate([
-                'nama_menu' => 'required|string|max:100|unique:menu,nama_menu,NULL,id,layanan_id,' . $layanan->id,
-            ]);
-            $validated['layanan_id'] = $layanan->id;
-            $validated['deskripsi'] = null;
-            $validated['harga'] = 0;
-            $validated['status'] = true;
-        } else {
-            $validated = $request->validate([
-                'nama_menu' => 'required|string|max:255',
-                'deskripsi' => 'nullable|string',
-                'harga' => 'required|numeric|min:0',
-                'status' => 'boolean'
-            ]);
-            $validated['layanan_id'] = $layanan->id;
-            $validated['status'] = $request->boolean('status');
-        }
+        $validated = $request->validate([
+            'nama_menu' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'harga' => 'required|numeric|min:0',
+            'status' => 'boolean',
+            'kategori_penyajian' => $tipe_layanan === 'acara' ? 'required|in:bisa_pilih,prasmanan_saja' : 'nullable|string'
+        ]);
+
+        $validated['tipe_layanan'] = $tipe_layanan;
+        $validated['status'] = $request->boolean('status');
 
         Menu::create($validated);
 
-        if ($layanan->isHarian()) {
-            return redirect()->route('admin.catering.harian', $layanan->id)->with('success', 'Menu berhasil ditambahkan!');
+        if ($tipe_layanan === 'harian') {
+            return redirect()->route('admin.catering.harian', 'harian')->with('success', 'Menu berhasil ditambahkan!');
         }
-        return redirect()->route('admin.catering.acara', $layanan->id)->with('success', 'Menu berhasil ditambahkan!');
+        return redirect()->route('admin.catering.acara', 'acara')->with('success', 'Menu berhasil ditambahkan!');
     }
 
     public function edit(Menu $menu)
@@ -51,38 +43,32 @@ class MenuController extends Controller
 
     public function update(Request $request, Menu $menu)
     {
-        if ($menu->layanan->isAcara()) {
-            $validated = $request->validate([
-                'nama_menu' => 'required|string|max:100|unique:menu,nama_menu,' . $menu->id . ',id,layanan_id,' . $menu->layanan_id,
-            ]);
-            // we do not touch deskripsi, harga, status for Acara
-        } else {
-            $validated = $request->validate([
-                'nama_menu' => 'required|string|max:255',
-                'deskripsi' => 'nullable|string',
-                'harga' => 'required|numeric|min:0',
-                'status' => 'boolean'
-            ]);
-            $validated['status'] = $request->boolean('status');
-        }
+        $validated = $request->validate([
+            'nama_menu' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'harga' => 'required|numeric|min:0',
+            'status' => 'boolean',
+            'kategori_penyajian' => $menu->tipe_layanan === 'acara' ? 'required|in:bisa_pilih,prasmanan_saja' : 'nullable|string'
+        ]);
+
+        $validated['status'] = $request->boolean('status');
 
         $menu->update($validated);
 
-        if ($menu->layanan->isHarian()) {
-            return redirect()->route('admin.catering.harian', $menu->layanan_id)->with('success', 'Menu berhasil diupdate!');
+        if ($menu->tipe_layanan === 'harian') {
+            return redirect()->route('admin.catering.harian', 'harian')->with('success', 'Menu berhasil diupdate!');
         }
-        return redirect()->route('admin.catering.acara', $menu->layanan_id)->with('success', 'Menu berhasil diupdate!');
+        return redirect()->route('admin.catering.acara', 'acara')->with('success', 'Menu berhasil diupdate!');
     }
 
     public function destroy(Menu $menu)
     {
-        $layananId = $menu->layanan_id;
-        $isHarian = $menu->layanan->isHarian();
+        $tipeLayanan = $menu->tipe_layanan;
         $menu->delete();
 
-        if ($isHarian) {
-            return redirect()->route('admin.catering.harian', $layananId)->with('success', 'Menu berhasil dihapus!');
+        if ($tipeLayanan === 'harian') {
+            return redirect()->route('admin.catering.harian', 'harian')->with('success', 'Menu berhasil dihapus!');
         }
-        return redirect()->route('admin.catering.acara', $layananId)->with('success', 'Menu berhasil dihapus!');
+        return redirect()->route('admin.catering.acara', 'acara')->with('success', 'Menu berhasil dihapus!');
     }
 }

@@ -14,16 +14,16 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
     <div class="col-md-8">
         {{-- Tombol Batal/Kembali --}}
         <div class="mb-3">
-            <a href="{{ $layanan->isHarian() ? route('admin.catering.harian', $layanan->id) : route('admin.catering.acara', $layanan->id) }}" class="text-decoration-none">
+            <a href="{{ $tipe_layanan === 'harian' ? route('admin.catering.harian', 'harian') : route('admin.catering.acara', 'acara') }}" class="text-decoration-none">
                 <i class="bi bi-arrow-left"></i> Batal & Kembali
             </a>
         </div>
 
-        <form action="{{ route('admin.menu.store', $layanan->id) }}" method="POST">
+        <form action="{{ route('admin.menu.store', $tipe_layanan) }}" method="POST">
             @csrf
             <div class="card card-outline card-success">
                 <div class="card-header">
-                    <h3 class="card-title">Form Tambah Menu {{ $layanan->isHarian() ? 'Harian' : 'Acara' }}</h3>
+                    <h3 class="card-title">Form Tambah Menu {{ $tipe_layanan === 'harian' ? 'Harian' : 'Acara' }}</h3>
                 </div>
                 <div class="card-body">
                     {{-- Nama Menu --}}
@@ -42,10 +42,23 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
 
                     {{-- Harga --}}
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Harga {{ $layanan->isHarian() ? 'per Porsi' : 'Dasar' }} (Rp) <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Harga {{ $tipe_layanan === 'harian' ? 'per Porsi' : 'Dasar' }} (Rp) <span class="text-danger">*</span></label>
                         <input type="number" name="harga" class="form-control" value="{{ old('harga') }}" min="0" required>
                         @error('harga')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
+
+                    @if($tipe_layanan !== 'harian')
+                    {{-- Kategori Penyajian --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kategori Menu Acara <span class="text-danger">*</span></label>
+                        <select name="kategori_penyajian" class="form-select" required>
+                            <option value="bisa_pilih" {{ old('kategori_penyajian') == 'bisa_pilih' ? 'selected' : '' }}>Menu Utama (Bisa Pilih Nasi Kotak / Prasmanan)</option>
+                            <option value="prasmanan_saja" {{ old('kategori_penyajian') == 'prasmanan_saja' ? 'selected' : '' }}>Menu Pondokan / Gubukan (Otomatis Prasmanan)</option>
+                        </select>
+                        @error('kategori_penyajian')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                        <div class="form-text">Pilih kategori ini untuk menentukan bagaimana pelanggan memilih menu ini di halaman pemesanan.</div>
+                    </div>
+                    @endif
 
                     {{-- Status Aktif --}}
                     <div class="form-check mt-3">
@@ -59,7 +72,7 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
                     <button type="submit" class="btn btn-success">
                         <i class="bi bi-save"></i> Simpan Menu
                     </button>
-                    <a href="{{ $layanan->isHarian() ? route('admin.catering.harian', $layanan->id) : route('admin.catering.acara', $layanan->id) }}" class="btn btn-secondary">Batal</a>
+                    <a href="{{ $tipe_layanan === 'harian' ? route('admin.catering.harian', 'harian') : route('admin.catering.acara', 'acara') }}" class="btn btn-secondary">Batal</a>
                 </div>
             </div>
         </form>

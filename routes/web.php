@@ -63,8 +63,7 @@ Route::middleware('unverified_customer_redirect')->prefix('katering')->name('pel
     Route::post('/acara/lokasi', [KateringAcaraController::class, 'storeSessionLokasi'])->name('acara.simpan_lokasi');
     Route::get('/acara/menu', [KateringAcaraController::class, 'showMenu'])->name('acara.menu');
     
-    // Legacy route
-    Route::get('/acara/service/{service}', [KateringAcaraController::class, 'acaraService'])->name('acara.service');
+    // Legacy route deleted
 });
 
 Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('pelanggan.')->group(function () {
@@ -109,27 +108,27 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Fungsi : Mengatur rute URL untuk Katering.
     // Penambahan 'show' berguna untuk membuka rute halaman detail katering.
     // =======================================
-    Route::resource('catering', CateringController::class)->except(['show']);
+    // CRUD Layanan dihapus, diganti hardcode tipe_layanan
 
     // =======================================
     // Rute Manajemen Katering Harian & Acara (Menu)
     // =======================================
     // 1. Halaman Utama Manajemen Katering Harian (Jadwal)
-    Route::get('/catering/{layanan}/harian', [CateringHarianController::class, 'index'])->name('catering.harian');
-    Route::post('/catering/{layanan}/harian/jadwal', [CateringHarianController::class, 'updateJadwal'])->name('catering.harian.jadwal');
+    Route::get('/catering/{tipe_layanan}/harian', [CateringHarianController::class, 'index'])->name('catering.harian');
+    Route::post('/catering/{tipe_layanan}/harian/jadwal', [CateringHarianController::class, 'updateJadwal'])->name('catering.harian.jadwal');
 
     // 2. Halaman Detail Katering Acara (Menu dan Minuman)
-    Route::get('/catering/{layanan}/acara', [App\Http\Controllers\Admin\CateringAcaraController::class, 'index'])->name('catering.acara');
+    Route::get('/catering/{tipe_layanan}/acara', [App\Http\Controllers\Admin\CateringAcaraController::class, 'index'])->name('catering.acara');
 
     // 2. CRUD Menu
-    Route::get('/catering/{layanan}/menu/create', [\App\Http\Controllers\Admin\MenuController::class, 'create'])->name('menu.create');
-    Route::post('/catering/{layanan}/menu', [\App\Http\Controllers\Admin\MenuController::class, 'store'])->name('menu.store');
+    Route::get('/catering/{tipe_layanan}/menu/create', [\App\Http\Controllers\Admin\MenuController::class, 'create'])->name('menu.create');
+    Route::post('/catering/{tipe_layanan}/menu', [\App\Http\Controllers\Admin\MenuController::class, 'store'])->name('menu.store');
     Route::get('/menu/{menu}/edit', [\App\Http\Controllers\Admin\MenuController::class, 'edit'])->name('menu.edit');
     Route::put('/menu/{menu}', [\App\Http\Controllers\Admin\MenuController::class, 'update'])->name('menu.update');
     Route::delete('/menu/{menu}', [\App\Http\Controllers\Admin\MenuController::class, 'destroy'])->name('menu.destroy');
 
     // CRUD Minuman (Khusus Acara)
-    Route::post('/catering/{layanan}/minuman', [\App\Http\Controllers\Admin\MinumanController::class, 'store'])->name('minuman.store');
+    Route::post('/catering/{tipe_layanan}/minuman', [\App\Http\Controllers\Admin\MinumanController::class, 'store'])->name('minuman.store');
     Route::put('/minuman/{minuman}', [\App\Http\Controllers\Admin\MinumanController::class, 'update'])->name('minuman.update');
     Route::delete('/minuman/{minuman}', [\App\Http\Controllers\Admin\MinumanController::class, 'destroy'])->name('minuman.destroy');
 

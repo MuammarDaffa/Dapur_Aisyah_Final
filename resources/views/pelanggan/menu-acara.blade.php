@@ -35,75 +35,100 @@
 
             <form action="{{ route('pelanggan.acara.simpan') }}" method="POST" id="formPilihMenu">
                 @csrf
-                <input type="hidden" name="layanan_id" value="{{ $service->id }}">
+
                 @if(isset($pesanan))
                     <input type="hidden" name="pesanan_id" value="{{ $pesanan->id }}">
                 @endif
                 
+                @php
+                    $menuPondokan = $menus->where('kategori_penyajian', 'prasmanan_saja');
+                    $menuUtama = $menus->where('kategori_penyajian', 'bisa_pilih');
+                @endphp
+
+                <!-- Card 1: Menu Pondokan -->
                 <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-body p-4">
-                        @forelse($menus as $menu)
+                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                        <h4 class="fw-bold text-dark mb-0">MENU PONDOKAN / GUBUKAN</h4>
+                        <p class="text-muted small">Semua menu di kategori ini otomatis disajikan secara prasmanan di lokasi.</p>
+                    </div>
+                    <div class="card-body p-4 pt-2">
+                        @forelse($menuPondokan as $menu)
                             @php
                                 $detail = isset($pesanan) ? $pesanan->detailPesanans->firstWhere('menu_id', $menu->id) : null;
                                 $porsiValue = $detail ? $detail->porsi : '';
-                                $selectedItems = $detail ? $detail->menuItems->pluck('id')->toArray() : [];
                             @endphp
-                            <div class="menu-section" data-menu-id="{{ $menu->id }}">
+                            <div class="menu-section mb-4 pb-3 {{ !$loop->last ? 'border-bottom' : '' }}" data-menu-id="{{ $menu->id }}">
                                 <h5 class="fw-bold text-dark mb-1">{{ $menu->nama_menu }}</h5>
                                 <p class="text-dark small mb-3">
                                     {{ $menu->deskripsi }}
                                     @if($menu->harga > 0)
-                                        &bull; <strong>Rp {{ number_format($menu->harga, 0, ',', '.') }}</strong> / porsi dasar
+                                        <br><strong>Rp {{ number_format($menu->harga, 0, ',', '.') }}</strong> / porsi
                                     @endif
                                 </p>
                                 
-                                @if($menu->items->count() > 0)
-                                    <div class="mb-3 checkbox-group">
-                                        @foreach($menu->items as $item)
-                                            <div class="form-check mb-2 d-flex justify-content-between align-items-center" style="max-width: 500px;">
-                                                <div>
-                                                    <input class="form-check-input me-2 item-checkbox" type="checkbox" name="items_{{ $menu->id }}[]" value="{{ $item->id }}" id="item_{{ $item->id }}" {{ in_array($item->id, $selectedItems) ? 'checked' : '' }}>
-                                                    <label class="form-check-label text-dark" style="cursor: pointer;" for="item_{{ $item->id }}">
-                                                        {{ $item->nama }}
-                                                    </label>
-                                                </div>
-                                                <span class="text-dark small">
-                                                    @if($item->harga > 0)
-                                                        Rp {{ number_format($item->harga, 0, ',', '.') }}
-                                                    @else
-                                                        <span class="text-success fw-semibold">Gratis</span>
-                                                    @endif
-                                                </span>
-                                            </div>
-                                        @endforeach
-                                        <div class="invalid-feedback items-feedback d-none">Pilih minimal satu item menu.</div>
-                                        @error('items_'.$menu->id)
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                @else
-                                    <div class="text-dark small mb-3 font-italic">
-                                        Belum ada pilihan item untuk menu ini.
-                                    </div>
-                                @endif
-
                                 <div class="mb-2">
                                     <label for="porsi_{{ $menu->id }}" class="form-label fw-semibold text-dark">Jumlah Porsi</label>
                                     <input type="number" class="form-control porsi-input @error('porsi_'.$menu->id) is-invalid @enderror" style="max-width: 300px;" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" value="{{ $porsiValue }}">
-                                    <div class="invalid-feedback porsi-feedback">Jumlah porsi wajib diisi.</div>
+                                    <div class="invalid-feedback porsi-feedback">Minimal pemesanan 50 porsi.</div>
                                     @error('porsi_'.$menu->id)
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                     <div class="form-text text-dark">Minimal pemesanan 50 porsi.</div>
                                 </div>
-
-                                @if(!$loop->last)
-                                    <hr class="my-4 border-secondary opacity-25">
-                                @endif
                             </div>
                         @empty
-                            <div class="text-center py-5">
-                                <p class="text-dark mb-0">Belum ada menu yang tersedia untuk layanan ini.</p>
+                            <div class="text-center py-4">
+                                <p class="text-muted mb-0">Belum ada menu pondokan yang tersedia.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Card 2: Menu Utama -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                        <h4 class="fw-bold text-dark mb-0">MENU UTAMA (NASI LENGKAP)</h4>
+                        <p class="text-muted small">Pilih jenis kemasan untuk masing-masing menu (Nasi Kotak atau Prasmanan).</p>
+                    </div>
+                    <div class="card-body p-4 pt-2">
+                        @forelse($menuUtama as $menu)
+                            @php
+                                $detail = isset($pesanan) ? $pesanan->detailPesanans->firstWhere('menu_id', $menu->id) : null;
+                                $porsiValue = $detail ? $detail->porsi : '';
+                                $tipeValue = $detail ? $detail->tipe_penyajian : '';
+                            @endphp
+                            <div class="menu-section mb-4 pb-3 {{ !$loop->last ? 'border-bottom' : '' }}" data-menu-id="{{ $menu->id }}">
+                                <h5 class="fw-bold text-dark mb-1">{{ $menu->nama_menu }}</h5>
+                                <p class="text-dark small mb-3">
+                                    {{ $menu->deskripsi }}
+                                    @if($menu->harga > 0)
+                                        <br><strong>Rp {{ number_format($menu->harga, 0, ',', '.') }}</strong> / porsi
+                                    @endif
+                                </p>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-dark">Penyajian</label>
+                                    <select name="tipe_penyajian_{{ $menu->id }}" class="form-select penyajian-input" style="max-width: 300px;" required>
+                                        <option value="">-- Pilih Kemasan --</option>
+                                        <option value="Nasi Kotak" {{ $tipeValue == 'Nasi Kotak' ? 'selected' : '' }}>Nasi Kotak</option>
+                                        <option value="Prasmanan" {{ $tipeValue == 'Prasmanan' ? 'selected' : '' }}>Prasmanan</option>
+                                    </select>
+                                    <div class="invalid-feedback penyajian-feedback">Pilih jenis penyajian.</div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="porsi_{{ $menu->id }}" class="form-label fw-semibold text-dark">Jumlah Porsi</label>
+                                    <input type="number" class="form-control porsi-input @error('porsi_'.$menu->id) is-invalid @enderror" style="max-width: 300px;" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" value="{{ $porsiValue }}">
+                                    <div class="invalid-feedback porsi-feedback">Minimal pemesanan 50 porsi.</div>
+                                    @error('porsi_'.$menu->id)
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                    <div class="form-text text-dark">Minimal pemesanan 50 porsi.</div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-4">
+                                <p class="text-muted mb-0">Belum ada menu utama yang tersedia.</p>
                             </div>
                         @endforelse
                     </div>
@@ -115,7 +140,7 @@
                     <div class="card-body p-4">
                         <h5 class="fw-bold text-dark mb-1">Minuman</h5>
                         <p class="text-dark small mb-3">
-                            <!-- Minuman bersifat opsional. Tidak dihitung ke dalam kuota mingguan. -->
+                            Tambahan minuman untuk menyegarkan acara Anda.
                         </p>
                         
                         <div class="mb-3 checkbox-group">
@@ -171,38 +196,17 @@
                 </div>
                 @endif
 
-                @if($menus->count() > 0)
-                    <!-- Tipe Penyajian -->
-                    <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold text-dark mb-3">Tipe Penyajian</h5>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="tipe_penyajian" id="tipe_nasi_kotak" value="Nasi Kotak" {{ (!isset($pesanan) || $pesanan->tipe_penyajian == 'nasi_kotak') ? 'checked' : '' }} required>
-                                <label class="form-check-label text-dark" for="tipe_nasi_kotak">
-                                    Nasi Kotak
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="tipe_penyajian" id="tipe_prasmanan" value="Prasmanan" {{ (isset($pesanan) && $pesanan->tipe_penyajian == 'prasmanan') ? 'checked' : '' }} required>
-                                <label class="form-check-label text-dark" for="tipe_prasmanan">
-                                    Prasmanan
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end mb-5">
-                        @auth
-                            <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
-                                Buat Pesanan
-                            </button>
-                        @else
-                            <a href="{{ route('login') }}" class="btn btn-warning px-5 py-2 fw-bold shadow-sm">
-                                Login untuk Memesan
-                            </a>
-                        @endauth
-                    </div>
-                @endif
+                <div class="d-flex justify-content-end mb-5">
+                    @auth
+                        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
+                            Buat Pesanan
+                        </button>
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-warning px-5 py-2 fw-bold shadow-sm">
+                            Login untuk Memesan
+                        </a>
+                    @endauth
+                </div>
             </form>
         </div>
     </div>
@@ -220,46 +224,37 @@
 
                 // Reset validation state
                 document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-                document.querySelectorAll('.items-feedback, .minuman-feedback, .jumlah-cup-feedback').forEach(el => {
+                document.querySelectorAll('.items-feedback, .minuman-feedback, .jumlah-cup-feedback, .penyajian-feedback').forEach(el => {
                     el.classList.remove('d-block');
                     el.classList.add('d-none');
                 });
 
                 document.querySelectorAll('.menu-section').forEach(section => {
                     const porsiInput = section.querySelector('.porsi-input');
-                    const checkboxes = section.querySelectorAll('.item-checkbox');
+                    const penyajianInput = section.querySelector('.penyajian-input');
                     
                     let hasPorsi = porsiInput.value && parseInt(porsiInput.value) > 0;
-                    let hasItems = false;
-                    
-                    checkboxes.forEach(cb => {
-                        if (cb.checked) hasItems = true;
-                    });
 
-                    if (hasPorsi || hasItems) {
+                    if (hasPorsi) {
                         isAnyMenuSelected = true;
-                    }
-
-                    if (hasPorsi && !hasItems) {
-                        // Show error on checkboxes
-                        section.querySelector('.checkbox-group').classList.add('is-invalid');
-                        const itemsFeedback = section.querySelector('.items-feedback');
-                        if (itemsFeedback) {
-                            itemsFeedback.classList.remove('d-none');
-                            itemsFeedback.classList.add('d-block');
-                        }
-                        isValid = false;
-                    } else if (hasItems && !hasPorsi) {
-                        // Show error on porsi
-                        porsiInput.classList.add('is-invalid');
-                        isValid = false;
-                    } else if (hasPorsi && hasItems) {
+                        
                         // Check minimum portion
                         if (parseInt(porsiInput.value) < 50) {
                             porsiInput.classList.add('is-invalid');
                             const porsiFeedback = section.querySelector('.porsi-feedback');
                             if (porsiFeedback) {
                                 porsiFeedback.innerHTML = "Minimal pemesanan 50 porsi.";
+                            }
+                            isValid = false;
+                        }
+
+                        // Check penyajian if it exists
+                        if (penyajianInput && penyajianInput.value === "") {
+                            penyajianInput.classList.add('is-invalid');
+                            const penyajianFeedback = section.querySelector('.penyajian-feedback');
+                            if (penyajianFeedback) {
+                                penyajianFeedback.classList.remove('d-none');
+                                penyajianFeedback.classList.add('d-block');
                             }
                             isValid = false;
                         }
@@ -302,7 +297,7 @@
                     Swal.fire({
                         icon: 'warning',
                         title: 'Perhatian',
-                        text: 'Terdapat kesalahan pada isian menu. Silakan periksa kembali pesan error yang muncul.'
+                        text: 'Terdapat kesalahan pada isian form. Silakan lengkapi data yang wajib.'
                     });
                     return false;
                 }
@@ -312,7 +307,7 @@
                     Swal.fire({
                         icon: 'warning',
                         title: 'Perhatian',
-                        text: 'Silakan pilih minimal satu menu.'
+                        text: 'Silakan isi jumlah porsi minimal pada satu menu untuk memesan.'
                     });
                     return false;
                 }

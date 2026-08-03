@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Layanan;
+// Layanan removed
 use App\Models\Ulasan;
 use Illuminate\Http\Request;
 
@@ -10,16 +10,24 @@ class LandingController extends Controller
 {
     public function index()
     {
-        $services = Layanan::where('status', true)->get()->map(function($service) {
-            if ($service->isHarian()) {
-                $service->base_price = $service->menus()->min('harga') ?? 0;
-            } else {
-                $service->base_price = \App\Models\MenuItem::whereHas('menu', function ($query) use ($service) {
-                    $query->where('layanan_id', $service->id);
-                })->min('harga') ?? 0;
-            }
-            return $service;
-        });
+        $harianBasePrice = \App\Models\Menu::where('tipe_layanan', 'harian')->min('harga') ?? 0;
+        
+        $acaraBasePrice = \App\Models\MenuItem::whereHas('menu', function ($query) {
+            $query->where('tipe_layanan', 'acara');
+        })->min('harga') ?? 0;
+
+        $services = [
+            (object) [
+                'tipe_layanan' => 'harian',
+                'nama' => 'Katering Harian',
+                'base_price' => $harianBasePrice,
+            ],
+            (object) [
+                'tipe_layanan' => 'acara',
+                'nama' => 'Katering Acara',
+                'base_price' => $acaraBasePrice,
+            ]
+        ];
 
         $ulasan = Ulasan::with('user')
             ->latest()

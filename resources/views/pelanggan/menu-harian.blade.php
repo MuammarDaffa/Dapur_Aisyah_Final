@@ -37,7 +37,7 @@
             <form action="{{ route('pelanggan.harian.simpan') }}" method="POST" id="formPilihMenu">
                 @csrf
                 <input type="hidden" name="pesanan_id" value="{{ isset($pesanan) ? $pesanan->id : '' }}">
-                <input type="hidden" name="layanan_id" value="{{ $service->id }}">
+
                 
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header bg-white border-bottom-0 pt-4 pb-0">

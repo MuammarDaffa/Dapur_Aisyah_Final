@@ -22,7 +22,7 @@ class Pesanan extends Model
     protected $fillable = [
         'nomor_pesanan',
         'user_id',
-        'layanan_id',
+        'tipe_layanan',
         'menu_id',
         'tanggal_pesanan',
         'event_start_time',
@@ -131,11 +131,6 @@ class Pesanan extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function layanan(): BelongsTo
-    {
-        return $this->belongsTo(Layanan::class, 'layanan_id');
     }
 
     public function detailPesanans(): HasMany

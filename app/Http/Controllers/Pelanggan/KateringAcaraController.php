@@ -57,24 +57,11 @@ class KateringAcaraController extends Controller
             return redirect()->route('pelanggan.acara.lokasi')->with('error', 'Silakan isi tanggal acara dan metode pengambilan terlebih dahulu.');
         }
 
-        $service = \App\Models\Layanan::acara()->active()->first();
-        if (!$service) {
-            return redirect()->route('landing')->with('error', 'Layanan Katering Acara Kantor tidak tersedia saat ini.');
-        }
-
-        $menus = $service->menus()->with('items')->get();
-        $minumans = $service->minumans;
+        $service = (object) ['tipe_layanan' => 'acara', 'nama' => 'Katering Acara'];
+        $menus = \App\Models\Menu::where('tipe_layanan', 'acara')->get();
+        $minumans = \App\Models\Minuman::where('tipe_layanan', 'acara')->get();
         
         return view('pelanggan.menu-acara', compact('service', 'menus', 'minumans'));
-    }
-    /**
-     * Halaman pilih layanan acara (Legacy, bisa dihapus atau dibiarkan jika masih dipakai)
-     */
-    public function acaraService(Request $request, \App\Models\Layanan $service)
-    {
-        $menus = $service->menus()->with('items')->get();
-        $minumans = $service->minumans;
-        return view('pelanggan.katering_acara', compact('service', 'menus', 'minumans'));
     }
 
     /**
@@ -82,16 +69,16 @@ class KateringAcaraController extends Controller
      */
     public function editPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menuItems', 'detailPesanans.minuman'])->findOrFail($id);
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans', 'detailPesanans.minuman'])->findOrFail($id);
         
         // Pastikan hanya bisa diedit jika belum_dibayar
         if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
             return redirect()->route('pelanggan.riwayat')->with('error', 'Pesanan tidak valid atau sudah dibayar.');
         }
 
-        $service = \App\Models\Layanan::findOrFail($pesanan->layanan_id);
-        $menus = $service->menus()->with('items')->get();
-        $minumans = $service->minumans;
+        $service = (object) ['tipe_layanan' => 'acara', 'nama' => 'Katering Acara'];
+        $menus = \App\Models\Menu::where('tipe_layanan', 'acara')->get();
+        $minumans = \App\Models\Minuman::where('tipe_layanan', 'acara')->get();
 
         // Populate session dengan data pesanan agar bisa dipakai di form dan saat simpan
         session([
@@ -109,10 +96,7 @@ class KateringAcaraController extends Controller
      */
     public function storePesanan(Request $request)
     {
-        $request->validate([
-            'layanan_id' => 'required|exists:layanan,id',
-            'tipe_penyajian' => 'required|in:Nasi Kotak,Prasmanan',
-        ]);
+        // layanan_id validation removed
 
         $tanggal_acara = session('acara_tanggal_acara');
         $metode_pengambilan = session('acara_metode_pengambilan');
@@ -127,28 +111,21 @@ class KateringAcaraController extends Controller
         $totalHargaKeseluruhan = 0;
         $customErrors = [];
 
-        // Kumpulkan semua ID menu yang ada di request (dari porsi_ atau items_)
+        // Kumpulkan semua ID menu yang ada di request
         $menuIds = [];
         foreach ($request->all() as $key => $value) {
-            if (str_starts_with($key, 'porsi_')) {
+            if (str_starts_with($key, 'porsi_') && !empty($value)) {
                 $menuIds[str_replace('porsi_', '', $key)] = true;
-            } elseif (str_starts_with($key, 'items_')) {
-                $menuIds[str_replace('items_', '', $key)] = true;
             }
         }
 
         foreach (array_keys($menuIds) as $menuId) {
             $porsiInput = $request->input('porsi_' . $menuId);
-            $items = $request->input('items_' . $menuId, []);
-
+            $tipePenyajianInput = $request->input('tipe_penyajian_' . $menuId);
+            
             $hasPorsi = !empty($porsiInput) && is_numeric($porsiInput) && (int)$porsiInput > 0;
-            $hasItems = !empty($items) && count($items) > 0;
 
-            if ($hasPorsi && !$hasItems) {
-                $customErrors['items_' . $menuId] = "Pilih minimal satu item menu.";
-            } elseif ($hasItems && !$hasPorsi) {
-                $customErrors['porsi_' . $menuId] = "Jumlah porsi wajib diisi.";
-            } elseif ($hasPorsi && $hasItems) {
+            if ($hasPorsi) {
                 $porsi = (int) $porsiInput;
                 if ($porsi < 50) {
                     $customErrors['porsi_' . $menuId] = "Minimal pemesanan 50 porsi.";
@@ -157,20 +134,21 @@ class KateringAcaraController extends Controller
 
                 $menu = \App\Models\Menu::find($menuId);
                 if ($menu) {
-                    $subtotalItems = 0;
-                    $menuItems = \App\Models\MenuItem::whereIn('id', $items)->get();
-                    foreach ($menuItems as $item) {
-                        $subtotalItems += $item->harga;
+                    if ($menu->kategori_penyajian === 'bisa_pilih' && empty($tipePenyajianInput)) {
+                        $customErrors['tipe_penyajian_' . $menuId] = "Pilih jenis penyajian.";
+                        continue;
                     }
 
-                    $hargaPerPorsi = $menu->harga + $subtotalItems;
+                    $tipePenyajian = $menu->kategori_penyajian === 'bisa_pilih' ? $tipePenyajianInput : 'Prasmanan';
+
+                    $hargaPerPorsi = $menu->harga;
                     $subtotal = $hargaPerPorsi * $porsi;
                     $totalHargaKeseluruhan += $subtotal;
 
                     $menusDipilih[] = [
                         'menu_id' => $menu->id,
                         'porsi' => $porsi,
-                        'menu_item_ids' => $items,
+                        'tipe_penyajian' => $tipePenyajian,
                         'subtotal' => $subtotal
                     ];
                 }
@@ -211,7 +189,7 @@ class KateringAcaraController extends Controller
         }
 
         if (empty($menusDipilih)) {
-            return back()->withInput()->with('error', 'Silakan pilih minimal satu menu.');
+            return back()->withInput()->with('error', 'Silakan isi jumlah porsi minimal pada satu menu.');
         }
         
         $totalPorsiBaru = collect($menusDipilih)->sum('porsi');
@@ -221,9 +199,7 @@ class KateringAcaraController extends Controller
         $startOfWeek = $tanggalAcaraObj->copy()->startOfWeek();
         $endOfWeek = $tanggalAcaraObj->copy()->endOfWeek();
 
-        $pesananQuery = \App\Models\Pesanan::whereHas('layanan', function ($q) {
-                $q->where('tipe', 'acara');
-            })
+        $pesananQuery = \App\Models\Pesanan::where('tipe_layanan', 'acara')
             ->whereBetween('tanggal_pesanan', [$startOfWeek->toDateString(), $endOfWeek->toDateString()])
             ->where(function ($q) {
                 $q->whereNull('status_pesanan')
@@ -265,7 +241,7 @@ class KateringAcaraController extends Controller
                     'metode_pengambilan' => $metode_pengambilan,
                     'latitude' => $latitude,
                     'longitude' => $longitude,
-                    'tipe_penyajian' => $request->tipe_penyajian === 'Nasi Kotak' ? 'nasi_kotak' : 'prasmanan',
+                    'tipe_penyajian' => null, // removed global tipe_penyajian
                     'subtotal' => $totalHargaKeseluruhan,
                     'total' => $totalHargaKeseluruhan,
                     'jumlah_dp' => $jumlahDp,
@@ -278,7 +254,7 @@ class KateringAcaraController extends Controller
                 $pesanan = \App\Models\Pesanan::create([
                     'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
                     'user_id' => auth()->id(),
-                    'layanan_id' => $request->layanan_id,
+                    'tipe_layanan' => 'acara',
                     'tanggal_pesanan' => $tanggal_acara,
                     'metode_pengambilan' => $metode_pengambilan,
                     'latitude' => $latitude,
@@ -287,7 +263,7 @@ class KateringAcaraController extends Controller
                     'total' => $totalHargaKeseluruhan,
                     'jumlah_dp' => $jumlahDp,                   
                     'sisa_pembayaran' => $sisaPembayaran,       
-                    'tipe_penyajian' => $request->tipe_penyajian === 'Nasi Kotak' ? 'nasi_kotak' : 'prasmanan',
+                    'tipe_penyajian' => null, // removed global tipe_penyajian
                     'status_pembayaran' => \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR,
                     'status_pesanan' => null,
                 ]);
@@ -295,15 +271,12 @@ class KateringAcaraController extends Controller
 
             // Simpan detail pesanan baru (Makanan)
             foreach ($menusDipilih as $menuDraft) {
-                $detail = $pesanan->detailPesanans()->create([
+                $pesanan->detailPesanans()->create([
                     'menu_id' => $menuDraft['menu_id'],
                     'porsi' => $menuDraft['porsi'],
+                    'tipe_penyajian' => $menuDraft['tipe_penyajian'],
                     'subtotal' => $menuDraft['subtotal'],
                 ]);
-
-                if (!empty($menuDraft['menu_item_ids'])) {
-                    $detail->menuItems()->attach($menuDraft['menu_item_ids']);
-                }
             }
 
             // Simpan detail minuman
@@ -330,7 +303,7 @@ class KateringAcaraController extends Controller
 
     public function detailPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesanans.minuman', 'layanan'])->findOrFail($id);
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.minuman'])->findOrFail($id);
         
         if ($pesanan->user_id !== auth()->id()) {
             return redirect()->route('landing')->with('error', 'Anda tidak berhak melihat pesanan ini.');

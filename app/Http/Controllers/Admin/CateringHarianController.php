@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Layanan;
+// App\Models\Layanan removed
 use App\Models\Menu;
 use App\Models\JadwalMenu;
 use Carbon\Carbon;
@@ -18,15 +18,14 @@ class CateringHarianController extends Controller
     // Data berasal dari mana : Model Layanan, Menu, dan JadwalMenu.
     // Data dikirim ke mana : View resources/views/admin/catering/harian.blade.php
 
-    public function index(Request $request, Layanan $layanan)
+    public function index(Request $request, string $tipe_layanan = 'harian')
     {
-        // Memastikan katering yang dibuka benar-benar tipe harian
-        if (!$layanan->isHarian()) {
-            return redirect()->route('admin.catering.index')->with('error', 'Layanan ini bukan tipe Harian.');
+        if ($tipe_layanan !== 'harian') {
+            return redirect()->route('admin.dashboard')->with('error', 'Layanan ini bukan tipe Harian.');
         }
 
         // 1. Mengambil daftar menu milik katering ini (Untuk mengisi form dropdown jadwal dan Card 2)
-        $daftarMenu = Menu::where('layanan_id', $layanan->id)->get();
+        $daftarMenu = Menu::where('tipe_layanan', 'harian')->get();
 
         // 2. Mengambil data jadwal menu yang sudah tersimpan sebelumnya (jika ada)
         $menuIds = $daftarMenu->pluck('id');
@@ -84,7 +83,7 @@ class CateringHarianController extends Controller
             }
         }
 
-        return view('admin.catering.harian', compact('layanan', 'daftarMenu', 'jadwalTersimpan', 'daftarTanggal', 'startDate'));
+        return view('admin.catering.harian', compact('daftarMenu', 'jadwalTersimpan', 'daftarTanggal', 'startDate', 'tipe_layanan'));
     }
 
     // =======================================
@@ -93,7 +92,7 @@ class CateringHarianController extends Controller
     // Data berasal dari mana : Form di halaman harian.blade.php
     // Mengapa ini diperlukan : Untuk mengatur menu apa saja yang tersedia di hari tertentu beserta stok awalnya.
     // =======================================
-    public function updateJadwal(Request $request, Layanan $layanan)
+    public function updateJadwal(Request $request, string $tipe_layanan = 'harian')
     {
         $startDate = $request->input('start_date');
         $jadwalInput = $request->input('jadwal', []);
@@ -146,9 +145,7 @@ class CateringHarianController extends Controller
             $namaHari = Carbon::parse($keyTanggal)->translatedFormat('l');
 
             // Coba cari apakah sebelumnya jadwal hari ini sudah pernah dibuat
-            // Kita cari dari daftar menu milik layanan ini
-            $menuIds = Menu::where('layanan_id', $layanan->id)->pluck('id');
-            $jadwalLama = JadwalMenu::whereIn('menu_id', $menuIds)->where('tanggal', $keyTanggal)->first();
+            $menuIds = Menu::where('tipe_layanan', 'harian')->pluck('id');
 
             if ($isAktif) {
                 // Jika aktif, kita update (jika ada) atau create (jika belum ada)
@@ -187,7 +184,7 @@ class CateringHarianController extends Controller
 
         // Kembali ke halaman sebelumnya dengan parameter pencarian dan pesan sukses
         return redirect()->route('admin.catering.harian', [
-            'layanan' => $layanan->id,
+            'tipe_layanan' => 'harian',
             'start_date' => $startDate
         ])->with('success', 'Jadwal Menu berhasil diperbarui.');
     }

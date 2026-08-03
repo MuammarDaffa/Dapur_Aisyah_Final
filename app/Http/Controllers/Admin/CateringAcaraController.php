@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Layanan;
+// Layanan removed
 use Illuminate\Http\Request;
 
 class CateringAcaraController extends Controller
@@ -15,21 +15,17 @@ class CateringAcaraController extends Controller
     // Data berasal dari mana : Model Layanan berdasarkan ID yang diklik.
     // Data dikirim ke mana : Halaman resources/views/admin/catering/show.blade.php
     // =======================================
-    public function index(Request $request, Layanan $layanan)
+    public function index(Request $request, string $tipe_layanan = 'acara')
     {
         // Pastikan katering bertipe acara
-        if (!$layanan->isAcara()) {
-            return redirect()->route('admin.catering.index')->with('error', 'Layanan ini bukan tipe Acara.');
+        if ($tipe_layanan !== 'acara') {
+            return redirect()->route('admin.dashboard')->with('error', 'Layanan ini bukan tipe Acara.');
         }
 
-        $layanan->load(['menus.items', 'minumans']);
-        $menus = $layanan->menus;
-        $minumans = $layanan->minumans;
-        
-        $catering = $layanan; // pass back as $catering for view compatibility
+        $menus = \App\Models\Menu::with('items')->where('tipe_layanan', 'acara')->get();
+        $minumans = \App\Models\Minuman::where('tipe_layanan', 'acara')->get();
         
         return view('admin.catering.show', compact(
-            'catering', 
             'menus',
             'minumans'
         ));

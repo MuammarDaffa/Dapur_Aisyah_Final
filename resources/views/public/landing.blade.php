@@ -172,7 +172,7 @@
             <div class="row row-cols-1 sm:row-cols-2 lg:row-cols-{{ count($services) > 2 ? '3' : count($services) }} g-3 items-stretch">
                 @forelse($services as $service)
                     @php
-                        $serviceUrl = $service->isAcara()
+                        $serviceUrl = $service->tipe_layanan === 'acara'
                             ? route('pelanggan.acara.lokasi')
                             : route('pelanggan.harian.lokasi');
                     @endphp

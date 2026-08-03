@@ -40,9 +40,6 @@
                                 Tgl Kirim: {{ $pesanan->tanggal_pesanan->format('d M Y') }}<br>
                             @endif
                             Metode: {{ ucfirst($pesanan->metode_pengambilan) }}
-                            @if($pesanan->tipe_penyajian && !$pesanan->layanan->isHarian())
-                                <br>Penyajian: {{ $pesanan->tipe_penyajian }}
-                            @endif
                         </address>
                     </div>
                     @if($pesanan->metode_pengambilan === 'delivery')
@@ -94,8 +91,11 @@
                                 </td>
                                 @endif
                                 <td class="align-middle fw-medium">
-                                    {{ $detail->menu->nama_menu }}
-                                    @if($detail->menuItems->count() > 0)
+                                    {{ $detail->menu->nama_menu ?? '-' }}
+                                    @if($detail->tipe_penyajian)
+                                        <br><small class="text-muted">Kemasan: {{ $detail->tipe_penyajian }}</small>
+                                    @endif
+                                    @if($detail->menuItems && $detail->menuItems->count() > 0)
                                         <ul class="mb-0 mt-1 ps-3 text-muted small">
                                             @foreach($detail->menuItems as $item)
                                                 <li>{{ $item->nama }} (+Rp {{ number_format($item->harga, 0, ',', '.') }})</li>

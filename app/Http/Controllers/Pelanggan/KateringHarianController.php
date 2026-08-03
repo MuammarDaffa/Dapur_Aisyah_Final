@@ -16,7 +16,7 @@ class KateringHarianController extends Controller
 
     public function detailPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesanans.minuman', 'layanan'])->findOrFail($id);
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesanans.minuman'])->findOrFail($id);
         
         if ($pesanan->user_id !== auth()->id()) {
             return redirect()->route('landing')->with('error', 'Anda tidak berhak melihat pesanan ini.');
@@ -88,10 +88,8 @@ class KateringHarianController extends Controller
             return redirect()->route('pelanggan.harian.lokasi')->with('error', 'Silakan pilih metode pengambilan terlebih dahulu.');
         }
 
-        $service = \App\Models\Layanan::harian()->active()->first();
-        if (!$service) {
-            return redirect()->route('landing')->with('error', 'Layanan Katering Harian tidak tersedia saat ini.');
-        }
+        // Layanan is now hardcoded
+        $service = (object) ['tipe_layanan' => 'harian', 'nama' => 'Katering Harian'];
 
         $besok = \Carbon\Carbon::tomorrow()->toDateString();
         $jadwals = \App\Models\JadwalMenu::with(['menu', 'menu.items'])
@@ -108,14 +106,14 @@ class KateringHarianController extends Controller
      */
     public function editPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menuItems', 'layanan'])->findOrFail($id);
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menuItems'])->findOrFail($id);
         
         // Pastikan hanya bisa diedit jika belum_dibayar
         if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
             return redirect()->route('pelanggan.riwayat')->with('error', 'Pesanan tidak valid atau sudah dibayar.');
         }
 
-        $service = \App\Models\Layanan::findOrFail($pesanan->layanan_id);
+        $service = (object) ['tipe_layanan' => 'harian', 'nama' => 'Katering Harian'];
         
         $besok = \Carbon\Carbon::tomorrow()->toDateString();
         $jadwals = \App\Models\JadwalMenu::with(['menu', 'menu.items'])
@@ -140,7 +138,6 @@ class KateringHarianController extends Controller
     public function storePesanan(Request $request)
     {
         $request->validate([
-            'layanan_id' => 'required|exists:layanan,id',
             'jadwal_ids' => 'required|array|min:1',
         ]);
 
@@ -252,7 +249,7 @@ class KateringHarianController extends Controller
 
                 $pesanan = \App\Models\Pesanan::create([
                     'user_id' => auth()->id(),
-                    'layanan_id' => $request->layanan_id,
+                    'tipe_layanan' => 'harian',
                     'nomor_pesanan' => $nomorPesanan,
                     'tanggal_pesanan' => now()->toDateString(), 
                     'metode_pengambilan' => $metode_pengambilan,

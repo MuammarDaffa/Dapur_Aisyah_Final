@@ -70,7 +70,8 @@
                             $menuItems = [
                                 ['route' => 'admin.dashboard', 'label' => 'Dashboard', 'icon' => 'fa-solid fa-house'],
                                 ['route' => 'admin.pesanan', 'label' => 'Pesanan', 'icon' => 'fa-solid fa-shopping-cart'],
-                                ['route' => 'admin.catering.index', 'label' => 'Katering', 'icon' => 'fa-solid fa-utensils'],
+                                ['route' => 'admin.catering.harian', 'label' => 'Katering Harian', 'icon' => 'fa-solid fa-calendar-day'],
+                                ['route' => 'admin.catering.acara', 'label' => 'Katering Acara', 'icon' => 'fa-solid fa-glass-cheers'],
                                 ['route' => 'admin.customers', 'label' => 'Pelanggan', 'icon' => 'fa-solid fa-users'],
                                 ['route' => 'admin.ulasan', 'label' => 'Ulasan', 'icon' => 'fa-solid fa-star'],
                                 ['route' => 'admin.reports', 'label' => 'Laporan', 'icon' => 'fa-solid fa-chart-line'],

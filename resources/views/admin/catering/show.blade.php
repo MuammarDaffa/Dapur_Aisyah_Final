@@ -21,7 +21,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
     </div>
 </div>
 
-@if($catering->isAcara())
+
 <div class="row mt-4">
     <!-- Card 1: Menu Makanan -->
     <div class="col-md-12 mb-4">
@@ -41,7 +41,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                             <tr>
                                 <th width="5%">No</th>
                                 <th>Nama Menu</th>
-                                <th width="20%" class="text-center">Isi Menu</th>
+                                <th width="20%" class="text-center">Harga</th>
                                 <th width="15%" class="text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -53,14 +53,19 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                                     <strong>{{ $menu->nama_menu }}</strong>
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('admin.menu.items.index', $menu->id) }}" class="btn btn-info btn-sm text-white">
+                                    <!-- <a href="{{ route('admin.menu.items.index', $menu->id) }}" class="btn btn-info btn-sm text-white">
                                         Kelola Isi Menu
-                                    </a>
+                                    </a> -->
+                                    <span class="text-muted">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-warning btn-sm btn-edit-menu" 
                                             data-id="{{ $menu->id }}" 
                                             data-nama="{{ $menu->nama_menu }}"
+                                            data-deskripsi="{{ $menu->deskripsi }}"
+                                            data-harga="{{ $menu->harga }}"
+                                            data-kategori="{{ $menu->kategori_penyajian }}"
+                                            data-status="{{ $menu->status }}"
                                             data-bs-toggle="modal" 
                                             data-bs-target="#editMenuModal">
                                         Edit
@@ -85,9 +90,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
         </div>
     </div>
 </div>
-@endif
 
-@if($catering->isAcara())
 <div class="row">
     <div class="col-md-12">
         <div class="card card-outline card-success">
@@ -148,7 +151,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
         </div>
     </div>
 </div>
-@endif
+
 
 <!-- <div class="row mt-4">
     <div class="col-md-12">
@@ -166,7 +169,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
 <!-- Modal Tambah Menu -->
 <div class="modal fade" id="tambahMenuModal" tabindex="-1" aria-labelledby="tambahMenuModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form action="{{ route('admin.menu.store', $catering->id) }}" method="POST">
+        <form action="{{ route('admin.menu.store', 'acara') }}" method="POST">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
@@ -177,6 +180,25 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                     <div class="mb-3">
                         <label for="nama_menu" class="form-label">Nama Menu <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="nama_menu" name="nama_menu" required maxlength="100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="deskripsi" class="form-label">Deskripsi Menu</label>
+                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="harga" class="form-label">Harga per Porsi (Rp) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="harga" name="harga" required min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="kategori_penyajian" class="form-label">Kategori Menu Acara <span class="text-danger">*</span></label>
+                        <select name="kategori_penyajian" id="kategori_penyajian" class="form-select" required>
+                            <option value="bisa_pilih">Menu Utama (Bisa Pilih Nasi Kotak / Prasmanan)</option>
+                            <option value="prasmanan_saja">Menu Pondokan / Gubukan (Otomatis Prasmanan)</option>
+                        </select>
+                    </div>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" name="status" value="1" id="statusCheck" checked>
+                        <label class="form-check-label fw-bold" for="statusCheck">Tersedia (Aktif)</label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -204,6 +226,25 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                         <label for="edit_nama_menu" class="form-label">Nama Menu <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="edit_nama_menu" name="nama_menu" required maxlength="100">
                     </div>
+                    <div class="mb-3">
+                        <label for="edit_deskripsi" class="form-label">Deskripsi Menu</label>
+                        <textarea class="form-control" id="edit_deskripsi" name="deskripsi" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_harga" class="form-label">Harga per Porsi (Rp) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="edit_harga" name="harga" required min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_kategori_penyajian" class="form-label">Kategori Menu Acara <span class="text-danger">*</span></label>
+                        <select name="kategori_penyajian" id="edit_kategori_penyajian" class="form-select" required>
+                            <option value="bisa_pilih">Menu Utama (Bisa Pilih Nasi Kotak / Prasmanan)</option>
+                            <option value="prasmanan_saja">Menu Pondokan / Gubukan (Otomatis Prasmanan)</option>
+                        </select>
+                    </div>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" name="status" value="1" id="edit_statusCheck">
+                        <label class="form-check-label fw-bold" for="edit_statusCheck">Tersedia (Aktif)</label>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -216,7 +257,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
 <!-- Modal Tambah Minuman -->
 <div class="modal fade" id="tambahMinumanModal" tabindex="-1" aria-labelledby="tambahMinumanModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form action="{{ route('admin.minuman.store', $catering->id) }}" method="POST">
+        <form action="{{ route('admin.minuman.store', 'acara') }}" method="POST">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
@@ -298,9 +339,17 @@ $(document).ready(function() {
     $('.btn-edit-menu').click(function() {
         var menuId = $(this).data('id');
         var menuNama = $(this).data('nama');
+        var menuDeskripsi = $(this).data('deskripsi');
+        var menuHarga = $(this).data('harga');
+        var menuKategori = $(this).data('kategori');
+        var menuStatus = $(this).data('status');
         
         // Isi input nama menu
         $('#edit_nama_menu').val(menuNama);
+        $('#edit_deskripsi').val(menuDeskripsi);
+        $('#edit_harga').val(menuHarga);
+        $('#edit_kategori_penyajian').val(menuKategori);
+        $('#edit_statusCheck').prop('checked', menuStatus == 1);
         
         // Ubah action form ke route update yang benar
         var formAction = "{{ url('admin/menu') }}/" + menuId;

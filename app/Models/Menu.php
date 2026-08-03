@@ -12,17 +12,13 @@ class Menu extends Model
     protected $table = 'menu';
 
     protected $fillable = [
-        'layanan_id',
+        'tipe_layanan',
         'nama_menu',
         'deskripsi',
         'harga',
         'status',
+        'kategori_penyajian',
     ];
-
-    public function layanan()
-    {
-        return $this->belongsTo(Layanan::class);
-    }
 
     public function items()
     {

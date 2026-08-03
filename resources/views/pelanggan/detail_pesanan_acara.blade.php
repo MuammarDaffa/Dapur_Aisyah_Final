@@ -65,16 +65,6 @@
                                 @endif
                             </td>
                         </tr>
-                        <tr>
-                            <td class="text-muted">Tipe Penyajian</td>
-                            <td class="fw-semibold">
-                                @if($pesanan->tipe_penyajian == 'nasi_kotak')
-                                    Nasi Kotak
-                                @else
-                                    Prasmanan
-                                @endif
-                            </td>
-                        </tr>
                     </table>
 
                     @if($pesanan->metode_pengambilan == 'diantar_ke_tempat' && $pesanan->latitude && $pesanan->longitude)
@@ -95,7 +85,12 @@
                 </div>
                 <div class="card-body">
                     @foreach($pesanan->detailPesanans as $detail)
-                        <h6 class="fw-bold mb-3">{{ $detail->menu->nama_menu }}</h6>
+                        <h6 class="fw-bold mb-1">{{ $detail->menu->nama_menu ?? '-' }}</h6>
+                        @if($detail->tipe_penyajian)
+                            <p class="mb-2 text-muted small">Kemasan: {{ $detail->tipe_penyajian }}</p>
+                        @else
+                            <p class="mb-2"></p>
+                        @endif
                         
                         @if($detail->menuItems->count() > 0)
                             <ul class="list-group list-group-flush mb-3">

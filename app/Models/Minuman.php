@@ -12,13 +12,8 @@ class Minuman extends Model
     protected $table = 'minumans';
 
     protected $fillable = [
-        'layanan_id',
+        'tipe_layanan',
         'nama_minuman',
         'harga',
     ];
-
-    public function layanan()
-    {
-        return $this->belongsTo(Layanan::class);
-    }
 }

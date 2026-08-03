@@ -24,7 +24,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
 {{-- Judul Halaman Sesuai Nama Katering --}}
 <!-- <div class="row mb-4">
     <div class="col-12">
-        <h2>{{ $layanan->nama }}</h2>
+        <h2>Katering Harian</h2>
     </div>
 </div> -->
 
@@ -42,7 +42,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
             
             <div class="card-body pb-0">
                 {{-- Form Generate Tanggal --}}
-                <form action="{{ route('admin.catering.harian', $layanan->id) }}" method="GET" class="mb-4">
+                <form action="{{ route('admin.catering.harian', 'harian') }}" method="GET" class="mb-4">
                     <div class="row align-items-end">
                         <div class="col-md-6">
                             <label for="start_date" class="form-label">Pilih Tanggal Mulai (Senin)</label>
@@ -53,7 +53,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                  Generate Jadwal 1 Minggu
                             </button>
                             @if(request('start_date'))
-                                <a href="{{ route('admin.catering.harian', $layanan->id) }}" class="btn btn-secondary">
+                                <a href="{{ route('admin.catering.harian', 'harian') }}" class="btn btn-secondary">
                                     Reset
                                 </a>
                             @endif
@@ -63,7 +63,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
             </div>
 
             @if(!empty($daftarTanggal))
-            <form action="{{ route('admin.catering.harian.jadwal', $layanan->id) }}" method="POST" id="formJadwal">
+            <form action="{{ route('admin.catering.harian.jadwal', 'harian') }}" method="POST" id="formJadwal">
                 @csrf
                 <input type="hidden" name="start_date" value="{{ request('start_date') }}">
                 <div class="card-body pt-0 table-responsive">
@@ -148,7 +148,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
         <div class="card card-outline card-success">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title fw-bold m-0">Daftar Menu Harian</h3>
-                <a href="{{ route('admin.menu.create', $layanan->id) }}" class="btn btn-sm btn-success">
+                <a href="{{ route('admin.menu.create', 'harian') }}" class="btn btn-sm btn-success">
                     <i class="bi bi-plus-lg"></i> Tambah Menu
                 </a>
             </div>
