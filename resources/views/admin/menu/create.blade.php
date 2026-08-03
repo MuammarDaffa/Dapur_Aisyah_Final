@@ -19,7 +19,7 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
             </a>
         </div>
 
-        <form action="{{ route('admin.menu.store', $tipe_layanan) }}" method="POST">
+        <form action="{{ route('admin.menu.store', $tipe_layanan) }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="card card-outline card-success">
                 <div class="card-header">
@@ -33,11 +33,12 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
                         @error('nama_menu')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
 
-                    {{-- Deskripsi --}}
+                    {{-- Gambar Menu --}}
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Deskripsi Menu</label>
-                        <textarea name="deskripsi" class="form-control" rows="3">{{ old('deskripsi') }}</textarea>
-                        @error('deskripsi')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                        <label class="form-label fw-bold">Gambar Menu <span class="text-danger">*</span></label>
+                        <input type="file" name="gambar" id="gambar" class="form-control" accept="image/jpeg,image/png,image/jpg" required>
+                        @error('gambar')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                        <img id="preview" src="#" alt="Preview Gambar" class="img-thumbnail mt-2" style="max-height: 200px; display: none;">
                     </div>
 
                     {{-- Harga --}}
@@ -79,3 +80,24 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.getElementById('gambar').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('preview');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+        }
+    });
+</script>
+@endpush

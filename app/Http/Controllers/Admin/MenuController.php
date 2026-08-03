@@ -20,6 +20,7 @@ class MenuController extends Controller
         $validated = $request->validate([
             'nama_menu' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
+            'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'harga' => 'required|numeric|min:0',
             'status' => 'boolean',
             'kategori_penyajian' => $tipe_layanan === 'acara' ? 'required|in:bisa_pilih,prasmanan_saja' : 'nullable|string'
@@ -27,6 +28,13 @@ class MenuController extends Controller
 
         $validated['tipe_layanan'] = $tipe_layanan;
         $validated['status'] = $request->boolean('status');
+
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('menu', $filename, 'public');
+            $validated['gambar'] = $filename;
+        }
 
         Menu::create($validated);
 
@@ -46,12 +54,23 @@ class MenuController extends Controller
         $validated = $request->validate([
             'nama_menu' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'harga' => 'required|numeric|min:0',
             'status' => 'boolean',
             'kategori_penyajian' => $menu->tipe_layanan === 'acara' ? 'required|in:bisa_pilih,prasmanan_saja' : 'nullable|string'
         ]);
 
         $validated['status'] = $request->boolean('status');
+
+        if ($request->hasFile('gambar')) {
+            if ($menu->gambar) {
+                Storage::disk('public')->delete('menu/' . $menu->gambar);
+            }
+            $file = $request->file('gambar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('menu', $filename, 'public');
+            $validated['gambar'] = $filename;
+        }
 
         $menu->update($validated);
 
@@ -64,6 +83,11 @@ class MenuController extends Controller
     public function destroy(Menu $menu)
     {
         $tipeLayanan = $menu->tipe_layanan;
+        
+        if ($menu->gambar) {
+            Storage::disk('public')->delete('menu/' . $menu->gambar);
+        }
+        
         $menu->delete();
 
         if ($tipeLayanan === 'harian') {

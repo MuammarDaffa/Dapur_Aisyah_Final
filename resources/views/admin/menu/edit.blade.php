@@ -19,7 +19,7 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
             </a>
         </div>
 
-        <form action="{{ route('admin.menu.update', $menu->id) }}" method="POST">
+        <form action="{{ route('admin.menu.update', $menu->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="card card-outline card-warning">
@@ -34,11 +34,20 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
                         @error('nama_menu')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
 
-                    {{-- Deskripsi --}}
+                    {{-- Gambar Menu --}}
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Deskripsi Menu</label>
-                        <textarea name="deskripsi" class="form-control" rows="3">{{ old('deskripsi', $menu->deskripsi) }}</textarea>
-                        @error('deskripsi')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                        <label class="form-label fw-bold">Gambar Menu</label>
+                        <input type="file" name="gambar" id="gambar" class="form-control" accept="image/jpeg,image/png,image/jpg">
+                        <small class="text-muted">Biarkan kosong jika tidak ingin mengubah gambar.</small>
+                        @error('gambar')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                        
+                        <div class="mt-2">
+                            @if($menu->gambar)
+                                <img id="preview" src="{{ asset('storage/menu/' . $menu->gambar) }}" alt="Preview Gambar" class="img-thumbnail" style="max-height: 200px;">
+                            @else
+                                <img id="preview" src="#" alt="Preview Gambar" class="img-thumbnail" style="max-height: 200px; display: none;">
+                            @endif
+                        </div>
                     </div>
 
                     {{-- Harga --}}
@@ -80,3 +89,28 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.getElementById('gambar').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('preview');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            @if($menu->gambar)
+                preview.src = "{{ asset('storage/menu/' . $menu->gambar) }}";
+            @else
+                preview.src = '#';
+                preview.style.display = 'none';
+            @endif
+        }
+    });
+</script>
+@endpush

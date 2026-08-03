@@ -15,6 +15,7 @@ class Menu extends Model
         'tipe_layanan',
         'nama_menu',
         'deskripsi',
+        'gambar',
         'harga',
         'status',
         'kategori_penyajian',

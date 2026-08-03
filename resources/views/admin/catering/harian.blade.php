@@ -150,7 +150,8 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                     <thead class="table-light">
                         <tr>
                             <th class="text-center" style="width: 5%;">No</th>
-                            <th class="text-start" style="width: 50%;">Nama Menu</th>
+                            <th class="text-start" style="width: 35%;">Nama Menu</th>
+                            <th class="text-center" style="width: 15%;">Gambar</th>
                             <th class="text-start" style="width: 20%;">Harga</th>
                             <th class="text-center" style="width: 25%;">Aksi</th>
                         </tr>
@@ -160,6 +161,13 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                             <tr>
                                 <td class="text-center">{{ $index + 1 }}</td>
                                 <td class="text-start">{{ $menu->nama_menu }}</td>
+                                <td class="text-center">
+                                    @if($menu->gambar)
+                                        <img src="{{ asset('storage/menu/' . $menu->gambar) }}" class="img-thumbnail" style="width:80px;height:80px;object-fit:cover;" alt="Gambar Menu">
+                                    @else
+                                        <span class="text-muted small">Belum ada gambar</span>
+                                    @endif
+                                </td>
                                 <td class="text-start">Rp {{ number_format($menu->harga, 0, ',', '.') }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap justify-content-center gap-2">
