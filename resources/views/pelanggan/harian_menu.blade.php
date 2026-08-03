@@ -65,17 +65,26 @@
                                 
                                 <h5 class="fw-bold text-dark mb-3">{{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l, d F Y') }}</h5>
                                 
-                                <div class="mb-3">
-                                    <span class="fw-semibold d-block">Menu :</span>
-                                    <span class="text-dark">{{ $jadwal->menu->nama_menu }}</span>
-                                </div>
-                                
-                               <div class="mb-3">
-                                    <span class="fw-semibold d-block">Terdiri dari :</span>
-                                    <span class="text-dark">{{ $jadwal->menu->deskripsi }}</span>
-                                </div>
-                                
-                                <div class="mb-3">
+                                <div class="row mb-3">
+                                    <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                        @if($jadwal->menu->gambar)
+                                            <img src="{{ asset('storage/menu/' . $jadwal->menu->gambar) }}" class="img-fluid rounded" style="width: 100%; max-width: 220px; height: 220px; object-fit: cover;" alt="{{ $jadwal->menu->nama_menu }}">
+                                        @else
+                                            <div class="bg-light border d-flex align-items-center justify-content-center rounded" style="width: 100%; max-width: 220px; height: 220px;">
+                                                <span class="text-muted small">Belum ada gambar</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="col-12 col-md-8">
+                                        <div class="mb-3">
+                                            <span class="fw-semibold d-block">Menu :</span>
+                                            <span class="text-dark">{{ $jadwal->menu->nama_menu }}</span>
+                                        </div>
+                                        <div class="mb-3">
+                                            <span class="fw-semibold d-block">Terdiri dari :</span>
+                                            <span class="text-dark">{{ $jadwal->menu->deskripsi }}</span>
+                                        </div>
+                                         <div class="mb-3">
                                     <span class="fw-semibold d-block mb-2">Tambahan :</span>
                                     @if($jadwal->menu->items->count() > 0)
                                         @foreach($jadwal->menu->items as $item)
@@ -106,6 +115,9 @@
                                 <div class="mb-2">
                                     <span class="text-dark">Stok : {{ $jadwal->stok_tersisa }} Porsi</span>
                                 </div>
+                                    </div>
+                                </div>
+                               
                                 
                                 @if(!$loop->last)
                                     <hr class="border-secondary opacity-25 my-4">
