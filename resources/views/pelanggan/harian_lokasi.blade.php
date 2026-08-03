@@ -70,11 +70,11 @@
 
 <!-- Menampilkan Hasil Peta -->
 <div class="mt-3 p-3 bg-light border rounded">
-        <label class="form-label fw-bold text-secondary">Kecamatan Terdeteksi:</label>
-        <input type="text" id="kecamatan_terdeteksi" class="form-control mb-2" readonly placeholder="Klik peta untuk mendeteksi lokasi...">
-    
     <label class="form-label fw-bold text-secondary">Alamat Lengkap (Satelit):</label>
-    <textarea id="alamat_satelit" class="form-control" rows="2" readonly placeholder="Alamat otomatis akan muncul di sini..."></textarea>
+    <textarea name="alamat_satelit" id="alamat_satelit" class="form-control mb-3" rows="2" readonly placeholder="Alamat otomatis akan muncul di sini..."></textarea>
+    
+    <label class="form-label fw-bold text-secondary">Nomor Rumah <span class="text-danger">*</span></label>
+    <input type="text" name="nomor_rumah" id="nomor_rumah" class="form-control" placeholder="Contoh: No. 12A / Blok C4" required>
 </div>
 
                         </div>
@@ -111,6 +111,7 @@
                 wadahPeta.style.display = 'block';
                 inputLat.setAttribute('required', 'required');
                 inputLng.setAttribute('required', 'required');
+                document.getElementById('nomor_rumah').setAttribute('required', 'required');
                 
                 // Tambahkan sedikit jeda agar DOM me-render container dengan benar sebelum peta dipanggil
                 setTimeout(() => {
@@ -144,8 +145,7 @@
                                 
                                 // Matikan sementara tombol lanjut sembari menunggu loading API
                                 document.getElementById('btn_lanjut').disabled = true;
-                                document.getElementById('kecamatan_terdeteksi').value = "Sedang melacak lokasi...";
-                                document.getElementById('alamat_satelit').value = "";
+                                document.getElementById('alamat_satelit').value = "Sedang melacak lokasi...";
                                 document.getElementById('alert_lokasi').style.display = 'none';
 
                                 // 2. Memanggil API Nominatim (OpenStreetMap) untuk Reverse Geocoding
@@ -154,20 +154,17 @@
                                     .then(data => {
                                         let fullAddress = data.display_name || "Alamat tidak ditemukan";
 
-                                        // 3. Logika Validasi Wilayah
+                                        // 3. Logika Validasi Wilayah (Internal)
                                         let allowedKecamatan = ["Pontianak Barat", "Pontianak Kota", "Pontianak Selatan", "Pontianak Tenggara"];
                                         let isAllowed = false;
-                                        let kecamatanDitemukan = "Tidak Diketahui";
 
                                         allowedKecamatan.forEach(function(kecamatan) {
                                             if (fullAddress.includes(kecamatan)) {
                                                 isAllowed = true;
-                                                kecamatanDitemukan = kecamatan;
                                             }
                                         });
 
                                         document.getElementById('alamat_satelit').value = fullAddress;
-                                        document.getElementById('kecamatan_terdeteksi').value = kecamatanDitemukan;
 
                                         if (isAllowed) {
                                             document.getElementById('btn_lanjut').disabled = false;
@@ -179,7 +176,7 @@
                                     })
                                     .catch(error => {
                                         console.error('Error memuat alamat:', error);
-                                        document.getElementById('kecamatan_terdeteksi').value = "Gagal memuat alamat. Pastikan ada koneksi internet.";
+                                        document.getElementById('alamat_satelit').value = "Gagal memuat alamat. Pastikan ada koneksi internet.";
                                     });
                             });
                         }
@@ -197,6 +194,12 @@
                 inputLng.removeAttribute('required');
                 inputLat.value = '';
                 inputLng.value = '';
+                
+                let inputNomor = document.getElementById('nomor_rumah');
+                if (inputNomor) {
+                    inputNomor.removeAttribute('required');
+                    inputNomor.value = '';
+                }
                 document.getElementById('btn_lanjut').disabled = false;
             }
         }
