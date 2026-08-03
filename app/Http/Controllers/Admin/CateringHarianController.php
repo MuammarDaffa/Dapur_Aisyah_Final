@@ -146,6 +146,9 @@ class CateringHarianController extends Controller
 
             // Coba cari apakah sebelumnya jadwal hari ini sudah pernah dibuat
             $menuIds = Menu::where('tipe_layanan', 'harian')->pluck('id');
+            $jadwalLama = JadwalMenu::whereIn('menu_id', $menuIds)
+                ->where('tanggal', $keyTanggal)
+                ->first();
 
             if ($isAktif) {
                 // Jika aktif, kita update (jika ada) atau create (jika belum ada)
@@ -172,6 +175,11 @@ class CateringHarianController extends Controller
                     ]);
                 }
                 
+                // Sinkronisasi menu ke pesanan reschedule (DetailPesanan) yang menu_id-nya null pada tanggal ini
+                \App\Models\DetailPesanan::where('tanggal_pengiriman', $input['tanggal'])
+                    ->whereNull('menu_id')
+                    ->update(['menu_id' => $input['menu_id']]);
+
                 // ExtraHarian was moved to MenuItem, handled independently from JadwalMenu now.
                 // So no extra syncing here!
             } else {

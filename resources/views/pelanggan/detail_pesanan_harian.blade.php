@@ -83,7 +83,11 @@
                 </div>
                 <div class="card-body">
                     @foreach($pesanan->detailPesanans as $detail)
-                        <h6 class="fw-bold mb-3">{{ $detail->menu->nama_menu }}</h6>
+                        @if($detail->menu)
+                            <h6 class="fw-bold mb-3">{{ $detail->menu->nama_menu }}</h6>
+                        @else
+                            <h6 class="fw-bold mb-3 text-warning"><i class="bi bi-clock-history"></i> Menunggu Jadwal Admin</h6>
+                        @endif
                         
                         @if($detail->menuItems->count() > 0)
                             @php
@@ -118,8 +122,39 @@
                         </div>
 
                         @if($pesanan->tipe_layanan === 'harian' && $detail->tanggal_pengiriman)
-                            <div class="mt-2 mb-3">
-                                <p class="mb-1 text-muted small">Jadwal Pengiriman: <strong>{{ \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('d F Y') }}</strong></p>
+                            <div class="mt-2 mb-3 d-flex justify-content-between align-items-center">
+                                <p class="mb-1 text-muted small">Jadwal Pengiriman: <strong>{{ \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('l, d F Y') }}</strong></p>
+                                @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS && \Carbon\Carbon::now()->startOfDay()->lt(\Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay()))
+                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
+                                        Ubah Tanggal
+                                    </button>
+
+                                    <!-- Modal Reschedule -->
+                                    <div class="modal fade" id="rescheduleModal{{ $detail->id }}" tabindex="-1" aria-hidden="true">
+                                      <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                          <form action="{{ route('pelanggan.harian.reschedule', $detail->id) }}" method="POST">
+                                              @csrf
+                                              <div class="modal-header">
+                                                <h5 class="modal-title">Ubah Tanggal Pengiriman</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                              </div>
+                                              <div class="modal-body text-start">
+                                                <p class="mb-3 text-muted">Pilih tanggal pengiriman yang baru. <strong>Catatan:</strong> Jika Anda mengubah tanggal, menu tambahan yang sudah Anda pilih akan hangus, dan menu utama akan disesuaikan dengan ketersediaan dari Dapur Aisyah.</p>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Tanggal Baru</label>
+                                                    <input type="date" class="form-control" name="new_date" min="{{ \Carbon\Carbon::now()->addDays(1)->format('Y-m-d') }}" required>
+                                                </div>
+                                              </div>
+                                              <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-primary">Simpan Tanggal</button>
+                                              </div>
+                                          </form>
+                                        </div>
+                                      </div>
+                                    </div>
+                                @endif
                             </div>
                         @endif
 

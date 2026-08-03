@@ -300,4 +300,58 @@ class KateringHarianController extends Controller
             return back()->withInput()->with('error', 'Gagal memproses pesanan: ' . $e->getMessage());
     }
     }
+    
+    public function reschedule(\Illuminate\Http\Request $request, $id)
+    {
+        $detail = \App\Models\DetailPesanan::findOrFail($id);
+        
+        // Cek kepemilikan
+        if ($detail->pesanan->user_id !== auth()->id()) {
+            return back()->with('error', 'Akses ditolak.');
+        }
+
+        // Cek status pesanan LUNAS
+        if ($detail->pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_LUNAS) {
+            return back()->with('error', 'Reschedule hanya bisa dilakukan jika pesanan sudah lunas.');
+        }
+
+        // Cek batas waktu (Harus sebelum hari-H)
+        $today = \Carbon\Carbon::now()->startOfDay();
+        $deliveryDate = \Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay();
+        
+        if ($today->gte($deliveryDate)) {
+            return back()->with('error', 'Pindah hari tidak bisa dilakukan pada hari pengiriman atau sesudahnya. Harus minimal H-1.');
+        }
+
+        $request->validate([
+            'new_date' => 'required|date|after:today'
+        ]);
+
+        try {
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            $newDate = $request->input('new_date');
+
+            // Cek apakah admin sudah mengatur menu di JadwalMenuHarian untuk tanggal baru ini
+            $jadwalMenu = \App\Models\JadwalMenu::whereDate('tanggal', $newDate)->first();
+
+            // Kosongkan relasi menu tambahan (hangus)
+            $detail->menuItems()->detach();
+
+            // Update data detail
+            $detail->update([
+                'tanggal_pengiriman' => $newDate,
+                'menu_id' => $jadwalMenu ? $jadwalMenu->menu_id : null,
+                'is_rescheduled' => true,
+            ]);
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            return back()->with('success', 'Jadwal pengiriman berhasil dipindahkan ke tanggal ' . \Carbon\Carbon::parse($newDate)->translatedFormat('d F Y') . '.');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            return back()->with('error', 'Terjadi kesalahan saat menyimpan perubahan: ' . $e->getMessage());
+        }
+    }
 }
