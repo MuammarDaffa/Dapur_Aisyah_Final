@@ -64,76 +64,104 @@
 
                 <h4 class="mb-3">Detail Pesanan</h4>
                 <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light text-center">
                             <tr>
                                 @if($pesanan->tipe_layanan === 'harian')
                                 <th>Tanggal Pengiriman</th>
                                 @endif
                                 <th>Menu</th>
+                                <th>Porsi</th>
                                 <th>Tambahan</th>
-                                <th class="text-center">Porsi</th>
-                                <th class="text-end">Subtotal</th>
+                                <th>Jumlah</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($pesanan->detailPesanans as $detail)
-                            <tr>
-                                @if($pesanan->tipe_layanan === 'harian')
-                                <td class="align-middle text-muted">
-                                    {{ \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('d F Y') }}
-                                </td>
-                                @endif
-                                <td class="align-middle fw-medium">
-                                    {{ $detail->menu->nama_menu ?? '-' }}
-                                    @if($detail->tipe_penyajian)
-                                        <br><small class="text-muted">Kemasan: {{ $detail->tipe_penyajian }}</small>
+                            @php
+                                // Filter out minuman from the main loop so they don't appear as empty menus
+                                $menuDetails = $pesanan->detailPesanans->filter(function ($item) {
+                                    return is_null($item->minuman_id);
+                                });
+                            @endphp
+                            
+                            @forelse($menuDetails as $detail)
+                                @php
+                                    $groupedItems = null;
+                                    $rowspan = 1;
+                                    if ($detail->menuItems && $detail->menuItems->count() > 0) {
+                                        $groupedItems = $detail->menuItems->groupBy('id')->map(function ($items) {
+                                            return (object) [
+                                                'nama' => $items->first()->nama,
+                                                'jumlah' => $items->count()
+                                            ];
+                                        })->values();
+                                        $rowspan = $groupedItems->count();
+                                    }
+                                    
+                                    $menuName = $detail->menu ? $detail->menu->nama_menu : '<span class="text-warning"><i class="fa-solid fa-clock"></i> Menunggu Jadwal Admin</span>';
+                                    if ($detail->tipe_penyajian) {
+                                        $menuName .= '<br><small class="text-muted">Kemasan: ' . $detail->tipe_penyajian . '</small>';
+                                    }
+                                    
+                                    $formattedDate = $detail->tanggal_pengiriman ? \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('d F Y') : '-';
+                                @endphp
+
+                                <tr>
+                                    @if($pesanan->tipe_layanan === 'harian')
+                                    <td class="text-center" rowspan="{{ $rowspan }}">{{ $formattedDate }}</td>
                                     @endif
-                                </td>
-                                <td class="align-middle text-muted small">
-                                    @if($detail->menuItems && $detail->menuItems->count() > 0)
-                                        @php
-                                            $groupedTambahan = $detail->menuItems->groupBy('id')->map(function ($items) {
-                                                return $items->first()->nama . ' (' . $items->count() . ')';
-                                            })->implode(', ');
-                                        @endphp
-                                        {{ $groupedTambahan }}
+                                    
+                                    <td rowspan="{{ $rowspan }}">{!! $menuName !!}</td>
+                                    <td class="text-center" rowspan="{{ $rowspan }}">{{ $detail->porsi }}</td>
+                                    
+                                    @if($groupedItems)
+                                        <td>{{ $groupedItems[0]->nama }}</td>
+                                        <td class="text-center">{{ $groupedItems[0]->jumlah }}</td>
                                     @else
-                                        -
+                                        <td class="text-center text-muted">-</td>
+                                        <td class="text-center text-muted">-</td>
                                     @endif
-                                </td>
-                                <td class="align-middle text-center">
-                                    {{ $detail->porsi }}
-                                </td>
-                                <td class="align-middle text-end fw-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
-                            </tr>
+                                    
+                                    <td class="text-end fw-bold" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                                </tr>
+
+                                @if($groupedItems && $groupedItems->count() > 1)
+                                    @for($i = 1; $i < $rowspan; $i++)
+                                        <tr>
+                                            <td>{{ $groupedItems[$i]->nama }}</td>
+                                            <td class="text-center">{{ $groupedItems[$i]->jumlah }}</td>
+                                        </tr>
+                                    @endfor
+                                @endif
                             @empty
-                            <tr>
-                                <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '5' : '4' }}" class="text-center text-muted">Data menu tidak ditemukan.</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '6' : '5' }}" class="text-center text-muted">Data menu tidak ditemukan.</td>
+                                </tr>
                             @endforelse
 
                             @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
                                 <tr>
-                                    <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '5' : '4' }}" class="bg-light fw-bold text-success">
+                                    <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '6' : '5' }}" class="bg-light fw-bold text-success">
                                         <i class="fa-solid fa-mug-hot"></i> Minuman
                                     </td>
                                 </tr>
                                 @foreach($pesanan->detailPesanans->whereNotNull('minuman_id') as $minumanDetail)
                                 <tr>
                                     @if($pesanan->tipe_layanan === 'harian')
-                                    <td class="align-middle text-muted">
-                                        {{ \Carbon\Carbon::parse($minumanDetail->tanggal_pengiriman)->translatedFormat('d F Y') }}
+                                    <td class="text-center text-muted">
+                                        {{ $minumanDetail->tanggal_pengiriman ? \Carbon\Carbon::parse($minumanDetail->tanggal_pengiriman)->translatedFormat('d F Y') : '-' }}
                                     </td>
                                     @endif
-                                    <td class="align-middle fw-medium text-success">
+                                    <td class="fw-medium text-success">
                                         {{ $minumanDetail->minuman->nama_minuman }}
                                     </td>
-                                    <td class="align-middle text-muted text-center">-</td>
-                                    <td class="align-middle text-center text-success">
-                                        {{ $minumanDetail->porsi }} Porsi
+                                    <td class="text-center text-success">
+                                        {{ $minumanDetail->porsi }}
                                     </td>
-                                    <td class="align-middle text-end fw-bold text-success">Rp {{ number_format($minumanDetail->subtotal, 0, ',', '.') }}</td>
+                                    <td class="text-center text-muted">-</td>
+                                    <td class="text-center text-muted">-</td>
+                                    <td class="text-end fw-bold text-success">Rp {{ number_format($minumanDetail->subtotal, 0, ',', '.') }}</td>
                                 </tr>
                                 @endforeach
                             @endif
