@@ -28,9 +28,8 @@
                     <div class="col-md-3">
                         <select name="service" class="form-select">
                             <option value="">Semua Layanan</option>
-                            @foreach(\App\Models\Layanan::all() as $layanan)
-                                <option value="{{ $layanan->id }}" {{ request('service') == $layanan->id ? 'selected' : '' }}>{{ $layanan->nama }}</option>
-                            @endforeach
+                                <option value="harian" {{ request('service') == 'harian' ? 'selected' : '' }}>Katering Harian</option>
+                                <option value="acara" {{ request('service') == 'acara' ? 'selected' : '' }}>Katering Acara</option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -63,8 +62,7 @@
                                 <tr>
                                     <td class="align-middle fw-medium">{{ $p->nomor_pesanan }}</td>
                                     <td class="align-middle">
-                                        <span class="d-block">{{ $p->layanan->nama ?? '-' }}</span>
-                                        <small class="text-muted">{{ ucfirst($p->layanan->tipe ?? '') }}</small>
+                                        <span class="d-block">Katering {{ ucfirst($p->tipe_layanan) }}</span>
                                     </td>
                                     <td class="align-middle fw-bold text-success">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
                                     <td class="align-middle ">

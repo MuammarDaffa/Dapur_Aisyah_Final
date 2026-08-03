@@ -31,9 +31,9 @@ class MenuController extends Controller
         Menu::create($validated);
 
         if ($tipe_layanan === 'harian') {
-            return redirect()->route('admin.catering.harian', 'harian')->with('success', 'Menu berhasil ditambahkan!');
+            return redirect()->route('admin.catering.harian')->with('success', 'Menu berhasil ditambahkan!');
         }
-        return redirect()->route('admin.catering.acara', 'acara')->with('success', 'Menu berhasil ditambahkan!');
+        return redirect()->route('admin.catering.acara')->with('success', 'Menu berhasil ditambahkan!');
     }
 
     public function edit(Menu $menu)
@@ -56,9 +56,9 @@ class MenuController extends Controller
         $menu->update($validated);
 
         if ($menu->tipe_layanan === 'harian') {
-            return redirect()->route('admin.catering.harian', 'harian')->with('success', 'Menu berhasil diupdate!');
+            return redirect()->route('admin.catering.harian')->with('success', 'Menu berhasil diupdate!');
         }
-        return redirect()->route('admin.catering.acara', 'acara')->with('success', 'Menu berhasil diupdate!');
+        return redirect()->route('admin.catering.acara')->with('success', 'Menu berhasil diupdate!');
     }
 
     public function destroy(Menu $menu)
@@ -67,8 +67,8 @@ class MenuController extends Controller
         $menu->delete();
 
         if ($tipeLayanan === 'harian') {
-            return redirect()->route('admin.catering.harian', 'harian')->with('success', 'Menu berhasil dihapus!');
+            return redirect()->route('admin.catering.harian')->with('success', 'Menu berhasil dihapus!');
         }
-        return redirect()->route('admin.catering.acara', 'acara')->with('success', 'Menu berhasil dihapus!');
+        return redirect()->route('admin.catering.acara')->with('success', 'Menu berhasil dihapus!');
     }
 }

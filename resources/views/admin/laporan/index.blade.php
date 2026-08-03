@@ -66,7 +66,7 @@
                                 <tr>
                                     <td class="align-middle fw-medium">{{ $p->nomor_pesanan }}</td>
                                     <td class="align-middle">{{ $p->user->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $p->layanan->nama ?? '-' }}</td>
+                                    <td class="align-middle">Katering {{ ucfirst($p->tipe_layanan) }}</td>
                                     <td class="align-middle fw-bold text-success">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
                                     <td class="align-middle text-center">
                                         <span class="badge text-bg-{{ $p->status_pembayaran_color }} mb-1">

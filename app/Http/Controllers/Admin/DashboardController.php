@@ -30,7 +30,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $recentOrders = Pesanan::with(['user', 'layanan'])
+        $recentOrders = Pesanan::with(['user'])
             ->latest()
             ->take(10)
             ->get();

@@ -10,16 +10,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
 @section('title', 'Lihat Katering')
 
 @section('content')
-<div class="row">
-    <div class="col-md-12">
-        <div class="mb-3">
-            <a href="{{ route('admin.catering.index') }}" class="text-decoration-none">
-                <i class="bi bi-arrow-left"></i> Kembali ke Daftar Katering
-            </a>
-        </div>
 
-    </div>
-</div>
 
 
 <div class="row mt-4">
@@ -153,19 +144,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
 </div>
 
 
-<!-- <div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card card-outline card-secondary">
-            <div class="card-header">
-                <h3 class="card-title">Deskripsi</h3>
-            </div>
-            <div class="card-body">
-                <textarea id="summernote" name="deskripsi" form="form-update-katering">{{ old('deskripsi', $catering->deskripsi) }}</textarea>
-                @error('deskripsi')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
-            </div>
-        </div>
-    </div>
-</div> -->
+
 <!-- Modal Tambah Menu -->
 <div class="modal fade" id="tambahMenuModal" tabindex="-1" aria-labelledby="tambahMenuModalLabel" aria-hidden="true">
     <div class="modal-dialog">

@@ -54,7 +54,7 @@
                                     @foreach($riwayatPesanan as $pesanan)
                                     @php
                                         // Deteksi tipe katering
-                                        $tipeLayanan = $pesanan->layanan ? ucfirst(strtolower($pesanan->layanan->tipe)) : 'Acara';
+                                        $tipeLayanan = ucfirst($pesanan->tipe_layanan);
                                     @endphp
                                     <tr>
                                         <td class="py-3 px-4 fw-bold text-primary">{{ $pesanan->nomor_pesanan }}</td>

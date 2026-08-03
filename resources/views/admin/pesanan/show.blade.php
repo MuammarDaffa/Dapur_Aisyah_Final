@@ -35,8 +35,8 @@
                     <div class="col-sm-4 detail-col">
                         Detail Pesanan
                         <address>
-                            <strong>{{ $pesanan->layanan->nama ?? '-' }}</strong> <small class="text-muted">({{ ucfirst($pesanan->layanan->tipe ?? '') }})</small><br>
-                            @if(!$pesanan->layanan->isHarian())
+                            <strong>Katering {{ ucfirst($pesanan->tipe_layanan) }}</strong><br>
+                            @if($pesanan->tipe_layanan !== 'harian')
                                 Tgl Kirim: {{ $pesanan->tanggal_pesanan->format('d M Y') }}<br>
                             @endif
                             Metode: {{ ucfirst($pesanan->metode_pengambilan) }}
@@ -74,7 +74,7 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                @if($pesanan->layanan->isHarian())
+                                @if($pesanan->tipe_layanan === 'harian')
                                 <th>Tanggal Pengiriman</th>
                                 @endif
                                 <th>Item</th>
@@ -85,7 +85,7 @@
                         <tbody>
                             @forelse($pesanan->detailPesanans as $detail)
                             <tr>
-                                @if($pesanan->layanan->isHarian())
+                                @if($pesanan->tipe_layanan === 'harian')
                                 <td class="align-middle text-muted">
                                     {{ \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('d F Y') }}
                                 </td>
@@ -110,19 +110,19 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="{{ $pesanan->layanan->isHarian() ? '4' : '3' }}" class="text-center text-muted">Data menu tidak ditemukan.</td>
+                                <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '4' : '3' }}" class="text-center text-muted">Data menu tidak ditemukan.</td>
                             </tr>
                             @endforelse
 
                             @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
                                 <tr>
-                                    <td colspan="{{ $pesanan->layanan->isHarian() ? '4' : '3' }}" class="bg-light fw-bold text-success">
+                                    <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '4' : '3' }}" class="bg-light fw-bold text-success">
                                         <i class="fa-solid fa-mug-hot"></i> Minuman
                                     </td>
                                 </tr>
                                 @foreach($pesanan->detailPesanans->whereNotNull('minuman_id') as $minumanDetail)
                                 <tr>
-                                    @if($pesanan->layanan->isHarian())
+                                    @if($pesanan->tipe_layanan === 'harian')
                                     <td class="align-middle text-muted">
                                         {{ \Carbon\Carbon::parse($minumanDetail->tanggal_pengiriman)->translatedFormat('d F Y') }}
                                     </td>

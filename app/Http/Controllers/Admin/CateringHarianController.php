@@ -184,8 +184,7 @@ class CateringHarianController extends Controller
 
         // Kembali ke halaman sebelumnya dengan parameter pencarian dan pesan sukses
         return redirect()->route('admin.catering.harian', [
-            'tipe_layanan' => 'harian',
             'start_date' => $startDate
-        ])->with('success', 'Jadwal Menu berhasil diperbarui.');
+        ])->with('success', 'Jadwal berhasil disimpan!');
     }
 }

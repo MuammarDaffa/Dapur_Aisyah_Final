@@ -49,7 +49,7 @@
                         </tr>
                         <tr>
                             <td class="text-muted">Layanan Katering</td>
-                            <td class="fw-semibold">{{ $pesanan->layanan->nama }}</td>
+                            <td class="fw-semibold">Katering {{ ucfirst($pesanan->tipe_layanan) }}</td>
                         </tr>
                         <tr>
                             <td class="text-muted">Tanggal Acara</td>

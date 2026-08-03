@@ -12,14 +12,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
 @section('title', 'Manajemen Katering Harian')
 
 @section('content')
-<div class="row mb-3">
-    <div class="col-12">
-        {{-- Tombol Kembali --}}
-        <a href="{{ route('admin.catering.index') }}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Kembali
-        </a>
-    </div>
-</div>
+
 
 {{-- Judul Halaman Sesuai Nama Katering --}}
 <!-- <div class="row mb-4">

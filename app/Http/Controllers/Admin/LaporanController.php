@@ -45,7 +45,7 @@ class LaporanController extends Controller
             'average_order' => (clone $query)->where('status_pesanan', 'selesai')->avg('total') ?? 0,
         ];
 
-        $pesanan = $query->with(['user', 'layanan'])->latest()->paginate(20);
+        $pesanan = $query->with(['user'])->latest()->paginate(20);
 
         return view('admin.laporan.index', compact('pesanan', 'summary'));
     }

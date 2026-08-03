@@ -5,8 +5,8 @@
 @section('content')
 <div class="row mb-3">
     <div class="col-12">
-        <a href="{{ $menu->layanan->isHarian() ? route('admin.catering.harian', $menu->layanan_id) : route('admin.catering.acara', $menu->layanan_id) }}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Kembali ke Menu {{ $menu->layanan->isHarian() ? 'Harian' : 'Acara' }}
+        <a href="{{ $menu->tipe_layanan === 'harian' ? route('admin.catering.harian') : route('admin.catering.acara') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Menu {{ $menu->tipe_layanan === 'harian' ? 'Harian' : 'Acara' }}
         </a>
     </div>
 </div>

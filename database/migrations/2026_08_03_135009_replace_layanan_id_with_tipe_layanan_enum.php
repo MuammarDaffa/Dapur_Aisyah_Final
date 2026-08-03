@@ -13,41 +13,61 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Add tipe_layanan to pesanan, menu, minumans
-        Schema::table('pesanan', function (Blueprint $table) {
-            $table->enum('tipe_layanan', ['harian', 'acara'])->default('harian')->after('user_id');
-        });
+        if (!Schema::hasColumn('pesanan', 'tipe_layanan')) {
+            Schema::table('pesanan', function (Blueprint $table) {
+                $table->enum('tipe_layanan', ['harian', 'acara'])->default('harian')->after('user_id');
+            });
+        }
 
-        Schema::table('menu', function (Blueprint $table) {
-            $table->enum('tipe_layanan', ['harian', 'acara'])->default('harian')->after('id');
-        });
+        if (!Schema::hasColumn('menu', 'tipe_layanan')) {
+            Schema::table('menu', function (Blueprint $table) {
+                $table->enum('tipe_layanan', ['harian', 'acara'])->default('harian')->after('id');
+            });
+        }
 
-        Schema::table('minumans', function (Blueprint $table) {
-            $table->enum('tipe_layanan', ['harian', 'acara'])->default('acara')->after('id');
-        });
+        if (!Schema::hasColumn('minumans', 'tipe_layanan')) {
+            Schema::table('minumans', function (Blueprint $table) {
+                $table->enum('tipe_layanan', ['harian', 'acara'])->default('acara')->after('id');
+            });
+        }
 
-        // 2. Migrate data
-        $layanans = DB::table('layanan')->get();
-        foreach ($layanans as $layanan) {
-            DB::table('pesanan')->where('layanan_id', $layanan->id)->update(['tipe_layanan' => $layanan->tipe]);
-            DB::table('menu')->where('layanan_id', $layanan->id)->update(['tipe_layanan' => $layanan->tipe]);
-            DB::table('minumans')->where('layanan_id', $layanan->id)->update(['tipe_layanan' => $layanan->tipe]);
+        // 2. Migrate data (only if layanan table still exists)
+        if (Schema::hasTable('layanan')) {
+            $layanans = DB::table('layanan')->get();
+            foreach ($layanans as $layanan) {
+                if (Schema::hasColumn('pesanan', 'layanan_id')) {
+                    DB::table('pesanan')->where('layanan_id', $layanan->id)->update(['tipe_layanan' => $layanan->tipe]);
+                }
+                if (Schema::hasColumn('menu', 'layanan_id')) {
+                    DB::table('menu')->where('layanan_id', $layanan->id)->update(['tipe_layanan' => $layanan->tipe]);
+                }
+                if (Schema::hasColumn('minumans', 'layanan_id')) {
+                    DB::table('minumans')->where('layanan_id', $layanan->id)->update(['tipe_layanan' => $layanan->tipe]);
+                }
+            }
         }
 
         // 3. Drop foreign keys and columns
-        Schema::table('pesanan', function (Blueprint $table) {
-            $table->dropForeign(['layanan_id']);
-            $table->dropColumn('layanan_id');
-        });
+        if (Schema::hasColumn('pesanan', 'layanan_id')) {
+            Schema::table('pesanan', function (Blueprint $table) {
+                $table->dropForeign(['layanan_id']);
+                $table->dropColumn('layanan_id');
+            });
+        }
 
-        Schema::table('menu', function (Blueprint $table) {
-            $table->dropForeign(['layanan_id']);
-            $table->dropColumn('layanan_id');
-        });
+        if (Schema::hasColumn('menu', 'layanan_id')) {
+            Schema::table('menu', function (Blueprint $table) {
+                $table->dropForeign('menu_harian_layanan_id_foreign');
+                $table->dropColumn('layanan_id');
+            });
+        }
 
-        Schema::table('minumans', function (Blueprint $table) {
-            $table->dropForeign(['layanan_id']);
-            $table->dropColumn('layanan_id');
-        });
+        if (Schema::hasColumn('minumans', 'layanan_id')) {
+            Schema::table('minumans', function (Blueprint $table) {
+                $table->dropForeign('minumans_layanan_id_foreign');
+                $table->dropColumn('layanan_id');
+            });
+        }
 
         // 4. Drop layanan table
         Schema::dropIfExists('layanan');

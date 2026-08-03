@@ -14,7 +14,7 @@ class PesananController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Pesanan::with(['user', 'layanan'])
+        $query = Pesanan::with(['user'])
             ->orderBy('created_at', 'desc');
 
         if ($request->filled('status_pembayaran')) {
@@ -24,7 +24,7 @@ class PesananController extends Controller
             $query->where('status_pesanan', $request->status_pesanan);
         }
         if ($request->filled('service')) {
-            $query->where('layanan_id', $request->service);
+            $query->where('tipe_layanan', $request->service);
         }
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
@@ -44,7 +44,7 @@ class PesananController extends Controller
 
     public function show(Pesanan $pesanan)
     {
-        $pesanan->load(['user', 'detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesanans.minuman', 'layanan']);
+        $pesanan->load(['user', 'detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesanans.minuman']);
 
         return view('admin.pesanan.show', compact('pesanan'));
     }

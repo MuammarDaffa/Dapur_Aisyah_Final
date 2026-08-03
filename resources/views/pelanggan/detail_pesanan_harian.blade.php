@@ -49,7 +49,7 @@
                         </tr>
                         <tr>
                             <td class="text-muted">Layanan Katering</td>
-                            <td class="fw-semibold">{{ $pesanan->layanan->nama }}</td>
+                            <td class="fw-semibold">Katering {{ ucfirst($pesanan->tipe_layanan) }}</td>
                         </tr>
                         <tr>
                             <td class="text-muted">Metode Pengiriman</td>
@@ -105,7 +105,7 @@
                             <span class="fw-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</span>
                         </div>
 
-                        @if($pesanan->layanan->isHarian() && $detail->tanggal_pengiriman)
+                        @if($pesanan->tipe_layanan === 'harian' && $detail->tanggal_pengiriman)
                             <div class="mt-2 mb-3">
                                 <p class="mb-1 text-muted small">Jadwal Pengiriman: <strong>{{ \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('d F Y') }}</strong></p>
                             </div>
