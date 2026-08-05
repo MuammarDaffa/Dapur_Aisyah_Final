@@ -34,13 +34,6 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
                         @error('nama_menu')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
 
-                    {{-- Deskripsi Menu --}}
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Deskripsi Menu <span class="text-danger">*</span></label>
-                        <textarea name="deskripsi" class="form-control" rows="3" placeholder="Contoh: Nasi Putih, Semur Daging, Tempe Goreng, Sambal, Kerupuk" required>{{ old('deskripsi', $menu->deskripsi) }}</textarea>
-                        @error('deskripsi')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
-                    </div>
-
                     {{-- Gambar Menu --}}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Gambar Menu</label>
@@ -57,25 +50,19 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
                         </div>
                     </div>
 
+                    {{-- Deskripsi Menu --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Deskripsi Menu <span class="text-danger">*</span></label>
+                        <textarea name="deskripsi" class="form-control" rows="3" placeholder="Contoh: Nasi Putih, Semur Daging, Tempe Goreng, Sambal, Kerupuk" required>{{ old('deskripsi', $menu->deskripsi) }}</textarea>
+                        @error('deskripsi')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                    </div>
+
                     {{-- Harga --}}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Harga {{ $menu->tipe_layanan === 'harian' ? 'per Porsi' : 'Dasar' }} (Rp) <span class="text-danger">*</span></label>
                         <input type="number" name="harga" class="form-control" value="{{ old('harga', $menu->harga) }}" min="0" required>
                         @error('harga')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
-
-                    @if($menu->tipe_layanan !== 'harian')
-                    {{-- Kategori Penyajian --}}
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Kategori Menu Acara <span class="text-danger">*</span></label>
-                        <select name="kategori_penyajian" class="form-select" required>
-                            <option value="bisa_pilih" {{ old('kategori_penyajian', $menu->kategori_penyajian) == 'bisa_pilih' ? 'selected' : '' }}>Menu Utama (Bisa Pilih Nasi Kotak / Prasmanan)</option>
-                            <option value="prasmanan_saja" {{ old('kategori_penyajian', $menu->kategori_penyajian) == 'prasmanan_saja' ? 'selected' : '' }}>Menu Pondokan / Gubukan (Otomatis Prasmanan)</option>
-                        </select>
-                        @error('kategori_penyajian')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
-                        <div class="form-text">Pilih kategori ini untuk menentukan bagaimana pelanggan memilih menu ini di halaman pemesanan.</div>
-                    </div>
-                    @endif
 
                     {{-- Status Aktif --}}
                     <div class="form-check mt-3">

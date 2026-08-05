@@ -32,7 +32,9 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                             <tr>
                                 <th width="5%">No</th>
                                 <th>Nama Menu</th>
-                                <th width="20%" class="text-center">Harga</th>
+                                <th width="15%" class="text-center">Gambar</th>
+                                <th>Deskripsi</th>
+                                <th width="15%" class="text-center">Harga</th>
                                 <th width="15%" class="text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -44,22 +46,20 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                                     <strong>{{ $menu->nama_menu }}</strong>
                                 </td>
                                 <td class="text-center">
-                                    <!-- <a href="{{ route('admin.menu.items.index', $menu->id) }}" class="btn btn-info btn-sm text-white">
-                                        Kelola Isi Menu
-                                    </a> -->
+                                    @if($menu->gambar)
+                                        <img src="{{ asset('storage/menu/' . $menu->gambar) }}" alt="{{ $menu->nama_menu }}" style="width: 80px; height: 80px; object-fit: cover;">
+                                    @else
+                                        <span class="text-muted small">Tidak ada gambar</span>
+                                    @endif
+                                </td>
+                                <td>{{ $menu->deskripsi }}</td>
+                                <td class="text-center">
                                     <span class="text-muted">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-warning btn-sm btn-edit-menu" 
-                                            data-id="{{ $menu->id }}" 
-                                            data-nama="{{ $menu->nama_menu }}"
-                                            data-deskripsi="{{ $menu->deskripsi }}"
-                                            data-harga="{{ $menu->harga }}"
-                                            data-status="{{ $menu->status }}"
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#editMenuModal">
+                                    <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-warning btn-sm">
                                         Edit
-                                    </button>
+                                    </a>
                                     <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus menu ini?');">
                                         @csrf
                                         @method('DELETE')
@@ -146,44 +146,6 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
 
 
 
-<!-- Modal Edit Menu -->
-<div class="modal fade" id="editMenuModal" tabindex="-1" aria-labelledby="editMenuModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <form id="formEditMenu" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editMenuModalLabel">Edit Menu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="edit_nama_menu" class="form-label">Nama Menu <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="edit_nama_menu" name="nama_menu" required maxlength="100">
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_deskripsi" class="form-label">Deskripsi Menu</label>
-                        <textarea class="form-control" id="edit_deskripsi" name="deskripsi" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_harga" class="form-label">Harga per Porsi (Rp) <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="edit_harga" name="harga" required min="0">
-                    </div>
-
-                    <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" name="status" value="1" id="edit_statusCheck">
-                        <label class="form-check-label fw-bold" for="edit_statusCheck">Tersedia (Aktif)</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-warning">Update</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 <!-- Modal Tambah Minuman -->
 <div class="modal fade" id="tambahMinumanModal" tabindex="-1" aria-labelledby="tambahMinumanModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -263,25 +225,6 @@ $(document).ready(function() {
             ['insert', ['link']],
             ['misc', ['undo', 'redo', 'codeview']]
         ]
-    });
-
-    // Handle Edit Menu Modal
-    $('.btn-edit-menu').click(function() {
-        var menuId = $(this).data('id');
-        var menuNama = $(this).data('nama');
-        var menuDeskripsi = $(this).data('deskripsi');
-        var menuHarga = $(this).data('harga');
-        var menuStatus = $(this).data('status');
-        
-        // Isi input nama menu
-        $('#edit_nama_menu').val(menuNama);
-        $('#edit_deskripsi').val(menuDeskripsi);
-        $('#edit_harga').val(menuHarga);
-        $('#edit_statusCheck').prop('checked', menuStatus == 1);
-        
-        // Ubah action form ke route update yang benar
-        var formAction = "{{ url('admin/menu') }}/" + menuId;
-        $('#formEditMenu').attr('action', formAction);
     });
 
     // Handle Edit Minuman Modal

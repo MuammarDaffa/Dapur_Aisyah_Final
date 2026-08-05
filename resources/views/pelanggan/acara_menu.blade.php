@@ -43,10 +43,6 @@
                 
                 <!-- Card 1: Daftar Menu -->
                 <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-                        <h4 class="fw-bold text-dark mb-0">DAFTAR MENU KATERING ACARA</h4>
-                        <p class="text-muted small">Pilih menu yang Anda inginkan untuk acara Anda.</p>
-                    </div>
                     <div class="card-body p-4 pt-2">
                         @forelse($menus as $menu)
                             @php
@@ -147,9 +143,9 @@
                         <i class="fa-solid fa-arrow-left me-1"></i> Kembali
                     </a>
                 </div>
-                <div class="d-flex justify-content-end gap-2 mb-5">
+                <div class="d-flex justify-content-end  gap-2 mb-5">
                     @auth
-                        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
+                        <button type="submit" class="btn btn-warning text-white px-5 py-2 fw-bold shadow-sm">
                             Buat Pesanan
                         </button>
                     @else
