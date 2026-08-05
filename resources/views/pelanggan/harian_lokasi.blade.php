@@ -82,7 +82,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mb-5 pb-5">
-                   <button type="submit" id="btn_lanjut" class="btn btn-primary px-4 py-2 fw-bold w-100">
+                   <button type="submit" id="btn_lanjut" class="btn btn-warning text-white px-4 py-2 fw-bold w-100">
     Lanjut ke Menu Harian
 </button>
 

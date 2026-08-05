@@ -240,10 +240,8 @@ class KateringAcaraController extends Controller
                 
                 $pesanan->update([
                     'tanggal_pesanan' => $tanggalAcara,
-                    'event_start_time' => $tanggalAcara . ' 08:00:00', // Default jam jika diperlukan
                     'metode_pengambilan' => $metode_pengambilan,
                     'alamat_lengkap' => $alamat_lengkap,
-                    'tipe_penyajian' => null, // removed global tipe_penyajian
                     'subtotal' => $totalHargaKeseluruhan,
                     'total' => $totalHargaKeseluruhan,
                     'jumlah_dp' => $jumlahDp,
@@ -258,14 +256,12 @@ class KateringAcaraController extends Controller
                     'tipe_layanan' => 'acara',
                     'nomor_pesanan' => \App\Models\Pesanan::generateOrderNumber(),
                     'tanggal_pesanan' => $tanggalAcara,
-                    'event_start_time' => $tanggalAcara . ' 08:00:00',
                     'metode_pengambilan' => $metode_pengambilan,
                     'alamat_lengkap' => $alamat_lengkap,
                     'subtotal' => $totalHargaKeseluruhan,
                     'total' => $totalHargaKeseluruhan,
                     'jumlah_dp' => $jumlahDp,
                     'sisa_pembayaran' => $sisaPembayaran,
-                    'tipe_penyajian' => null, // removed global tipe_penyajian
                     'status_pembayaran' => \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR,
                     'status_pesanan' => null,
                 ]);

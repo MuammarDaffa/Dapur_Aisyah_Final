@@ -191,7 +191,7 @@
                         @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
                             <form id="form-bayar" action="{{ route('pelanggan.acara.bayar_dp', $pesanan->id) }}" method="POST">
                                 @csrf
-                                <button id="btn-bayar" type="submit" class="btn btn-primary btn-lg px-5 shadow-sm fw-bold">
+                                <button id="btn-bayar" type="submit" class="btn btn-warning text-white btn-lg px-5 shadow-sm fw-bold">
                                     Bayar Sekarang
                                 </button>
                             </form>

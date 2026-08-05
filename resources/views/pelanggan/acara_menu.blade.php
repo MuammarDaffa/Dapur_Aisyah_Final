@@ -5,9 +5,9 @@
 <div class="container mx-auto px-4 py-8 mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="mb-4">
+            <div class="mb-4 text-center">
                 <!-- <h2 class="fs-3 fw-bold text-dark mt-2 mb-1">Pilih Menu untuk {{ $service->nama }}</h2> -->
-                <h2 class="fs-3 fw-bold text-dark mt-2 mb-1">Pilih Menu untuk Katering Acara Kantor</h2>
+                <h2 class="fs-3 fw-bold text-dark mt-2 mb-1">Pilih Menu untuk Acara Kantor</h2>
             </div>
 
             @if(session('success'))
@@ -50,22 +50,37 @@
                                 $porsiValue = $detail ? $detail->porsi : '';
                             @endphp
                             <div class="menu-section mb-4 pb-3 {{ !$loop->last ? 'border-bottom' : '' }}" data-menu-id="{{ $menu->id }}">
-                                <h5 class="fw-bold text-dark mb-1">{{ $menu->nama_menu }}</h5>
-                                <p class="text-dark small mb-3">
-                                    {{ $menu->deskripsi }}
-                                    @if($menu->harga > 0)
-                                        <br><strong>Rp {{ number_format($menu->harga, 0, ',', '.') }}</strong> / porsi
-                                    @endif
-                                </p>
-                                
-                                <div class="mb-2">
-                                    <label for="porsi_{{ $menu->id }}" class="form-label fw-semibold text-dark">Jumlah Porsi</label>
-                                    <input type="number" class="form-control porsi-input @error('porsi_'.$menu->id) is-invalid @enderror" style="max-width: 300px;" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" value="{{ $porsiValue }}">
-                                    <div class="invalid-feedback porsi-feedback">Minimal pemesanan 50 porsi.</div>
-                                    @error('porsi_'.$menu->id)
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                    <div class="form-text text-dark">Minimal pemesanan 50 porsi.</div>
+                                <div class="row align-items-start">
+                                    <div class="col-12 col-md-3 mb-3 mb-md-0 text-center text-md-start">
+                                        @if($menu->gambar)
+                                            <img src="{{ asset('storage/menu/' . $menu->gambar) }}" class="img-fluid  shadow-sm" style="width: 100%; max-width: 200px; height: 200px; object-fit: cover;" alt="{{ $menu->nama_menu }}">
+                                        @else
+                                            <div class="bg-light border d-flex align-items-center justify-content-center  shadow-sm mx-auto mx-md-0" style="width: 100%; max-width: 200px; height: 200px;">
+                                                <span class="text-muted small">Belum ada gambar</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        <h5 class="fw-bold text-dark mb-2">{{ $menu->nama_menu }}</h5>
+                                        <p class="text-dark small mb-3">
+                                            {{ $menu->deskripsi }}
+                                        </p>
+                                        @if($menu->harga > 0)
+                                            <div class="mb-3">
+                                                <span class="fw-bold fs-6">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span> <span class="text-muted small">/ porsi</span>
+                                            </div>
+                                        @endif
+                                        
+                                        <div class="mb-2">
+                                            <label for="porsi_{{ $menu->id }}" class="form-label fw-semibold text-dark">Jumlah Porsi</label>
+                                            <input type="number" class="form-control porsi-input @error('porsi_'.$menu->id) is-invalid @enderror" style="max-width: 200px;" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" value="{{ $porsiValue }}">
+                                            <div class="invalid-feedback porsi-feedback">Minimal pemesanan 50 porsi.</div>
+                                            @error('porsi_'.$menu->id)
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                            @enderror
+                                            <div class="form-text text-dark">Minimal pemesanan 50 porsi.</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         @empty

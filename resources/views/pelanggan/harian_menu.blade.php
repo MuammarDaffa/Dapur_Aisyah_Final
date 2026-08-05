@@ -70,9 +70,9 @@
                                 <div class="row mb-3">
                                     <div class="col-12 col-md-4 mb-3 mb-md-0">
                                         @if($jadwal->menu->gambar)
-                                            <img src="{{ asset('storage/menu/' . $jadwal->menu->gambar) }}" class="img-fluid rounded" style="width: 100%; max-width: 220px; height: 220px; object-fit: cover;" alt="{{ $jadwal->menu->nama_menu }}">
+                                            <img src="{{ asset('storage/menu/' . $jadwal->menu->gambar) }}" class="img-fluid" style="width: 100%; max-width: 220px; height: 220px; object-fit: cover;" alt="{{ $jadwal->menu->nama_menu }}">
                                         @else
-                                            <div class="bg-light border d-flex align-items-center justify-content-center rounded" style="width: 100%; max-width: 220px; height: 220px;">
+                                            <div class="bg-light border d-flex align-items-center justify-content-center" style="width: 100%; max-width: 220px; height: 220px;">
                                                 <span class="text-muted small">Belum ada gambar</span>
                                             </div>
                                         @endif
@@ -135,7 +135,7 @@
 
                 <div class="d-flex justify-content-end gap-2 mb-5 pb-5">
                     @auth
-                        <button type="submit" class="btn btn-primary px-5 py-2 fw-semibold" id="btnSimpan">
+                        <button type="submit" class="btn btn-warning text-white px-5 py-2 fw-semibold" id="btnSimpan">
                             Buat Pesanan
                         </button>
                     @else
