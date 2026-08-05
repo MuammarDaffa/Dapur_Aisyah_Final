@@ -89,7 +89,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mb-5 pb-5">
-                    <button type="submit" id="btn_lanjut" class="btn btn-primary px-5 py-2 fw-semibold">
+                    <button type="submit" id="btn_lanjut" class="btn btn-warning px-5 py-2 fw-semibold text-white">
                         Lanjut ke Menu Acara
                     </button>
                 </div>

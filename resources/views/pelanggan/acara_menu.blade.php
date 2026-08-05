@@ -41,19 +41,14 @@
                     <input type="hidden" name="pesanan_id" value="{{ $pesanan->id }}">
                 @endif
                 
-                @php
-                    $menuPondokan = $menus->where('kategori_penyajian', 'prasmanan_saja');
-                    $menuUtama = $menus->where('kategori_penyajian', 'bisa_pilih');
-                @endphp
-
-                <!-- Card 1: Menu Pondokan -->
+                <!-- Card 1: Daftar Menu -->
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-                        <h4 class="fw-bold text-dark mb-0">MENU PONDOKAN / GUBUKAN</h4>
-                        <p class="text-muted small">Semua menu di kategori ini otomatis disajikan secara prasmanan di lokasi.</p>
+                        <h4 class="fw-bold text-dark mb-0">DAFTAR MENU KATERING ACARA</h4>
+                        <p class="text-muted small">Pilih menu yang Anda inginkan untuk acara Anda.</p>
                     </div>
                     <div class="card-body p-4 pt-2">
-                        @forelse($menuPondokan as $menu)
+                        @forelse($menus as $menu)
                             @php
                                 $detail = isset($pesanan) ? $pesanan->detailPesanans->firstWhere('menu_id', $menu->id) : null;
                                 $porsiValue = $detail ? $detail->porsi : '';
@@ -79,57 +74,7 @@
                             </div>
                         @empty
                             <div class="text-center py-4">
-                                <p class="text-muted mb-0">Belum ada menu pondokan yang tersedia.</p>
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-
-                <!-- Card 2: Menu Utama -->
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-                        <h4 class="fw-bold text-dark mb-0">MENU UTAMA (NASI LENGKAP)</h4>
-                        <p class="text-muted small">Pilih jenis kemasan untuk masing-masing menu (Nasi Kotak atau Prasmanan).</p>
-                    </div>
-                    <div class="card-body p-4 pt-2">
-                        @forelse($menuUtama as $menu)
-                            @php
-                                $detail = isset($pesanan) ? $pesanan->detailPesanans->firstWhere('menu_id', $menu->id) : null;
-                                $porsiValue = $detail ? $detail->porsi : '';
-                                $tipeValue = $detail ? $detail->tipe_penyajian : '';
-                            @endphp
-                            <div class="menu-section mb-4 pb-3 {{ !$loop->last ? 'border-bottom' : '' }}" data-menu-id="{{ $menu->id }}">
-                                <h5 class="fw-bold text-dark mb-1">{{ $menu->nama_menu }}</h5>
-                                <p class="text-dark small mb-3">
-                                    {{ $menu->deskripsi }}
-                                    @if($menu->harga > 0)
-                                        <br><strong>Rp {{ number_format($menu->harga, 0, ',', '.') }}</strong> / porsi
-                                    @endif
-                                </p>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold text-dark">Penyajian</label>
-                                    <select name="tipe_penyajian_{{ $menu->id }}" class="form-select penyajian-input" style="max-width: 300px;" required>
-                                        <option value="">-- Pilih Kemasan --</option>
-                                        <option value="Nasi Kotak" {{ $tipeValue == 'Nasi Kotak' ? 'selected' : '' }}>Nasi Kotak</option>
-                                        <option value="Prasmanan" {{ $tipeValue == 'Prasmanan' ? 'selected' : '' }}>Prasmanan</option>
-                                    </select>
-                                    <div class="invalid-feedback penyajian-feedback">Pilih jenis penyajian.</div>
-                                </div>
-
-                                <div class="mb-2">
-                                    <label for="porsi_{{ $menu->id }}" class="form-label fw-semibold text-dark">Jumlah Porsi</label>
-                                    <input type="number" class="form-control porsi-input @error('porsi_'.$menu->id) is-invalid @enderror" style="max-width: 300px;" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" value="{{ $porsiValue }}">
-                                    <div class="invalid-feedback porsi-feedback">Minimal pemesanan 50 porsi.</div>
-                                    @error('porsi_'.$menu->id)
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                    <div class="form-text text-dark">Minimal pemesanan 50 porsi.</div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="text-center py-4">
-                                <p class="text-muted mb-0">Belum ada menu utama yang tersedia.</p>
+                                <p class="text-muted mb-0">Belum ada menu yang tersedia.</p>
                             </div>
                         @endforelse
                     </div>
@@ -230,14 +175,13 @@
 
                 // Reset validation state
                 document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-                document.querySelectorAll('.items-feedback, .minuman-feedback, .jumlah-cup-feedback, .penyajian-feedback').forEach(el => {
+                document.querySelectorAll('.items-feedback, .minuman-feedback, .jumlah-cup-feedback').forEach(el => {
                     el.classList.remove('d-block');
                     el.classList.add('d-none');
                 });
 
                 document.querySelectorAll('.menu-section').forEach(section => {
                     const porsiInput = section.querySelector('.porsi-input');
-                    const penyajianInput = section.querySelector('.penyajian-input');
                     
                     let hasPorsi = porsiInput.value && parseInt(porsiInput.value) > 0;
 
@@ -250,17 +194,6 @@
                             const porsiFeedback = section.querySelector('.porsi-feedback');
                             if (porsiFeedback) {
                                 porsiFeedback.innerHTML = "Minimal pemesanan 50 porsi.";
-                            }
-                            isValid = false;
-                        }
-
-                        // Check penyajian if it exists
-                        if (penyajianInput && penyajianInput.value === "") {
-                            penyajianInput.classList.add('is-invalid');
-                            const penyajianFeedback = section.querySelector('.penyajian-feedback');
-                            if (penyajianFeedback) {
-                                penyajianFeedback.classList.remove('d-none');
-                                penyajianFeedback.classList.add('d-block');
                             }
                             isValid = false;
                         }

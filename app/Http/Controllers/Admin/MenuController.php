@@ -22,8 +22,7 @@ class MenuController extends Controller
             'deskripsi' => 'required|string',
             'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'harga' => 'required|numeric|min:0',
-            'status' => 'boolean',
-            'kategori_penyajian' => $tipe_layanan === 'acara' ? 'required|in:bisa_pilih,prasmanan_saja' : 'nullable|string'
+            'status' => 'boolean'
         ]);
 
         $validated['tipe_layanan'] = $tipe_layanan;
@@ -56,8 +55,7 @@ class MenuController extends Controller
             'deskripsi' => 'required|string',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'harga' => 'required|numeric|min:0',
-            'status' => 'boolean',
-            'kategori_penyajian' => $menu->tipe_layanan === 'acara' ? 'required|in:bisa_pilih,prasmanan_saja' : 'nullable|string'
+            'status' => 'boolean'
         ]);
 
         $validated['status'] = $request->boolean('status');

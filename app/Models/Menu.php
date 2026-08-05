@@ -18,7 +18,6 @@ class Menu extends Model
         'gambar',
         'harga',
         'status',
-        'kategori_penyajian',
     ];
 
     public function items()

@@ -71,7 +71,7 @@
                 Nikmati masakan rumahan berkualitas untuk kebutuhan harian atau acara.
             </p>
             <div>
-                <a href="#services" class="btn btn-primary btn-lg rounded-0 px-5 py-3 fw-bold shadow scroll-to-services">
+                <a href="#services" class="btn btn-warning text-white  btn-lg rounded-0 px-5 py-3 fw-bold shadow scroll-to-services">
                     Pesan Sekarang
                 </a>
             </div>
@@ -166,7 +166,7 @@
     <section id="services" class="py-16 bg-white section-item">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <h2 class="fs-2 fw-bold text-secondary">Layanan <span class="text-primary">Katering</span> Kami</h2>
+                <h2 class="fs-2 fw-bold text-secondary">Layanan <span class="text-warning">Katering</span> Kami</h2>
                 <p class="mt-3 text-secondary max-w-2xl mx-auto">Pilih layanan katering sesuai kebutuhan Anda</p>
             </div>
             <div class="row row-cols-1 sm:row-cols-2 lg:row-cols-{{ count($services) > 2 ? '3' : count($services) }} g-3 items-stretch">
@@ -204,7 +204,7 @@
                 <!-- Kolom Kanan: Judul & Deskripsi -->
                 <div class="col-lg-6 px-lg-5">
                     <h2 class="fs-1 fw-bold text-dark mb-4">
-                        Tentang <span class="text-primary">Dapur Aisyah</span>
+                        Tentang <span class="text-warning">Dapur Aisyah</span>
                     </h2>
                     <p class="text-secondary fs-5 leading-relaxed" style="text-align: justify; line-height: 1.8;">
                         Dapur Aisyah adalah penyedia layanan katering rumahan yang menyajikan hidangan berkualitas untuk kebutuhan harian maupun berbagai acara. Dengan bahan segar, cita rasa rumahan, dan pelayanan yang terpercaya, kami berkomitmen memberikan pengalaman terbaik di setiap sajian.

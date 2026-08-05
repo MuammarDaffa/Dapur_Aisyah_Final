@@ -132,7 +132,6 @@ class KateringAcaraController extends Controller
 
         foreach (array_keys($menuIds) as $menuId) {
             $porsiInput = $request->input('porsi_' . $menuId);
-            $tipePenyajianInput = $request->input('tipe_penyajian_' . $menuId);
             
             $hasPorsi = !empty($porsiInput) && is_numeric($porsiInput) && (int)$porsiInput > 0;
 
@@ -145,13 +144,6 @@ class KateringAcaraController extends Controller
 
                 $menu = \App\Models\Menu::find($menuId);
                 if ($menu) {
-                    if ($menu->kategori_penyajian === 'bisa_pilih' && empty($tipePenyajianInput)) {
-                        $customErrors['tipe_penyajian_' . $menuId] = "Pilih jenis penyajian.";
-                        continue;
-                    }
-
-                    $tipePenyajian = $menu->kategori_penyajian === 'bisa_pilih' ? $tipePenyajianInput : 'Prasmanan';
-
                     $hargaPerPorsi = $menu->harga;
                     $subtotal = $hargaPerPorsi * $porsi;
                     $totalHargaKeseluruhan += $subtotal;
@@ -159,7 +151,6 @@ class KateringAcaraController extends Controller
                     $menusDipilih[] = [
                         'menu_id' => $menu->id,
                         'porsi' => $porsi,
-                        'tipe_penyajian' => $tipePenyajian,
                         'subtotal' => $subtotal
                     ];
                 }
@@ -285,7 +276,6 @@ class KateringAcaraController extends Controller
                 $pesanan->detailPesanans()->create([
                     'menu_id' => $menuDraft['menu_id'],
                     'porsi' => $menuDraft['porsi'],
-                    'tipe_penyajian' => $menuDraft['tipe_penyajian'],
                     'subtotal' => $menuDraft['subtotal'],
                 ]);
             }

@@ -33,7 +33,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top shadow-sm">
     <div class="container">
         <!-- Logo -->
-        <a class="navbar-brand fw-bold text-primary" href="{{ route('landing') }}#hero">
+        <a class="navbar-brand fw-bold text-warning" href="{{ route('landing') }}#hero">
             <img src="{{ asset('images/logo.png') }}" alt="Logo Dapur Aisyah" height="30" class="d-inline-block align-text-top me-2">
             Dapur Aisyah
         </a>
@@ -258,11 +258,11 @@
                     <h4 class="fs-6 fw-bold text-white text-uppercase mb-3">Kontak</h4>
                     <ul class="list-unstyled mb-4">
                         <li class="mb-2 d-flex align-items-center">
-                            <svg style="width: 16px; height: 16px;" class="text-primary me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                            <svg style="width: 16px; height: 16px;" class="text-warning me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                             <span>0812-3456-7890</span>
                         </li>
                         <li class="mb-2 d-flex align-items-center">
-                            <svg style="width: 16px; height: 16px;" class="text-primary me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            <svg style="width: 16px; height: 16px;" class="text-warning me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                             <span>info@dapuraisyah.com</span>
                         </li>
                     </ul>

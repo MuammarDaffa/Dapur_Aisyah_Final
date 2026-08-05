@@ -31,7 +31,7 @@
                     @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    <button type="submit" class="btn btn-warning">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
