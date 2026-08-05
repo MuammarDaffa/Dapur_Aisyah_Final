@@ -24,130 +24,86 @@
 
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-white fw-bold fs-5">
-                    Ringkasan Acara
+                    Detail Menu
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Menu</th>
+                                    <th class="text-center" style="width: 15%;">Porsi</th>
+                                    <th class="text-end" style="width: 25%;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($pesanan->detailPesanans as $detail)
+                                    <tr>
+                                        <td>
+                                            @if($detail->menu)
+                                                <div class="fw-bold">{{ $detail->menu->nama_menu }}</div>
+                                                @if($detail->menuItems->count() > 0)
+                                                    <ul class="list-unstyled ms-3 mb-0 small text-muted">
+                                                        @foreach($detail->menuItems as $item)
+                                                            <li>&bull; {{ $item->nama }} @if($item->harga > 0)(+ Rp {{ number_format($item->harga, 0, ',', '.') }})@endif</li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                            @elseif($detail->minuman)
+                                                <div class="fw-bold">{{ $detail->minuman->nama_minuman }}</div>
+                                            @else
+                                                <div class="fw-bold">{{ $detail->item_name ?? '-' }}</div>
+                                            @endif
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            {{ $detail->porsi }} {{ $detail->minuman ? 'cup' : 'porsi' }}
+                                        </td>
+                                        <td class="text-end align-middle fw-semibold">
+                                            Rp {{ number_format($detail->subtotal, 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white fw-bold fs-5">
+                    Informasi Acara
                 </div>
                 <div class="card-body">
-                    <table class="table table-borderless mb-0">
-                        <tr>
-                            <td class="text-muted" style="width: 200px;">Status Pembayaran</td>
-                            <td class="fw-bold">
-                                <span class="badge bg-{{ $pesanan->status_pembayaran_color }} fs-6">{{ $pesanan->status_pembayaran_label }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted" style="width: 200px;">Status Pesanan</td>
-                            <td class="fw-bold">
-                                @if(!is_null($pesanan->status_pesanan))
-                                    <span class="badge bg-{{ $pesanan->status_pesanan_color }} fs-6">{{ $pesanan->status_pesanan_label }}</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Tanggal Dibuat</td>
-                            <td class="fw-semibold">{{ \Carbon\Carbon::parse($pesanan->created_at)->translatedFormat('d F Y H:i') }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Layanan Katering</td>
-                            <td class="fw-semibold">Katering {{ ucfirst($pesanan->tipe_layanan) }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Tanggal Acara</td>
-                            <td class="fw-semibold">{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->translatedFormat('d F Y') }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Metode Pengambilan</td>
-                            <td class="fw-semibold">
+                    <div class="row">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <span class="text-muted d-block small mb-1">Tanggal Acara</span>
+                            <span class="fw-semibold">{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->translatedFormat('l, d F Y') }}</span>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <span class="text-muted d-block small mb-1">Metode Pengambilan</span>
+                            <span class="fw-semibold">
                                 @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
                                     Di Antar ke Lokasi
                                 @else
                                     Ambil Sendiri
                                 @endif
-                            </td>
-                        </tr>
-                    </table>
-
-                    @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
-                        <hr class="my-4">
-                        <h6 class="fw-bold text-dark mb-3">Lokasi Pengantaran</h6>
-                        <div class="bg-light p-3 rounded border">
-                            @if($pesanan->alamat_lengkap)
-                                <p class="mb-0 text-dark">{{ $pesanan->alamat_lengkap }}</p>
-                            @else
-                                <p class="mb-0 text-muted fst-italic">Alamat belum tersedia.</p>
-                            @endif
+                            </span>
                         </div>
-                    @endif
-                </div>
-            </div>
-
-            @if($pesanan->detailPesanans && $pesanan->detailPesanans->count() > 0)
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-white fw-bold fs-5">
-                    Detail Menu
-                </div>
-                <div class="card-body">
-                    @foreach($pesanan->detailPesanans as $detail)
-                        <h6 class="fw-bold mb-1">{{ $detail->menu->nama_menu ?? '-' }}</h6>
-                        @if($detail->tipe_penyajian)
-                            <p class="mb-2 text-muted small">Kemasan: {{ $detail->tipe_penyajian }}</p>
-                        @else
-                            <p class="mb-2"></p>
-                        @endif
-                        
-                        @if($detail->menuItems->count() > 0)
-                            <ul class="list-group list-group-flush mb-3">
-                                @foreach($detail->menuItems as $item)
-                                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
-                                        <span>&bull; {{ $item->nama }}</span>
-                                        @if($item->harga > 0)
-                                            <span class="text-muted">+ Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
-                                        @endif
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
-
-                        <div class="d-flex justify-content-between text-dark mb-2">
-                            <span class="text-muted">Jumlah Porsi</span>
-                            <span class="fw-bold">{{ $detail->porsi }} porsi</span>
+                        <div class="col-md-4">
+                            <span class="text-muted d-block small mb-1">Alamat</span>
+                            <span class="fw-semibold">
+                                @if($pesanan->alamat_lengkap)
+                                    {{ $pesanan->alamat_lengkap }}
+                                @elseif($pesanan->metode_pengambilan == 'ambil_sendiri')
+                                    <span class="text-muted fst-italic">Diambil di Dapur Aisyah</span>
+                                @else
+                                    <span class="text-muted fst-italic">-</span>
+                                @endif
+                            </span>
                         </div>
-                        <div class="d-flex justify-content-between text-dark">
-                            <span class="text-muted">Subtotal Menu</span>
-                            <span class="fw-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</span>
-                        </div>
-
-
-
-                        @if(!$loop->last)
-                            <hr class="my-4 border-secondary opacity-25">
-                        @endif
-                    @endforeach
-                </div>
-            </div>
-            @endif
-
-            @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
-                <div class="card shadow-sm border-0 mb-4 bg-light">
-                    <div class="card-header bg-white fw-bold fs-5 text-success">
-                        <i class="bi bi-cup-straw me-2"></i> Pilihan Minuman
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group list-group-flush mb-0">
-                            @foreach($pesanan->detailPesanans->whereNotNull('minuman_id') as $detailMinuman)
-                                <li class="list-group-item bg-transparent px-0">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="fw-bold">{{ $detailMinuman->minuman->nama_minuman }}</span>
-                                        <span class="fw-bold text-success">Rp {{ number_format($detailMinuman->subtotal, 0, ',', '.') }}</span>
-                                    </div>
-                                    <div class="text-muted small">
-                                        {{ $detailMinuman->porsi }} cup &times; Rp {{ number_format($detailMinuman->minuman->harga, 0, ',', '.') }}
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
                     </div>
                 </div>
-            @endif
+            </div>
 
            <div class="card shadow-sm border-0 mb-5 bg-light">
                 <div class="card-body p-4">
