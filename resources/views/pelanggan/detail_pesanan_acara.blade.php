@@ -28,12 +28,12 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
+                        <table class="table table-bordered align-middle mb-0">
+                            <thead class="table-light text-center">
                                 <tr>
                                     <th>Menu</th>
-                                    <th class="text-center" style="width: 15%;">Porsi</th>
-                                    <th class="text-end" style="width: 25%;">Total</th>
+                                    <th style="width: 15%;">Porsi / cup</th>
+                                    <th style="width: 25%;">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -55,10 +55,10 @@
                                                 <div class="fw-bold">{{ $detail->item_name ?? '-' }}</div>
                                             @endif
                                         </td>
-                                        <td class="text-center align-middle">
-                                            {{ $detail->porsi }} {{ $detail->minuman ? 'cup' : 'porsi' }}
+                                        <td class="text-center">
+                                            {{ $detail->porsi }}
                                         </td>
-                                        <td class="text-end align-middle fw-semibold">
+                                        <td class="text-end fw-semibold">
                                             Rp {{ number_format($detail->subtotal, 0, ',', '.') }}
                                         </td>
                                     </tr>
