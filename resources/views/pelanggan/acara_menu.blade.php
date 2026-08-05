@@ -6,7 +6,8 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="mb-4">
-                <h2 class="fs-3 fw-bold text-dark mt-2 mb-1">Pilih Menu untuk {{ $service->nama }}</h2>
+                <!-- <h2 class="fs-3 fw-bold text-dark mt-2 mb-1">Pilih Menu untuk {{ $service->nama }}</h2> -->
+                <h2 class="fs-3 fw-bold text-dark mt-2 mb-1">Pilih Menu untuk Katering Acara Kantor</h2>
             </div>
 
             @if(session('success'))
@@ -195,8 +196,13 @@
                     </div>
                 </div>
                 @endif
-
-                <div class="d-flex justify-content-end mb-5">
+            
+                <div class="d-flex justify-content-start">
+                    <a href="{{ route('pelanggan.acara.lokasi') }}" class="btn btn-secondary px-4 py-2 fw-bold shadow-sm">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+                    </a>
+                </div>
+                <div class="d-flex justify-content-end gap-2 mb-5">
                     @auth
                         <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
                             Buat Pesanan

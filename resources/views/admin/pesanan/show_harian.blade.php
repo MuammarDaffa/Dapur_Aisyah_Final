@@ -36,9 +36,7 @@
                         Detail Pesanan
                         <address>
                             <strong>Katering {{ ucfirst($pesanan->tipe_layanan) }}</strong><br>
-                            @if($pesanan->tipe_layanan !== 'harian')
-                                Tgl Kirim: {{ $pesanan->tanggal_pesanan->format('d M Y') }}<br>
-                            @endif
+
                             <strong>Metode:</strong>{{ ucfirst($pesanan->metode_pengambilan) }}<br>
                             @if($pesanan->metode_pengambilan === 'diantar_ke_tempat')
                                 <strong>Lokasi:</strong> {{ $pesanan->alamat_lengkap ?? '-' }}
@@ -67,9 +65,7 @@
                     <table class="table table-bordered align-middle">
                         <thead class="table-light text-center">
                             <tr>
-                                @if($pesanan->tipe_layanan === 'harian')
                                 <th>Tanggal Pengiriman</th>
-                                @endif
                                 <th>Menu</th>
                                 <th>Porsi</th>
                                 <th>Tambahan</th>
@@ -108,9 +104,7 @@
                                 @endphp
 
                                 <tr>
-                                    @if($pesanan->tipe_layanan === 'harian')
                                     <td class="text-center" rowspan="{{ $rowspan }}">{{ $formattedDate }}</td>
-                                    @endif
                                     
                                     <td rowspan="{{ $rowspan }}">{!! $menuName !!}</td>
                                     <td class="text-center" rowspan="{{ $rowspan }}">{{ $detail->porsi }}</td>
@@ -136,35 +130,11 @@
                                 @endif
                             @empty
                                 <tr>
-                                    <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '6' : '5' }}" class="text-center text-muted">Data menu tidak ditemukan.</td>
+                                    <td colspan="6" class="text-center text-muted">Data menu tidak ditemukan.</td>
                                 </tr>
                             @endforelse
 
-                            @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
-                                <tr>
-                                    <td colspan="{{ $pesanan->tipe_layanan === 'harian' ? '6' : '5' }}" class="bg-light fw-bold text-success">
-                                        <i class="fa-solid fa-mug-hot"></i> Minuman
-                                    </td>
-                                </tr>
-                                @foreach($pesanan->detailPesanans->whereNotNull('minuman_id') as $minumanDetail)
-                                <tr>
-                                    @if($pesanan->tipe_layanan === 'harian')
-                                    <td class="text-center text-muted">
-                                        {{ $minumanDetail->tanggal_pengiriman ? \Carbon\Carbon::parse($minumanDetail->tanggal_pengiriman)->translatedFormat('d F Y') : '-' }}
-                                    </td>
-                                    @endif
-                                    <td class="fw-medium text-success">
-                                        {{ $minumanDetail->minuman->nama_minuman }}
-                                    </td>
-                                    <td class="text-center text-success">
-                                        {{ $minumanDetail->porsi }}
-                                    </td>
-                                    <td class="text-center text-muted">-</td>
-                                    <td class="text-center text-muted">-</td>
-                                    <td class="text-end fw-bold text-success">Rp {{ number_format($minumanDetail->subtotal, 0, ',', '.') }}</td>
-                                </tr>
-                                @endforeach
-                            @endif
+
                         </tbody>
                     </table>
                 </div>

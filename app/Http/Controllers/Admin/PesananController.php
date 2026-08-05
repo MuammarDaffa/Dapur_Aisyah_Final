@@ -44,9 +44,13 @@ class PesananController extends Controller
 
     public function show(Pesanan $pesanan)
     {
-        $pesanan->load(['user', 'detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesanans.minuman']);
+        $pesanan->load(['user', 'detailPesanans.menu', 'detailPesanans.minuman', 'detailPesanans.menuItems']);
 
-        return view('admin.pesanan.show', compact('pesanan'));
+        if ($pesanan->tipe_layanan === 'harian') {
+            return view('admin.pesanan.show_harian', compact('pesanan'));
+        }
+
+        return view('admin.pesanan.show_acara', compact('pesanan'));
     }
 
     public function updateStatus(Request $request, Pesanan $pesanan)

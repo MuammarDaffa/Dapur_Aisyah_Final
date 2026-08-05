@@ -23,7 +23,7 @@ class KateringAcaraController extends Controller
     public function storeSessionLokasi(Request $request)
     {
         $request->validate([
-            'tanggal_acara' => 'required|date|after_or_equal:today',
+            'tanggal_acara' => 'required|date|after_or_equal:' . \Carbon\Carbon::now()->addDays(5)->format('Y-m-d'),
             'metode_pengambilan' => 'required|in:ambil_sendiri,diantar_ke_tempat',
         ]);
 

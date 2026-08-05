@@ -38,8 +38,12 @@
                     <div class="card-body p-4">
                         <!-- Input Datepicker -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-black">Tanggal Acara</label>
-                            <input type="date" name="tanggal_acara" id="tanggal_acara" class="form-control border-danger" required>
+                            <label class="form-label fw-bold text-black">Tanggal Acara <span class="text-danger">*</span></label>
+                            <span class="text-muted small d-block mb-2"><i>Pemesanan minimal H-5 sebelum tanggal acara</i></span>
+                            @php
+                                $minDate = \Carbon\Carbon::now()->addDays(5)->format('Y-m-d');
+                            @endphp
+                            <input type="date" name="tanggal_acara" id="tanggal_acara" class="form-control border-danger" required min="{{ $minDate }}">
                         </div>
 
                         <div class="mb-4">
@@ -74,10 +78,10 @@
 
                             <!-- Menampilkan Hasil Peta -->
                             <div class="mt-3 p-3 bg-light border rounded">
-                                <label class="form-label fw-bold text-secondary">Alamat Lengkap (Satelit):</label>
+                                <label class="form-label fw-bold text-secondary">Alamat yang ditandai:</label>
                                 <textarea name="alamat_satelit" id="alamat_satelit" class="form-control mb-3" rows="2" readonly placeholder="Alamat otomatis akan muncul di sini..."></textarea>
                                 
-                                <label class="form-label fw-bold text-secondary">Nomor Rumah <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold text-secondary">Alamat Lengkap <span class="text-danger">*</span></label>
                                 <input type="text" name="nomor_rumah" id="nomor_rumah" class="form-control" placeholder="Contoh: No. 12A / Blok C4" required>
                             </div>
                         </div>
