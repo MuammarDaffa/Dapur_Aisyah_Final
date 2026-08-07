@@ -7,7 +7,7 @@
         <div class="col-md-8">
             <div class="mb-4">
                 <h2 class="fs-3 fw-bold text-dark mt-2 mb-1 text-center">
-    Pilih Jadwal Katering Harian
+    Pilih Menu
 </h2>
                 <!-- <p class="text-muted">Pilih jadwal pengantaran yang tersedia mulai besok ke depan.</p> -->
             </div>

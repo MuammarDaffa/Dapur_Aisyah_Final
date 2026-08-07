@@ -21,8 +21,11 @@ class LaporanController extends Controller
 
         if ($request->filled('period')) {
             switch ($request->period) {
-                case 'harian':
-                    $query->whereDate('created_at', today());
+                // case 'harian':
+                //     $query->whereDate('created_at', today());
+                //     break;
+                case 'weekly':
+                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
                     break;
                 case 'monthly':
                     $query->whereMonth('created_at', now()->month)

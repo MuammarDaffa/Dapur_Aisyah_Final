@@ -116,12 +116,12 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                         </tbody>
                     </table>
                 </div>
-                <div class="card-footer d-flex justify-content-between">
+                <div class="card-footer d-flex gap-2">
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save"></i> Simpan Jadwal
+                        Simpan Jadwal
                     </button>
                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#resetJadwalModal">
-                        <i class="bi bi-trash"></i> Reset Semua Jadwal
+                         Reset Semua Jadwal
                     </button>
                 </div>
             </form>
@@ -166,12 +166,14 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
          ======================================= --}}
     <div class="col-12">
         <div class="card card-outline card-success">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="card-title fw-bold m-0">Daftar Menu Harian</h3>
-                <a href="{{ route('admin.menu.create', 'harian') }}" class="btn btn-sm btn-success">
-                    <i class="bi bi-plus-lg"></i> Tambah Menu
-                </a>
-            </div>
+           <div class="card-header d-flex align-items-center">
+    <h3 class="card-title mb-0">Daftar Menu Harian</h3>
+
+    <a href="{{ route('admin.menu.create', 'harian') }}"
+       class="btn btn-sm btn-success ms-auto">
+        Tambah Menu
+    </a>
+</div>
             <div class="card-body table-responsive">
                 <table class="table table-bordered table-striped align-middle">
                     <thead class="table-light">

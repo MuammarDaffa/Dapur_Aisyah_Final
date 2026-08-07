@@ -182,7 +182,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 mb-3"><i class="fa-solid fa-sync"></i> Update Status</button>
+                    <button type="submit" class="btn btn-primary w-100 mb-3"> Update Status</button>
                 </form>
 
 

@@ -16,7 +16,8 @@
                         <label class="form-label fw-bold">Periode</label>
                         <select name="period" class="form-select">
                             <option value="">Semua Periode</option>
-                            <option value="harian" {{ request('period') == 'harian' ? 'selected' : '' }}>Hari Ini</option>
+                            {{-- <option value="harian" {{ request('period') == 'harian' ? 'selected' : '' }}>Hari Ini</option> --}}
+                            <option value="weekly" {{ request('period') == 'weekly' ? 'selected' : '' }}>Minggu Ini</option>
                             <option value="monthly" {{ request('period') == 'monthly' ? 'selected' : '' }}>Bulan Ini</option>
                             <option value="yearly" {{ request('period') == 'yearly' ? 'selected' : '' }}>Tahun Ini</option>
                         </select>
@@ -35,8 +36,8 @@
                         <input type="date" name="date" value="{{ request('date') }}" class="form-control">
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-filter"></i> Terapkan</button>
-                        <a href="{{ route('admin.reports') }}" class="btn btn-default"><i class="fa-solid fa-rotate-left"></i> Reset</a>
+                        <button type="submit" class="btn btn-primary">Terapkan</button>
+                        <a href="{{ route('admin.reports') }}" class="btn btn-secondary text-white">Reset</a>
                     </div>
                 </form>
             </div>

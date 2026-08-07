@@ -57,7 +57,7 @@
                                         $tipeLayanan = ucfirst($pesanan->tipe_layanan);
                                     @endphp
                                     <tr>
-                                        <td class="py-3 px-4 fw-bold text-primary">{{ $pesanan->nomor_pesanan }}</td>
+                                        <td class="py-3 px-4 fw-bold ">{{ $pesanan->nomor_pesanan }}</td>
                                         <td class="py-3 text-start" data-sort="{{ $pesanan->created_at->format('YmdHis') }}">{{ $pesanan->created_at->format('d M Y') }}</td>
                                         <td class="py-3">{{ $tipeLayanan }}</td>
                                         <td class="py-3 text-end">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>

@@ -109,7 +109,7 @@
                                             </span>
                                         </td>
                                         <td class="align-middle">
-                                            <a href="{{ route('admin.pesanan.show', $pesanan) }}" class="btn btn-sm btn-default"><i class="fa-solid fa-eye"></i> Detail</a>
+                                            <a href="{{ route('admin.pesanan.show', $pesanan) }}" class="btn btn-sm btn-primary">Lihat</a>
                                         </td>
                                     </tr>
                                 @empty

@@ -65,7 +65,7 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-success">
-                        <i class="bi bi-save"></i> Simpan Menu
+                         Simpan Menu
                     </button>
                     <a href="{{ $tipe_layanan === 'harian' ? route('admin.catering.harian', 'harian') : route('admin.catering.acara', 'acara') }}" class="btn btn-secondary">Batal</a>
                 </div>

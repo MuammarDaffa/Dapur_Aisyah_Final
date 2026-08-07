@@ -29,7 +29,7 @@
                         <select name="service" class="form-select">
                             <option value="">Semua Layanan</option>
                                 <option value="harian" {{ request('service') == 'harian' ? 'selected' : '' }}>Katering Harian</option>
-                                <option value="acara" {{ request('service') == 'acara' ? 'selected' : '' }}>Katering Acara</option>
+                                <option value="acara" {{ request('service') == 'acara' ? 'selected' : '' }}>Katering Acara Kantoran</option>
                         </select>
                     </div>
                     <div class="col-md-2">

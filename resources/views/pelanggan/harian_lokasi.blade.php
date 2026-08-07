@@ -69,7 +69,7 @@
 </div>
 
 <!-- Menampilkan Hasil Peta -->
-<div class="mt-3 p-3 bg-light border rounded">
+<div class="mt-3 p-3 ">
     <label class="form-label fw-bold text-secondary">Alamat yang ditandai</label>
     <textarea name="alamat_satelit" id="alamat_satelit" class="form-control mb-3" rows="2" readonly placeholder="Alamat otomatis akan muncul di sini..."></textarea>
     
