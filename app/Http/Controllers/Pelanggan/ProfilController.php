@@ -29,7 +29,7 @@ class ProfilController extends Controller
 
     public function riwayatPesanan()
     {
-        $riwayatPesanan = \App\Models\Pesanan::where('user_id', auth()->id())->latest()->get();
+        $riwayatPesanan = \App\Models\Pesanan::with('ulasan')->where('user_id', auth()->id())->latest()->get();
         return view('pelanggan.riwayat_pesanan', compact('riwayatPesanan'));
     }
     public function hapusPesanan($id)

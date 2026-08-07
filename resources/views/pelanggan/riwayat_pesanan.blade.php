@@ -100,6 +100,12 @@
                                                         <!-- Aksi Harian -->
                                                         <a href="{{ route('pelanggan.harian.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
                                                     @endif
+
+                                                    @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS && $pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_SELESAI && !$pesanan->ulasan)
+                                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalPenilaian{{ $pesanan->id }}">
+                                                            Penilaian
+                                                        </button>
+                                                    @endif
                                                 @endif
                                             </div>
                                         </td>
@@ -112,6 +118,37 @@
                 </div>
             @endif
             
+            <!-- Modals for Penilaian -->
+            @foreach($riwayatPesanan as $pesanan)
+                @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS && $pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_SELESAI && !$pesanan->ulasan)
+                <div class="modal fade" id="modalPenilaian{{ $pesanan->id }}" tabindex="-1" aria-labelledby="modalPenilaianLabel{{ $pesanan->id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="{{ route('pelanggan.ulasan.store') }}" method="POST" class="form-penilaian">
+                                @csrf
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalPenilaianLabel{{ $pesanan->id }}">Beri Penilaian untuk Pesanan {{ $pesanan->nomor_pesanan }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="pesanan_id" value="{{ $pesanan->id }}">
+
+                                    <div class="mb-3">
+                                        <label for="komentar{{ $pesanan->id }}" class="form-label fw-bold">Ulasan</label>
+                                        <textarea class="form-control" id="komentar{{ $pesanan->id }}" name="komentar" rows="4" placeholder="Bagaimana pengalaman Anda dengan layanan kami?" required></textarea>
+                                        <div class="invalid-feedback">Komentar wajib diisi.</div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-primary btn-kirim-ulasan">Kirim</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            @endforeach
          
         </div>
     </div>
@@ -191,6 +228,66 @@
             columnDefs: [
                 { orderable: false, targets: 6 } // Disable sorting on Action column
             ]
+        });
+
+        // AJAX Form Submission for Penilaian
+        $('.form-penilaian').on('submit', function(e) {
+            e.preventDefault();
+            
+            let form = $(this);
+            let btnKirim = form.find('.btn-kirim-ulasan');
+            let originalText = btnKirim.html();
+            btnKirim.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mengirim...').prop('disabled', true);
+
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize(),
+                success: function(response) {
+                    btnKirim.html(originalText).prop('disabled', false);
+                    
+                    if (response.status === 'success') {
+                        // Close modal
+                        let modalId = form.closest('.modal').attr('id');
+                        let modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+                        modal.hide();
+                        
+                        // SweetAlert Success
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            confirmButtonColor: '#198754'
+                        }).then((result) => {
+                            // Reload to update the button state to "Lihat Ulasan"
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: response.message,
+                            confirmButtonColor: '#dc3545'
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    btnKirim.html(originalText).prop('disabled', false);
+                    let errMsg = 'Terjadi kesalahan. Silakan coba lagi.';
+                    if(xhr.responseJSON && xhr.responseJSON.errors) {
+                        let errors = xhr.responseJSON.errors;
+                        if(errors.komentar) errMsg = errors.komentar[0];
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errMsg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: errMsg,
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            });
         });
     });
 </script>

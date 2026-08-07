@@ -13,10 +13,15 @@ class Ulasan extends Model
 {
     protected $table = 'ulasan';
 
-    protected $fillable = ['user_id', 'komentar'];
+    protected $fillable = ['user_id', 'pesanan_id', 'komentar'];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function pesanan(): BelongsTo
+    {
+        return $this->belongsTo(Pesanan::class);
     }
 }

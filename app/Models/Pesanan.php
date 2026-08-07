@@ -132,4 +132,9 @@ class Pesanan extends Model
         return $this->hasMany(DetailPesanan::class);
     }
 
+    public function ulasan(): HasOne
+    {
+        return $this->hasOne(Ulasan::class);
+    }
+
 }

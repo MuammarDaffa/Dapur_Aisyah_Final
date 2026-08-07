@@ -17,6 +17,7 @@ class ReviewRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'pesanan_id' => 'required|exists:pesanan,id',
             'komentar' => 'required|string|max:1000',
         ];
     }
@@ -24,6 +25,8 @@ class ReviewRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'pesanan_id.required' => 'Pesanan tidak valid.',
+            'pesanan_id.exists' => 'Pesanan tidak ditemukan.',
             'komentar.required' => 'Komentar ulasan wajib diisi.',
             'komentar.max' => 'Komentar maksimal 1000 karakter.',
         ];

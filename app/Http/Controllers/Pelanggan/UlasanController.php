@@ -12,11 +12,23 @@ class UlasanController extends Controller
     {
         $validated = $request->validated();
 
+        if (Ulasan::where('pesanan_id', $validated['pesanan_id'])->exists()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['status' => 'error', 'message' => 'Anda sudah memberikan penilaian untuk pesanan ini.']);
+            }
+            return back()->with('error', 'Anda sudah memberikan penilaian untuk pesanan ini.');
+        }
+
         Ulasan::create([
             'user_id' => auth()->id(),
+            'pesanan_id' => $validated['pesanan_id'],
             'komentar' => $validated['komentar'],
         ]);
 
-        return back()->with('success', 'Terima kasih atas ulasan Anda!');
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Penilaian berhasil dikirim. Terima kasih!']);
+        }
+
+        return back()->with('success', 'Penilaian berhasil dikirim. Terima kasih!');
     }
 }
