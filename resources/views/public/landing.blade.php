@@ -219,28 +219,30 @@
     <section id="testimonials" class="py-5 bg-white section-item">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="fs-1 fw-bold text-dark">Apa Kata <span class="text-primary">Pelanggan</span></h2>
-                <p class="text-secondary fs-5">Ulasan dari pelanggan setia kami</p>
+                <h2 class="fs-1 fw-bold text-dark">Apa Kata <span class="text-warning">Pelanggan</span></h2>
+                <p class="text-secondary fs-5">Ulasan dari pelanggan kami</p>
             </div>
-            <div class="row justify-content-center g-4">
-                @foreach($ulasan as $ulasan)
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card h-100 border-primary shadow-sm">
-                            <div class="card-body p-4">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0 bg-primary" style="width: 48px; height: 48px;">
-                                        {{ strtoupper(substr($ulasan->user->name ?? 'U', 0, 1)) }}
-                                    </div>
-                                    <div class="ms-3">
-                                        <h5 class="fw-bold text-dark mb-0 fs-6">{{ $ulasan->user->name ?? 'Pelanggan' }}</h5>
-                                        <small class="text-primary fw-medium">Pelanggan Setia</small>
-                                    </div>
-                                </div>
-                                <p class="card-text text-secondary mb-0" style="font-style: italic;">"{{ $ulasan->komentar ?? 'Pelayanan sangat memuaskan!' }}"</p>
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-8">
+                    <div id="carouselTestimoni" class="carousel carousel-dark slide text-center" data-bs-ride="carousel">
+                        <div class="carousel-inner p-4 py-5  shadow-sm" style="background-color: #f8f9fa;">
+                            @foreach($ulasan as $key => $item)
+                            <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                <h4 class="fw-bolder text-dark mb-4" style="letter-spacing: 0.5px;">{{ $item->user->name ?? 'Pelanggan' }}</h4>
+                                <p class="text-secondary fs-5 mb-0 px-md-5 px-3" style="font-style: italic; line-height: 1.6;">"{{ $item->komentar ?? 'Pelayanan sangat memuaskan!' }}"</p>
                             </div>
+                            @endforeach
                         </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="prev" style="width: 10%;">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="next" style="width: 10%;">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
                     </div>
-                @endforeach
+                </div>
             </div>
         </div>
     </section>
