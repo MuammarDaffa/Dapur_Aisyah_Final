@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pesanan;
@@ -50,6 +50,6 @@ class LaporanController extends Controller
 
         $pesanan = $query->with(['user'])->latest()->paginate(20);
 
-        return view('admin.laporan.index', compact('pesanan', 'summary'));
+        return view('owner.laporan.index', compact('pesanan', 'summary'));
     }
 }

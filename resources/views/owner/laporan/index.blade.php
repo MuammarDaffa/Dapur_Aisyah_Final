@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.owner')
 
 @section('title', 'Rekapitulasi Penjualan')
 
@@ -11,7 +11,7 @@
                 <h3 class="card-title">Filter Laporan</h3>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.reports') }}" method="GET" class="row gx-3 gy-2 align-items-end">
+                <form action="{{ route('owner.reports') }}" method="GET" class="row gx-3 gy-2 align-items-end">
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Periode</label>
                         <select name="period" class="form-select">
@@ -37,7 +37,7 @@
                     </div>
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-primary">Terapkan</button>
-                        <a href="{{ route('admin.reports') }}" class="btn btn-secondary text-white">Reset</a>
+                        <a href="{{ route('owner.reports') }}" class="btn btn-secondary text-white">Reset</a>
                     </div>
                 </form>
             </div>

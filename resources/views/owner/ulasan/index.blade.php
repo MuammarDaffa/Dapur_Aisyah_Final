@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.owner')
 @section('title', 'Ulasan Pelanggan')
 @section('content')
 <div class="row">
@@ -25,9 +25,9 @@
                                 <td class="align-middle text-wrap">{{ $r->komentar }}</td>
                                 <td class="align-middle text-muted">{{ $r->created_at->format('d M Y') }}</td>
                                 <td class="align-middle text-center">
-                                    <form action="{{ route('admin.ulasan.destroy', $r) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Hapus ulasan ini?');">
+                                    <form action="{{ route('owner.ulasan.destroy', $r->id) }}" method="POST" class="d-inline" id="delete-form-{{ $r->id }}">
                                         @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('delete-form-{{ $r->id }}', 'Hapus ulasan ini?')"><i class="fa-solid fa-trash"></i> Hapus</button>
                                     </form>
                                 </td>
                             </tr>

@@ -73,8 +73,6 @@
                                 ['route' => 'admin.catering.harian', 'label' => 'Katering Harian', 'icon' => 'fa-solid fa-calendar-day'],
                                 ['route' => 'admin.catering.acara', 'label' => 'Katering Acara Kantoran', 'icon' => 'fa-solid fa-glass-cheers'],
                                 ['route' => 'admin.customers', 'label' => 'Pelanggan', 'icon' => 'fa-solid fa-users'],
-                                ['route' => 'admin.ulasan', 'label' => 'Ulasan', 'icon' => 'fa-solid fa-star'],
-                                ['route' => 'admin.reports', 'label' => 'Laporan', 'icon' => 'fa-solid fa-chart-line'],
                             ];
                         @endphp
                         @foreach($menuItems as $item)

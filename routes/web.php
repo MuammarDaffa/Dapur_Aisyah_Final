@@ -15,9 +15,11 @@ use App\Http\Controllers\Admin\CateringHarianController;
     // =======================================
 
 use App\Http\Controllers\Admin\PelangganController as AdminPelangganController;
-use App\Http\Controllers\Admin\UlasanController as AdminUlasanController;
-use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboard;
+use App\Http\Controllers\Owner\PesananController as OwnerPesananController;
+use App\Http\Controllers\Owner\PelangganController as OwnerPelangganController;
+use App\Http\Controllers\Owner\UlasanController as OwnerUlasanController;
+use App\Http\Controllers\Owner\LaporanController as OwnerLaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -145,9 +147,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // 4. Hapus rute lama (minuman-acara, dsb) sudah tergabung di menu-item.
 
     Route::get('/customers', [AdminPelangganController::class, 'index'])->name('customers');
-    Route::get('/ulasan', [AdminUlasanController::class, 'index'])->name('ulasan');
-    Route::delete('/ulasan/{ulasan}', [AdminUlasanController::class, 'destroy'])->name('ulasan.destroy');
-    Route::get('/laporan', [LaporanController::class, 'index'])->name('reports');
 });
 
 /*
@@ -157,9 +156,20 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 */
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
     Route::get('/dashboard', [OwnerDashboard::class, 'index'])->name('dashboard');
-    Route::get('/customers', [OwnerDashboard::class, 'customers'])->name('customers');
-    Route::get('/ulasan', [OwnerDashboard::class, 'ulasan'])->name('ulasan');
-    Route::get('/laporan', [OwnerDashboard::class, 'reports'])->name('reports');
+    
+    // Pesanan (Read-Only)
+    Route::get('/pesanan', [OwnerPesananController::class, 'index'])->name('pesanan');
+    Route::get('/pesanan/{pesanan}', [OwnerPesananController::class, 'show'])->name('pesanan.show');
+    
+    // Pelanggan (Read-Only)
+    Route::get('/customers', [OwnerPelangganController::class, 'index'])->name('customers');
+    
+    // Ulasan
+    Route::get('/ulasan', [OwnerUlasanController::class, 'index'])->name('ulasan');
+    Route::delete('/ulasan/{ulasan}', [OwnerUlasanController::class, 'destroy'])->name('ulasan.destroy');
+    
+    // Laporan
+    Route::get('/laporan', [OwnerLaporanController::class, 'index'])->name('reports');
 });
 
 /*

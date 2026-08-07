@@ -40,7 +40,7 @@
                 @php
                     $menuItems = [
                         ['route' => 'owner.dashboard', 'icon' => '📊', 'label' => 'Dashboard'],
-                        ['route' => 'owner.best-sellers', 'icon' => '⭐', 'label' => 'Best Seller'],
+                        ['route' => 'owner.pesanan', 'icon' => '🛒', 'label' => 'Pesanan'],
                         ['route' => 'owner.customers', 'icon' => '👥', 'label' => 'Pelanggan'],
                         ['route' => 'owner.ulasan', 'icon' => '💬', 'label' => 'Ulasan'],
                         ['route' => 'owner.reports', 'icon' => '📈', 'label' => 'Laporan'],

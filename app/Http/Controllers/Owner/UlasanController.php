@@ -1,19 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ulasan;
+use Illuminate\Http\Request;
 
 class UlasanController extends Controller
 {
     public function index()
     {
-        $ulasan = Ulasan::with(['user'])
-            ->latest()
-            ->paginate(15);
-
-        return view('admin.ulasan.index', compact('ulasan'));
+        $ulasan = Ulasan::with(['user', 'pesanan'])->latest()->paginate(15);
+        return view('owner.ulasan.index', compact('ulasan'));
     }
 
     public function destroy(Ulasan $ulasan)

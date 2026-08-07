@@ -36,51 +36,5 @@ class DashboardController extends Controller
 
         return view('owner.dashboard', compact('stats', 'orderStatuses', 'recentReviews'));
     }
-
-    public function customers()
-    {
-        $pelanggans = User::where('role', 'customer')
-            ->withCount('pesanan')
-            ->orderByDesc('pesanan_count')
-            ->take(10)
-            ->get();
-
-        return view('owner.customers', compact('pelanggans'));
-    }
-
-    public function ulasan()
-    {
-        $ulasan = Ulasan::with(['user'])
-            ->latest()
-            ->paginate(20);
-
-        return view('owner.reviews', compact('ulasan'));
-    }
-
-    public function reports(Request $request)
-    {
-        $query = Pesanan::completed();
-
-        if ($request->filled('period')) {
-            switch ($request->period) {
-                case 'harian':
-                    $query->whereDate('created_at', today());
-                    break;
-                case 'monthly':
-                    $query->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
-                    break;
-                case 'yearly':
-                    $query->whereYear('created_at', now()->year);
-                    break;
-            }
-        }
-
-        $summary = [
-            'total_orders' => $query->count(),
-            'total_revenue' => $query->sum('total'),
-            'average_order' => $query->avg('total') ?? 0,
-        ];
-
-        return view('owner.reports', compact('summary'));
-    }
+    // Methods customers, ulasan, dan reports telah dipindahkan ke controllernya masing-masing
 }
