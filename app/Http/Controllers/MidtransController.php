@@ -50,9 +50,23 @@ class MidtransController extends Controller
                 } 
                 // Jika dibatalkan atau kedaluwarsa
                 elseif ($request->transaction_status == 'cancel' || $request->transaction_status == 'deny' || $request->transaction_status == 'expire') {
-                    $pesanan->update([
-                        'status_pesanan' => Pesanan::PESANAN_DIBATALKAN,
-                    ]);
+                    if ($pesanan->status_pesanan !== Pesanan::PESANAN_DIBATALKAN) {
+                        $pesanan->update([
+                            'status_pesanan' => Pesanan::PESANAN_DIBATALKAN,
+                        ]);
+
+                        if ($pesanan->tipe_layanan === 'harian') {
+                            foreach ($pesanan->detailPesanans as $detail) {
+                                $jadwal = \App\Models\JadwalMenu::where('menu_id', $detail->menu_id)
+                                    ->whereDate('tanggal', $detail->tanggal_pengiriman)
+                                    ->first();
+                                if ($jadwal) {
+                                    $jadwal->stok_tersisa += $detail->porsi;
+                                    $jadwal->save();
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

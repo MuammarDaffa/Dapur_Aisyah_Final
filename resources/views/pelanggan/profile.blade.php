@@ -7,8 +7,8 @@
             <div class="d-flex flex-column gap-4">
         <!-- Informasi Akun -->
         <div class="card shadow-sm mb-4 p-4">
-            <h3 class="fw-bold text-secondary mb-1">Informasi Akun</h3>
-            <p class="text-muted small mb-4">Perbarui informasi profil dan alamat email akun Anda.</p>
+            <h3 class="fw-bold  mb-1 text-center">Informasi Akun</h3>
+            <!-- <p class="text-muted small mb-4">Perbarui informasi profil dan alamat email akun Anda.</p> -->
             <form action="{{ route('pelanggan.profile.update') }}" method="POST" class="d-flex flex-column gap-3">
                 @csrf @method('PUT')
                 <div class="mb-3">

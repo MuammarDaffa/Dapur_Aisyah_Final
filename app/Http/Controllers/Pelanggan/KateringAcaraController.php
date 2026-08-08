@@ -398,8 +398,12 @@ class KateringAcaraController extends Controller
             return redirect()->route('pelanggan.riwayat')->with('error', 'Anda tidak memiliki akses ke pesanan ini.');
         }
 
-        if ($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIBATALKAN) {
-            return redirect()->route('pelanggan.riwayat')->with('info', 'Pesanan sudah berstatus dibatalkan.');
+        if ($pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_LUNAS) {
+            return redirect()->route('pelanggan.riwayat')->with('error', 'Pesanan Katering Acara hanya dapat dibatalkan jika status pembayaran sudah Lunas.');
+        }
+
+        if ($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIBATALKAN || $pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_SELESAI) {
+            return redirect()->route('pelanggan.riwayat')->with('info', 'Pesanan sudah berstatus dibatalkan atau selesai.');
         }
 
         $pesanan->status_pesanan = \App\Models\Pesanan::PESANAN_DIBATALKAN;

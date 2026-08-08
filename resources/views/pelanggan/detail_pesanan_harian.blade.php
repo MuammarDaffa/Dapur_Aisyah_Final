@@ -75,35 +75,41 @@
                                     <td class="text-end fw-bold" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                                     <td class="text-center" rowspan="{{ $rowspan }}">
                                         @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS && $detail->tanggal_pengiriman && \Carbon\Carbon::now()->startOfDay()->lt(\Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay()))
-                                            <button type="button" class="btn btn-sm btn-warning text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
-                                                Ubah Tanggal
-                                            </button>
+                                            @if(!$detail->is_rescheduled)
+                                                <button type="button" class="btn btn-sm btn-warning text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
+                                                    Ubah Tanggal
+                                                </button>
 
-                                            <!-- Modal Reschedule -->
-                                            <div class="modal fade text-start" id="rescheduleModal{{ $detail->id }}" tabindex="-1" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <form action="{{ route('pelanggan.harian.reschedule', $detail->id) }}" method="POST">
-                                                        @csrf
-                                                        <div class="modal-header">
-                                                        <h5 class="modal-title">Ubah Tanggal Pengiriman</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                        <p class="mb-3 text-muted text-wrap" style="white-space: normal;">Pilih tanggal pengiriman yang baru. <strong>Catatan:</strong> Jika Anda mengubah tanggal, menu tambahan yang sudah Anda pilih akan hangus, dan menu utama akan disesuaikan dengan ketersediaan dari Dapur Aisyah.</p>
-                                                        <div class="mb-3">
-                                                            <label class="form-label fw-bold">Tanggal Baru</label>
-                                                            <input type="date" class="form-control" name="new_date" min="{{ \Carbon\Carbon::now()->addDays(1)->format('Y-m-d') }}" required>
-                                                        </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                        <button type="submit" class="btn btn-primary">Simpan Tanggal</button>
-                                                        </div>
-                                                    </form>
+                                                <!-- Modal Reschedule -->
+                                                <div class="modal fade text-start" id="rescheduleModal{{ $detail->id }}" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <form action="{{ route('pelanggan.harian.reschedule', $detail->id) }}" method="POST">
+                                                            @csrf
+                                                            <div class="modal-header">
+                                                            <h5 class="modal-title">Ubah Tanggal Pengiriman</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body text-start">
+                                                            <p class="mb-3 text-muted text-wrap" style="white-space: normal;">Pilih tanggal pengiriman yang baru. <strong>Catatan:</strong> Jika Anda mengubah tanggal, menu tambahan yang sudah Anda pilih akan hangus, dan menu utama akan disesuaikan dengan ketersediaan dari Dapur Aisyah.</p>
+                                                            <div class="mb-3">
+                                                                <label class="form-label fw-bold">Tanggal Baru</label>
+                                                                <input type="date" class="form-control" name="new_date" min="{{ \Carbon\Carbon::now()->addDays(1)->format('Y-m-d') }}" required>
+                                                            </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                            <button type="submit" class="btn btn-primary">Simpan Tanggal</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    </div>
                                                 </div>
-                                                </div>
-                                            </div>
+                                            @else
+                                                <button type="button" class="btn btn-sm btn-secondary text-nowrap" disabled title="Sudah pernah diubah">
+                                                    Ubah Tanggal
+                                                </button>
+                                            @endif
                                         @else
                                             <span class="text-muted small">-</span>
                                         @endif
@@ -186,10 +192,10 @@
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div>
                             <p class="text-muted mb-0">Total Pembayaran</p>
-                            <h3 class="fw-bold text-success mb-0">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</h3>
+                            <h3 class="fw-bold  mb-0">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</h3>
                         </div>
                         @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
-                            <form id="form-bayar" action="{{ route('pelanggan.acara.bayar_dp', $pesanan->id) }}" method="POST">
+                            <form id="form-bayar" action="{{ route('pelanggan.harian.bayar', $pesanan->id) }}" method="POST">
                                 @csrf
                                 <button id="btn-bayar" type="submit" class="btn btn-warning text-white btn-lg px-5 shadow-sm fw-bold">
                                     Bayar Sekarang
@@ -246,7 +252,7 @@
         })
         .then(response => response.json())
         .then(data => {
-            btnBayar.innerHTML = 'Bayar DP Sekarang';
+            btnBayar.innerHTML = 'Bayar Sekarang';
             btnBayar.disabled = false;
 
             if(data.status === 'success'){
@@ -272,7 +278,7 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            btnBayar.innerHTML = 'Bayar DP Sekarang';
+            btnBayar.innerHTML = 'Bayar Sekarang';
             btnBayar.disabled = false;
             alert('Gagal menghubungi server.');
         });

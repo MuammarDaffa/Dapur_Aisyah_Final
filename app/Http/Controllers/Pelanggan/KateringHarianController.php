@@ -29,20 +29,7 @@ class KateringHarianController extends Controller
 
     public function batalkanPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::findOrFail($id);
-
-        if ($pesanan->user_id !== auth()->id()) {
-            return redirect()->route('pelanggan.riwayat')->with('error', 'Anda tidak memiliki akses ke pesanan ini.');
-        }
-
-        if ($pesanan->status_pesanan === \App\Models\Pesanan::PESANAN_DIBATALKAN) {
-            return redirect()->route('pelanggan.riwayat')->with('info', 'Pesanan sudah berstatus dibatalkan.');
-        }
-
-        $pesanan->status_pesanan = \App\Models\Pesanan::PESANAN_DIBATALKAN;
-        $pesanan->save();
-
-        return redirect()->route('pelanggan.riwayat')->with('success', 'Pesanan berhasil dibatalkan.');
+        return redirect()->route('pelanggan.riwayat')->with('error', 'Pesanan Katering Harian tidak dapat dibatalkan oleh pelanggan.');
     }
 
     // ==========================================
@@ -186,6 +173,10 @@ class KateringHarianController extends Controller
 
             if ($porsi < 1) continue;
 
+            if ($jadwal->stok_tersisa < $porsi) {
+                return back()->withInput()->with('error', 'Stok untuk menu ' . $jadwal->menu->nama_menu . ' pada tanggal ' . \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('d F Y') . ' tidak mencukupi. Sisa stok: ' . $jadwal->stok_tersisa);
+            }
+
             $items = $request->input('items_' . $jadwalId, []); // Array of menu_item_id => quantity
             
             $subtotalItems = 0;
@@ -243,6 +234,16 @@ class KateringHarianController extends Controller
                     throw new \Exception('Pesanan tidak valid untuk diubah.');
                 }
                 
+                foreach ($pesanan->detailPesanans as $oldDetail) {
+                    $oldJadwal = \App\Models\JadwalMenu::where('menu_id', $oldDetail->menu_id)
+                        ->whereDate('tanggal', $oldDetail->tanggal_pengiriman)
+                        ->first();
+                    if ($oldJadwal) {
+                        $oldJadwal->stok_tersisa += $oldDetail->porsi;
+                        $oldJadwal->save();
+                    }
+                }
+
                 $pesanan->update([
                     'metode_pengambilan' => $metode_pengambilan,
                     'alamat_lengkap' => $alamat_lengkap,
@@ -275,6 +276,14 @@ class KateringHarianController extends Controller
             }
 
             foreach ($menusDipilih as $menuData) {
+                $jadwalToUpdate = \App\Models\JadwalMenu::where('menu_id', $menuData['menu_id'])
+                    ->whereDate('tanggal', $menuData['tanggal_pengiriman'])
+                    ->first();
+                if ($jadwalToUpdate) {
+                    $jadwalToUpdate->stok_tersisa -= $menuData['porsi'];
+                    $jadwalToUpdate->save();
+                }
+
                 $detail = \App\Models\DetailPesanan::create([
                     'pesanan_id' => $pesanan->id,
                     'menu_id' => $menuData['menu_id'],
@@ -315,6 +324,11 @@ class KateringHarianController extends Controller
             return back()->with('error', 'Reschedule hanya bisa dilakukan jika pesanan sudah lunas.');
         }
 
+        // Cek apakah sudah pernah reschedule
+        if ($detail->is_rescheduled) {
+            return back()->with('error', 'Tanggal pengiriman untuk pesanan ini sudah pernah diubah sebelumnya.');
+        }
+
         // Cek batas waktu (Harus sebelum hari-H)
         $today = \Carbon\Carbon::now()->startOfDay();
         $deliveryDate = \Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay();
@@ -327,13 +341,33 @@ class KateringHarianController extends Controller
             'new_date' => 'required|date|after:today'
         ]);
 
+        $newDate = $request->input('new_date');
+
+        // Cek apakah admin sudah mengatur menu di JadwalMenuHarian untuk tanggal baru ini
+        $jadwalMenu = \App\Models\JadwalMenu::whereDate('tanggal', $newDate)->first();
+        if (!$jadwalMenu) {
+            return back()->with('error', 'Tidak ada jadwal menu Katering Harian pada tanggal tersebut.');
+        }
+
+        if ($jadwalMenu->stok_tersisa < $detail->porsi) {
+            return back()->with('error', 'Stok pada tanggal baru tidak mencukupi. Sisa stok: ' . $jadwalMenu->stok_tersisa);
+        }
+
         try {
             \Illuminate\Support\Facades\DB::beginTransaction();
 
-            $newDate = $request->input('new_date');
+            // Kembalikan stok lama
+            $oldJadwal = \App\Models\JadwalMenu::where('menu_id', $detail->menu_id)
+                ->whereDate('tanggal', $detail->tanggal_pengiriman)
+                ->first();
+            if ($oldJadwal) {
+                $oldJadwal->stok_tersisa += $detail->porsi;
+                $oldJadwal->save();
+            }
 
-            // Cek apakah admin sudah mengatur menu di JadwalMenuHarian untuk tanggal baru ini
-            $jadwalMenu = \App\Models\JadwalMenu::whereDate('tanggal', $newDate)->first();
+            // Kurangi stok baru
+            $jadwalMenu->stok_tersisa -= $detail->porsi;
+            $jadwalMenu->save();
 
             // Kosongkan relasi menu tambahan (hangus)
             $detail->menuItems()->detach();
@@ -341,7 +375,7 @@ class KateringHarianController extends Controller
             // Update data detail
             $detail->update([
                 'tanggal_pengiriman' => $newDate,
-                'menu_id' => $jadwalMenu ? $jadwalMenu->menu_id : null,
+                'menu_id' => $jadwalMenu->menu_id,
                 'is_rescheduled' => true,
             ]);
 
@@ -353,5 +387,38 @@ class KateringHarianController extends Controller
             \Illuminate\Support\Facades\DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan saat menyimpan perubahan: ' . $e->getMessage());
         }
+    }
+
+    public function bayar($id)
+    {
+        $pesanan = \App\Models\Pesanan::findOrFail($id);
+        
+        if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
+            return response()->json(['status' => 'error', 'message' => 'Pesanan tidak valid untuk dibayar'], 403);
+        }
+
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => $pesanan->nomor_pesanan . '-PELUNASAN-' . time(), 
+                'gross_amount' => $pesanan->total,
+            ),
+            'customer_details' => array(
+                'first_name' => auth()->user()->name,
+                'email' => auth()->user()->email,
+            ),
+        );
+
+        $snapToken = Snap::getSnapToken($params);
+
+        return response()->json([
+            'status' => 'success',
+            'snap_token' => $snapToken,
+            'pesanan_id' => $pesanan->nomor_pesanan
+        ]);
     }
 }

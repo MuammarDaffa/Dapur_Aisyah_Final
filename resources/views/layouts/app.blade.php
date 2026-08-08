@@ -23,7 +23,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <style>
-        
+        /* Mengubah warna latar belakang dropdown item yang aktif */
+/* .dropdown-item.active, .dropdown-item:active { */
+    /* background-color: #EAB308 !important; Ganti dengan warna kuning Tailwind atau warna pilihan Anda */
+    /* color: white !important; */
+/* } */
+
     </style>
 
     @stack('styles')
@@ -96,7 +101,7 @@
                         <a href="{{ route('login') }}" class="nav-link">Masuk</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('register') }}" class="btn btn-primary rounded-pill px-3">Daftar</a>
+                        <a href="{{ route('register') }}" class="btn btn-warning rounded-pill px-3">Daftar</a>
                     </li>
                 @endif
             </ul>

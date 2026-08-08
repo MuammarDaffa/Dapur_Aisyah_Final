@@ -113,7 +113,7 @@
                     </div>
                     @if($pesanan->sisa_pembayaran > 0)
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">Sisa Pelunasan (Dibayar Nanti)</span>
+                        <span class="text-muted">Sisa Pelunasan </span>
                         <span class="fw-bold fs-5 text-danger">Rp {{ number_format($pesanan->sisa_pembayaran, 0, ',', '.') }}</span>
                     </div>
                     @endif
@@ -137,7 +137,7 @@
                         @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_DP)
                             <div class="text-end">
                                 <button disabled class="btn btn-secondary btn-lg px-5 text-white">Bayar DP Sekarang</button>
-                                <div class="text-muted small mt-1">DP sudah dibayarkan.</div>
+                                <!-- <div class="text-muted small mt-1">DP sudah dibayarkan.</div> -->
                             </div>
                         @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
                             <div class="text-end">

@@ -90,11 +90,12 @@
                                                                     <button type="submit" class="btn btn-success btn-sm btn-pelunasan">Pelunasan</button>
                                                                 </form>
                                                             @endif
-                                                            
-                                                            <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
-                                                                @csrf
-                                                                <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
-                                                            </form>
+                                                            @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
+                                                                <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
+                                                                    @csrf
+                                                                    <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
+                                                                </form>
+                                                            @endif
                                                         @endif
                                                     @else
                                                         <!-- Aksi Harian -->
