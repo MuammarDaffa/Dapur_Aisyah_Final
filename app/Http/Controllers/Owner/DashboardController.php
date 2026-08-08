@@ -21,6 +21,7 @@ class DashboardController extends Controller
             'monthly_revenue' => Pesanan::completed()->whereMonth('created_at', $today->month)->whereYear('created_at', $today->year)->sum('total'),
             'total_orders' => Pesanan::count(),
             'total_customers' => User::where('role', 'customer')->count(),
+            'total_reviews' => Ulasan::count(),
         ];
 
         // Status pesanan untuk pie chart

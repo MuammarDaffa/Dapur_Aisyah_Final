@@ -130,13 +130,13 @@
                         @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
                             <form id="form-bayar" action="{{ route('pelanggan.acara.bayar_dp', $pesanan->id) }}" method="POST">
                                 @csrf
-                                <button id="btn-bayar" type="submit" class="btn btn-primary btn-lg px-5 shadow-sm fw-bold">
+                                <button id="btn-bayar" type="submit" class="btn btn-warning btn-lg px-5 shadow-sm fw-bold">
                                     {{ $pesanan->jumlah_dp == $pesanan->total ? 'Bayar Sekarang' : 'Bayar DP Sekarang' }}
                                 </button>
                             </form>
                         @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_DP)
                             <div class="text-end">
-                                <button disabled class="btn btn-secondary btn-lg px-5 shadow-sm fw-bold">Bayar DP Sekarang</button>
+                                <button disabled class="btn btn-secondary btn-lg px-5 text-white">Bayar DP Sekarang</button>
                                 <div class="text-muted small mt-1">DP sudah dibayarkan.</div>
                             </div>
                         @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)

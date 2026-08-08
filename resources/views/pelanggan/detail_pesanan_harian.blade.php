@@ -75,7 +75,7 @@
                                     <td class="text-end fw-bold" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                                     <td class="text-center" rowspan="{{ $rowspan }}">
                                         @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS && $detail->tanggal_pengiriman && \Carbon\Carbon::now()->startOfDay()->lt(\Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay()))
-                                            <button type="button" class="btn btn-sm btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
+                                            <button type="button" class="btn btn-sm btn-warning text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
                                                 Ubah Tanggal
                                             </button>
 

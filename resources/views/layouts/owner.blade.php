@@ -5,110 +5,251 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name') }} — Owner @yield('title')</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=poppins:300,400,500,600,700&display=swap" rel="stylesheet" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- AdminLTE CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/css/adminlte.min.css">
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Flatpickr Date Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     @stack('styles')
 </head>
-<body class="font-sans antialiased bg-light">
-    <div class="min-vh-100 d-flex">
-        <!-- Sidebar -->
-        <aside x-data="{ open: true }" :class="open ? 'w-64' : 'w-20'" class="text-secondary position-fixed inset-y-0 overflow-y-auto">
-            <div class="p-4 d-flex align-items-center justify-content-between">
-                <a href="{{ route('owner.dashboard') }}" class="d-flex align-items-center space-x-2" x-show="open">
-                    <span class="fs-4">🍲</span>
-                    <span class="fs-5 fw-bold text-white">Owner Panel</span>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <div class="app-wrapper">
+        <!-- Main Header -->
+        <nav class="app-header navbar navbar-expand bg-body">
+            <div class="container-fluid">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"><i class="fa-solid fa-bars"></i></a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <!-- User Menu -->
+                    <li class="nav-item dropdown user-menu">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <span class="d-none d-md-inline">Halo, {{ auth()->user()->name ?? 'Owner' }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                            <li class="user-header text-bg-primary">
+                                <p>
+                                    {{ auth()->user()->name ?? 'Owner' }}
+                                    <small>{{ auth()->user()->email ?? '' }}</small>
+                                </p>
+                            </li>
+                            <li class="user-footer">
+                                <form id="logout-form-owner" method="POST" action="{{ route('logout') }}" class="m-0">
+                                    @csrf
+                                    <button type="button" onclick="confirmLogout('logout-form-owner')" class="btn btn-danger btn-flat float-end">Keluar</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- Main Sidebar -->
+        <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+            <div class="sidebar-brand">
+                <a href="{{ route('owner.dashboard') }}" class="brand-link">
+                    <span class="brand-text fw-bold">Owner Panel</span>
                 </a>
-                <button @click="open = !open" class="text-secondary hover:text-white">
-                    <svg style="width: 20px; height: 20px;" class="" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
             </div>
-
-            {{-- Read-Only Badge --}}
-            <div class="px-4 mb-4" x-show="open">
-                <div class="bg-teal-700/50 text-teal-200 small fw-medium px-3 py-1.5 rounded text-center">
-                    🔒 Mode Read-Only
-                </div>
-            </div>
-
-            <nav class="mt-2 px-3 space-y-1">
-                @php
-                    $menuItems = [
-                        ['route' => 'owner.dashboard', 'icon' => '📊', 'label' => 'Dashboard'],
-                        ['route' => 'owner.pesanan', 'icon' => '🛒', 'label' => 'Pesanan'],
-                        ['route' => 'owner.customers', 'icon' => '👥', 'label' => 'Pelanggan'],
-                        ['route' => 'owner.ulasan', 'icon' => '💬', 'label' => 'Ulasan'],
-                        ['route' => 'owner.reports', 'icon' => '📈', 'label' => 'Laporan'],
-                    ];
-                @endphp
-
-                @foreach($menuItems as $item)
-                    <a href="{{ route($item['route']) }}"
-                       class="d-flex align-items-center px-3 py-2.5 rounded fs-6 {{ request()->routeIs($item['route'] . '*') ? 'bg-teal-500/20 text-teal-300 fw-medium' : 'hover:bg-white/5 hover:text-white' }}">
-                        <span class="fs-5">{{ $item['icon'] }}</span>
-                        <span class="ms-3" x-show="open">{{ $item['label'] }}</span>
-                    </a>
-                @endforeach
-            </nav>
-
-            <!-- Logout -->
-            <div class="position-absolute w-100 p-3">
-                <form id="logout-form-owner" method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="button" onclick="confirmLogout('logout-form-owner')" class="btn btn-outline-danger btn btn-danger d-flex align-items-center w-100 px-3 py-2.5 rounded fs-6 text-danger hover:bg-danger text-white/10">
-                        <span class="fs-5">🚪</span>
-                        <span class="ms-3" x-show="open">Keluar</span>
-                    </button>
-                </form>
+            <div class="sidebar-wrapper">
+                <nav class="mt-2">
+                    <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
+                        @php
+                            $menuItems = [
+                                ['route' => 'owner.dashboard', 'label' => 'Dashboard', 'icon' => 'fa-solid fa-house'],
+                                ['route' => 'owner.pesanan', 'label' => 'Pesanan', 'icon' => 'fa-solid fa-shopping-cart'],
+                                ['route' => 'owner.customers', 'label' => 'Pelanggan', 'icon' => 'fa-solid fa-users'],
+                                ['route' => 'owner.ulasan', 'label' => 'Ulasan', 'icon' => 'fa-solid fa-star'],
+                                ['route' => 'owner.reports', 'label' => 'Laporan', 'icon' => 'fa-solid fa-chart-line'],
+                            ];
+                        @endphp
+                        @foreach($menuItems as $item)
+                            <li class="nav-item">
+                                <a href="{{ route($item['route']) }}" class="nav-link {{ request()->routeIs($item['route'] . '*') ? 'active' : '' }}">
+                                    <i class="nav-icon {{ $item['icon'] }}"></i>
+                                    <p>{{ $item['label'] }}</p>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </nav>
             </div>
         </aside>
-
-        <!-- Main Content -->
-        <div x-data="{ sidebarOpen: true }" :class="sidebarOpen ? 'ms-64' : 'ms-20'" class="d-flex-1 ms-64">
-            <!-- Top Bar -->
-            <header class="bg-white shadow-sm border-b border border-secondary sticky-top">
-                <div class="px-6 py-4 d-flex justify-content-between align-items-center">
-                    <h1 class="fs-4 fw-bold text-secondary">@yield('title', 'Dashboard Owner')</h1>
-                    <div class="d-flex align-items-center space-x-3">
-                        <span class="fs-6 text-secondary">{{ auth()->user()->name }}</span>
-                        <div style="width: 32px; height: 32px;" class="rounded-pill d-flex align-items-center justify-content-center text-white fs-6 fw-bold">
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+        
+        <!-- Content Wrapper -->
+        <main class="app-main">
+            <div class="app-content-header">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h3 class="mb-0">@yield('title', 'Dashboard')</h3>
                         </div>
                     </div>
                 </div>
-            </header>
+            </div>
+            
+            <div class="app-content">
+                <div class="container-fluid">
+                    <!-- Flash Messages -->
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+                    @if($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
 
-            <!-- Page Content -->
-            <main class="p-6">
-                <x-toast />
-                @yield('content')
-            </main>
-        </div>
+                    <!-- Content -->
+                    @yield('content')
+                </div>
+            </div>
+        </main>
+        
+        <footer class="app-footer">
+            <strong>Copyright &copy; {{ date('Y') }} Dapur Aisyah.</strong>
+        </footer>
     </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/js/adminlte.min.js"></script>
     <script>
     function confirmLogout(formId) {
         Swal.fire({
-            title: 'Konfirmasi Logout',
-            text: 'Apakah Anda yakin ingin logout?',
-            icon: 'question',
+            title: 'Keluar?',
+            text: "Apakah Anda yakin ingin logout?",
+            icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#f97316',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Ya, Logout',
-            cancelButtonText: 'Batal',
-            reverseButtons: true
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Keluar'
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById(formId).submit();
             }
-        });
+        })
     }
+    window.confirmDelete = function(formId, message) {
+        Swal.fire({
+            title: 'Hapus Data?',
+            text: message || "Data ini tidak dapat dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Hapus'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        })
+    };
+    window.confirmDeleteForm = function(form, message) {
+        Swal.fire({
+            title: 'Hapus Data?',
+            text: message || "Data ini tidak dapat dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Hapus'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        })
+    };
     </script>
+    <script>
+// Fungsi Global Format Rupiah
+    function formatRupiah(angka) {
+        if (!angka && angka !== 0) return '';
+        let string_angka = angka.toString();
+        if(!isNaN(string_angka) && string_angka.includes('.')) {
+            string_angka = Math.round(parseFloat(string_angka)).toString();
+        }
+        let number_string = string_angka.replace(/[^,\d]/g, ''),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        return split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const initRupiahInputs = () => {
+            document.querySelectorAll('.rupiah-input').forEach(input => {
+                if (input.dataset.rupiahInit) return;
+                input.dataset.rupiahInit = "true";
+                if (input.value) {
+                    input.value = formatRupiah(input.value);
+                }
+                input.addEventListener('input', function(e) {
+                    let rawValue = this.value.replace(/\./g, '');
+                    if (parseInt(rawValue) > 1000000000) {
+                        alert('Harga tidak boleh lebih dari Rp 1.000.000.000.');
+                        rawValue = '1000000000';
+                    }
+                    this.value = formatRupiah(rawValue);
+                });
+                const form = input.closest('form');
+                if (form && !form.dataset.rupiahFormInit) {
+                    form.dataset.rupiahFormInit = "true";
+                    form.addEventListener('submit', () => {
+                        form.querySelectorAll('.rupiah-input').forEach(inp => {
+                            inp.value = inp.value.replace(/\./g, '');
+                        });
+                    });
+                }
+            });
+        };
+        initRupiahInputs();
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+                    initRupiahInputs();
+                }
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+
+ 
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     @stack('scripts')
 </body>
 </html>
