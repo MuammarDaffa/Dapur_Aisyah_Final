@@ -175,10 +175,20 @@
                         $serviceUrl = $service->tipe_layanan === 'acara'
                             ? route('pelanggan.acara.lokasi')
                             : route('pelanggan.harian.lokasi');
+                        $bgImage = $service->tipe_layanan === 'acara'
+                            ? asset('images/acara.jpg')
+                            : asset('images/harian.png');
                     @endphp
-                    <a href="{{ $serviceUrl }}" class="group position-relative bg-white rounded-2xl border border border-secondary hover:-translate-y-1 shadow-sm d-flex flex-column h-100 overflow-hidden text-decoration-none">
-                        <div class="p-6 flex-grow-1 d-flex flex-column justify-content-between text-center">
-                            <h3 class="fs-4 fw-bold text-secondary mb-3">{{ $service->nama }}</h3>
+                    <a href="{{ $serviceUrl }}" class="group position-relative rounded-2xl border border-secondary hover:-translate-y-1 shadow-sm d-flex flex-column h-100 overflow-hidden text-decoration-none transition-all duration-300" style="min-height: 250px;">
+                        <!-- Background Image -->
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: url('{{ $bgImage }}'); background-size: cover; background-position: center; transition: transform 0.3s ease-in-out;"></div>
+                        
+                        <!-- Overlay Gelap -->
+                        <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-75 group-hover:opacity-50 transition-opacity duration-300"></div>
+                        
+                        <!-- Konten -->
+                        <div class="p-6 flex-grow-1 d-flex flex-column justify-content-center text-center position-relative" style="z-index: 1;">
+                            <h3 class="fs-2 fw-bold text-white mb-0" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.7);">{{ $service->nama }}</h3>
                         </div>
                     </a>
                 @empty
