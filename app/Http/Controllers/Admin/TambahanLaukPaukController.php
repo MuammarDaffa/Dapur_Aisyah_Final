@@ -5,16 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Menu;
-use App\Models\MenuItem;
+use App\Models\TambahanLaukPauk;
 
-class MenuItemController extends Controller
+class TambahanLaukPaukController extends Controller
 {
     public function index(Menu $menu)
     {
         // Untuk Acara: melihat detail menu acara dan menambah isi menu
         // Untuk Harian: bisa jadi melihat detail menu harian dan menambah extra
-        $items = $menu->items;
-        return view('admin.menu.items', compact('menu', 'items'));
+        $items = $menu->tambahanLaukPauk;
+        return view('admin.menu.tambahan_lauk_pauk', compact('menu', 'items'));
     }
 
     public function store(Request $request, Menu $menu)
@@ -25,12 +25,12 @@ class MenuItemController extends Controller
         ]);
 
         $validated['menu_id'] = $menu->id;
-        MenuItem::create($validated);
+        TambahanLaukPauk::create($validated);
 
         return back()->with('success', 'Item berhasil ditambahkan!');
     }
 
-    public function update(Request $request, MenuItem $item)
+    public function update(Request $request, TambahanLaukPauk $item)
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
@@ -42,7 +42,7 @@ class MenuItemController extends Controller
         return back()->with('success', 'Item berhasil diupdate!');
     }
 
-    public function destroy(MenuItem $item)
+    public function destroy(TambahanLaukPauk $item)
     {
         $item->delete();
         return back()->with('success', 'Item berhasil dihapus!');

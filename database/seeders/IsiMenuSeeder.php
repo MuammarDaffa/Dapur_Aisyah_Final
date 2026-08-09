@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\MenuItem;
+use App\Models\TambahanLaukPauk;
 use App\Models\Menu;
 
 class IsiMenuSeeder extends Seeder
@@ -36,7 +36,7 @@ class IsiMenuSeeder extends Seeder
         $menuAcaraId = $menuAcara ? $menuAcara->id : 1;
 
         foreach ($menus as $menu) {
-            MenuItem::updateOrCreate(
+            TambahanLaukPauk::updateOrCreate(
                 [
                     'menu_id' => $menuAcaraId,
                     'nama' => $menu,

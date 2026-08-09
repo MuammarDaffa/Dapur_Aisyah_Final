@@ -139,11 +139,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('/minuman/{minuman}', [\App\Http\Controllers\Admin\MinumanController::class, 'destroy'])->name('minuman.destroy');
 
 
-    // 3. CRUD MenuItem (Isi Menu / Extra Harian)
-    Route::get('/menu/{menu}/items', [\App\Http\Controllers\Admin\MenuItemController::class, 'index'])->name('menu.items.index');
-    Route::post('/menu/{menu}/items', [\App\Http\Controllers\Admin\MenuItemController::class, 'store'])->name('menu.items.store');
-    Route::put('/menu-item/{item}', [\App\Http\Controllers\Admin\MenuItemController::class, 'update'])->name('menu.item.update');
-    Route::delete('/menu-item/{item}', [\App\Http\Controllers\Admin\MenuItemController::class, 'destroy'])->name('menu.item.destroy');
+    // 3. CRUD Tambahan Lauk Pauk (Isi Menu / Extra Harian)
+    Route::get('/menu/{menu}/tambahan-lauk-pauk', [\App\Http\Controllers\Admin\TambahanLaukPaukController::class, 'index'])->name('menu.tambahan.index');
+    Route::post('/menu/{menu}/tambahan-lauk-pauk', [\App\Http\Controllers\Admin\TambahanLaukPaukController::class, 'store'])->name('menu.tambahan.store');
+    Route::put('/menu-tambahan/{item}', [\App\Http\Controllers\Admin\TambahanLaukPaukController::class, 'update'])->name('menu.tambahan.update');
+    Route::delete('/menu-tambahan/{item}', [\App\Http\Controllers\Admin\TambahanLaukPaukController::class, 'destroy'])->name('menu.tambahan.destroy');
 
     // 4. Hapus rute lama (minuman-acara, dsb) sudah tergabung di menu-item.
 

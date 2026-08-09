@@ -42,9 +42,9 @@
                                         <td>
                                             @if($detail->menu)
                                                 <div class="fw-bold">{{ $detail->menu->nama_menu }}</div>
-                                                @if($detail->menuItems->count() > 0)
+                                                @if($detail->tambahanLaukPauk->count() > 0)
                                                     <ul class="list-unstyled ms-3 mb-0 small text-muted">
-                                                        @foreach($detail->menuItems as $item)
+                                                        @foreach($detail->tambahanLaukPauk as $item)
                                                             <li>&bull; {{ $item->nama }} @if($item->harga > 0)(+ Rp {{ number_format($item->harga, 0, ',', '.') }})@endif</li>
                                                         @endforeach
                                                     </ul>

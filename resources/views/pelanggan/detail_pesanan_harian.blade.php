@@ -45,8 +45,8 @@
                                 @php
                                     $groupedItems = null;
                                     $rowspan = 1;
-                                    if ($detail->menuItems && $detail->menuItems->count() > 0) {
-                                        $groupedItems = $detail->menuItems->groupBy('id')->map(function ($items) {
+                                    if ($detail->tambahanLaukPauk && $detail->tambahanLaukPauk->count() > 0) {
+                                        $groupedItems = $detail->tambahanLaukPauk->groupBy('id')->map(function ($items) {
                                             return (object) [
                                                 'nama' => $items->first()->nama,
                                                 'jumlah' => $items->count()

@@ -33,9 +33,9 @@ class DetailPesanan extends Model
         return $this->belongsTo(Menu::class);
     }
 
-    public function menuItems(): BelongsToMany
+    public function tambahanLaukPauk(): BelongsToMany
     {
-        return $this->belongsToMany(MenuItem::class, 'detail_pesanan_menu_item');
+        return $this->belongsToMany(TambahanLaukPauk::class, 'detail_tambahan_lauk_pauk', 'detail_pesanan_id', 'tambahan_lauk_pauk_id');
     }
 
     public function minuman(): BelongsTo

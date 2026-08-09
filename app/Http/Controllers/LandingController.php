@@ -12,7 +12,7 @@ class LandingController extends Controller
     {
         $harianBasePrice = \App\Models\Menu::where('tipe_layanan', 'harian')->min('harga') ?? 0;
         
-        $acaraBasePrice = \App\Models\MenuItem::whereHas('menu', function ($query) {
+        $acaraBasePrice = \App\Models\TambahanLaukPauk::whereHas('menu', function ($query) {
             $query->where('tipe_layanan', 'acara');
         })->min('harga') ?? 0;
 

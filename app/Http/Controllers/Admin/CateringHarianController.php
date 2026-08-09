@@ -180,7 +180,7 @@ class CateringHarianController extends Controller
                     ->whereNull('menu_id')
                     ->update(['menu_id' => $input['menu_id']]);
 
-                // ExtraHarian was moved to MenuItem, handled independently from JadwalMenu now.
+                // ExtraHarian was moved to TambahanLaukPauk, handled independently from JadwalMenu now.
                 // So no extra syncing here!
             } else {
                 // Jika tidak aktif (tidak dicentang), berarti admin ingin meliburkan/menghapus jadwal hari tersebut

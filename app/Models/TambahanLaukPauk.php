@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MenuItem extends Model
+class TambahanLaukPauk extends Model
 {
     use HasFactory;
 
-    protected $table = 'menu_item';
+    protected $table = 'tambahan_lauk_pauk';
 
     protected $fillable = [
         'menu_id',
@@ -24,6 +24,6 @@ class MenuItem extends Model
 
     public function detailPesanans()
     {
-        return $this->belongsToMany(DetailPesanan::class, 'detail_pesanan_menu_item');
+        return $this->belongsToMany(DetailPesanan::class, 'detail_tambahan_lauk_pauk', 'tambahan_lauk_pauk_id', 'detail_pesanan_id');
     }
 }

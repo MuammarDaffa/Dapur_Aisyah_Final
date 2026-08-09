@@ -88,12 +88,12 @@
                                         </div>
                                          <div class="mb-3">
                                     <span class="fw-semibold d-block mb-2">Tambahan :</span>
-                                    @if($jadwal->menu->items->count() > 0)
-                                        @foreach($jadwal->menu->items as $item)
+                                    @if($jadwal->menu->tambahanLaukPauk->count() > 0)
+                                        @foreach($jadwal->menu->tambahanLaukPauk as $item)
                                             @php
                                                 $itemCount = 0;
-                                                if ($detailLama && $detailLama->menuItems) {
-                                                    $itemCount = $detailLama->menuItems->where('id', $item->id)->count();
+                                                if ($detailLama && $detailLama->tambahanLaukPauk) {
+                                                    $itemCount = $detailLama->tambahanLaukPauk->where('id', $item->id)->count();
                                                 }
                                             @endphp
                                             <div class="d-flex justify-content-between align-items-center mb-2 ms-2" style="max-width: 300px;">

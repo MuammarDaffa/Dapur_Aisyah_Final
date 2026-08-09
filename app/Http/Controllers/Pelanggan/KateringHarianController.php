@@ -16,7 +16,7 @@ class KateringHarianController extends Controller
 
     public function detailPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.menuItems', 'detailPesanans.minuman'])->findOrFail($id);
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menu', 'detailPesanans.tambahanLaukPauk', 'detailPesanans.minuman'])->findOrFail($id);
         
         if ($pesanan->user_id !== auth()->id()) {
             return redirect()->route('landing')->with('error', 'Anda tidak berhak melihat pesanan ini.');
@@ -97,7 +97,7 @@ class KateringHarianController extends Controller
      */
     public function editPesanan($id)
     {
-        $pesanan = \App\Models\Pesanan::with(['detailPesanans.menuItems'])->findOrFail($id);
+        $pesanan = \App\Models\Pesanan::with(['detailPesanans.tambahanLaukPauk'])->findOrFail($id);
         
         // Pastikan hanya bisa diedit jika belum_dibayar
         if ($pesanan->user_id !== auth()->id() || $pesanan->status_pembayaran !== \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR) {
@@ -185,9 +185,9 @@ class KateringHarianController extends Controller
             if (is_array($items)) {
                 foreach ($items as $itemId => $qty) {
                     if ($qty > 0) {
-                        $menuItem = \App\Models\MenuItem::find($itemId);
-                        if ($menuItem) {
-                            $subtotalItems += ($menuItem->harga * $qty);
+                        $tambahanLauk = \App\Models\TambahanLaukPauk::find($itemId);
+                        if ($tambahanLauk) {
+                            $subtotalItems += ($tambahanLauk->harga * $qty);
                             // We need to store this somehow. 
                             // In Acara, it uses pivot. For Harian, let's just sum it to the subtotal, 
                             // or attach the items properly. DetailPesanan only accepts array of IDs currently in acara.
@@ -210,7 +210,7 @@ class KateringHarianController extends Controller
             $menusDipilih[] = [
                 'menu_id' => $jadwal->menu_id,
                 'porsi' => $porsi,
-                'menu_item_ids' => $selectedItemsData,
+                'tambahan_lauk_pauk_ids' => $selectedItemsData,
                 'subtotal' => $subtotal,
                 'tanggal_pengiriman' => $jadwal->tanggal,
             ];
@@ -292,7 +292,7 @@ class KateringHarianController extends Controller
                 ]);
 
                 if (!empty($menuData['menu_item_ids'])) {
-                    $detail->menuItems()->attach($menuData['menu_item_ids']);
+                    $detail->tambahanLaukPauk()->attach($menuData['tambahan_lauk_pauk_ids'] ?? []);
                 }
             }
 
@@ -369,7 +369,7 @@ class KateringHarianController extends Controller
             $jadwalMenu->save();
 
             // Kosongkan relasi menu tambahan (hangus)
-            $detail->menuItems()->detach();
+            $detail->tambahanLaukPauk()->detach();
 
             // Update data detail
             $detail->update([

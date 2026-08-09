@@ -75,7 +75,7 @@ class MenuHarianSeeder extends Seeder
 
                 // Buat atau update Item Menu
                 foreach ($menuData['items'] as $itemName) {
-                    \App\Models\MenuItem::firstOrCreate(
+                    \App\Models\TambahanLaukPauk::firstOrCreate(
                         [
                             'menu_id' => $menu->id,
                             'nama' => $itemName,

@@ -20,9 +20,9 @@ class Menu extends Model
         'status',
     ];
 
-    public function items()
+    public function tambahanLaukPauk()
     {
-        return $this->hasMany(MenuItem::class);
+        return $this->hasMany(TambahanLaukPauk::class);
     }
 
     public function pesanan()

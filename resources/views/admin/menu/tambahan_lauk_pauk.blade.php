@@ -46,7 +46,7 @@
                                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditIsi{{ $item->id }}">
                                         Edit
                                     </button>
-                                    <form action="{{ route('admin.menu.item.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus item ini?');">
+                                    <form action="{{ route('admin.menu.tambahan.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus item ini?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
@@ -57,7 +57,7 @@
                             <!-- Modal Edit Item -->
                             <div class="modal fade" id="modalEditIsi{{ $item->id }}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
-                                    <form action="{{ route('admin.menu.item.update', $item->id) }}" method="POST">
+                                    <form action="{{ route('admin.menu.tambahan.update', $item->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
                                         <div class="modal-content">
@@ -99,7 +99,7 @@
 <!-- Modal Tambah Item -->
 <div class="modal fade" id="modalTambahIsi" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <form action="{{ route('admin.menu.items.store', $menu->id) }}" method="POST">
+        <form action="{{ route('admin.menu.tambahan.store', $menu->id) }}" method="POST">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">

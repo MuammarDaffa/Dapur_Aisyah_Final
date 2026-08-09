@@ -48,7 +48,7 @@ class ProfilController extends Controller
             \Illuminate\Support\Facades\DB::beginTransaction();
             
             foreach ($pesanan->detailPesanans as $detail) {
-                $detail->menuItems()->detach();
+                $detail->tambahanLaukPauk()->detach();
             }
             $pesanan->detailPesanans()->delete();
             $pesanan->delete();
