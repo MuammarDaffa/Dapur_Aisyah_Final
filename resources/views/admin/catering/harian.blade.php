@@ -134,16 +134,16 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                             @csrf
                             @method('DELETE')
                             <div class="modal-header">
-                                <h5 class="modal-title text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Reset Seluruh Jadwal</h5>
+                                <h5 class="modal-title fw-bold">Reset Seluruh Jadwal</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p class="mb-0">Apakah Anda yakin ingin <strong>menghapus seluruh jadwal menu katering harian</strong> di database?</p>
-                                <p class="text-muted small mt-2">Catatan: Tindakan ini tidak bisa dibatalkan, namun pesanan pelanggan lama tidak akan terdampak.</p>
+                                <p class="mb-0">Apakah Anda yakin ingin menghapus seluruh jadwal menu katering harian?</p>
+                                <!-- <p class="text-muted small mt-2">Catatan: Tindakan ini tidak bisa dibatalkan, namun pesanan pelanggan lama tidak akan terdampak.</p> -->
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                <button type="submit" class="btn btn-danger">Ya, Reset Jadwal</button>
+                                <button type="submit" class="btn btn-danger">Ya</button>
                             </div>
                         </form>
                     </div>
@@ -151,9 +151,6 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
             </div>
             @else
                 <div class="card-body pt-0">
-                    <div class="alert alert-info mb-0">
-                        <i class="bi bi-info-circle me-1"></i> Silakan pilih rentang tanggal dan klik <b>Generate</b> untuk mengatur jadwal menu.
-                    </div>
                 </div>
             @endif
         </div>

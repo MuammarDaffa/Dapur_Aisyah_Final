@@ -27,7 +27,7 @@
                                 <td class="align-middle text-center">
                                     <form action="{{ route('owner.ulasan.destroy', $r->id) }}" method="POST" class="d-inline" id="delete-form-{{ $r->id }}">
                                         @csrf @method('DELETE')
-                                        <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('delete-form-{{ $r->id }}', 'Hapus ulasan ini?')"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('delete-form-{{ $r->id }}', 'Hapus ulasan ini?')">Hapus</button>
                                     </form>
                                 </td>
                             </tr>

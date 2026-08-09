@@ -171,6 +171,7 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     
     // Laporan
     Route::get('/laporan', [OwnerLaporanController::class, 'index'])->name('reports');
+    Route::get('/laporan/pdf', [OwnerLaporanController::class, 'cetakPdf'])->name('reports.pdf');
 });
 
 /*
