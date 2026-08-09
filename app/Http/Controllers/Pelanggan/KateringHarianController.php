@@ -291,8 +291,10 @@ class KateringHarianController extends Controller
                     'tanggal_pengiriman' => $menuData['tanggal_pengiriman'],
                 ]);
 
-                if (!empty($menuData['menu_item_ids'])) {
-                    $detail->tambahanLaukPauk()->attach($menuData['tambahan_lauk_pauk_ids'] ?? []);
+                if (!empty($menuData['tambahan_lauk_pauk_ids'])) {
+                    foreach ($menuData['tambahan_lauk_pauk_ids'] as $itemId) {
+                        $detail->tambahanLaukPauk()->attach($itemId);
+                    }
                 }
             }
 
