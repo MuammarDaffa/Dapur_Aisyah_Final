@@ -76,9 +76,6 @@
                                     <td>
                                         @if($detail->menu)
                                             <div class="fw-medium">{{ $detail->menu->nama_menu }}</div>
-                                            @if($detail->tipe_penyajian)
-                                                <small class="text-muted">Kemasan: {{ $detail->tipe_penyajian }}</small>
-                                            @endif
                                             @if($detail->menuItems->count() > 0)
                                                 <ul class="list-unstyled ms-3 mb-0 small text-muted">
                                                     @foreach($detail->menuItems as $item)

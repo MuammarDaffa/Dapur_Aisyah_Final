@@ -96,10 +96,8 @@
                                     }
                                     
                                     $menuName = $detail->menu ? $detail->menu->nama_menu : '<span class="text-warning"><i class="fa-solid fa-clock"></i> Menunggu Jadwal Admin</span>';
-                                    if ($detail->tipe_penyajian) {
-                                        $menuName .= '<br><small class="text-muted">Kemasan: ' . $detail->tipe_penyajian . '</small>';
-                                    }
                                     
+
                                     $formattedDate = $detail->tanggal_pengiriman ? \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('d F Y') : '-';
                                 @endphp
 

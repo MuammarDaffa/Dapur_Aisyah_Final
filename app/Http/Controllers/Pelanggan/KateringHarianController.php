@@ -267,7 +267,6 @@ class KateringHarianController extends Controller
                     'alamat_lengkap' => $alamat_lengkap,
                     'subtotal' => $totalHargaKeseluruhan,
                     'total' => $totalHargaKeseluruhan,
-                    'tipe_penyajian' => 'nasi_kotak',
                     'jumlah_dp' => $jumlahDp,
                     'sisa_pembayaran' => $sisaPembayaran,
                     'status_pembayaran' => \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR,
