@@ -101,7 +101,7 @@
                         <a href="{{ route('login') }}" class="nav-link">Masuk</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('register') }}" class="btn btn-warning rounded-pill px-3">Daftar</a>
+                        <a href="{{ route('register') }}" class="btn btn-warning text-dark px-3">Daftar</a>
                     </li>
                 @endif
             </ul>
