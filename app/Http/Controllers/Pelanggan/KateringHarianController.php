@@ -83,7 +83,7 @@ class KateringHarianController extends Controller
         $service = (object) ['tipe_layanan' => 'harian', 'nama' => 'Katering Harian'];
 
         $besok = \Carbon\Carbon::tomorrow()->toDateString();
-        $jadwals = \App\Models\JadwalMenu::with(['menu', 'menu.items'])
+        $jadwals = \App\Models\JadwalMenu::with(['menu', 'menu.tambahanLaukPauk'])
             ->where('tanggal', '>=', $besok)
             ->where('aktif', true)
             ->orderBy('tanggal', 'asc')
@@ -107,7 +107,7 @@ class KateringHarianController extends Controller
         $service = (object) ['tipe_layanan' => 'harian', 'nama' => 'Katering Harian'];
         
         $besok = \Carbon\Carbon::tomorrow()->toDateString();
-        $jadwals = \App\Models\JadwalMenu::with(['menu', 'menu.items'])
+        $jadwals = \App\Models\JadwalMenu::with(['menu', 'menu.tambahanLaukPauk'])
             ->where('tanggal', '>=', $besok)
             ->where('aktif', true)
             ->orderBy('tanggal', 'asc')

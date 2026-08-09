@@ -45,11 +45,11 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                             <button type="submit" class="btn btn-success">
                                  Generate Jadwal 1 Minggu
                             </button>
-                            @if(request('start_date'))
+                            <!-- @if(request('start_date'))
                                 <a href="{{ route('admin.catering.harian', 'harian') }}" class="btn btn-secondary">
                                     Reset
                                 </a>
-                            @endif
+                            @endif -->
                         </div>
                     </div>
                 </form>
@@ -203,7 +203,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                         <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-sm btn-warning">
                                             Edit
                                         </a>
-                                        <a href="{{ route('admin.menu.items.index', $menu->id) }}" class="btn btn-sm btn-info text-white">
+                                        <a href="{{ route('admin.menu.tambahan.index', $menu->id) }}" class="btn btn-sm btn-info text-white">
                                             Tambahan Menu
                                         </a>
                                         {{-- Tombol Hapus --}}

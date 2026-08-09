@@ -24,7 +24,7 @@ class LandingController extends Controller
             ],
             (object) [
                 'tipe_layanan' => 'acara',
-                'nama' => 'Katering Acara',
+                'nama' => 'Katering Acara Kantoran',
                 'base_price' => $acaraBasePrice,
             ]
         ];

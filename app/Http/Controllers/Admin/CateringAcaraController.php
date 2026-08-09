@@ -22,7 +22,7 @@ class CateringAcaraController extends Controller
             return redirect()->route('admin.dashboard')->with('error', 'Layanan ini bukan tipe Acara.');
         }
 
-        $menus = \App\Models\Menu::with('items')->where('tipe_layanan', 'acara')->get();
+        $menus = \App\Models\Menu::with('tambahanLaukPauk')->where('tipe_layanan', 'acara')->get();
         $minumans = \App\Models\Minuman::where('tipe_layanan', 'acara')->get();
         
         return view('admin.catering.show', compact(
