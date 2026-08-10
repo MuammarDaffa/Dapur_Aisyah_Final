@@ -80,7 +80,8 @@
                                     <div class="col-12 col-md-8">
                                         <div class="mb-3">
                                             <span class="fw-semibold d-block">Menu :</span>
-                                            <span class="text-dark">{{ $jadwal->menu->nama_menu }}</span>
+                                            <span class="text-dark d-block">{{ $jadwal->menu->nama_menu }}</span>
+                                            <span class="text-dark">Rp. {{ number_format($jadwal->menu->harga, 0, ',', '.') }}</span>
                                         </div>
                                         <div class="mb-3">
                                             <span class="fw-semibold d-block">Terdiri dari :</span>
