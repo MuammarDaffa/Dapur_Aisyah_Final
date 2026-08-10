@@ -90,7 +90,8 @@
                                     <th>ID Pesanan</th>
                                     <th>Pelanggan</th>
                                     <th>Waktu Pesan</th>
-                                    <th>Status</th>
+                                    <th>Status Pembayaran</th>
+                                    <th>Status Pesanan</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -101,9 +102,11 @@
                                         <td class="align-middle">{{ $pesanan->user->name ?? '-' }}</td>
                                         <td class="align-middle">{{ $pesanan->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="align-middle">
-                                            <span class="badge text-bg-{{ $pesanan->status_pembayaran_color }} mb-1">
+                                            <span class="badge text-bg-{{ $pesanan->status_pembayaran_color }}">
                                                 {{ $pesanan->status_pembayaran_label }}
                                             </span>
+                                        </td>
+                                        <td class="align-middle">
                                             <span class="badge text-bg-{{ $pesanan->status_pesanan_color }}">
                                                 {{ $pesanan->status_pesanan_label }}
                                             </span>
@@ -114,7 +117,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">Belum ada pesanan terbaru.</td>
+                                        <td colspan="6" class="text-center text-muted py-4">Belum ada pesanan terbaru.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

@@ -50,7 +50,7 @@
         <div class="card card-outline card-info">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title mb-0">Daftar Pesanan</h3>
-                <a href="{{ route('owner.reports.pdf', request()->all()) }}" target="_blank" class="btn btn-danger btn-sm"><i class="fas fa-file-pdf me-1"></i> Cetak PDF</a>
+                <a href="{{ route('owner.reports.pdf', request()->all()) }}" target="_blank" class="btn btn-danger btn-sm">     Cetak PDF</a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
