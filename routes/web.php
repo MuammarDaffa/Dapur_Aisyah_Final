@@ -8,7 +8,7 @@ use App\Http\Controllers\Pelanggan\ProfilController;
 use App\Http\Controllers\Pelanggan\UlasanController as CustomerUlasanController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\PesananController as AdminPesananController;
-use App\Http\Controllers\Admin\CateringController;
+
 use App\Http\Controllers\Admin\CateringHarianController;
     // =======================================
     // Controllers for Catering/Menu
