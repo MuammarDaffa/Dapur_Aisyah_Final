@@ -23,35 +23,44 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="row detail-info mb-4">
-                    <div class="col-sm-4 detail-col">
-                        Pelanggan
-                        <address>
-                            <strong>{{ $pesanan->user->name }}</strong><br>
-                            Telepon: {{ $pesanan->user->phone }}<br>
-                            Email: {{ $pesanan->user->email }}
-                        </address>
+                <div class="mb-5">
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px;">Pelanggan</strong>
+                        <span>: {{ $pesanan->user->name }}</span>
                     </div>
-                    <div class="col-sm-4 detail-col">
-                        Detail Pesanan
-                        <address>
-                            <strong>Katering {{ ucfirst($pesanan->tipe_layanan) }}</strong><br>
-                                Tgl Kirim: {{ $pesanan->tanggal_pesanan->format('d M Y') }}<br>
-                            <strong>Metode:</strong>{{ ucfirst($pesanan->metode_pengambilan) }}<br>
-                            @if($pesanan->metode_pengambilan === 'diantar_ke_tempat')
-                                <strong>Lokasi:</strong> {{ $pesanan->alamat_lengkap ?? '-' }}
-                            @endif
-                        </address>
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px;">Telepon</strong>
+                        <span>: {{ $pesanan->user->phone }}</span>
                     </div>
-
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px;">Email</strong>
+                        <span>: <a href="mailto:{{ $pesanan->user->email }}" class="text-primary text-decoration-none">{{ $pesanan->user->email }}</a></span>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px;">Tipe Katering</strong>
+                        <span>: Katering {{ ucfirst($pesanan->tipe_layanan) }} Kantoran</span>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px;">Tgl Kirim</strong>
+                        <span>: {{ $pesanan->tanggal_pesanan->format('d M Y') }}</span>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px;">Metode</strong>
+                        <span>: {{ ucfirst($pesanan->metode_pengambilan) }}</span>
+                    </div>
+                    @if($pesanan->metode_pengambilan === 'diantar_ke_tempat')
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px;">Lokasi</strong>
+                        <span>: {{ $pesanan->alamat_lengkap ?? '-' }}</span>
+                    </div>
+                    @endif
+                    @if($pesanan->catatan)
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px;">Catatan</strong>
+                        <span>: {{ $pesanan->catatan }}</span>
+                    </div>
+                    @endif
                 </div>
-
-                @if($pesanan->catatan)
-                <div class="callout callout-info mb-4">
-                    <h5> Catatan</h5>
-                    <p>{{ $pesanan->catatan }}</p>
-                </div>
-                @endif
 
                 <h4 class="mb-3">Detail Pesanan</h4>
                 <div class="table-responsive">
