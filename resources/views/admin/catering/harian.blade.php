@@ -90,11 +90,11 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                     </td>
                                     
                                     <td>
-                                        <input type="date" class="form-control input-tanggal" name="jadwal[{{ $tanggalStr }}][tanggal]" value="{{ $tanggalStr }}" {{ $isAktif ? '' : 'disabled' }} readonly style="pointer-events: none;">
+                                        <input type="date" class="form-control form-control-sm shadow-none input-tanggal" name="jadwal[{{ $tanggalStr }}][tanggal]" value="{{ $tanggalStr }}" {{ $isAktif ? '' : 'disabled' }} readonly style="pointer-events: none;">
                                     </td>
                                     
                                     <td>
-                                        <select class="form-select input-menu" name="jadwal[{{ $tanggalStr }}][menu_id]" {{ $isAktif ? '' : 'disabled' }} required>
+                                        <select class="form-select form-select-sm shadow-none input-menu" name="jadwal[{{ $tanggalStr }}][menu_id]" {{ $isAktif ? '' : 'disabled' }} required>
                                             <option value="">-- Pilih Menu --</option>
                                             @foreach($daftarMenu as $menu)
                                                 <option value="{{ $menu->id }}" {{ $isAktif && $jadwal->menu_id == $menu->id ? 'selected' : '' }}>
@@ -105,11 +105,11 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                     </td>
                                     
                                     <td>
-                                        <input type="number" class="form-control input-stok" name="jadwal[{{ $tanggalStr }}][stok_awal]" value="{{ $isAktif ? $jadwal->stok_awal : 0 }}" min="0" {{ $isAktif ? '' : 'disabled' }}>
+                                        <input type="number" class="form-control form-control-sm shadow-none input-stok" name="jadwal[{{ $tanggalStr }}][stok_awal]" value="{{ $isAktif ? $jadwal->stok_awal : 0 }}" min="0" {{ $isAktif ? '' : 'disabled' }}>
                                     </td>
                                     
                                     <td>
-                                        <input type="text" class="form-control bg-light" value="{{ $isAktif ? $jadwal->stok_tersisa : '-' }}" readonly>
+                                        <input type="text" class="form-control form-control-sm shadow-none bg-transparent border-0 text-center fw-bold" value="{{ $isAktif ? $jadwal->stok_tersisa : '-' }}" readonly>
                                     </td>
                                 </tr>
                             @endforeach
