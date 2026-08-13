@@ -102,6 +102,16 @@
                             </span>
                         </div>
                     </div>
+                    
+                    @if($pesanan->catatan)
+                    <hr class="my-3">
+                    <div class="row">
+                        <div class="col-12">
+                            <span class="text-muted d-block small mb-1">Catatan</span>
+                            <span class="fw-semibold">{{ $pesanan->catatan }}</span>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
 

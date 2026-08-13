@@ -89,7 +89,22 @@
                             </div>
                         @endforelse
                     </div>
+                    
                 </div>
+                
+                <!-- Bagian Catatan -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold text-dark mb-1">Catatan </h5>
+                        <div class="mb-2">
+                            <textarea class="form-control @error('catatan') is-invalid @enderror" name="catatan" id="catatan" rows="3" placeholder="Contoh: Tolong disajikan prasmanan dan makanannya jangan terlalu pedas.">{{ old('catatan', isset($pesanan) ? $pesanan->catatan : '') }}</textarea>
+                            @error('catatan')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            
 
                 @if(isset($minumans) && $minumans->count() > 0)
                 <!-- Bagian Minuman -->

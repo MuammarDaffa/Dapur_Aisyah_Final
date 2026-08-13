@@ -48,7 +48,7 @@
 
                 @if($pesanan->catatan)
                 <div class="callout callout-info mb-4">
-                    <h5><i class="fa-solid fa-note-sticky text-info"></i> Catatan Pesanan:</h5>
+                    <h5> Catatan</h5>
                     <p>{{ $pesanan->catatan }}</p>
                 </div>
                 @endif

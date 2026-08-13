@@ -246,6 +246,7 @@ class KateringAcaraController extends Controller
                     'total' => $totalHargaKeseluruhan,
                     'jumlah_dp' => $jumlahDp,
                     'sisa_pembayaran' => $sisaPembayaran,
+                    'catatan' => $request->input('catatan'),
                 ]);
 
                 // Hapus detail lama untuk diganti yang baru
@@ -264,6 +265,7 @@ class KateringAcaraController extends Controller
                     'sisa_pembayaran' => $sisaPembayaran,
                     'status_pembayaran' => \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR,
                     'status_pesanan' => null,
+                    'catatan' => $request->input('catatan'),
                 ]);
             }
 
