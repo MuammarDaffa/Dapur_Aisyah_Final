@@ -53,12 +53,7 @@
                 </div>
                 @endif
 
-                @if($pesanan->alasan_pembatalan)
-                <div class="callout callout-danger mb-4">
-                    <h5><i class="fa-solid fa-ban text-danger"></i> Alasan Pembatalan:</h5>
-                    <p>{{ $pesanan->alasan_pembatalan }}</p>
-                </div>
-                @endif
+
 
                 <h4 class="mb-3">Detail Pesanan</h4>
                 <div class="table-responsive">
