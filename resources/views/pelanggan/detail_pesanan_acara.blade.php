@@ -74,42 +74,36 @@
                     Informasi Acara
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3 mb-md-0">
-                            <span class="text-muted d-block small mb-1">Tanggal Acara</span>
-                            <span class="fw-semibold">{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->translatedFormat('l, d F Y') }}</span>
-                        </div>
-                        <div class="col-md-4 mb-3 mb-md-0">
-                            <span class="text-muted d-block small mb-1">Metode Pengambilan</span>
-                            <span class="fw-semibold">
-                                @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
-                                    Di Antar ke Lokasi
-                                @else
-                                    Ambil Sendiri
-                                @endif
-                            </span>
-                        </div>
-                        <div class="col-md-4">
-                            <span class="text-muted d-block small mb-1">Alamat</span>
-                            <span class="fw-semibold">
-                                @if($pesanan->alamat_lengkap)
-                                    {{ $pesanan->alamat_lengkap }}
-                                @elseif($pesanan->metode_pengambilan == 'ambil_sendiri')
-                                    <span class="text-muted fst-italic">Diambil di Dapur Aisyah</span>
-                                @else
-                                    <span class="text-muted fst-italic">-</span>
-                                @endif
-                            </span>
-                        </div>
+                    <div class="d-flex mb-2">
+                        <strong class="text-muted" style="width: 180px;">Tanggal Acara</strong>
+                        <span class="fw-semibold">: {{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->translatedFormat('l, d F Y') }}</span>
                     </div>
-                    
+                    <div class="d-flex mb-2">
+                        <strong class="text-muted" style="width: 180px;">Metode Pengambilan</strong>
+                        <span class="fw-semibold">: 
+                            @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
+                                Di Antar ke Lokasi
+                            @else
+                                Ambil Sendiri
+                            @endif
+                        </span>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <strong class="text-muted" style="width: 180px;">Alamat</strong>
+                        <span class="fw-semibold">: 
+                            @if($pesanan->alamat_lengkap)
+                                {{ $pesanan->alamat_lengkap }}
+                            @elseif($pesanan->metode_pengambilan == 'ambil_sendiri')
+                                <span class="fst-italic">Diambil di Dapur Aisyah</span>
+                            @else
+                                <span class="fst-italic">-</span>
+                            @endif
+                        </span>
+                    </div>
                     @if($pesanan->catatan)
-                    <hr class="my-3">
-                    <div class="row">
-                        <div class="col-12">
-                            <span class="text-muted d-block small mb-1">Catatan</span>
-                            <span class="fw-semibold">{{ $pesanan->catatan }}</span>
-                        </div>
+                    <div class="d-flex mb-2">
+                        <strong class="text-muted" style="width: 180px;">Catatan</strong>
+                        <span class="fw-semibold">: {{ $pesanan->catatan }}</span>
                     </div>
                     @endif
                 </div>
@@ -124,7 +118,7 @@
                     @if($pesanan->sisa_pembayaran > 0)
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">Sisa Pelunasan </span>
-                        <span class="fw-bold fs-5 text-danger">Rp {{ number_format($pesanan->sisa_pembayaran, 0, ',', '.') }}</span>
+                        <span class="fw-bold fs-5 ">Rp {{ number_format($pesanan->sisa_pembayaran, 0, ',', '.') }}</span>
                     </div>
                     @endif
                     <hr>
