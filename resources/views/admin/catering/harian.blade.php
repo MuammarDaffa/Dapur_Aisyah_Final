@@ -43,8 +43,16 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                         </div>
                         <div class="col-md-6">
                             <button type="submit" class="btn btn-success">
-                                 Generate Jadwal 1 Minggu
+                                 Buat Jadwal
                             </button>
+
+                              <form action="{{ route('admin.catering.harian.reset') }}" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" class="btn btn-danger" onclick="resetJadwal(this.form)">
+                         Hapus Jadwal
+                    </button>
+                </form>
                             <!-- @if(request('start_date'))
                                 <a href="{{ route('admin.catering.harian', 'harian') }}" class="btn btn-secondary">
                                     Reset
@@ -116,38 +124,11 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                         </tbody>
                     </table>
                 </div>
-                <div class="card-footer d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">
-                        Simpan Jadwal
-                    </button>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#resetJadwalModal">
-                         Reset Semua Jadwal
-                    </button>
-                </div>
             </form>
-
-            <!-- Modal Reset Jadwal -->
-            <div class="modal fade text-start" id="resetJadwalModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <form action="{{ route('admin.catering.harian.reset') }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <div class="modal-header">
-                                <h5 class="modal-title fw-bold">Reset Seluruh Jadwal</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p class="mb-0">Apakah Anda yakin ingin menghapus seluruh jadwal menu katering harian?</p>
-                                <!-- <p class="text-muted small mt-2">Catatan: Tindakan ini tidak bisa dibatalkan, namun pesanan pelanggan lama tidak akan terdampak.</p> -->
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                <button type="submit" class="btn btn-danger">Ya</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <div class="card-footer d-flex gap-2">
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('formJadwal').submit()">
+                    Simpan Jadwal
+                </button>
             </div>
             @else
                 <div class="card-body pt-0">
@@ -262,6 +243,22 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
             cancelButtonColor: '#6c757d',
             confirmButtonText: 'Ya',
             cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    function resetJadwal(form) {
+        Swal.fire({
+            title: 'Apakah Anda ingin reset jadwal ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya',
+            cancelButtonText: 'Tidak'
         }).then((result) => {
             if (result.isConfirmed) {
                 form.submit();
