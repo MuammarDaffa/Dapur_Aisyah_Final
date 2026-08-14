@@ -42,24 +42,21 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                             <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date') }}" required>
                         </div>
                         <div class="col-md-6">
-                            <button type="submit" class="btn btn-success">
-                                 Buat Jadwal
-                            </button>
-
-                              <form action="{{ route('admin.catering.harian.reset') }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button" class="btn btn-danger" onclick="resetJadwal(this.form)">
-                         Hapus Jadwal
-                    </button>
-                </form>
-                            <!-- @if(request('start_date'))
-                                <a href="{{ route('admin.catering.harian', 'harian') }}" class="btn btn-secondary">
-                                    Reset
-                                </a>
-                            @endif -->
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success">
+                                     Buat Jadwal
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="resetJadwal(document.getElementById('formResetJadwal'))">
+                                     Hapus Jadwal
+                                </button>
+                            </div>
                         </div>
                     </div>
+                </form>
+
+                <form id="formResetJadwal" action="{{ route('admin.catering.harian.reset') }}" method="POST" class="d-none">
+                    @csrf
+                    @method('DELETE')
                 </form>
             </div>
 
