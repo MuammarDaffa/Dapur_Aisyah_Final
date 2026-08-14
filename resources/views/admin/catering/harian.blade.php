@@ -109,7 +109,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                     </td>
                                     
                                     <td>
-                                        <input type="text" class="form-control form-control-sm shadow-none bg-transparent border-0 text-center fw-bold" value="{{ $isAktif ? $jadwal->stok_tersisa : '-' }}" readonly>
+                                        <input type="text" class="form-control form-control-sm shadow-none bg-transparent border-0 text-center" value="{{ $isAktif ? $jadwal->stok_tersisa : '-' }}" readonly>
                                     </td>
                                 </tr>
                             @endforeach

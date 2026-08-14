@@ -64,13 +64,7 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
                         @error('harga')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
 
-                    {{-- Status Aktif --}}
-                    <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" name="status" value="1" id="statusCheck" {{ old('status', $menu->status) ? 'checked' : '' }}>
-                        <label class="form-check-label fw-bold" for="statusCheck">
-                            Tersedia (Aktif)
-                        </label>
-                    </div>
+
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-warning">

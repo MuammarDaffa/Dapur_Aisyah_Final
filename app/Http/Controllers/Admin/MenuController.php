@@ -21,12 +21,10 @@ class MenuController extends Controller
             'nama_menu' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'harga' => 'required|numeric|min:0',
-            'status' => 'boolean'
+            'harga' => 'required|numeric|min:0'
         ]);
 
         $validated['tipe_layanan'] = $tipe_layanan;
-        $validated['status'] = $request->boolean('status');
 
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
@@ -54,11 +52,8 @@ class MenuController extends Controller
             'nama_menu' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'harga' => 'required|numeric|min:0',
-            'status' => 'boolean'
+            'harga' => 'required|numeric|min:0'
         ]);
-
-        $validated['status'] = $request->boolean('status');
 
         if ($request->hasFile('gambar')) {
             if ($menu->gambar) {

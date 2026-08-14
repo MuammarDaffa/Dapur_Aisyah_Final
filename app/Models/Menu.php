@@ -17,7 +17,6 @@ class Menu extends Model
         'deskripsi',
         'gambar',
         'harga',
-        'status',
     ];
 
     public function tambahanLaukPauk()
