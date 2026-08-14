@@ -10,14 +10,16 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
 @section('title', 'Edit Menu')
 
 @section('content')
+<!-- <div class="row mb-3">
+    <div class="col-12">
+        <a href="{{ $menu->tipe_layanan === 'harian' ? route('admin.catering.harian') : route('admin.catering.acara') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali 
+        </a>
+    </div>
+</div> -->
+
 <div class="row">
     <div class="col-md-8">
-        {{-- Tombol Batal/Kembali --}}
-        <div class="mb-3">
-            <a href="{{ $menu->tipe_layanan === 'harian' ? route('admin.catering.harian', 'harian') : route('admin.catering.acara', 'acara') }}" class="text-decoration-none">
-                <i class="bi bi-arrow-left"></i> Batal & Kembali
-            </a>
-        </div>
 
         <form action="{{ route('admin.menu.update', $menu->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -43,9 +45,9 @@ Fungsi : Halaman untuk mengedit menu yang sudah ada.
                         
                         <div class="mt-2">
                             @if($menu->gambar)
-                                <img id="preview" src="{{ asset('storage/menu/' . $menu->gambar) }}" alt="Preview Gambar" class="img-thumbnail" style="max-height: 200px;">
+                                <img id="preview" src="{{ asset('storage/menu/' . $menu->gambar) }}" alt="Preview Gambar" style="max-height: 200px;">
                             @else
-                                <img id="preview" src="#" alt="Preview Gambar" class="img-thumbnail" style="max-height: 200px; display: none;">
+                                <img id="preview" src="#" alt="Preview Gambar" style="max-height: 200px; display: none;">
                             @endif
                         </div>
                     </div>

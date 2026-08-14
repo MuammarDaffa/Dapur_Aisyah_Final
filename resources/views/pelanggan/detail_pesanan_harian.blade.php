@@ -31,7 +31,7 @@
                     <table class="table table-bordered align-middle">
                         <thead class="table-light text-center">
                             <tr>
-                                <th style="width: 20%;">Tanggal Pengiriman</th>
+                                <th style="width: 20%;">Hari/Tanggal</th>
                                 <th style="width: 20%;">Menu</th>
                                 <th style="width: 8%;">Porsi</th>
                                 <th style="width: 22%;">Tambahan</th>

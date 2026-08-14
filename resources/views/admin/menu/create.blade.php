@@ -10,14 +10,16 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
 @section('title', 'Tambah Menu')
 
 @section('content')
+<!-- <div class="row mb-3">
+    <div class="col-12">
+        <a href="{{ $tipe_layanan === 'harian' ? route('admin.catering.harian') : route('admin.catering.acara') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali 
+        </a>
+    </div>
+</div> -->
+
 <div class="row">
     <div class="col-md-8">
-        {{-- Tombol Batal/Kembali --}}
-        <div class="mb-3">
-            <a href="{{ $tipe_layanan === 'harian' ? route('admin.catering.harian', 'harian') : route('admin.catering.acara', 'acara') }}" class="text-decoration-none">
-                <i class="bi bi-arrow-left"></i> Batal & Kembali
-            </a>
-        </div>
 
         <form action="{{ route('admin.menu.store', $tipe_layanan) }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -38,7 +40,7 @@ Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
                         <label class="form-label fw-bold">Upload Foto <span class="text-danger">*</span></label>
                         <input type="file" name="gambar" id="gambar" class="form-control" accept="image/jpeg,image/png,image/jpg" required>
                         @error('gambar')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
-                        <img id="preview" src="#" alt="Preview Gambar" class="img-thumbnail mt-2" style="max-height: 200px; display: none;">
+                        <img id="preview" src="#" alt="Preview Gambar" class="mt-2" style="max-height: 200px; display: none;">
                     </div>
 
                     {{-- Deskripsi Menu --}}

@@ -166,7 +166,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                 <td class="text-start">{{ $menu->nama_menu }}</td>
                                 <td class="text-center">
                                     @if($menu->gambar)
-                                        <img src="{{ asset('storage/menu/' . $menu->gambar) }}" class="img-thumbnail" style="width:80px;height:80px;object-fit:cover;" alt="Gambar Menu">
+                                        <img src="{{ asset('storage/menu/' . $menu->gambar) }}" style="width:80px;height:80px;object-fit:cover;" alt="Gambar Menu">
                                     @else
                                         <span class="text-muted small">Belum ada gambar</span>
                                     @endif

@@ -60,7 +60,7 @@
                     <table class="table table-bordered align-middle">
                         <thead class="table-light text-center">
                             <tr>
-                                <th>Tanggal Pengiriman</th>
+                                <th>Tanggal</th>
                                 <th>Menu</th>
                                 <th>Porsi</th>
                                 <th>Tambahan</th>
