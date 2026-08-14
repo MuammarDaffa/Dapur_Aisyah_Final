@@ -96,25 +96,9 @@ class CateringHarianController extends Controller
     {
         $startDate = $request->input('start_date');
         $jadwalInput = $request->input('jadwal', []);
-
-        if (!$startDate) {
-            return back()->with('error', 'Tanggal mulai tidak ditemukan, silakan generate ulang.');
-        }
+        $daftarTanggal = array_keys($jadwalInput);
 
         Carbon::setLocale('id');
-        $start = Carbon::parse($startDate);
-        $endDate = $start->copy()->next(Carbon::FRIDAY);
-        if ($start->isFriday()) {
-            $endDate = $start->copy();
-        }
-
-        $period = CarbonPeriod::create($start, $endDate);
-        
-        $daftarTanggal = [];
-        foreach ($period as $date) {
-            if ($date->isSaturday() || $date->isSunday()) continue;
-            $daftarTanggal[] = $date->format('Y-m-d');
-        }
 
         // Melakukan proses validasi tanggal terlebih dahulu sebelum menyimpan data apapun
         foreach ($daftarTanggal as $keyTanggal) {
@@ -200,9 +184,8 @@ class CateringHarianController extends Controller
             }
         }
 
-        return redirect()->route('admin.catering.harian', [
-            'start_date' => $startDate
-        ])->with('swal_success', 'Jadwal tersimpan');
+        $redirectParams = $startDate ? ['start_date' => $startDate] : [];
+        return redirect()->route('admin.catering.harian', $redirectParams)->with('swal_success', 'Jadwal tersimpan');
     }
 
     public function resetJadwal()

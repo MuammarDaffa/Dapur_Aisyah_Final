@@ -122,7 +122,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
             </form>
             <div class="card-footer d-flex gap-2">
                 <button type="button" class="btn btn-primary" onclick="document.getElementById('formJadwal').submit()">
-                    Simpan Jadwal
+                    Simpan
                 </button>
             </div>
             @else

@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Kelola Item Menu')
+@section('title', 'Kelola Tambahan Lauk Pauk')
 
 @section('content')
 <div class="row mb-3">
     <div class="col-12">
         <a href="{{ $menu->tipe_layanan === 'harian' ? route('admin.catering.harian') : route('admin.catering.acara') }}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Kembali ke Menu {{ $menu->tipe_layanan === 'harian' ? 'Harian' : 'Acara' }}
+            <i class="bi bi-arrow-left"></i> Kembali 
         </a>
     </div>
 </div>

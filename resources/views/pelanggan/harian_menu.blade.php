@@ -128,7 +128,7 @@
                             </div>
                         @empty
                             <div class="text-center py-5">
-                                <p class="text-dark mb-0">Belum ada jadwal harian yang tersedia mulai besok ke depan.</p>
+                                <p class="text-dark mb-0">Belum ada menu tersedia saat ini</p>
                             </div>
                         @endforelse
                     </div>
