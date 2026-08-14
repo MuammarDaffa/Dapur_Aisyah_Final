@@ -60,7 +60,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                                     <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-warning btn-sm">
                                         Edit
                                     </a>
-                                    <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus menu ini?');">
+                                    <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline" onsubmit="hapusData(event, this)">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
@@ -122,7 +122,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                                             data-bs-target="#editMinumanModal">
                                         Edit
                                     </button>
-                                    <form action="{{ route('admin.minuman.destroy', $minuman->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus minuman ini?');">
+                                    <form action="{{ route('admin.minuman.destroy', $minuman->id) }}" method="POST" class="d-inline" onsubmit="hapusData(event, this)">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
@@ -240,7 +240,37 @@ $(document).ready(function() {
         // Ubah action form ke route update yang benar
         var formAction = "{{ url('admin/minuman') }}/" + minumanId;
         $('#formEditMinuman').attr('action', formAction);
-    });
 });
+
+function hapusData(event, form) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Apakah Anda yakin ingin menghapus data ini?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
 </script>
+
+@if(session('swal_success'))
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        Swal.fire({
+            title: '{{ session('swal_success') }}',
+            icon: 'success',
+            showConfirmButton: true,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#3085d6'
+        });
+    });
+</script>
+@endif
 @endpush

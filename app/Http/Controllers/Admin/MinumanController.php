@@ -20,7 +20,7 @@ class MinumanController extends Controller
 
         Minuman::create($validated);
 
-        return redirect()->route('admin.catering.acara')->with('success', 'Minuman berhasil ditambahkan!');
+        return redirect()->route('admin.catering.acara')->with('swal_success', 'Data berhasil ditambahkan.');
     }
 
     public function update(Request $request, Minuman $minuman)
@@ -32,13 +32,13 @@ class MinumanController extends Controller
 
         $minuman->update($validated);
 
-        return redirect()->route('admin.catering.acara')->with('success', 'Minuman berhasil diupdate!');
+        return redirect()->route('admin.catering.acara')->with('swal_success', 'Data berhasil diupdate.');
     }
 
     public function destroy(Minuman $minuman)
     {
         $minuman->delete();
 
-        return redirect()->route('admin.catering.acara')->with('success', 'Minuman berhasil dihapus!');
+        return redirect()->route('admin.catering.acara');
     }
 }
