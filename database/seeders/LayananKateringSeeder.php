@@ -80,7 +80,6 @@ class LayananKateringSeeder extends Seeder
                 $jadwal = JadwalMenu::create([
                     'menu_harian_id' => $menuHarian->id,
                     'hari' => $hari,
-                    'aktif' => true,
                     'tanggal' => $tanggalObj->format('Y-m-d'),
                     'stok_awal' => 50,
                     'stok_tersisa' => 50,

@@ -83,7 +83,6 @@ class KateringHarianController extends Controller
         $service = (object) ['tipe_layanan' => 'harian', 'nama' => 'Katering Harian'];
 
         $jadwals = \App\Models\JadwalMenu::with(['menu', 'menu.tambahanLaukPauk'])
-            ->where('aktif', true)
             ->orderBy('tanggal', 'asc')
             ->get();
 
@@ -105,7 +104,6 @@ class KateringHarianController extends Controller
         $service = (object) ['tipe_layanan' => 'harian', 'nama' => 'Katering Harian'];
         
         $jadwals = \App\Models\JadwalMenu::with(['menu', 'menu.tambahanLaukPauk'])
-            ->where('aktif', true)
             ->orderBy('tanggal', 'asc')
             ->get();
 

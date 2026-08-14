@@ -68,12 +68,11 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                     <table class="table table-bordered table-hover align-middle text-nowrap">
                         <thead class="table-light">
                             <tr>
-                                <th style="width: 10%;">Hari</th>
-                                <th style="width: 5%;" class="text-center">Aktif</th>
+                                <th style="width: 15%;">Hari</th>
                                 <th style="width: 15%;">Tanggal</th>
-                                <th style="width: 30%;">Menu</th>
+                                <th style="width: 35%;">Menu</th>
                                 <th style="width: 15%;">Stok Awal</th>
-                                <th style="width: 15%;">Sisa Stok</th>
+                                <th style="width: 20%;">Sisa Stok</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -88,21 +87,15 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                 <tr class="jadwal-row">
                                     <td class="fw-bold">{{ $hariStr }}</td>
                                     
-                                    <td class="text-center">
-                                        <div class="form-check d-flex justify-content-center m-0">
-                                            <input class="form-check-input checkbox-aktif" type="checkbox" name="jadwal[{{ $tanggalStr }}][aktif]" value="1" {{ $isAktif ? 'checked' : '' }} onchange="toggleInputs(this)">
-                                        </div>
+                                    <td>
+                                        <input type="date" class="form-control form-control-sm shadow-none input-tanggal" name="jadwal[{{ $tanggalStr }}][tanggal]" value="{{ $tanggalStr }}" readonly style="pointer-events: none;">
                                     </td>
                                     
                                     <td>
-                                        <input type="date" class="form-control form-control-sm shadow-none input-tanggal" name="jadwal[{{ $tanggalStr }}][tanggal]" value="{{ $tanggalStr }}" {{ $isAktif ? '' : 'disabled' }} readonly style="pointer-events: none;">
-                                    </td>
-                                    
-                                    <td>
-                                        <select class="form-select form-select-sm shadow-none input-menu" name="jadwal[{{ $tanggalStr }}][menu_id]" {{ $isAktif ? '' : 'disabled' }} required>
+                                        <select class="form-select form-select-sm shadow-none input-menu" name="jadwal[{{ $tanggalStr }}][menu_id]">
                                             <option value="">-- Pilih Menu --</option>
                                             @foreach($daftarMenu as $menu)
-                                                <option value="{{ $menu->id }}" {{ $isAktif && $jadwal->menu_id == $menu->id ? 'selected' : '' }}>
+                                                <option value="{{ $menu->id }}" {{ $jadwal && $jadwal->menu_id == $menu->id ? 'selected' : '' }}>
                                                     {{ $menu->nama_menu }}
                                                 </option>
                                             @endforeach
@@ -110,11 +103,11 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                     </td>
                                     
                                     <td>
-                                        <input type="number" class="form-control form-control-sm shadow-none input-stok" name="jadwal[{{ $tanggalStr }}][stok_awal]" value="{{ $isAktif ? $jadwal->stok_awal : 0 }}" min="0" {{ $isAktif ? '' : 'disabled' }}>
+                                        <input type="number" class="form-control form-control-sm shadow-none input-stok" name="jadwal[{{ $tanggalStr }}][stok_awal]" value="{{ $jadwal ? $jadwal->stok_awal : 0 }}" min="0">
                                     </td>
                                     
                                     <td>
-                                        <input type="text" class="form-control form-control-sm shadow-none bg-transparent border-0 text-center" value="{{ $isAktif ? $jadwal->stok_tersisa : '-' }}" readonly>
+                                        <input type="text" class="form-control form-control-sm shadow-none bg-transparent border-0 text-center" value="{{ $jadwal ? $jadwal->stok_tersisa : '-' }}" readonly>
                                     </td>
                                 </tr>
                             @endforeach
@@ -211,25 +204,6 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
 
 @push('scripts')
 <script>
-    function toggleInputs(checkbox) {
-        // Cari baris <tr> terdekat
-        const row = checkbox.closest('.jadwal-row');
-        // Cari input menu (select), stok_awal, dan tanggal di dalam baris tersebut
-        const inputMenu = row.querySelector('.input-menu');
-        const inputStok = row.querySelector('.input-stok');
-        const inputTanggal = row.querySelector('.input-tanggal');
-        
-        // Jika checkbox dicentang, aktifkan input; jika tidak, nonaktifkan
-        if (checkbox.checked) {
-            inputMenu.removeAttribute('disabled');
-            inputStok.removeAttribute('disabled');
-            if (inputTanggal) inputTanggal.removeAttribute('disabled');
-        } else {
-            inputMenu.setAttribute('disabled', 'disabled');
-            inputStok.setAttribute('disabled', 'disabled');
-            if (inputTanggal) inputTanggal.setAttribute('disabled', 'disabled');
-        }
-    }
 
     function hapusData(form) {
         Swal.fire({

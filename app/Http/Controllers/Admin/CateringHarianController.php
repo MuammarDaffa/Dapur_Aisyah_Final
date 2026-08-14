@@ -119,16 +119,11 @@ class CateringHarianController extends Controller
         // Melakukan proses validasi tanggal terlebih dahulu sebelum menyimpan data apapun
         foreach ($daftarTanggal as $keyTanggal) {
             $input = $jadwalInput[$keyTanggal] ?? [];
-            // Jika hari tersebut dicentang aktif oleh admin
-            if (isset($input['aktif']) && $input['aktif'] == '1') {
-                $tanggalInput = $input['tanggal'] ?? null;
-                $menuId = $input['menu_id'] ?? null;
+            $menuId = $input['menu_id'] ?? null;
 
-                // Memastikan data tanggal dan menu diisi
-                if (!$tanggalInput || !$menuId) {
-                    $hariError = Carbon::parse($keyTanggal)->translatedFormat('l');
-                    return back()->with('error', "Tanggal dan Menu pada hari $hariError harus diisi jika diaktifkan.");
-                }
+            // Jika admin memilih menu dari dropdown
+            if (!empty($menuId)) {
+                $tanggalInput = $input['tanggal'] ?? null;
 
                 // Memastikan input tanggal sesuai dengan barisnya
                 if ($keyTanggal !== $tanggalInput) {
@@ -140,7 +135,8 @@ class CateringHarianController extends Controller
         // Jika lolos validasi, kita mulai proses penyimpanan (menyimpan/mengubah/menghapus)
         foreach ($daftarTanggal as $keyTanggal) {
             $input = $jadwalInput[$keyTanggal] ?? [];
-            $isAktif = isset($input['aktif']) && $input['aktif'] == '1';
+            $menuId = $input['menu_id'] ?? null;
+            $isAktif = !empty($menuId);
             
             $namaHari = Carbon::parse($keyTanggal)->translatedFormat('l');
 
@@ -159,8 +155,7 @@ class CateringHarianController extends Controller
                         'tanggal' => $input['tanggal'],
                         'hari' => $namaHari,
                         'stok_awal' => $input['stok_awal'] ?? 0,
-                        'stok_tersisa' => $input['stok_awal'] ?? 0, // Direset sama dengan stok awal jika diubah
-                        'aktif' => true
+                        'stok_tersisa' => $input['stok_awal'] ?? 0 // Direset sama dengan stok awal jika diubah
                     ]);
                     $activeJadwal = $jadwalLama;
                 } else {
@@ -170,8 +165,7 @@ class CateringHarianController extends Controller
                         'hari' => $namaHari,
                         'tanggal' => $input['tanggal'],
                         'stok_awal' => $input['stok_awal'] ?? 0,
-                        'stok_tersisa' => $input['stok_awal'] ?? 0,
-                        'aktif' => true
+                        'stok_tersisa' => $input['stok_awal'] ?? 0
                     ]);
                 }
                 

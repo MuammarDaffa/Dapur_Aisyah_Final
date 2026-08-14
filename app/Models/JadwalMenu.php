@@ -16,7 +16,6 @@ class JadwalMenu extends Model
     protected $fillable = [
         'menu_id',
         'hari',
-        'aktif',
         'tanggal',
         'stok_awal',
         'stok_tersisa',
@@ -25,7 +24,6 @@ class JadwalMenu extends Model
     protected function casts(): array
     {
         return [
-            'aktif' => 'boolean',
             'tanggal' => 'date',
             'stok_awal' => 'integer',
             'stok_tersisa' => 'integer',
