@@ -207,10 +207,10 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                             Tambahan Menu
                                         </a>
                                         {{-- Tombol Hapus --}}
-                                        <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus menu ini?');">
+                                        <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger">
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="hapusData(this.form)">
                                                 Hapus
                                             </button>
                                         </form>
@@ -252,5 +252,35 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
             if (inputTanggal) inputTanggal.setAttribute('disabled', 'disabled');
         }
     }
+
+    function hapusData(form) {
+        Swal.fire({
+            title: 'Apakah Anda yakin ingin menghapus data ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
 </script>
+
+@if(session('swal_success'))
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        Swal.fire({
+            title: '{{ session('swal_success') }}',
+            icon: 'success',
+            showConfirmButton: true,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#3085d6'
+        });
+    });
+</script>
+@endif
 @endpush

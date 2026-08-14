@@ -36,7 +36,7 @@ class MenuController extends Controller
         Menu::create($validated);
 
         if ($tipe_layanan === 'harian') {
-            return redirect()->route('admin.catering.harian')->with('success', 'Menu berhasil ditambahkan!');
+            return redirect()->route('admin.catering.harian')->with('swal_success', 'Data berhasil ditambahkan.');
         }
         return redirect()->route('admin.catering.acara')->with('swal_success', 'Data berhasil ditambahkan.');
     }
@@ -68,7 +68,7 @@ class MenuController extends Controller
         $menu->update($validated);
 
         if ($menu->tipe_layanan === 'harian') {
-            return redirect()->route('admin.catering.harian')->with('success', 'Menu berhasil diupdate!');
+            return redirect()->route('admin.catering.harian')->with('swal_success', 'Data berhasil diupdate.');
         }
         return redirect()->route('admin.catering.acara')->with('swal_success', 'Data berhasil diupdate.');
     }
@@ -84,7 +84,7 @@ class MenuController extends Controller
         $menu->delete();
 
         if ($tipeLayanan === 'harian') {
-            return redirect()->route('admin.catering.harian')->with('success', 'Menu berhasil dihapus!');
+            return redirect()->route('admin.catering.harian');
         }
         return redirect()->route('admin.catering.acara');
     }
