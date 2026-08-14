@@ -68,11 +68,12 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                     <table class="table table-bordered table-hover align-middle text-nowrap">
                         <thead class="table-light">
                             <tr>
-                                <th style="width: 15%;">Hari</th>
+                                <th style="width: 10%;">Hari</th>
                                 <th style="width: 15%;">Tanggal</th>
-                                <th style="width: 35%;">Menu</th>
+                                <th style="width: 30%;">Menu</th>
                                 <th style="width: 15%;">Stok Awal</th>
-                                <th style="width: 20%;">Sisa Stok</th>
+                                <th style="width: 15%;">Terjual</th>
+                                <th style="width: 15%;">Sisa Stok</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -104,6 +105,10 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                                     
                                     <td>
                                         <input type="number" class="form-control form-control-sm shadow-none input-stok" name="jadwal[{{ $tanggalStr }}][stok_awal]" value="{{ $jadwal ? $jadwal->stok_awal : 0 }}" min="0">
+                                    </td>
+                                    
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm shadow-none bg-transparent border-0 text-center" value="{{ $jadwal ? ($jadwal->stok_awal - $jadwal->stok_tersisa) : '-' }}" readonly>
                                     </td>
                                     
                                     <td>
