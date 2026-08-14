@@ -149,14 +149,30 @@ class CateringHarianController extends Controller
             if ($isAktif) {
                 // Jika aktif, kita update (jika ada) atau create (jika belum ada)
                 if ($jadwalLama) {
-                    // Update data jadwal lama
-                    $jadwalLama->update([
-                        'menu_id' => $input['menu_id'],
-                        'tanggal' => $input['tanggal'],
-                        'hari' => $namaHari,
-                        'stok_awal' => $input['stok_awal'] ?? 0,
-                        'stok_tersisa' => $input['stok_awal'] ?? 0 // Direset sama dengan stok awal jika diubah
-                    ]);
+                    $stokAwalBaru = (int) ($input['stok_awal'] ?? 0);
+
+                    if ($jadwalLama->menu_id == $input['menu_id']) {
+                        // Jika menu masih sama, pertahankan jumlah terjual
+                        // Terjual = stok awal lama - sisa stok lama
+                        $terjual = $jadwalLama->stok_awal - $jadwalLama->stok_tersisa;
+                        
+                        // Hitung sisa stok baru = stok awal baru - terjual
+                        $sisaStokBaru = $stokAwalBaru - $terjual;
+
+                        $jadwalLama->update([
+                            'stok_awal' => $stokAwalBaru,
+                            'stok_tersisa' => $sisaStokBaru
+                        ]);
+                    } else {
+                        // Jika menu berubah, reset terjual menjadi 0 (sisa stok = stok awal)
+                        $jadwalLama->update([
+                            'menu_id' => $input['menu_id'],
+                            'tanggal' => $input['tanggal'],
+                            'hari' => $namaHari,
+                            'stok_awal' => $stokAwalBaru,
+                            'stok_tersisa' => $stokAwalBaru
+                        ]);
+                    }
                     $activeJadwal = $jadwalLama;
                 } else {
                     // Create data jadwal baru
