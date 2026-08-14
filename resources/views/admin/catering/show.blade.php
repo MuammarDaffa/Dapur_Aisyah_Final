@@ -60,10 +60,10 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                                     <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-warning btn-sm">
                                         Edit
                                     </a>
-                                    <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline" onsubmit="hapusData(event, this)">
+                                    <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="hapusData(this.form)">Hapus</button>
                                     </form>
                                 </td>
                             </tr>
@@ -122,10 +122,10 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                                             data-bs-target="#editMinumanModal">
                                         Edit
                                     </button>
-                                    <form action="{{ route('admin.minuman.destroy', $minuman->id) }}" method="POST" class="d-inline" onsubmit="hapusData(event, this)">
+                                    <form action="{{ route('admin.minuman.destroy', $minuman->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="hapusData(this.form)">Hapus</button>
                                     </form>
                                 </td>
                             </tr>
@@ -240,10 +240,10 @@ $(document).ready(function() {
         // Ubah action form ke route update yang benar
         var formAction = "{{ url('admin/minuman') }}/" + minumanId;
         $('#formEditMinuman').attr('action', formAction);
+    });
 });
 
-function hapusData(event, form) {
-    event.preventDefault();
+function hapusData(form) {
     Swal.fire({
         title: 'Apakah Anda yakin ingin menghapus data ini?',
         icon: 'warning',
