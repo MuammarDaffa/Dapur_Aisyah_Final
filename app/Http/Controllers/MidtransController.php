@@ -43,6 +43,19 @@ class MidtransController extends Controller
                     // Jika status_pesanan masih null, ubah menjadi diproses
                     if (is_null($pesanan->status_pesanan)) {
                         $pesanan->status_pesanan = Pesanan::PESANAN_DIPROSES;
+                        
+                        // KURANGI STOK KETIKA LUNAS (Hanya untuk pesanan katering harian)
+                        if ($pesanan->tipe_layanan === 'harian') {
+                            foreach ($pesanan->detailPesanans as $detail) {
+                                $jadwal = \App\Models\JadwalMenu::where('menu_id', $detail->menu_id)
+                                    ->whereDate('tanggal', $detail->tanggal_pengiriman)
+                                    ->first();
+                                if ($jadwal) {
+                                    $jadwal->stok_tersisa -= $detail->porsi;
+                                    $jadwal->save();
+                                }
+                            }
+                        }
                     }
 
                     $pesanan->save();
@@ -55,17 +68,7 @@ class MidtransController extends Controller
                             'status_pesanan' => Pesanan::PESANAN_DIBATALKAN,
                         ]);
 
-                        if ($pesanan->tipe_layanan === 'harian') {
-                            foreach ($pesanan->detailPesanans as $detail) {
-                                $jadwal = \App\Models\JadwalMenu::where('menu_id', $detail->menu_id)
-                                    ->whereDate('tanggal', $detail->tanggal_pengiriman)
-                                    ->first();
-                                if ($jadwal) {
-                                    $jadwal->stok_tersisa += $detail->porsi;
-                                    $jadwal->save();
-                                }
-                            }
-                        }
+
                     }
                 }
             }

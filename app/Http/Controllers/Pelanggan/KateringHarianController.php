@@ -228,15 +228,7 @@ class KateringHarianController extends Controller
                     throw new \Exception('Pesanan tidak valid untuk diubah.');
                 }
                 
-                foreach ($pesanan->detailPesanans as $oldDetail) {
-                    $oldJadwal = \App\Models\JadwalMenu::where('menu_id', $oldDetail->menu_id)
-                        ->whereDate('tanggal', $oldDetail->tanggal_pengiriman)
-                        ->first();
-                    if ($oldJadwal) {
-                        $oldJadwal->stok_tersisa += $oldDetail->porsi;
-                        $oldJadwal->save();
-                    }
-                }
+
 
                 $pesanan->update([
                     'metode_pengambilan' => $metode_pengambilan,
@@ -269,13 +261,7 @@ class KateringHarianController extends Controller
             }
 
             foreach ($menusDipilih as $menuData) {
-                $jadwalToUpdate = \App\Models\JadwalMenu::where('menu_id', $menuData['menu_id'])
-                    ->whereDate('tanggal', $menuData['tanggal_pengiriman'])
-                    ->first();
-                if ($jadwalToUpdate) {
-                    $jadwalToUpdate->stok_tersisa -= $menuData['porsi'];
-                    $jadwalToUpdate->save();
-                }
+
 
                 $detail = \App\Models\DetailPesanan::create([
                     'pesanan_id' => $pesanan->id,
