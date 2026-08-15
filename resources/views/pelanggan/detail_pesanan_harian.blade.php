@@ -9,19 +9,6 @@
         <div class="col-12 col-xl-10">
             <h2 class="fs-3 fw-bold text-dark mt-2 mb-4">Detail Pesanan Anda ({{ $pesanan->nomor_pesanan }})</h2>
 
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
 
 
             @if($pesanan->detailPesanans && $pesanan->detailPesanans->count() > 0)
@@ -55,7 +42,7 @@
                                         $rowspan = $groupedItems->count();
                                     }
                                     
-                                    $menuName = $detail->menu ? $detail->menu->nama_menu : '<span class="text-warning"><i class="bi bi-clock-history"></i> Menunggu Jadwal Admin</span>';
+                                    $menuName = $detail->menu ? $detail->menu->nama_menu : ($detail->is_rescheduled ? '-' : '<span class="text-warning"><i class="bi bi-clock-history"></i> Menunggu Jadwal Admin</span>');
                                     $formattedDate = $detail->tanggal_pengiriman ? \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('l, d M Y') : '-';
                                 @endphp
 
