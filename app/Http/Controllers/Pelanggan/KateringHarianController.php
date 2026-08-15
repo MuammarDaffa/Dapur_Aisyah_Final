@@ -343,17 +343,23 @@ class KateringHarianController extends Controller
             return back()->with('error', 'Tanggal baru tidak boleh menggunakan tanggal hari ini.');
         }
 
-        // Cek ketersediaan menu yang sama pada tanggal baru
-        $jadwalMenu = \App\Models\JadwalMenu::whereDate('tanggal', $newDate)
-            ->where('menu_id', $detail->menu_id)
-            ->first();
+        // 3. Tanggal baru tidak boleh bertabrakan dengan tanggal lain di pesanan yang sama
+        $tanggalSudahAda = \App\Models\DetailPesanan::where('pesanan_id', $detail->pesanan_id)
+            ->whereDate('tanggal_pengiriman', $newDate)
+            ->exists();
 
-        if (!$jadwalMenu) {
-            return back()->with('error', 'Menu pesanan Anda tidak tersedia pada tanggal pengganti yang dipilih.');
+        if ($tanggalSudahAda) {
+            return back()->with('error', 'Tanggal pengganti sudah ada dalam jadwal pesanan Anda. Silakan pilih tanggal lain.');
         }
 
-        if ($jadwalMenu->stok_tersisa < $detail->porsi) {
-            return back()->with('error', 'Stok menu pada tanggal pengganti tidak mencukupi. Sisa stok: ' . $jadwalMenu->stok_tersisa);
+        // 4. Cek apakah ada jadwal menu pada tanggal baru
+        $jadwalMenuBaru = \App\Models\JadwalMenu::whereDate('tanggal', $newDate)->first();
+
+        // Jika ada jadwal menu, cek stok
+        if ($jadwalMenuBaru) {
+            if ($jadwalMenuBaru->stok_tersisa < $detail->porsi) {
+                return back()->with('error', 'Stok menu pada tanggal pengganti tidak mencukupi. Sisa stok: ' . $jadwalMenuBaru->stok_tersisa);
+            }
         }
 
         try {
@@ -368,13 +374,18 @@ class KateringHarianController extends Controller
                 $oldJadwal->save();
             }
 
-            // Kurangi stok baru
-            $jadwalMenu->stok_tersisa -= $detail->porsi;
-            $jadwalMenu->save();
+            // Kurangi stok baru jika ada
+            $newMenuId = null;
+            if ($jadwalMenuBaru) {
+                $jadwalMenuBaru->stok_tersisa -= $detail->porsi;
+                $jadwalMenuBaru->save();
+                $newMenuId = $jadwalMenuBaru->menu_id;
+            }
 
             // Update data detail
             $detail->update([
                 'tanggal_pengiriman' => $newDate->toDateString(),
+                'menu_id' => $newMenuId,
                 'is_rescheduled' => true,
             ]);
 
