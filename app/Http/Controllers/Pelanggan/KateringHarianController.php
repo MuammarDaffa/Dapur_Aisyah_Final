@@ -352,8 +352,15 @@ class KateringHarianController extends Controller
             return back()->with('error', 'Tanggal pengganti sudah ada dalam jadwal pesanan Anda. Silakan pilih tanggal lain.');
         }
 
-        // 4. (Dihapus) Tidak lagi mengecek ketersediaan jadwal menu dari admin.
-        // Pelanggan bebas memilih tanggal mana saja (asal tidak bentrok dengan pesanannya sendiri di atas).
+        // 4. Cek apakah ada jadwal menu pada tanggal baru
+        $jadwalMenuBaru = \App\Models\JadwalMenu::whereDate('tanggal', $newDate)->first();
+
+        // Jika ada jadwal menu, cek stok
+        if ($jadwalMenuBaru) {
+            if ($jadwalMenuBaru->stok_tersisa < $detail->porsi) {
+                return back()->with('error', 'Stok menu pada tanggal pengganti tidak mencukupi. Sisa stok: ' . $jadwalMenuBaru->stok_tersisa);
+            }
+        }
 
         try {
             \Illuminate\Support\Facades\DB::beginTransaction();
@@ -367,17 +374,25 @@ class KateringHarianController extends Controller
                 $oldJadwal->save();
             }
 
+            // Kurangi stok baru jika ada, dan ambil menu_id-nya
+            $newMenuId = null;
+            if ($jadwalMenuBaru) {
+                $jadwalMenuBaru->stok_tersisa -= $detail->porsi;
+                $jadwalMenuBaru->save();
+                $newMenuId = $jadwalMenuBaru->menu_id;
+            }
+
             // Aturan Tambahan: Semua tambahan/lauk-pauk dari tanggal sebelumnya dianggap hangus.
             // Setelah tanggal berhasil diubah, seluruh tambahan harus dikosongkan.
             $detail->tambahanLaukPauk()->detach();
 
             // Update data detail
-            // Aturan Menu: Ubah nilai menu menjadi `-` (menu_id = null).
+            // Aturan Menu: Jika ada menu, tampilkan. Jika tidak, menu_id = null (tampil `-`).
             // Aturan Porsi: Tetap (tidak diubah).
             // Aturan Total: subtotal tidak diubah.
             $detail->update([
                 'tanggal_pengiriman' => $newDate->toDateString(),
-                'menu_id' => null, 
+                'menu_id' => $newMenuId, 
                 'is_rescheduled' => true,
             ]);
 
