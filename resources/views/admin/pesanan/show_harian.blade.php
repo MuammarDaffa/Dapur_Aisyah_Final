@@ -90,7 +90,7 @@
                                         $rowspan = $groupedItems->count();
                                     }
                                     
-                                    $menuName = $detail->menu ? $detail->menu->nama_menu : '<span class="text-warning"><i class="fa-solid fa-clock"></i> Menunggu Jadwal Admin</span>';
+                                    $menuName = $detail->menu ? $detail->menu->nama_menu : ($detail->is_rescheduled ? '-' : '<span class="text-warning"><i class="fa-solid fa-clock"></i> Menunggu Jadwal Admin</span>');
                                     
 
                                     $formattedDate = $detail->tanggal_pengiriman ? \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('d F Y') : '-';
