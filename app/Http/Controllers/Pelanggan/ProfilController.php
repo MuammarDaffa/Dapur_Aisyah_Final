@@ -55,7 +55,7 @@ class ProfilController extends Controller
 
             \Illuminate\Support\Facades\DB::commit();
 
-            return back()->with('success', 'Pesanan berhasil dihapus.');
+            return back();
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan saat menghapus pesanan.');

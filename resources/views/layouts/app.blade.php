@@ -310,6 +310,24 @@
         });
     }
 
+    window.confirmDeleteForm = function(form, message) {
+        Swal.fire({
+            title: 'Hapus Pesanan?',
+            text: message || "Apakah Anda yakin ingin menghapus pesanan ini?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        })
+    };
+
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

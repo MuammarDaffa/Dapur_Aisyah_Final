@@ -93,9 +93,9 @@ class PesananController extends Controller
 
         // Jika request dari halaman detail pesanan yang baru saja dihapus, redirect ke index
         if (str_contains(url()->previous(), '/pesanan/' . $pesanan->id)) {
-            return redirect()->route('admin.pesanan')->with('success', 'Pesanan berhasil dihapus.');
+            return redirect()->route('admin.pesanan');
         }
 
-        return back()->with('success', 'Pesanan berhasil dihapus.');
+        return back();
     }
 }

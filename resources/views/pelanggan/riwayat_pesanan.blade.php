@@ -73,7 +73,7 @@
                                             <div class="d-flex gap-2 justify-content-center">
                                                 @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
                                                     <a href="{{ route(strtolower($tipeLayanan) === 'acara' ? 'pelanggan.acara.detail_pesanan' : 'pelanggan.harian.detail_pesanan', $pesanan->id) }}" class="btn btn-primary btn-sm">Lihat</a>
-                                                    <form action="{{ route('pelanggan.pesanan.hapus', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?');">
+                                                    <form action="{{ route('pelanggan.pesanan.hapus', $pesanan->id) }}" method="POST" onsubmit="event.preventDefault(); confirmDeleteForm(this, 'Apakah Anda yakin ingin menghapus pesanan ini?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
