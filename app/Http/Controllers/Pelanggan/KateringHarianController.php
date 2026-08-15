@@ -348,15 +348,6 @@ class KateringHarianController extends Controller
             return back()->with('error', 'Tanggal pengiriman yang dipilih sama dengan tanggal saat ini.');
         }
 
-        // (Tambahan) Tanggal baru tidak boleh bertabrakan dengan tanggal lain di pesanan yang sama
-        $tanggalSudahAda = \App\Models\DetailPesanan::where('pesanan_id', $detail->pesanan_id)
-            ->whereDate('tanggal_pengiriman', $newDate)
-            ->exists();
-
-        if ($tanggalSudahAda) {
-            return back()->with('error', 'Tanggal pengganti sudah ada dalam jadwal pesanan Anda. Silakan pilih tanggal lain.');
-        }
-
         // 4. Cari tanggal_tujuan pada jadwal_menu
         $jadwalMenuBaru = \App\Models\JadwalMenu::whereDate('tanggal', $newDate)->first();
 
