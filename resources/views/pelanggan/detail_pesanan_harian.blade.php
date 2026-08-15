@@ -74,8 +74,19 @@
                                     
                                     <td class="text-end fw-bold" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                                     <td class="text-center" rowspan="{{ $rowspan }}">
-                                        @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS && $detail->tanggal_pengiriman && \Carbon\Carbon::now()->startOfDay()->lt(\Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay()))
-                                            @if(!$detail->is_rescheduled)
+                                        @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
+                                            @php
+                                                $isToday = $detail->tanggal_pengiriman && \Carbon\Carbon::parse($detail->tanggal_pengiriman)->isToday();
+                                            @endphp
+                                            @if($detail->is_rescheduled)
+                                                <button type="button" class="btn btn-sm btn-secondary text-nowrap" disabled title="Sudah pernah diubah">
+                                                    Ubah Tanggal
+                                                </button>
+                                            @elseif($isToday)
+                                                <button type="button" class="btn btn-sm btn-secondary text-nowrap" disabled title="Tidak bisa diubah karena jadwal pengiriman adalah hari ini">
+                                                    Ubah Tanggal
+                                                </button>
+                                            @else
                                                 <button type="button" class="btn btn-sm btn-warning text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
                                                     Ubah Tanggal
                                                 </button>
@@ -91,10 +102,10 @@
                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body text-start">
-                                                            <p class="mb-3 text-muted text-wrap" style="white-space: normal;">Pilih tanggal pengiriman yang baru. <strong>Catatan:</strong> Jika Anda mengubah tanggal, menu tambahan yang sudah Anda pilih akan hangus, dan menu utama akan disesuaikan dengan ketersediaan dari Dapur Aisyah.</p>
+                                                            <p class="mb-3 text-muted">Silakan pilih tanggal pengganti untuk pesanan ini.</p>
                                                             <div class="mb-3">
                                                                 <label class="form-label fw-bold">Tanggal Baru</label>
-                                                                <input type="date" class="form-control" name="new_date" min="{{ \Carbon\Carbon::now()->addDays(1)->format('Y-m-d') }}" required>
+                                                                <input type="date" class="form-control" name="new_date" required>
                                                             </div>
                                                             </div>
                                                             <div class="modal-footer">
@@ -105,10 +116,6 @@
                                                     </div>
                                                     </div>
                                                 </div>
-                                            @else
-                                                <button type="button" class="btn btn-sm btn-secondary text-nowrap" disabled title="Sudah pernah diubah">
-                                                    Ubah Tanggal
-                                                </button>
                                             @endif
                                         @else
                                             <span class="text-muted small">-</span>

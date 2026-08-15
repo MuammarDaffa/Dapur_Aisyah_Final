@@ -324,28 +324,36 @@ class KateringHarianController extends Controller
             return back()->with('error', 'Tanggal pengiriman untuk pesanan ini sudah pernah diubah sebelumnya.');
         }
 
-        // Cek batas waktu (Harus sebelum hari-H)
         $today = \Carbon\Carbon::now()->startOfDay();
         $deliveryDate = \Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay();
         
-        if ($today->gte($deliveryDate)) {
-            return back()->with('error', 'Pindah hari tidak bisa dilakukan pada hari pengiriman atau sesudahnya. Harus minimal H-1.');
-        }
-
         $request->validate([
-            'new_date' => 'required|date|after:today'
+            'new_date' => 'required|date'
         ]);
 
-        $newDate = $request->input('new_date');
+        $newDate = \Carbon\Carbon::parse($request->input('new_date'))->startOfDay();
 
-        // Cek apakah admin sudah mengatur menu di JadwalMenuHarian untuk tanggal baru ini
-        $jadwalMenu = \App\Models\JadwalMenu::whereDate('tanggal', $newDate)->first();
+        // 1. Tanggal baru tidak boleh sama dengan tanggal lama
+        if ($newDate->isSameDay($deliveryDate)) {
+            return back()->with('error', 'Tanggal baru harus berbeda dari tanggal pesanan saat ini.');
+        }
+
+        // 2. Tanggal baru tidak boleh menggunakan tanggal yang sedang berada pada hari ini
+        if ($newDate->isToday()) {
+            return back()->with('error', 'Tanggal baru tidak boleh menggunakan tanggal hari ini.');
+        }
+
+        // Cek ketersediaan menu yang sama pada tanggal baru
+        $jadwalMenu = \App\Models\JadwalMenu::whereDate('tanggal', $newDate)
+            ->where('menu_id', $detail->menu_id)
+            ->first();
+
         if (!$jadwalMenu) {
-            return back()->with('error', 'Tidak ada jadwal menu Katering Harian pada tanggal tersebut.');
+            return back()->with('error', 'Menu pesanan Anda tidak tersedia pada tanggal pengganti yang dipilih.');
         }
 
         if ($jadwalMenu->stok_tersisa < $detail->porsi) {
-            return back()->with('error', 'Stok pada tanggal baru tidak mencukupi. Sisa stok: ' . $jadwalMenu->stok_tersisa);
+            return back()->with('error', 'Stok menu pada tanggal pengganti tidak mencukupi. Sisa stok: ' . $jadwalMenu->stok_tersisa);
         }
 
         try {
@@ -364,13 +372,9 @@ class KateringHarianController extends Controller
             $jadwalMenu->stok_tersisa -= $detail->porsi;
             $jadwalMenu->save();
 
-            // Kosongkan relasi menu tambahan (hangus)
-            $detail->tambahanLaukPauk()->detach();
-
             // Update data detail
             $detail->update([
-                'tanggal_pengiriman' => $newDate,
-                'menu_id' => $jadwalMenu->menu_id,
+                'tanggal_pengiriman' => $newDate->toDateString(),
                 'is_rescheduled' => true,
             ]);
 
