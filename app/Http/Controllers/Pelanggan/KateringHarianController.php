@@ -327,23 +327,28 @@ class KateringHarianController extends Controller
         $today = \Carbon\Carbon::now()->startOfDay();
         $deliveryDate = \Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay();
         
+        // 1. Jika tanggal_pesanan <= today: tolak perubahan
+        if ($deliveryDate->lte($today)) {
+            return back()->with('error', 'Pesanan pada tanggal tersebut sudah tidak dapat diubah.');
+        }
+
         $request->validate([
             'new_date' => 'required|date'
         ]);
 
         $newDate = \Carbon\Carbon::parse($request->input('new_date'))->startOfDay();
 
-        // 1. Tanggal baru tidak boleh sama dengan tanggal lama
-        if ($newDate->isSameDay($deliveryDate)) {
-            return back()->with('error', 'Tanggal baru harus berbeda dari tanggal pesanan saat ini.');
+        // 2. Jika tanggal_tujuan <= today: tolak perubahan
+        if ($newDate->lte($today)) {
+            return back()->with('error', 'Tanggal pengiriman harus merupakan tanggal setelah hari ini.');
         }
 
-        // 2. Tanggal baru tidak boleh menggunakan tanggal yang sedang berada pada hari ini
-        if ($newDate->isToday()) {
-            return back()->with('error', 'Tanggal baru tidak boleh menggunakan tanggal hari ini.');
+        // 3. Jika tanggal_tujuan == tanggal_pesanan_saat_ini: tolak perubahan
+        if ($newDate->equalTo($deliveryDate)) {
+            return back()->with('error', 'Tanggal pengiriman yang dipilih sama dengan tanggal saat ini.');
         }
 
-        // 3. Tanggal baru tidak boleh bertabrakan dengan tanggal lain di pesanan yang sama
+        // (Tambahan) Tanggal baru tidak boleh bertabrakan dengan tanggal lain di pesanan yang sama
         $tanggalSudahAda = \App\Models\DetailPesanan::where('pesanan_id', $detail->pesanan_id)
             ->whereDate('tanggal_pengiriman', $newDate)
             ->exists();
@@ -352,20 +357,23 @@ class KateringHarianController extends Controller
             return back()->with('error', 'Tanggal pengganti sudah ada dalam jadwal pesanan Anda. Silakan pilih tanggal lain.');
         }
 
-        // 4. Cek apakah ada jadwal menu pada tanggal baru
+        // 4. Cari tanggal_tujuan pada jadwal_menu
         $jadwalMenuBaru = \App\Models\JadwalMenu::whereDate('tanggal', $newDate)->first();
 
-        // Jika ada jadwal menu, cek stok
         if ($jadwalMenuBaru) {
+            if ($jadwalMenuBaru->stok_tersisa == 0) {
+                return back()->with('error', 'Menu pada tanggal yang dipilih stoknya habis.');
+            }
+
             if ($jadwalMenuBaru->stok_tersisa < $detail->porsi) {
-                return back()->with('error', 'Stok menu pada tanggal pengganti tidak mencukupi. Sisa stok: ' . $jadwalMenuBaru->stok_tersisa);
+                return back()->with('error', 'Stok menu pada tanggal yang dipilih tidak mencukupi untuk jumlah porsi pesanan Anda.');
             }
         }
 
         try {
             \Illuminate\Support\Facades\DB::beginTransaction();
 
-            // Kembalikan stok lama
+            // Kembalikan stok lama jika ada jadwal lama
             $oldJadwal = \App\Models\JadwalMenu::where('menu_id', $detail->menu_id)
                 ->whereDate('tanggal', $detail->tanggal_pengiriman)
                 ->first();
@@ -398,11 +406,11 @@ class KateringHarianController extends Controller
 
             \Illuminate\Support\Facades\DB::commit();
 
-            return back()->with('success', 'Jadwal pengiriman berhasil dipindahkan ke tanggal ' . \Carbon\Carbon::parse($newDate)->translatedFormat('d F Y') . '.');
+            return back()->with('success', 'Tanggal pesanan berhasil diubah.');
 
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();
-            return back()->with('error', 'Terjadi kesalahan saat menyimpan perubahan: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat mengubah tanggal pesanan.');
         }
     }
 

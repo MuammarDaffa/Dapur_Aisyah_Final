@@ -63,14 +63,15 @@
                                     <td class="text-center" rowspan="{{ $rowspan }}">
                                         @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
                                             @php
-                                                $isToday = $detail->tanggal_pengiriman && \Carbon\Carbon::parse($detail->tanggal_pengiriman)->isToday();
+                                                $today = \Carbon\Carbon::now()->startOfDay();
+                                                $deliveryDate = \Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay();
                                             @endphp
                                             @if($detail->is_rescheduled)
                                                 <button type="button" class="btn btn-sm btn-secondary text-nowrap" disabled title="Sudah pernah diubah">
                                                     Ubah Tanggal
                                                 </button>
-                                            @elseif($isToday)
-                                                <button type="button" class="btn btn-sm btn-secondary text-nowrap" disabled title="Tidak bisa diubah karena jadwal pengiriman adalah hari ini">
+                                            @elseif($deliveryDate->lte($today))
+                                                <button type="button" class="btn btn-sm btn-secondary text-nowrap" disabled title="Pesanan pada tanggal tersebut sudah tidak dapat diubah">
                                                     Ubah Tanggal
                                                 </button>
                                             @else
@@ -92,7 +93,7 @@
                                                             <p class="mb-3 text-muted">Silakan pilih tanggal pengganti untuk pesanan ini.</p>
                                                             <div class="mb-3">
                                                                 <label class="form-label fw-bold">Tanggal Baru</label>
-                                                                <input type="date" class="form-control" name="new_date" required>
+                                                                <input type="date" class="form-control" name="new_date" min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}" required>
                                                             </div>
                                                             </div>
                                                             <div class="modal-footer">
