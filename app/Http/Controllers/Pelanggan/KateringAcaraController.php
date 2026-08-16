@@ -209,7 +209,6 @@ class KateringAcaraController extends Controller
 
         $pesananQuery = \App\Models\Pesanan::with('detailPesanans')->where('tipe_layanan', 'acara')
             ->whereBetween('tanggal_pesanan', [$startOfWeek->toDateString(), $endOfWeek->toDateString()])
-            ->where('status_pesanan', '!=', \App\Models\Pesanan::PESANAN_DIBATALKAN)
             ->whereIn('status_pembayaran', [\App\Models\Pesanan::PEMBAYARAN_DP, \App\Models\Pesanan::PEMBAYARAN_LUNAS]);
 
         if ($request->has('pesanan_id') && !empty($request->pesanan_id)) {
