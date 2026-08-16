@@ -125,6 +125,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // 2. Halaman Detail Katering Acara (Menu dan Minuman)
     Route::get('/catering/acara', [App\Http\Controllers\Admin\CateringAcaraController::class, 'index'])->name('catering.acara');
+    Route::post('/catering/acara/stok', [App\Http\Controllers\Admin\CateringAcaraController::class, 'storeStok'])->name('catering.acara.stok');
 
     // 2. CRUD Menu
     Route::get('/catering/{tipe_layanan}/menu/create', [\App\Http\Controllers\Admin\MenuController::class, 'create'])->name('menu.create');

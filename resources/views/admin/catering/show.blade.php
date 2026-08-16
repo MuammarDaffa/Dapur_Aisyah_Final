@@ -12,6 +12,68 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
 @section('content')
 
 
+<div class="row mt-4">
+    <div class="col-md-12 mb-4">
+        <div class="card card-outline card-info">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Pengaturan Porsi per Minggu</h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ route('admin.catering.acara') }}" method="GET" class="row align-items-end mb-4">
+                    <div class="col-md-4">
+                        <label for="tanggal" class="form-label">Pilih Tanggal</label>
+                        <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ $periodeMinggu['tanggal_terpilih'] }}" required>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Cek Porsi</button>
+                    </div>
+                </form>
+
+                <div class="alert alert-secondary">
+                    <strong>Periode:</strong> {{ $periodeMinggu['start_formatted'] }} - {{ $periodeMinggu['end_formatted'] }}
+                </div>
+
+                <form action="{{ route('admin.catering.acara.stok') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="tanggal_mulai" value="{{ $periodeMinggu['start'] }}">
+                    <input type="hidden" name="tanggal_selesai" value="{{ $periodeMinggu['end'] }}">
+                    <input type="hidden" name="terjual" value="{{ $terjual }}">
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Periode Minggu</th>
+                                    <th width="20%">Stok per Minggu</th>
+                                    <th width="15%" class="text-center">Terjual</th>
+                                    <th width="15%" class="text-center">Sisa Stok</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ $periodeMinggu['start_formatted'] }} - {{ $periodeMinggu['end_formatted'] }}</td>
+                                    <td>
+                                        <input type="number" name="stok" class="form-control" value="{{ $stok }}" min="0" required>
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $terjual }}
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>{{ $sisaStok }}</strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-3 text-end">
+                        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="row mt-4">
     <!-- Card 1: Menu Makanan -->

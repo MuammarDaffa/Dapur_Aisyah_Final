@@ -196,17 +196,21 @@ class KateringAcaraController extends Controller
         
         $totalPorsiBaru = collect($menusDipilih)->sum('porsi');
         
-        // Cek Kuota Porsi per Minggu (Maks 200) khusus Katering Acara
+        // Cek Kuota Porsi per Minggu khusus Katering Acara
         $tanggalAcaraObj = \Carbon\Carbon::parse($tanggalAcara);
         $startOfWeek = $tanggalAcaraObj->copy()->startOfWeek();
         $endOfWeek = $tanggalAcaraObj->copy()->endOfWeek();
 
-        $pesananQuery = \App\Models\Pesanan::where('tipe_layanan', 'acara')
+        $stokMingguan = \App\Models\StokPorsiAcara::where('tanggal_mulai', $startOfWeek->toDateString())
+                            ->where('tanggal_selesai', $endOfWeek->toDateString())
+                            ->first();
+
+        $kuotaMaksimal = $stokMingguan ? $stokMingguan->stok : 0;
+
+        $pesananQuery = \App\Models\Pesanan::with('detailPesanans')->where('tipe_layanan', 'acara')
             ->whereBetween('tanggal_pesanan', [$startOfWeek->toDateString(), $endOfWeek->toDateString()])
-            ->where(function ($q) {
-                $q->whereNull('status_pesanan')
-                  ->orWhere('status_pesanan', '!=', \App\Models\Pesanan::PESANAN_DIBATALKAN);
-            });
+            ->where('status_pesanan', '!=', \App\Models\Pesanan::PESANAN_DIBATALKAN)
+            ->whereIn('status_pembayaran', [\App\Models\Pesanan::PEMBAYARAN_DP, \App\Models\Pesanan::PEMBAYARAN_LUNAS]);
 
         if ($request->has('pesanan_id') && !empty($request->pesanan_id)) {
             $pesananQuery->where('id', '!=', $request->pesanan_id);
@@ -219,8 +223,8 @@ class KateringAcaraController extends Controller
             $porsiTelahDipesan += $p->detailPesanans->whereNotNull('menu_id')->sum('porsi');
         }
 
-        if (($porsiTelahDipesan + $totalPorsiBaru) > 200) {
-            $sisaKuota = max(0, 200 - $porsiTelahDipesan);
+        if (($porsiTelahDipesan + $totalPorsiBaru) > $kuotaMaksimal) {
+            $sisaKuota = max(0, $kuotaMaksimal - $porsiTelahDipesan);
             $pesanError = 'Maaf, sisa kuota Katering Acara untuk minggu tersebut (' . $startOfWeek->translatedFormat('d M') . ' - ' . $endOfWeek->translatedFormat('d M Y') . ') tidak mencukupi. Sisa kuota minggu itu: ' . $sisaKuota . ' porsi.';
             return back()->withInput()->with('error', $pesanError);
         }
