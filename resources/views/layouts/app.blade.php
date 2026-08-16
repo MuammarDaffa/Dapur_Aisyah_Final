@@ -23,12 +23,26 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <style>
-        /* Mengubah warna latar belakang dropdown item yang aktif */
-/* .dropdown-item.active, .dropdown-item:active { */
-    /* background-color: #EAB308 !important; Ganti dengan warna kuning Tailwind atau warna pilihan Anda */
-    /* color: white !important; */
-/* } */
-
+        /* Custom Navbar Styling */
+        .navbar-nav .nav-item {
+            margin: 0 4px;
+        }
+        .navbar-nav .nav-link {
+            color: #6c757d !important;
+            font-weight: 500;
+            padding: 8px 16px !important;
+            /* border-radius: 8px; */
+            transition: all 0.2s ease-in-out;
+        }
+        /* .navbar-nav .nav-link:hover {
+            color: #ffc107 !important; /* text-warning */
+        /* }  */
+        /* Active State */
+        .navbar-nav .nav-link.active {
+            background-color: #ffc107 !important; /* bg-warning */
+            color: #212529 !important; /* text-dark */
+            font-weight: 600;
+        }
     </style>
 
     @stack('styles')
