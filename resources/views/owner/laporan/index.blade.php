@@ -73,12 +73,12 @@
                                     <td class="align-middle">{{ $p->user->name ?? '-' }}</td>
                                     <td class="align-middle">Katering {{ ucfirst($p->tipe_layanan) }}</td>
                                     <td class="align-middle">{{ $p->created_at->format('d M Y') }}</td>
-                                    <td class="align-middle fw-bold text-success text-end">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
+                                    <td class="align-middle fw-bold text-end">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center py-5">
-                                        <i class="fa-solid fa-inbox fa-3x text-muted mb-3 d-block"></i>
+                                        
                                         <p class="text-muted fw-medium mb-0">Tidak ada data laporan yang sesuai dengan filter.</p>
                                     </td>
                                 </tr>
@@ -87,7 +87,7 @@
                         <tfoot>
                             <tr class="bg-light">
                                 <td colspan="5" class="text-end fw-bold">Total Pemasukan:</td>
-                                <td class="fw-bold text-success text-end fs-5">Rp {{ number_format($summary['total_revenue'] ?? 0, 0, ',', '.') }}</td>
+                                <td class="fw-bold  text-end fs-5">Rp {{ number_format($summary['total_revenue'] ?? 0, 0, ',', '.') }}</td>
                             </tr>
                         </tfoot>
                     </table>

@@ -100,8 +100,9 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="5" class="text-end fw-bold" style="border: none; padding-top: 15px;">Total Pemasukan:</td>
-                <td class="text-end fw-bold" style="border: none; padding-top: 15px;">Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</td>
+                <td colspan="6" class="text-start fw-bold" style="border: none; padding-top: 15px;">
+                    Total Pemasukan : Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
+                </td>
             </tr>
         </tfoot>
     </table>
