@@ -43,6 +43,14 @@
             color: #212529 !important; /* text-dark */
             font-weight: 600;
         }
+
+        /* Mengubah background dan warna teks dropdown item yang sedang aktif
+.dropdown-menu .dropdown-item.active, 
+.dropdown-menu .dropdown-item:active {
+    background-color: #ffc107 !important; /* Ganti dengan kode warna yang Anda inginkan (contoh: oranye) */
+    /* color: #212529 !important; Warna teks */
+/* } */ */
+
     </style>
 
     @stack('styles')
