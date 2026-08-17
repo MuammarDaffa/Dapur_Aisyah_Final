@@ -91,7 +91,7 @@
                                                                 </form>
                                                             @endif
                                                             @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
-                                                                <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
+                                                                <form action="{{ route('pelanggan.acara.batalkan', $pesanan->id) }}" method="POST" onsubmit="event.preventDefault(); confirmCancelForm(this, 'Apakah Anda yakin ingin membatalkan pesanan ini?');">
                                                                     @csrf
                                                                     <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
                                                                 </form>

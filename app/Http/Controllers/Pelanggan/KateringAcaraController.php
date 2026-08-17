@@ -414,7 +414,7 @@ class KateringAcaraController extends Controller
         $pesanan->status_pesanan = \App\Models\Pesanan::PESANAN_DIBATALKAN;
         $pesanan->save();
 
-        return redirect()->route('pelanggan.riwayat')->with('success', 'Pesanan berhasil dibatalkan.');
+        return redirect()->route('pelanggan.riwayat');
     }
 
 

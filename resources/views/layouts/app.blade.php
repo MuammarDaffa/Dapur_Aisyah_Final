@@ -342,6 +342,24 @@
         })
     };
 
+    window.confirmCancelForm = function(form, message) {
+        Swal.fire({
+            title: 'Batalkan Pesanan?',
+            text: message || "Apakah Anda yakin ingin membatalkan pesanan ini?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Batalkan',
+            cancelButtonText: 'Kembali',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    };
+
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
