@@ -25,13 +25,13 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                         <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ $periodeMinggu['tanggal_terpilih'] }}" required>
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">Cek Porsi</button>
+                        <button type="submit" class="btn btn-primary w-100">Cek Porsi terjual</button>
                     </div>
                 </form>
-
+<!-- 
                 <div class="alert alert-secondary">
                     <strong>Periode:</strong> {{ $periodeMinggu['start_formatted'] }} - {{ $periodeMinggu['end_formatted'] }}
-                </div>
+                </div> -->
 
                 <form action="{{ route('admin.catering.acara.stok') }}" method="POST">
                     @csrf
@@ -59,7 +59,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                                         {{ $terjual }}
                                     </td>
                                     <td class="text-center">
-                                        <strong>{{ $sisaStok }}</strong>
+                                        {{ $sisaStok }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -67,7 +67,7 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
                     </div>
                     
                     <div class="mt-3 text-end">
-                        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Simpan</button>
+                        <button type="submit" class="btn btn-success">Simpan</button>
                     </div>
                 </form>
             </div>

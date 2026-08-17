@@ -100,7 +100,7 @@
                                     <tr>
                                         <td class="align-middle fw-bold">{{ $pesanan->nomor_pesanan }}</td>
                                         <td class="align-middle">{{ $pesanan->user->name ?? '-' }}</td>
-                                        <td class="align-middle">{{ $pesanan->created_at->format('d/m/Y H:i') }}</td>
+                                        <td class="align-middle">{{ $pesanan->created_at->format('d/m/Y') }}</td>
                                         <td class="align-middle">
                                             <span class="badge text-bg-{{ $pesanan->status_pembayaran_color }}">
                                                 {{ $pesanan->status_pembayaran_label }}
