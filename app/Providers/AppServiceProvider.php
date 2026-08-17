@@ -23,5 +23,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Menggunakan settingan bawaan default (Laravel/Breeze)
+        \Carbon\Carbon::setLocale('id');
     }
 }
