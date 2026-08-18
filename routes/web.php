@@ -87,7 +87,6 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
     // Pemesanan Katering Acara
     Route::post('/katering-acara/simpan', [KateringAcaraController::class, 'storePesanan'])->name('acara.simpan');
     Route::get('/katering-acara/edit-pesanan/{id}', [KateringAcaraController::class, 'editPesanan'])->name('acara.edit_pesanan');
-    Route::post('/katering-acara/simpan-menu', [KateringAcaraController::class, 'simpanMenuAcara'])->name('acara.simpan_menu');
     Route::get('/katering-acara/detail-pesanan/{id}', [KateringAcaraController::class, 'detailPesanan'])->name('acara.detail_pesanan');
     Route::post('/katering-acara/bayar-dp/{id}', [KateringAcaraController::class, 'bayarDp'])->name('acara.bayar_dp');
     Route::post('/katering-acara/batalkan/{id}', [KateringAcaraController::class, 'batalkanPesanan'])->name('acara.batalkan');
