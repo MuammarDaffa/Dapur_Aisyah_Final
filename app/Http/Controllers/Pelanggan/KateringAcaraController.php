@@ -201,9 +201,7 @@ class KateringAcaraController extends Controller
         $startOfWeek = $tanggalAcaraObj->copy()->startOfWeek();
         $endOfWeek = $tanggalAcaraObj->copy()->endOfWeek();
 
-        $stokMingguan = \App\Models\StokPorsiAcara::where('tanggal_mulai', $startOfWeek->toDateString())
-                            ->where('tanggal_selesai', $endOfWeek->toDateString())
-                            ->first();
+        $stokMingguan = \App\Models\StokPorsiAcara::first();
 
         $kuotaMaksimal = $stokMingguan ? $stokMingguan->stok : 0;
 

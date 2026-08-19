@@ -35,10 +35,6 @@ Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara)
 
                 <form action="{{ route('admin.catering.acara.stok') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="tanggal_mulai" value="{{ $periodeMinggu['start'] }}">
-                    <input type="hidden" name="tanggal_selesai" value="{{ $periodeMinggu['end'] }}">
-                    <input type="hidden" name="terjual" value="{{ $terjual }}">
-                    
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <thead>

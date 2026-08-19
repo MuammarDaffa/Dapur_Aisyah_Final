@@ -28,9 +28,7 @@ class CateringAcaraController extends Controller
         $startOfWeek = $tanggalObj->copy()->startOfWeek();
         $endOfWeek = $tanggalObj->copy()->endOfWeek();
 
-        $stokMingguan = \App\Models\StokPorsiAcara::where('tanggal_mulai', $startOfWeek->toDateString())
-                            ->where('tanggal_selesai', $endOfWeek->toDateString())
-                            ->first();
+        $stokMingguan = \App\Models\StokPorsiAcara::first();
 
         $stok = $stokMingguan ? $stokMingguan->stok : 0;
 
@@ -72,26 +70,23 @@ class CateringAcaraController extends Controller
     public function storeStok(Request $request)
     {
         $request->validate([
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'required|date',
             'stok' => 'required|integer|min:0',
-            'terjual' => 'required|integer|min:0',
         ]);
 
-        if ($request->stok < $request->terjual) {
-            return back()->with('swal_error', 'Stok per minggu tidak boleh lebih kecil dari jumlah porsi yang sudah terjual.');
+        $stokMingguan = \App\Models\StokPorsiAcara::first();
+
+        if ($stokMingguan) {
+            $stokMingguan->update([
+                'stok' => $request->stok,
+            ]);
+        } else {
+            \App\Models\StokPorsiAcara::create([
+                'stok' => $request->stok,
+                'tanggal_mulai' => now()->startOfWeek()->toDateString(),
+                'tanggal_selesai' => now()->endOfWeek()->toDateString(),
+            ]);
         }
 
-        \App\Models\StokPorsiAcara::updateOrCreate(
-            [
-                'tanggal_mulai' => $request->tanggal_mulai,
-                'tanggal_selesai' => $request->tanggal_selesai,
-            ],
-            [
-                'stok' => $request->stok,
-            ]
-        );
-
-        return back()->with('swal_success', 'Pengaturan porsi mingguan berhasil disimpan.');
+        return back()->with('swal_success', 'Pengaturan porsi mingguan global berhasil disimpan.');
     }
 }
