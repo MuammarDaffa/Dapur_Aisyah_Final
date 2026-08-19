@@ -19,6 +19,7 @@
             <div>
                 <a href="/">
                     <!-- <x-application-logo class="w-20 h-20 fill-current text-gray-500" /> -->
+                      <!-- class="w-16 h-16 object-contain"  -->
                      <img src="{{ asset('images/logo.png') }}"/>
                 </a>
             </div>

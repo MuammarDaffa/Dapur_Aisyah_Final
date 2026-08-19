@@ -63,21 +63,20 @@
         </div>
 
         <!-- Content Container -->
-            <div class="position-relative container d-flex flex-column align-items-center justify-content-center h-100 z-1" style="z-index: 2;">
+            <div class="position-relative container d-flex flex-column align-items-center justify-content-center h-100d z-1" style="z-index: 2;">
                 <h1 class="display-2 fw-bold text-warning mb-4" style="max-width: 800px;">
                     Dapur Aisyah 
                 </h1>
-                <h4 class="display-8 fw-bold text-white mb-5" style="max-width: 700px;">
+                <h4 class="display-8 fw-bold text-white mb-5 pb-3" style="max-width: 700px;">
                     Katering Rumahan Berkualitas Premium
                 </h4>
-                <div>
-                    <a href="#services" class="btn btn-warning text-white  btn-lg rounded-0 px-5 py-3 fw-bold shadow scroll-to-services mb-5">
+                <div class="mt-5 mb-4 pb-4">
+                    <a href="#services" class="btn btn-warning text-white btn-lg rounded-0 px-5 py-3 fw-bold shadow scroll-to-services">
                         Pesan Sekarang
                     </a>
-                    
                 </div>
                 <marquee class="fs-5 text-light mb-5 text-2xl" style="max-width: 700px;">
-                    Nikmati masakan rumahan berkualitas untuk kebutuhan harian atau acara.
+                    Nikmati masakan rumahan berkualitas untuk kebutuhan harian atau acara kantor.
                 </marquee>
             </div>
     </section>
