@@ -131,7 +131,7 @@
                 <div class="card-body">
                     <table class="table table-borderless mb-0">
                         <tr>
-                            <td class="text-muted" style="width: 200px;">Metode Pengiriman : </td>
+                            <td class="text-muted" style="width: 200px;">Metode Pengambilan : </td>
                             <td class="fw-semibold">
                                 @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
                                     Di Antar ke Lokasi

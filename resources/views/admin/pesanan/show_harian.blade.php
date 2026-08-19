@@ -23,27 +23,46 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="row detail-info mb-4">
-                    <div class="col-sm-4 detail-col">
-                        Pelanggan
-                        <address>
-                            <strong>{{ $pesanan->user->name }}</strong><br>
-                            Telepon: {{ $pesanan->user->phone }}<br>
-                            Email: {{ $pesanan->user->email }}
-                        </address>
+                <div class="mb-5">
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px; flex-shrink: 0;">Pelanggan</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">{{ $pesanan->user->name }}</div>
                     </div>
-                    <div class="col-sm-4 detail-col">
-                        Detail Pesanan
-                        <address>
-                            <strong>Katering {{ ucfirst($pesanan->tipe_layanan) }}</strong><br>
-
-                            <strong>Metode:</strong>{{ ucfirst($pesanan->metode_pengambilan) }}<br>
-                            @if($pesanan->metode_pengambilan === 'diantar_ke_tempat')
-                                <strong>Lokasi:</strong> {{ $pesanan->alamat_lengkap ?? '-' }}
-                            @endif
-                        </address>
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px; flex-shrink: 0;">Telepon</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">{{ $pesanan->user->phone }}</div>
                     </div>
-
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px; flex-shrink: 0;">Email</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1"><a href="mailto:{{ $pesanan->user->email }}" class="text-primary text-decoration-none">{{ $pesanan->user->email }}</a></div>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px; flex-shrink: 0;">Tipe Katering</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">Katering {{ ucfirst($pesanan->tipe_layanan) }}</div>
+                    </div>
+                    @if($pesanan->tanggal_pesanan)
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px; flex-shrink: 0;">Tgl transaksi</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->format('d M Y') }}</div>
+                    </div>
+                    @endif
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px; flex-shrink: 0;">Metode</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">{{ ucwords(str_replace('_', ' ', $pesanan->metode_pengambilan)) }}</div>
+                    </div>
+                    @if($pesanan->metode_pengambilan === 'diantar_ke_tempat')
+                    <div class="d-flex mb-2">
+                        <strong style="width: 150px; flex-shrink: 0;">Lokasi</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">{{ $pesanan->alamat_lengkap ?? '-' }}</div>
+                    </div>
+                    @endif
                 </div>
 
                 @if($pesanan->catatan)

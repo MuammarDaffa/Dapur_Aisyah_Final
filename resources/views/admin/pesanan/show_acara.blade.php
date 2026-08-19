@@ -52,7 +52,7 @@
                     <div class="d-flex mb-2">
                         <strong style="width: 150px; flex-shrink: 0;">Metode</strong>
                         <div style="width: 15px; flex-shrink: 0;">:</div>
-                        <div class="flex-grow-1">{{ ucfirst($pesanan->metode_pengambilan) }}</div>
+                        <div class="flex-grow-1">{{ ucwords(str_replace('_', ' ', $pesanan->metode_pengambilan)) }}</div>
                     </div>
                     @if($pesanan->metode_pengambilan === 'diantar_ke_tempat')
                     <div class="d-flex mb-2">
