@@ -25,39 +25,47 @@
             <div class="card-body">
                 <div class="mb-5">
                     <div class="d-flex mb-2">
-                        <strong style="width: 150px;">Pelanggan</strong>
-                        <span>: {{ $pesanan->user->name }}</span>
+                        <strong style="width: 150px; flex-shrink: 0;">Pelanggan</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">{{ $pesanan->user->name }}</div>
                     </div>
                     <div class="d-flex mb-2">
-                        <strong style="width: 150px;">Telepon</strong>
-                        <span>: {{ $pesanan->user->phone }}</span>
+                        <strong style="width: 150px; flex-shrink: 0;">Telepon</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">{{ $pesanan->user->phone }}</div>
                     </div>
                     <div class="d-flex mb-2">
-                        <strong style="width: 150px;">Email</strong>
-                        <span>: <a href="mailto:{{ $pesanan->user->email }}" class="text-primary text-decoration-none">{{ $pesanan->user->email }}</a></span>
+                        <strong style="width: 150px; flex-shrink: 0;">Email</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1"><a href="mailto:{{ $pesanan->user->email }}" class="text-primary text-decoration-none">{{ $pesanan->user->email }}</a></div>
                     </div>
                     <div class="d-flex mb-2">
-                        <strong style="width: 150px;">Tipe Katering</strong>
-                        <span>: Katering {{ ucfirst($pesanan->tipe_layanan) }} Kantoran</span>
+                        <strong style="width: 150px; flex-shrink: 0;">Tipe Katering</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">Katering {{ ucfirst($pesanan->tipe_layanan) }} Kantoran</div>
                     </div>
                     <div class="d-flex mb-2">
-                        <strong style="width: 150px;">Tgl Kirim</strong>
-                        <span>: {{ $pesanan->tanggal_pesanan->format('d M Y') }}</span>
+                        <strong style="width: 150px; flex-shrink: 0;">Tgl Kirim</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">{{ $pesanan->tanggal_pesanan->format('d M Y') }}</div>
                     </div>
                     <div class="d-flex mb-2">
-                        <strong style="width: 150px;">Metode</strong>
-                        <span>: {{ ucfirst($pesanan->metode_pengambilan) }}</span>
+                        <strong style="width: 150px; flex-shrink: 0;">Metode</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">{{ ucfirst($pesanan->metode_pengambilan) }}</div>
                     </div>
                     @if($pesanan->metode_pengambilan === 'diantar_ke_tempat')
                     <div class="d-flex mb-2">
-                        <strong style="width: 150px;">Lokasi</strong>
-                        <span>: {{ $pesanan->alamat_lengkap ?? '-' }}</span>
+                        <strong style="width: 150px; flex-shrink: 0;">Lokasi</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">{{ $pesanan->alamat_lengkap ?? '-' }}</div>
                     </div>
                     @endif
                     @if($pesanan->catatan)
                     <div class="d-flex mb-2">
-                        <strong style="width: 150px;">Catatan</strong>
-                        <span>: {{ $pesanan->catatan }}</span>
+                        <strong style="width: 150px; flex-shrink: 0;">Catatan</strong>
+                        <div style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="flex-grow-1">{{ $pesanan->catatan }}</div>
                     </div>
                     @endif
                 </div>
