@@ -174,9 +174,6 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::get('/laporan/pdf', [OwnerLaporanController::class, 'cetakPdf'])->name('reports.pdf');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Webhook Midtrans
-|--------------------------------------------------------------------------
-*/
+
+// midtrans webhook
 Route::post('/payment/callback', [\App\Http\Controllers\MidtransController::class, 'callback']);

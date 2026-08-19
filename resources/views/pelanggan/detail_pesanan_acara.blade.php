@@ -75,22 +75,27 @@
                 </div>
                 <div class="card-body">
                     <div class="d-flex mb-2">
-                        <strong class="text-muted" style="width: 180px;">Tanggal Acara</strong>
-                        <span class="fw-semibold">: {{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->translatedFormat('l, d F Y') }}</span>
+                        <strong class="text-muted" style="width: 180px; flex-shrink: 0;">Tanggal Acara</strong>
+                        <div class="fw-semibold" style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="fw-semibold flex-grow-1">
+                            {{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->translatedFormat('l, d F Y') }}
+                        </div>
                     </div>
                     <div class="d-flex mb-2">
-                        <strong class="text-muted" style="width: 180px;">Metode Pengambilan</strong>
-                        <span class="fw-semibold">: 
+                        <strong class="text-muted" style="width: 180px; flex-shrink: 0;">Metode Pengambilan</strong>
+                        <div class="fw-semibold" style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="fw-semibold flex-grow-1">
                             @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
                                 Di Antar ke Lokasi
                             @else
                                 Ambil Sendiri
                             @endif
-                        </span>
+                        </div>
                     </div>
                     <div class="d-flex mb-2">
-                        <strong class="text-muted" style="width: 180px;">Alamat</strong>
-                        <span class="fw-semibold">: 
+                        <strong class="text-muted" style="width: 180px; flex-shrink: 0;">Alamat</strong>
+                        <div class="fw-semibold" style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="fw-semibold flex-grow-1">
                             @if($pesanan->alamat_lengkap)
                                 {{ $pesanan->alamat_lengkap }}
                             @elseif($pesanan->metode_pengambilan == 'ambil_sendiri')
@@ -98,12 +103,15 @@
                             @else
                                 <span class="fst-italic">-</span>
                             @endif
-                        </span>
+                        </div>
                     </div>
                     @if($pesanan->catatan)
                     <div class="d-flex mb-2">
-                        <strong class="text-muted" style="width: 180px;">Catatan</strong>
-                        <span class="fw-semibold">: {{ $pesanan->catatan }}</span>
+                        <strong class="text-muted" style="width: 180px; flex-shrink: 0;">Catatan</strong>
+                        <div class="fw-semibold" style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="fw-semibold flex-grow-1">
+                            {{ $pesanan->catatan }}
+                        </div>
                     </div>
                     @endif
                 </div>
@@ -112,7 +120,7 @@
            <div class="card shadow-sm border-0 mb-5 bg-light">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">Total Keseluruhan</span>
+                        <span class="text-muted">Total</span>
                         <span class="fw-bold fs-5">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</span>
                     </div>
                     @if($pesanan->sisa_pembayaran > 0)
@@ -127,9 +135,9 @@
                             @if($pesanan->jumlah_dp == $pesanan->total)
                                 <p class="text-muted mb-0">Total Pembayaran (Lunas)</p>
                             @else
-                                <p class="text-muted mb-0">DP yang Harus Dibayar (50%)</p>
+                                <p class="text-muted mb-0">DP (50%)</p>
                             @endif
-                            <h3 class="fw-bold text-success mb-0">Rp {{ number_format($pesanan->jumlah_dp, 0, ',', '.') }}</h3>
+                            <h3 class="fw-bold  mb-0">Rp {{ number_format($pesanan->jumlah_dp, 0, ',', '.') }}</h3>
                         </div>
                         @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
                             <form id="form-bayar" action="{{ route('pelanggan.acara.bayar_dp', $pesanan->id) }}" method="POST">
