@@ -354,7 +354,6 @@
     window.confirmCancelForm = function(form, message) {
         Swal.fire({
             title: 'Batalkan Pesanan?',
-            text: message || "Apakah Anda yakin ingin membatalkan pesanan ini?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',

@@ -156,21 +156,22 @@
                 </div>
                 @endif
             
-                <div class="d-flex justify-content-start">
+                <div class="d-flex justify-content-between align-items-center mb-5">
                     <a href="{{ route('pelanggan.acara.lokasi') }}" class="btn btn-secondary px-4 py-2 fw-bold shadow-sm">
                         <i class="fa-solid fa-arrow-left me-1"></i> Kembali
                     </a>
-                </div>
-                <div class="d-flex justify-content-end  gap-2 mb-5">
-                    @auth
-                        <button type="submit" class="btn btn-warning text-white px-5 py-2 fw-bold shadow-sm">
-                            Buat Pesanan
-                        </button>
-                    @else
-                        <a href="{{ route('login') }}" class="btn btn-warning px-5 py-2 fw-bold shadow-sm">
-                            Login untuk Memesan
-                        </a>
-                    @endauth
+
+                    <div>
+                        @auth
+                            <button type="submit" class="btn btn-warning text-white px-5 py-2 fw-bold shadow-sm">
+                                Buat Pesanan
+                            </button>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-warning px-5 py-2 fw-bold shadow-sm">
+                                Login untuk Memesan
+                            </a>
+                        @endauth
+                    </div>
                 </div>
             </form>
         </div>

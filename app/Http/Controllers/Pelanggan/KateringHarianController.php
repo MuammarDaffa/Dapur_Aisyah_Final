@@ -367,14 +367,11 @@ class KateringHarianController extends Controller
                 $newMenuId = $jadwalMenuBaru->menu_id;
             }
 
-            // Aturan Tambahan: Semua tambahan/lauk-pauk dari tanggal sebelumnya dianggap hangus.
+            
             // Setelah tanggal berhasil diubah, seluruh tambahan harus dikosongkan.
             $detail->tambahanLaukPauk()->detach();
 
-            // Update data detail
-            // Aturan Menu: Jika ada menu, tampilkan. Jika tidak, menu_id = null (tampil `-`).
-            // Aturan Porsi: Tetap (tidak diubah).
-            // Aturan Total: subtotal tidak diubah.
+           
             $detail->update([
                 'tanggal_pengiriman' => $newDate->toDateString(),
                 'menu_id' => $newMenuId, 

@@ -10,11 +10,6 @@ use Midtrans\Snap;
 class KateringAcaraController extends Controller
 {
 
-
-    // ==========================================
-    // KATERING ACARA KANTOR (NEW FLOW)
-    // ==========================================
-
     public function showFormLokasi()
     {
         return view('pelanggan.acara_lokasi');
@@ -312,6 +307,7 @@ class KateringAcaraController extends Controller
         return view('pelanggan.detail_pesanan_acara', compact('pesanan'));
     }
 
+    // BAYAR DP
     public function bayarDp($id)
     {
         $pesanan = \App\Models\Pesanan::findOrFail($id);
@@ -329,7 +325,6 @@ class KateringAcaraController extends Controller
 
         $params = array(
             'transaction_details' => array(
-                // PERHATIKAN: Kita menambahkan timestamp agar order_id selalu unik (menghindari error "order_id has already been taken")
                 'order_id' => $pesanan->nomor_pesanan . '-' . $tipePembayaran . '-' . time(), 
                 'gross_amount' => $pesanan->jumlah_dp,
             ),

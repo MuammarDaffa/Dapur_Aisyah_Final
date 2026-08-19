@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-// App\Models\Layanan removed
 use App\Models\Menu;
 use App\Models\JadwalMenu;
 use Carbon\Carbon;
@@ -12,12 +11,6 @@ use Carbon\CarbonPeriod;
 
 class CateringHarianController extends Controller
 {
-
-    // Fungsi : Menampilkan halaman Manajemen Katering Harian (Card 1 & Card 2).
-    // Dijalankan Kapan : Saat admin menekan tombol Manajemen Harian (ikon mata) di tabel katering.
-    // Data berasal dari mana : Model Layanan, Menu, dan JadwalMenu.
-    // Data dikirim ke mana : View resources/views/admin/catering/harian.blade.php
-
     public function index(Request $request, string $tipe_layanan = 'harian')
     {
         if ($tipe_layanan !== 'harian') {
@@ -39,18 +32,9 @@ class CateringHarianController extends Controller
         $daftarTanggal = [];
         Carbon::setLocale('id');
 
+        // generate sampai hari jumat
         if ($startDate) {
-            // Jika ada request generate, set end date ke hari Jumat di minggu tersebut (start_date + 4 hari)
-            // Asumsi admin memilih hari Senin. Jika tidak, akan tetap mentok hingga 5 hari ke depan.
-            // Lebih baik mencari hari jumat di minggu tersebut.
             $start = Carbon::parse($startDate);
-            // Mencari hari Jumat terdekat di minggu yang sama (atau minggu depan jika start_date weekend, dsb).
-            // Untuk D3 simple: Jika ini Senin, maka Jumat adalah start + 4 hari. 
-            // Kita bisa menggunakan logic: $start->copy()->next(Carbon::FRIDAY) jika ingin strict, 
-            // tapi yang paling aman secara visual: admin pilih hari apapun, batas akhirnya adalah hari Jumat terdekat di siklus itu.
-            // Atau cukup: $end = $start->copy()->endOfWeek(Carbon::FRIDAY);
-            // endOfWeek() bisa dikonfigurasi, tapi defaultnya $start->copy()->next(Carbon::FRIDAY) jika start bukan Jumat.
-            // Paling simple dan aman:
             $endDate = $start->copy()->next(Carbon::FRIDAY);
             if ($start->isFriday()) {
                 $endDate = $start->copy();
@@ -86,12 +70,6 @@ class CateringHarianController extends Controller
         return view('admin.catering.harian', compact('daftarMenu', 'jadwalTersimpan', 'daftarTanggal', 'startDate', 'tipe_layanan'));
     }
 
-    // =======================================
-    // Fungsi : Menyimpan atau memperbarui data Pengaturan Jadwal Menu (Card 1).
-    // Dijalankan Kapan : Saat admin menekan tombol "Simpan Jadwal" di bawah tabel jadwal.
-    // Data berasal dari mana : Form di halaman harian.blade.php
-    // Mengapa ini diperlukan : Untuk mengatur menu apa saja yang tersedia di hari tertentu beserta stok awalnya.
-    // =======================================
     public function updateJadwal(Request $request, string $tipe_layanan = 'harian')
     {
         $startDate = $request->input('start_date');
@@ -169,15 +147,12 @@ class CateringHarianController extends Controller
                     ]);
                 }
                 
-                // Sinkronisasi menu ke pesanan reschedule (DetailPesanan) yang menu_id-nya null pada tanggal ini
+                // mengisi tanggal pengiriman di detail pesanan yang menu_id nya null
                 \App\Models\DetailPesanan::where('tanggal_pengiriman', $input['tanggal'])
                     ->whereNull('menu_id')
                     ->update(['menu_id' => $input['menu_id']]);
 
-                // ExtraHarian was moved to TambahanLaukPauk, handled independently from JadwalMenu now.
-                // So no extra syncing here!
             } else {
-                // Jika tidak aktif (tidak dicentang), berarti admin ingin meliburkan/menghapus jadwal hari tersebut
                 if ($jadwalLama) {
                     $jadwalLama->delete();
                 }

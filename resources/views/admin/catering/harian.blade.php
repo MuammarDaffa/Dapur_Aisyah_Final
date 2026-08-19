@@ -38,7 +38,7 @@ Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMen
                 <form action="{{ route('admin.catering.harian', 'harian') }}" method="GET" class="mb-4">
                     <div class="row align-items-end">
                         <div class="col-md-6">
-                            <label for="start_date" class="form-label">Pilih Tanggal Mulai (Senin)</label>
+                            <label for="start_date" class="form-label">Pilih Tanggal Mulai</label>
                             <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date') }}" required>
                         </div>
                         <div class="col-md-6">

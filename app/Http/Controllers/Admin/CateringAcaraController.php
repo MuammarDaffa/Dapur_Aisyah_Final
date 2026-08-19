@@ -1,23 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
-// Layanan removed
 use Illuminate\Http\Request;
 
 class CateringAcaraController extends Controller
 {
-    // =======================================
-    // File : app/Http/Controllers/Admin/CateringAcaraController.php
-    // Fungsi : Menampilkan halaman detail spesifik dari satu katering acara.
-    // Dijalankan Kapan : Ketika admin menekan tombol ikon mata (Detail) di halaman daftar katering (Tipe Acara).
-    // Data berasal dari mana : Model Layanan berdasarkan ID yang diklik.
-    // Data dikirim ke mana : Halaman resources/views/admin/catering/show.blade.php
-    // =======================================
+  
     public function index(Request $request, string $tipe_layanan = 'acara')
     {
-        // Pastikan katering bertipe acara
+
         if ($tipe_layanan !== 'acara') {
             return redirect()->route('admin.dashboard')->with('error', 'Layanan ini bukan tipe Acara.');
         }
@@ -87,6 +79,6 @@ class CateringAcaraController extends Controller
             ]);
         }
 
-        return back()->with('swal_success', 'Pengaturan porsi mingguan global berhasil disimpan.');
+        return back()->with('swal_success', 'Pengaturan porsi mingguan berhasil disimpan.');
     }
 }
