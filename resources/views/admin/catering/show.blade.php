@@ -8,10 +8,28 @@
 
 
 <div class="row mt-4">
-    <div class="col-md-12 mb-4">
-        <div class="card card-outline card-info">
+    <div class="col-md-12">
+        <!-- Card 1: Pengaturan Stok per Minggu -->
+        <div class="card card-outline card-primary mb-4">
             <div class="card-header">
-                <h3 class="card-title mb-0"> <strong>Cek Stok Porsi</strong></h3>
+                <h3 class="card-title mb-0"><strong>Pengaturan Stok per Minggu</strong></h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ route('admin.catering.acara.stok') }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="stok_global" class="form-label">Porsi per Minggu</label>
+                        <input type="number" name="stok" id="stok_global" class="form-control" value="{{ $stok }}" min="0" required style="max-width: 250px;">
+                    </div>
+                    <button type="submit" class="btn btn-success">Simpan</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Card 2: Cek Stok Porsi -->
+        <div class="card card-outline card-info mb-4">
+            <div class="card-header">
+                <h3 class="card-title mb-0"><strong>Cek Stok Porsi</strong></h3>
             </div>
             <div class="card-body">
                 <form action="{{ route('admin.catering.acara') }}" method="GET" class="row align-items-end mb-4">
@@ -19,48 +37,37 @@
                         <label for="tanggal" class="form-label">Pilih Tanggal</label>
                         <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ $periodeMinggu['tanggal_terpilih'] }}" required>
                     </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">Cek Porsi terjual</button>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Cek Porsi Terjual</button>
                     </div>
                 </form>
-<!-- 
-                <div class="alert alert-secondary">
-                    <strong>Periode:</strong> {{ $periodeMinggu['start_formatted'] }} - {{ $periodeMinggu['end_formatted'] }}
-                </div> -->
 
-                <form action="{{ route('admin.catering.acara.stok') }}" method="POST">
-                    @csrf
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Periode Minggu</th>
-                                    <th width="20%">Stok per Minggu</th>
-                                    <th width="15%" class="text-center">Terjual</th>
-                                    <th width="15%" class="text-center">Sisa Stok</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{{ $periodeMinggu['start_formatted'] }} - {{ $periodeMinggu['end_formatted'] }}</td>
-                                    <td>
-                                        <input type="number" name="stok" class="form-control" value="{{ $stok }}" min="0" required>
-                                    </td>
-                                    <td class="text-center">
-                                        {{ $terjual }}
-                                    </td>
-                                    <td class="text-center">
-                                        {{ $sisaStok }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="mt-3 text-end">
-                        <button type="submit" class="btn btn-success">Simpan</button>
-                    </div>
-                </form>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Periode Minggu</th>
+                                <th width="20%">Stok per Minggu</th>
+                                <th width="15%" class="text-center">Terjual</th>
+                                <th width="15%" class="text-center">Sisa Stok</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ $periodeMinggu['start_formatted'] }} - {{ $periodeMinggu['end_formatted'] }}</td>
+                                <td>
+                                    <input type="number" class="form-control" value="{{ $stok }}" readonly>
+                                </td>
+                                <td class="text-center">
+                                    {{ $terjual }}
+                                </td>
+                                <td class="text-center">
+                                    {{ $sisaStok }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
