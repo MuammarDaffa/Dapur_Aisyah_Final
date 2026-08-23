@@ -72,7 +72,7 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">Harga</label>
-                                                    <input type="text" name="harga" class="form-control format-rupiah" value="{{ $item->harga }}" required>
+                                                    <input type="text" name="harga" class="form-control format-rupiah" value="{{ (int) $item->harga }}" required>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">

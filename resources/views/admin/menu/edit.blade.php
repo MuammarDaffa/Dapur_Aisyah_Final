@@ -57,7 +57,7 @@
                     {{-- Harga --}}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Harga {{ $menu->tipe_layanan === 'harian' ? 'per Porsi' : 'Dasar' }} (Rp) <span class="text-danger">*</span></label>
-                        <input type="text" name="harga" class="form-control format-rupiah" value="{{ old('harga', $menu->harga) }}" required>
+                        <input type="text" name="harga" class="form-control format-rupiah" value="{{ old('harga', (int) $menu->harga) }}" required>
                         @error('harga')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
 
