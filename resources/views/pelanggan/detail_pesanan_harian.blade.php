@@ -18,15 +18,20 @@
                     <table class="table table-bordered align-middle">
                         <thead class="table-light text-center">
                             <tr>
-                                <th style="width: 15%;">Hari/Tanggal</th>
-                                <th style="width: 15%;">Menu</th>
-                                <th style="width: 12%;">Harga Menu</th>
-                                <th style="width: 5%;">Porsi</th>
-                                <th style="width: 15%;">Tambahan</th>
-                                <th style="width: 12%;">Harga Tambahan</th>
-                                <th style="width: 5%;">Jumlah</th>
-                                <th style="width: 11%;">Total</th>
-                                <th style="width: 10%;">Opsi</th>
+                                @php
+                                    $isLunas = $pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS;
+                                @endphp
+                                <th style="width: {{ $isLunas ? '15' : '17' }}%;">Hari/Tanggal</th>
+                                <th style="width: {{ $isLunas ? '15' : '17' }}%;">Menu</th>
+                                <th style="width: {{ $isLunas ? '12' : '13' }}%;">Harga Menu</th>
+                                <th style="width: {{ $isLunas ? '5' : '6' }}%;">Porsi</th>
+                                <th style="width: {{ $isLunas ? '15' : '16' }}%;">Tambahan</th>
+                                <th style="width: {{ $isLunas ? '12' : '13' }}%;">Harga Tambahan</th>
+                                <th style="width: {{ $isLunas ? '5' : '6' }}%;">Jumlah</th>
+                                <th style="width: {{ $isLunas ? '11' : '12' }}%;">Total</th>
+                                @if($isLunas)
+                                    <th style="width: 10%;">Opsi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -73,8 +78,8 @@
                                     @endif
                                     
                                     <td class="text-end fw-bold" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
-                                    <td class="text-center" rowspan="{{ $rowspan }}">
-                                        @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
+                                    @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
+                                        <td class="text-center" rowspan="{{ $rowspan }}">
                                             @php
                                                 $today = \Carbon\Carbon::now()->startOfDay();
                                                 $deliveryDate = \Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay();
@@ -118,10 +123,8 @@
                                                     </div>
                                                 </div>
                                             @endif
-                                        @else
-                                            <span class="text-muted small">-</span>
-                                        @endif
-                                    </td>
+                                        </td>
+                                    @endif
                                 </tr>
 
                                 @if($groupedItems && $groupedItems->count() > 1)
