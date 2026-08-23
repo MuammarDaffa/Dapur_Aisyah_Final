@@ -18,12 +18,14 @@
                     <table class="table table-bordered align-middle">
                         <thead class="table-light text-center">
                             <tr>
-                                <th style="width: 20%;">Hari/Tanggal</th>
-                                <th style="width: 20%;">Menu</th>
-                                <th style="width: 8%;">Porsi</th>
-                                <th style="width: 22%;">Tambahan</th>
-                                <th style="width: 10%;">Jumlah</th>
-                                <th style="width: 10%;">Total</th>
+                                <th style="width: 15%;">Hari/Tanggal</th>
+                                <th style="width: 15%;">Menu</th>
+                                <th style="width: 12%;">Harga Menu</th>
+                                <th style="width: 5%;">Porsi</th>
+                                <th style="width: 15%;">Tambahan</th>
+                                <th style="width: 12%;">Harga Tambahan</th>
+                                <th style="width: 5%;">Jumlah</th>
+                                <th style="width: 11%;">Total</th>
                                 <th style="width: 10%;">Opsi</th>
                             </tr>
                         </thead>
@@ -36,6 +38,7 @@
                                         $groupedItems = $detail->tambahanLaukPauk->groupBy('id')->map(function ($items) {
                                             return (object) [
                                                 'nama' => $items->first()->nama,
+                                                'harga' => $items->first()->harga,
                                                 'jumlah' => $items->count()
                                             ];
                                         })->values();
@@ -43,18 +46,28 @@
                                     }
                                     
                                     $menuName = $detail->menu ? $detail->menu->nama_menu : ($detail->is_rescheduled ? '-' : '<span class="text-warning"><i class="bi bi-clock-history"></i> Menunggu Jadwal Admin</span>');
+                                    $menuPrice = $detail->menu ? $detail->menu->harga : 0;
                                     $formattedDate = $detail->tanggal_pengiriman ? \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('l, d M Y') : '-';
                                 @endphp
 
                                 <tr>
                                     <td class="text-center" rowspan="{{ $rowspan }}">{{ $formattedDate }}</td>
                                     <td rowspan="{{ $rowspan }}">{!! $menuName !!}</td>
+                                    <td class="text-end" rowspan="{{ $rowspan }}">
+                                        @if($detail->menu)
+                                            Rp {{ number_format($menuPrice, 0, ',', '.') }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
                                     <td class="text-center" rowspan="{{ $rowspan }}">{{ $detail->porsi }}</td>
                                     
                                     @if($groupedItems)
                                         <td>{{ $groupedItems[0]->nama }}</td>
+                                        <td class="text-end">Rp {{ number_format($groupedItems[0]->harga, 0, ',', '.') }}</td>
                                         <td class="text-center">{{ $groupedItems[0]->jumlah }}</td>
                                     @else
+                                        <td class="text-center text-muted">-</td>
                                         <td class="text-center text-muted">-</td>
                                         <td class="text-center text-muted">-</td>
                                     @endif
@@ -115,6 +128,7 @@
                                     @for($i = 1; $i < $rowspan; $i++)
                                         <tr>
                                             <td>{{ $groupedItems[$i]->nama }}</td>
+                                            <td class="text-end">Rp {{ number_format($groupedItems[$i]->harga, 0, ',', '.') }}</td>
                                             <td class="text-center">{{ $groupedItems[$i]->jumlah }}</td>
                                         </tr>
                                     @endfor
