@@ -17,6 +17,10 @@ class TambahanLaukPaukController extends Controller
 
     public function store(Request $request, Menu $menu)
     {
+        $request->merge([
+            'harga' => str_replace('.', '', $request->harga),
+        ]);
+
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'harga' => 'required|numeric|min:0'
@@ -30,6 +34,10 @@ class TambahanLaukPaukController extends Controller
 
     public function update(Request $request, TambahanLaukPauk $item)
     {
+        $request->merge([
+            'harga' => str_replace('.', '', $request->harga),
+        ]);
+
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'harga' => 'required|numeric|min:0'

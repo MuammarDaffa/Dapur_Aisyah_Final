@@ -10,6 +10,10 @@ class MinumanController extends Controller
 {
     public function store(Request $request, string $tipe_layanan = 'acara')
     {
+        $request->merge([
+            'harga' => str_replace('.', '', $request->harga),
+        ]);
+
         $validated = $request->validate([
             'nama_minuman' => 'required|string|max:100|unique:minumans,nama_minuman,NULL,id,tipe_layanan,' . $tipe_layanan,
             'harga' => 'required|numeric|min:0',
@@ -24,6 +28,10 @@ class MinumanController extends Controller
 
     public function update(Request $request, Minuman $minuman)
     {
+        $request->merge([
+            'harga' => str_replace('.', '', $request->harga),
+        ]);
+
         $validated = $request->validate([
             'nama_minuman' => 'required|string|max:100|unique:minumans,nama_minuman,' . $minuman->id . ',id,tipe_layanan,' . $minuman->tipe_layanan,
             'harga' => 'required|numeric|min:0',

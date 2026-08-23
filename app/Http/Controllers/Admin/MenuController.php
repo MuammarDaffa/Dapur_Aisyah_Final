@@ -16,6 +16,10 @@ class MenuController extends Controller
 
     public function store(Request $request, string $tipe_layanan)
     {
+        $request->merge([
+            'harga' => str_replace('.', '', $request->harga),
+        ]);
+
         $validated = $request->validate([
             'nama_menu' => 'required|string|max:255',
             'deskripsi' => 'required|string',
@@ -47,6 +51,10 @@ class MenuController extends Controller
 
     public function update(Request $request, Menu $menu)
     {
+        $request->merge([
+            'harga' => str_replace('.', '', $request->harga),
+        ]);
+
         $validated = $request->validate([
             'nama_menu' => 'required|string|max:255',
             'deskripsi' => 'required|string',

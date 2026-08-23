@@ -216,7 +216,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="harga" class="form-label">Harga per Cup/Gelas (Rp) <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="harga" name="harga" required min="0">
+                        <input type="text" class="form-control format-rupiah" id="harga" name="harga" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -246,7 +246,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="edit_harga" class="form-label">Harga per Cup/Gelas (Rp) <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="edit_harga" name="harga" required min="0">
+                        <input type="text" class="form-control format-rupiah" id="edit_harga" name="harga" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -267,7 +267,26 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script>
+function formatRupiah(angka) {
+    let number_string = angka.toString().replace(/[^0-9]/g, '');
+    let sisa = number_string.length % 3;
+    let rupiah = number_string.substr(0, sisa);
+    let ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+    if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
+    return rupiah;
+}
+
 $(document).ready(function() {
+    $('.format-rupiah').each(function() {
+        $(this).val(formatRupiah($(this).val()));
+    });
+    $(document).on('input', '.format-rupiah', function() {
+        $(this).val(formatRupiah($(this).val()));
+    });
     $('#summernote').summernote({
         placeholder: 'Tulis deskripsi layanan katering di sini...',
         tabsize: 2,
@@ -288,7 +307,7 @@ $(document).ready(function() {
         
         // Isi input
         $('#edit_nama_minuman').val(minumanNama);
-        $('#edit_harga').val(minumanHarga);
+        $('#edit_harga').val(formatRupiah(minumanHarga.toString()));
         
         // Ubah action form ke route update yang benar
         var formAction = "{{ url('admin/minuman') }}/" + minumanId;

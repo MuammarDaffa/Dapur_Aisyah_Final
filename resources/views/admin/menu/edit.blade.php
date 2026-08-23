@@ -57,7 +57,7 @@
                     {{-- Harga --}}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Harga {{ $menu->tipe_layanan === 'harian' ? 'per Porsi' : 'Dasar' }} (Rp) <span class="text-danger">*</span></label>
-                        <input type="number" name="harga" class="form-control" value="{{ old('harga', $menu->harga) }}" min="0" required>
+                        <input type="text" name="harga" class="form-control format-rupiah" value="{{ old('harga', $menu->harga) }}" required>
                         @error('harga')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
 
@@ -96,6 +96,26 @@
                 preview.style.display = 'none';
             @endif
         }
+    });
+
+    function formatRupiah(angka) {
+        let number_string = angka.replace(/[^0-9]/g, '').toString();
+        let sisa = number_string.length % 3;
+        let rupiah = number_string.substr(0, sisa);
+        let ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        return rupiah;
+    }
+
+    document.querySelectorAll('.format-rupiah').forEach(function(input) {
+        input.value = formatRupiah(input.value);
+        input.addEventListener('input', function(e) {
+            this.value = formatRupiah(this.value);
+        });
     });
 </script>
 @endpush

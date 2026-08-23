@@ -72,7 +72,7 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">Harga</label>
-                                                    <input type="number" name="harga" class="form-control" value="{{ $item->harga }}" required min="0">
+                                                    <input type="text" name="harga" class="form-control format-rupiah" value="{{ $item->harga }}" required>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -113,7 +113,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Harga</label>
-                        <input type="number" name="harga" class="form-control" required min="0">
+                        <input type="text" name="harga" class="form-control format-rupiah" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -125,3 +125,31 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function formatRupiah(angka) {
+        let number_string = angka.toString().replace(/[^0-9]/g, '');
+        let sisa = number_string.length % 3;
+        let rupiah = number_string.substr(0, sisa);
+        let ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        return rupiah;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.format-rupiah').forEach(function(input) {
+            if(input.value) {
+                input.value = formatRupiah(input.value);
+            }
+            input.addEventListener('input', function(e) {
+                this.value = formatRupiah(this.value);
+            });
+        });
+    });
+</script>
+@endpush
