@@ -37,5 +37,4 @@ class DashboardController extends Controller
 
         return view('owner.dashboard', compact('stats', 'orderStatuses', 'recentReviews'));
     }
-    // Methods customers, ulasan, dan reports telah dipindahkan ke controllernya masing-masing
 }

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-// Layanan removed
 use App\Models\Minuman;
 
 class MinumanController extends Controller

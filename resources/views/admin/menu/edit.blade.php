@@ -1,9 +1,4 @@
-{{-- 
-=======================================
-File : resources/views/admin/menu/edit.blade.php
-Fungsi : Halaman untuk mengedit menu yang sudah ada.
-=======================================
---}}
+
 
 @extends('layouts.admin')
 

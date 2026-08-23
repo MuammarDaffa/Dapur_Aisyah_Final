@@ -11,8 +11,6 @@ class TambahanLaukPaukController extends Controller
 {
     public function index(Menu $menu)
     {
-        // Untuk Acara: melihat detail menu acara dan menambah isi menu
-        // Untuk Harian: bisa jadi melihat detail menu harian dan menambah extra
         $items = $menu->tambahanLaukPauk;
         return view('admin.menu.tambahan_lauk_pauk', compact('menu', 'items'));
     }

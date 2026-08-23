@@ -10,10 +10,6 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\PesananController as AdminPesananController;
 
 use App\Http\Controllers\Admin\CateringHarianController;
-    // =======================================
-    // Controllers for Catering/Menu
-    // =======================================
-
 use App\Http\Controllers\Admin\PelangganController as AdminPelangganController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboard;
 use App\Http\Controllers\Owner\PesananController as OwnerPesananController;
@@ -21,26 +17,13 @@ use App\Http\Controllers\Owner\PelangganController as OwnerPelangganController;
 use App\Http\Controllers\Owner\UlasanController as OwnerUlasanController;
 use App\Http\Controllers\Owner\LaporanController as OwnerLaporanController;
 
-/*
-|--------------------------------------------------------------------------
-| Public Routes
-|--------------------------------------------------------------------------
-*/
 
+// Public Routes
 Route::get('/', [LandingController::class, 'index'])->name('landing')->middleware('unverified_customer_redirect');
 
-/*
-|--------------------------------------------------------------------------
-| Authentication Routes (dari Breeze)
-|--------------------------------------------------------------------------
-*/
 require __DIR__.'/auth.php';
 
-/*
-|--------------------------------------------------------------------------
-| Clear Notification Session (AJAX)
-|--------------------------------------------------------------------------
-*/
+
 Route::post('/session/clear-notification', function (\Illuminate\Http\Request $request) {
     $keys = $request->input('keys', ['info', 'warning', 'success', 'error', 'acara_conflict_error']);
     if (is_array($keys)) {
@@ -49,11 +32,7 @@ Route::post('/session/clear-notification', function (\Illuminate\Http\Request $r
     return response()->json(['status' => 'cleared']);
 })->name('session.clear-notification');
 
-/*
-|--------------------------------------------------------------------------
-| Public Pelanggan Routes (No Auth Required)
-|--------------------------------------------------------------------------
-*/
+// pelanggan Routes tanpa login
 Route::middleware('unverified_customer_redirect')->prefix('katering')->name('pelanggan.')->group(function () {
     // Katering Harian
     Route::get('/harian/lokasi', [KateringHarianController::class, 'showFormLokasi'])->name('harian.lokasi');
@@ -68,6 +47,7 @@ Route::middleware('unverified_customer_redirect')->prefix('katering')->name('pel
     // Legacy route deleted
 });
 
+// pelanggan Routes dengan login
 Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->name('pelanggan.')->group(function () {
     Route::get('/profile', [ProfilController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfilController::class, 'update'])->name('profile.update');
@@ -93,11 +73,7 @@ Route::middleware(['auth', 'verified', 'role:customer'])->prefix('dashboard')->n
 
 });
 
-/*
-|--------------------------------------------------------------------------
-| Admin Routes
-|--------------------------------------------------------------------------
-*/
+// admin routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
@@ -106,17 +82,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/pesanan/{pesanan}/status', [AdminPesananController::class, 'updateStatus'])->name('pesanan.status');
     Route::put('/pesanan/{pesanan}/cancel', [AdminPesananController::class, 'cancel'])->name('pesanan.cancel');
     Route::delete('/pesanan/{pesanan}', [AdminPesananController::class, 'destroy'])->name('pesanan.destroy');
-
-    // =======================================
-    // File : routes/web.php
-    // Fungsi : Mengatur rute URL untuk Katering.
-    // Penambahan 'show' berguna untuk membuka rute halaman detail katering.
-    // =======================================
-    // CRUD Layanan dihapus, diganti hardcode tipe_layanan
-
-    // =======================================
-    // Rute Manajemen Katering Harian & Acara (Menu)
-    // =======================================
     // 1. Halaman Utama Manajemen Katering Harian (Jadwal)
     Route::get('/catering/harian', [CateringHarianController::class, 'index'])->name('catering.harian');
     Route::post('/catering/harian/jadwal', [CateringHarianController::class, 'updateJadwal'])->name('catering.harian.jadwal');
@@ -145,16 +110,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/menu-tambahan/{item}', [\App\Http\Controllers\Admin\TambahanLaukPaukController::class, 'update'])->name('menu.tambahan.update');
     Route::delete('/menu-tambahan/{item}', [\App\Http\Controllers\Admin\TambahanLaukPaukController::class, 'destroy'])->name('menu.tambahan.destroy');
 
-    // 4. Hapus rute lama (minuman-acara, dsb) sudah tergabung di menu-item.
-
     Route::get('/customers', [AdminPelangganController::class, 'index'])->name('customers');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Owner Routes
-|--------------------------------------------------------------------------
-*/
+// owner routes
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
     Route::get('/dashboard', [OwnerDashboard::class, 'index'])->name('dashboard');
     

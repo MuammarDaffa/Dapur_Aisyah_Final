@@ -1,9 +1,4 @@
-{{-- 
-=======================================
-File : resources/views/admin/catering/show.blade.php
-Fungsi : Menampilkan form edit katering dan manajemen menu (jika katering acara) dalam satu halaman.
-=======================================
---}}
+
 
 @extends('layouts.admin')
 

@@ -1,11 +1,5 @@
-{{-- 
-=======================================
-File : resources/views/admin/catering/harian.blade.php
-Fungsi : Sebagai halaman pusat/dashboard pengelolaan Katering Harian (Pengaturan Jadwal & Daftar Menu).
-Dijalankan Kapan : Saat admin mengklik tombol detail/ikon mata pada katering tipe harian.
-Data berasal dari mana : CateringHarianController (variabel $layanan, $daftarMenu, $jadwalTersimpan, $daftarHari).
-=======================================
---}}
+
+<!-- Data berasal dari  : CateringHarianController (variabel $layanan, $daftarMenu, $jadwalTersimpan, $daftarHari). -->
 
 @extends('layouts.admin')
 

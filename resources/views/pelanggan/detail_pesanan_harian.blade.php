@@ -129,18 +129,17 @@
             <div class="card shadow-sm border-0 mb-4">
              
                 <div class="card-body">
-                    <table class="table table-borderless mb-0">
-                        <tr>
-                            <td class="text-muted" style="width: 200px;">Metode Pengambilan : </td>
-                            <td class="fw-semibold">
-                                @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
-                                    Di Antar ke Lokasi
-                                @else
-                                    Ambil Sendiri
-                                @endif
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="d-flex mb-2">
+                        <span class="text-muted" style="width: 180px; flex-shrink: 0;">Metode Pengambilan</span>
+                        <div class="fw-semibold" style="width: 15px; flex-shrink: 0;">:</div>
+                        <div class="fw-semibold flex-grow-1">
+                            @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
+                                Di Antar ke Lokasi
+                            @else
+                                Ambil Sendiri
+                            @endif
+                        </div>
+                    </div>
 
                     @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
                         <hr class="my-4">

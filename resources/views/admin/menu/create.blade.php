@@ -1,9 +1,3 @@
-{{-- 
-=======================================
-File : resources/views/admin/menu/create.blade.php
-Fungsi : Halaman untuk menambahkan menu baru (harian/acara).
-=======================================
---}}
 
 @extends('layouts.admin')
 

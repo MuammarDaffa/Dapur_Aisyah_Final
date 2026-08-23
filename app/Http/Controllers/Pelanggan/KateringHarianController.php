@@ -182,13 +182,6 @@ class KateringHarianController extends Controller
                         $tambahanLauk = \App\Models\TambahanLaukPauk::find($itemId);
                         if ($tambahanLauk) {
                             $subtotalItems += ($tambahanLauk->harga * $qty);
-                            // We need to store this somehow. 
-                            // In Acara, it uses pivot. For Harian, let's just sum it to the subtotal, 
-                            // or attach the items properly. DetailPesanan only accepts array of IDs currently in acara.
-                            // If they buy quantities of extras, the DB structure `detail_pesanan_item` doesn't have quantity!
-                            // Wait, DetailPesananItem pivot table:
-                            // let's check it. For now, just attach the items. If they want qty, we might need qty column.
-                            // Since the user said "input jumlah", I'll pass it anyway.
                             for($i = 0; $i < $qty; $i++) {
                                 $selectedItemsData[] = $itemId;
                             }
@@ -198,7 +191,7 @@ class KateringHarianController extends Controller
             }
 
             $hargaPerPorsiUtama = $jadwal->menu->harga;
-            $subtotal = ($hargaPerPorsiUtama * $porsi) + $subtotalItems; // If extras are independent of main portion
+            $subtotal = ($hargaPerPorsiUtama * $porsi) + $subtotalItems; 
             $totalHargaKeseluruhan += $subtotal;
 
             $menusDipilih[] = [
