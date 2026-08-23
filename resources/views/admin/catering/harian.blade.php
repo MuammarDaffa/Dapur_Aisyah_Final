@@ -64,7 +64,7 @@
                                             Edit
                                         </a>
                                         <a href="{{ route('admin.menu.tambahan.index', $menu->id) }}" class="btn btn-sm btn-info text-white">
-                                            Tambahan Menu
+                                            Lauk Pauk
                                         </a>
                                         {{-- Tombol Hapus --}}
                                         <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline">
@@ -232,7 +232,7 @@
 
     function hapusData(form) {
         Swal.fire({
-            title: 'Apakah Anda yakin ingin menghapus data ini?',
+            title: 'Apakah Anda yakin ingin menghapus menu ini?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -248,7 +248,7 @@
 
     function resetJadwal(form) {
         Swal.fire({
-            title: 'Apakah Anda ingin reset jadwal ini?',
+            title: 'Apakah Anda ingin hapus jadwal ini?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
