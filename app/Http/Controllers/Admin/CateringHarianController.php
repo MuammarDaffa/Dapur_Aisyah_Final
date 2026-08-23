@@ -35,6 +35,12 @@ class CateringHarianController extends Controller
         // generate sampai hari jumat
         if ($startDate) {
             $start = Carbon::parse($startDate);
+            $today = Carbon::now('Asia/Jakarta')->startOfDay();
+            
+            if ($start->lt($today)) {
+                return redirect()->route('admin.catering.harian')->with('swal_error', 'Tanggal mulai tidak boleh sebelum tanggal hari ini.');
+            }
+
             $endDate = $start->copy()->next(Carbon::FRIDAY);
             if ($start->isFriday()) {
                 $endDate = $start->copy();
@@ -73,6 +79,16 @@ class CateringHarianController extends Controller
     public function updateJadwal(Request $request, string $tipe_layanan = 'harian')
     {
         $startDate = $request->input('start_date');
+        
+        if ($startDate) {
+            $start = Carbon::parse($startDate);
+            $today = Carbon::now('Asia/Jakarta')->startOfDay();
+            
+            if ($start->lt($today)) {
+                return redirect()->route('admin.catering.harian')->with('swal_error', 'Tanggal mulai tidak boleh sebelum tanggal hari ini.');
+            }
+        }
+
         $jadwalInput = $request->input('jadwal', []);
         $daftarTanggal = array_keys($jadwalInput);
 

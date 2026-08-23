@@ -19,6 +19,79 @@
 
 <div class="row">
     {{-- =======================================
+         CARD 2: DAFTAR MENU HARIAN
+         ======================================= --}}
+    <div class="col-12 mb-4">
+        <div class="card card-outline card-success">
+           <div class="card-header d-flex align-items-center">
+    <h3 class="card-title mb-0">Daftar Menu Harian</h3>
+
+    <a href="{{ route('admin.menu.create', 'harian') }}"
+       class="btn btn-sm btn-success ms-auto">
+        Tambah Menu
+    </a>
+</div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center" style="width: 5%;">No</th>
+                            <th class="text-start" style="width: 20%;">Nama Menu</th>
+                            <th class="text-center" style="width: 15%;">Gambar</th>
+                            <th class="text-start" style="width: 25%;">Deskripsi</th>
+                            <th class="text-start" style="width: 15%;">Harga</th>
+                            <th class="text-center" style="width: 20%;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($daftarMenu as $index => $menu)
+                            <tr>
+                                <td class="text-center">{{ $index + 1 }}</td>
+                                <td class="text-start">{{ $menu->nama_menu }}</td>
+                                <td class="text-center">
+                                    @if($menu->gambar)
+                                        <img src="{{ asset('storage/menu/' . $menu->gambar) }}" style="width:80px;height:80px;object-fit:cover;" alt="Gambar Menu">
+                                    @else
+                                        <span class="text-muted small">Belum ada gambar</span>
+                                    @endif
+                                </td>
+                                <td class="text-start">{{ $menu->deskripsi }}</td>
+                                <td class="text-start">Rp {{ number_format($menu->harga, 0, ',', '.') }}</td>
+                                <td>
+                                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                                        {{-- Tombol Edit --}}
+                                        <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-sm btn-warning">
+                                            Edit
+                                        </a>
+                                        <a href="{{ route('admin.menu.tambahan.index', $menu->id) }}" class="btn btn-sm btn-info text-white">
+                                            Tambahan Menu
+                                        </a>
+                                        {{-- Tombol Hapus --}}
+                                        <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="hapusData(this.form)">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">Belum ada menu yang didaftarkan.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    {{-- =======================================
          CARD 1: PENGATURAN JADWAL MENU
          ======================================= --}}
     <div class="col-12 mb-4">
@@ -29,11 +102,11 @@
             
             <div class="card-body pb-0">
                 {{-- Form Generate Tanggal --}}
-                <form action="{{ route('admin.catering.harian', 'harian') }}" method="GET" class="mb-4">
+                <form action="{{ route('admin.catering.harian', 'harian') }}" method="GET" class="mb-4" id="formBuatJadwal">
                     <div class="row align-items-end">
                         <div class="col-md-6">
                             <label for="start_date" class="form-label">Pilih Tanggal Mulai</label>
-                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date') }}" required>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date') }}" min="{{ \Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d') }}" required>
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex gap-2">
@@ -127,82 +200,35 @@
     </div>
 </div>
 
-<div class="row">
-    {{-- =======================================
-         CARD 2: DAFTAR MENU HARIAN
-         ======================================= --}}
-    <div class="col-12">
-        <div class="card card-outline card-success">
-           <div class="card-header d-flex align-items-center">
-    <h3 class="card-title mb-0">Daftar Menu Harian</h3>
-
-    <a href="{{ route('admin.menu.create', 'harian') }}"
-       class="btn btn-sm btn-success ms-auto">
-        Tambah Menu
-    </a>
-</div>
-            <div class="card-body table-responsive">
-                <table class="table table-bordered table-striped align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="text-center" style="width: 5%;">No</th>
-                            <th class="text-start" style="width: 20%;">Nama Menu</th>
-                            <th class="text-center" style="width: 15%;">Gambar</th>
-                            <th class="text-start" style="width: 25%;">Deskripsi</th>
-                            <th class="text-start" style="width: 15%;">Harga</th>
-                            <th class="text-center" style="width: 20%;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($daftarMenu as $index => $menu)
-                            <tr>
-                                <td class="text-center">{{ $index + 1 }}</td>
-                                <td class="text-start">{{ $menu->nama_menu }}</td>
-                                <td class="text-center">
-                                    @if($menu->gambar)
-                                        <img src="{{ asset('storage/menu/' . $menu->gambar) }}" style="width:80px;height:80px;object-fit:cover;" alt="Gambar Menu">
-                                    @else
-                                        <span class="text-muted small">Belum ada gambar</span>
-                                    @endif
-                                </td>
-                                <td class="text-start">{{ $menu->deskripsi }}</td>
-                                <td class="text-start">Rp {{ number_format($menu->harga, 0, ',', '.') }}</td>
-                                <td>
-                                    <div class="d-flex flex-wrap justify-content-center gap-2">
-                                        {{-- Tombol Edit --}}
-                                        <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-sm btn-warning">
-                                            Edit
-                                        </a>
-                                        <a href="{{ route('admin.menu.tambahan.index', $menu->id) }}" class="btn btn-sm btn-info text-white">
-                                            Tambahan Menu
-                                        </a>
-                                        {{-- Tombol Hapus --}}
-                                        <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="hapusData(this.form)">
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center text-muted">Belum ada menu yang didaftarkan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
 @endsection
 
 @push('scripts')
 <script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const formBuatJadwal = document.getElementById('formBuatJadwal');
+        if (formBuatJadwal) {
+            formBuatJadwal.addEventListener('submit', function(e) {
+                const startDateInput = document.getElementById('start_date').value;
+                if (startDateInput) {
+                    const selectedDate = new Date(startDateInput);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    selectedDate.setHours(0, 0, 0, 0);
+
+                    if (selectedDate < today) {
+                        e.preventDefault();
+                        Swal.fire({
+                            title: 'Validasi Gagal!',
+                            text: 'Tanggal mulai tidak boleh sebelum tanggal hari ini.',
+                            icon: 'error',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                }
+            });
+        }
+    });
 
     function hapusData(form) {
         Swal.fire({
@@ -246,6 +272,21 @@
             showConfirmButton: true,
             confirmButtonText: 'OK',
             confirmButtonColor: '#3085d6'
+        });
+    });
+</script>
+@endif
+
+@if(session('swal_error'))
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        Swal.fire({
+            title: 'Error!',
+            text: '{{ session('swal_error') }}',
+            icon: 'error',
+            showConfirmButton: true,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#d33'
         });
     });
 </script>

@@ -11,7 +11,7 @@
     <div class="col-md-12 mb-4">
         <div class="card card-outline card-info">
             <div class="card-header">
-                <h3 class="card-title mb-0">Pengaturan Porsi per Minggu</h3>
+                <h3 class="card-title mb-0"> <strong>Cek Stok Porsi</strong></h3>
             </div>
             <div class="card-body">
                 <form action="{{ route('admin.catering.acara') }}" method="GET" class="row align-items-end mb-4">
