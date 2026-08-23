@@ -109,6 +109,7 @@
                 wadahPeta.style.display = 'block';
                 inputLat.setAttribute('required', 'required');
                 inputLng.setAttribute('required', 'required');
+                document.getElementById('alamat_satelit').setAttribute('required', 'required');
                 
                 // Tambahkan sedikit jeda agar DOM me-render container dengan benar sebelum peta dipanggil
                 setTimeout(() => {
@@ -189,6 +190,7 @@
                 wadahPeta.style.display = 'none';
                 inputLat.removeAttribute('required');
                 inputLng.removeAttribute('required');
+                document.getElementById('alamat_satelit').removeAttribute('required');
                 inputLat.value = '';
                 inputLng.value = '';
                 document.getElementById('btn_lanjut').disabled = false;
