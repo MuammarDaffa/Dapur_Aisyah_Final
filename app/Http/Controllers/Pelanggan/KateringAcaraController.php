@@ -26,8 +26,7 @@ class KateringAcaraController extends Controller
             $request->validate([
                 'latitude' => 'required|numeric',
                 'longitude' => 'required|numeric',
-                'alamat_satelit' => 'nullable|string',
-                'nomor_rumah' => 'required|string',
+                'alamat_satelit' => 'required|string',
             ]);
             
             session([
@@ -36,14 +35,13 @@ class KateringAcaraController extends Controller
                 'acara_latitude' => $request->latitude,
                 'acara_longitude' => $request->longitude,
                 'acara_alamat_satelit' => $request->alamat_satelit,
-                'acara_nomor_rumah' => $request->nomor_rumah,
             ]);
         } else {
             session([
                 'acara_tanggal_acara' => $request->tanggal_acara,
                 'acara_metode_pengambilan' => $request->metode_pengambilan,
             ]);
-            session()->forget(['acara_latitude', 'acara_longitude', 'acara_alamat_satelit', 'acara_nomor_rumah']);
+            session()->forget(['acara_latitude', 'acara_longitude', 'acara_alamat_satelit']);
         }
 
         return redirect()->route('pelanggan.acara.menu');
@@ -102,7 +100,6 @@ class KateringAcaraController extends Controller
         $latitude = session('acara_latitude', null);
         $longitude = session('acara_longitude', null);
         $alamat_satelit = session('acara_alamat_satelit', null);
-        $nomor_rumah = session('acara_nomor_rumah', null);
 
         if (!$tanggalAcara || !$metode_pengambilan) {
             return redirect()->route('pelanggan.acara.lokasi')->with('error', 'Sesi Anda telah habis. Silakan isi kembali tanggal acara dan metode pengambilan.');
@@ -110,7 +107,7 @@ class KateringAcaraController extends Controller
 
         $alamat_lengkap = null;
         if ($metode_pengambilan === 'diantar_ke_tempat') {
-            $alamat_lengkap = $nomor_rumah ? "$nomor_rumah, $alamat_satelit" : $alamat_satelit;
+            $alamat_lengkap = $alamat_satelit;
         }
 
         $menusDipilih = [];
@@ -286,7 +283,7 @@ class KateringAcaraController extends Controller
             }
 
             \Illuminate\Support\Facades\DB::commit();
-            session()->forget(['pesanan_sementara', 'acara_tanggal_acara', 'acara_metode_pengambilan', 'acara_latitude', 'acara_longitude', 'acara_alamat_satelit', 'acara_nomor_rumah']);
+            session()->forget(['pesanan_sementara', 'acara_tanggal_acara', 'acara_metode_pengambilan', 'acara_latitude', 'acara_longitude', 'acara_alamat_satelit']);
 
             return redirect()->route('pelanggan.acara.detail_pesanan', $pesanan->id);
 

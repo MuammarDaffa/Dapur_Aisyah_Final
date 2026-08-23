@@ -51,8 +51,7 @@ class KateringHarianController extends Controller
             $request->validate([
                 'latitude' => 'required|numeric',
                 'longitude' => 'required|numeric',
-                'alamat_satelit' => 'nullable|string',
-                'nomor_rumah' => 'required|string',
+                'alamat_satelit' => 'required|string',
             ]);
             
             session([
@@ -60,13 +59,12 @@ class KateringHarianController extends Controller
                 'harian_latitude' => $request->latitude,
                 'harian_longitude' => $request->longitude,
                 'harian_alamat_satelit' => $request->alamat_satelit,
-                'harian_nomor_rumah' => $request->nomor_rumah,
             ]);
         } else {
             session([
                 'harian_metode_pengambilan' => $request->metode_pengambilan,
             ]);
-            session()->forget(['harian_latitude', 'harian_longitude', 'harian_alamat_satelit', 'harian_nomor_rumah']);
+            session()->forget(['harian_latitude', 'harian_longitude', 'harian_alamat_satelit']);
         }
 
         return redirect()->route('pelanggan.harian.menu');
@@ -131,7 +129,6 @@ class KateringHarianController extends Controller
         $latitude = session('harian_latitude', null);
         $longitude = session('harian_longitude', null);
         $alamat_satelit = session('harian_alamat_satelit', null);
-        $nomor_rumah = session('harian_nomor_rumah', null);
 
         if (!$metode_pengambilan) {
             return redirect()->route('pelanggan.harian.lokasi')->with('error', 'Sesi Anda telah habis. Silakan isi kembali metode pengambilan.');
@@ -139,7 +136,7 @@ class KateringHarianController extends Controller
 
         $alamat_lengkap = null;
         if ($metode_pengambilan === 'diantar_ke_tempat') {
-            $alamat_lengkap = $nomor_rumah ? "$nomor_rumah, $alamat_satelit" : $alamat_satelit;
+            $alamat_lengkap = $alamat_satelit;
         }
 
         $jadwalIds = $request->input('jadwal_ids', []);

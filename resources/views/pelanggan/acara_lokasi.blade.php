@@ -78,11 +78,9 @@
 
                             <!-- Menampilkan Hasil Peta -->
                             <div class="mt-3 p-3 bg-light border rounded">
-                                <label class="form-label fw-bold text-secondary">Alamat yang ditandai:</label>
-                                <textarea name="alamat_satelit" id="alamat_satelit" class="form-control mb-3" rows="2" readonly placeholder="Alamat otomatis akan muncul di sini..."></textarea>
-                                
-                                <label class="form-label fw-bold text-secondary">Alamat Lengkap <span class="text-danger">*</span></label>
-                                <input type="text" name="nomor_rumah" id="nomor_rumah" class="form-control" placeholder="Contoh: No. 12A / Blok C4" required>
+                                <label class="form-label fw-bold text-secondary">Alamat Lengkap  <span class="text-danger">*</span></label>
+                                <!-- <span class="text-muted small d-block mb-2"><i>Anda dapat mengedit atau menambahkan detail alamat di bawah ini</i></span> -->
+                                <textarea name="alamat_satelit" id="alamat_satelit" class="form-control mb-3" rows="3" placeholder="Alamat otomatis akan muncul di sini..." required></textarea>
                             </div>
                         </div>
                     </div>
@@ -115,7 +113,6 @@
                 wadahPeta.style.display = 'block';
                 inputLat.setAttribute('required', 'required');
                 inputLng.setAttribute('required', 'required');
-                document.getElementById('nomor_rumah').setAttribute('required', 'required');
                 
                 setTimeout(() => {
                     try {
@@ -193,12 +190,6 @@
                 inputLng.removeAttribute('required');
                 inputLat.value = '';
                 inputLng.value = '';
-                
-                let inputNomor = document.getElementById('nomor_rumah');
-                if (inputNomor) {
-                    inputNomor.removeAttribute('required');
-                    inputNomor.value = '';
-                }
                 document.getElementById('btn_lanjut').disabled = false;
             }
         }
