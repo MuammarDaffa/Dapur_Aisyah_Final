@@ -140,6 +140,7 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::get('/admins/{id}/edit', [AdminAccountController::class, 'edit'])->name('admins.edit');
     Route::put('/admins/{id}', [AdminAccountController::class, 'update'])->name('admins.update');
     Route::put('/admins/{id}/password', [AdminAccountController::class, 'updatePassword'])->name('admins.update_password');
+    Route::delete('/admins/{id}', [AdminAccountController::class, 'destroy'])->name('admins.destroy');
 });
 
 

@@ -45,7 +45,6 @@ class AdminAccountController extends Controller
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
             'role' => 'admin',
-            'is_active' => true,
         ]);
 
         return redirect()->route('owner.admins.index')->with('success', 'Akun admin berhasil ditambahkan.');
@@ -76,7 +75,6 @@ class AdminAccountController extends Controller
         $admin->name = $request->name;
         $admin->email = $request->email;
         $admin->phone = $request->phone;
-        $admin->is_active = $request->has('is_active');
         $admin->save();
 
         return redirect()->route('owner.admins.edit', $admin->id)->with('success', 'Informasi admin berhasil diperbarui.');
@@ -100,5 +98,16 @@ class AdminAccountController extends Controller
         $admin->save();
 
         return redirect()->route('owner.admins.edit', $admin->id)->with('success', 'Password admin berhasil di-reset.');
+    }
+
+    /**
+     * Menghapus admin
+     */
+    public function destroy($id)
+    {
+        $admin = User::where('role', 'admin')->findOrFail($id);
+        $admin->delete();
+
+        return redirect()->route('owner.admins.index')->with('success', 'Akun admin berhasil dihapus.');
     }
 }

@@ -13,7 +13,7 @@
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle mb-0">
+                    <table class="table table-bordered table-hover table-striped align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center" style="width: 5%">No</th>
@@ -21,7 +21,7 @@
                                 <th>Email</th>
                                 <th>No. Telepon</th>
                                 <th>Tanggal Aktif   </th>
-                                <th class="text-center">Status</th>
+
                                 <th class="text-center" style="width: 20%">Aksi</th>
                             </tr>
                         </thead>
@@ -33,25 +33,27 @@
                                     <td>{{ $admin->email }}</td>
                                     <td>{{ $admin->phone ?? '-' }}</td>
                                     <td>{{ $admin->created_at->format('d M Y') }}</td>
-                                    <td class="text-center">
-                                        @if($admin->is_active)
-                                            <span class="badge bg-success px-2 py-1">Aktif</span>
-                                        @else
-                                            <span class="badge bg-danger px-2 py-1">Nonaktif</span>
-                                        @endif
-                                    </td>
+
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-1">
                                             <!-- Edit -->
-                                            <a href="{{ route('owner.admins.edit', $admin->id) }}" class="btn btn-sm btn-outline-primary" title="Edit Data">
-                                                <i class="fa-solid fa-pen"></i>
+                                            <a href="{{ route('owner.admins.edit', $admin->id) }}" class="btn btn-sm btn-warning" title="Edit Data">
+                                                Edit
                                             </a>
+                                            <!-- Hapus -->
+                                            <form action="{{ route('owner.admins.destroy', $admin->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDeleteForm(this.form, 'Apakah Anda yakin ingin menghapus akun admin ini secara permanen?')" title="Hapus Data">
+                                                    Hapus
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-4 text-muted">
+                                    <td colspan="6" class="text-center py-4 text-muted">
                                         <i class="fa-solid fa-users-slash fs-1 d-block mb-2"></i>
                                         Belum ada data admin terdaftar.
                                     </td>
