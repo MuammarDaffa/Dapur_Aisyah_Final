@@ -32,8 +32,9 @@
                             <thead class="table-light text-center">
                                 <tr>
                                     <th>Menu</th>
-                                    <th style="width: 15%;">Porsi / cup</th>
-                                    <th style="width: 25%;">Total</th>
+                                    <th style="width: 20%;">Harga Porsi / Cup</th>
+                                    <th style="width: 15%;">Jumlah</th>
+                                    <th style="width: 20%;">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -53,6 +54,15 @@
                                                 <div class="fw-bold">{{ $detail->minuman->nama_minuman }}</div>
                                             @else
                                                 <div class="fw-bold">{{ $detail->item_name ?? '-' }}</div>
+                                            @endif
+                                        </td>
+                                        <td class="text-end">
+                                            @if($detail->menu)
+                                                Rp {{ number_format($detail->menu->harga, 0, ',', '.') }}
+                                            @elseif($detail->minuman)
+                                                Rp {{ number_format($detail->minuman->harga, 0, ',', '.') }}
+                                            @else
+                                                -
                                             @endif
                                         </td>
                                         <td class="text-center">
