@@ -16,6 +16,7 @@ use App\Http\Controllers\Owner\PesananController as OwnerPesananController;
 use App\Http\Controllers\Owner\PelangganController as OwnerPelangganController;
 use App\Http\Controllers\Owner\UlasanController as OwnerUlasanController;
 use App\Http\Controllers\Owner\LaporanController as OwnerLaporanController;
+use App\Http\Controllers\Owner\AdminAccountController;
 
 
 // Public Routes
@@ -131,6 +132,15 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     // Laporan
     Route::get('/laporan', [OwnerLaporanController::class, 'index'])->name('reports');
     Route::get('/laporan/pdf', [OwnerLaporanController::class, 'cetakPdf'])->name('reports.pdf');
+
+    // Kelola Admin
+    Route::get('/admins', [AdminAccountController::class, 'index'])->name('admins.index');
+    Route::get('/admins/create', [AdminAccountController::class, 'create'])->name('admins.create');
+    Route::post('/admins', [AdminAccountController::class, 'store'])->name('admins.store');
+    Route::get('/admins/{id}/edit', [AdminAccountController::class, 'edit'])->name('admins.edit');
+    Route::put('/admins/{id}', [AdminAccountController::class, 'update'])->name('admins.update');
+    Route::post('/admins/{id}/toggle-status', [AdminAccountController::class, 'toggleStatus'])->name('admins.toggle_status');
+    Route::post('/admins/{id}/reset-password', [AdminAccountController::class, 'updatePassword'])->name('admins.update_password');
 });
 
 

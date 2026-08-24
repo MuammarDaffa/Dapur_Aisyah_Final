@@ -73,6 +73,7 @@
                                 ['route' => 'owner.customers', 'label' => 'Pelanggan', 'icon' => 'fa-solid fa-users'],
                                 ['route' => 'owner.ulasan', 'label' => 'Ulasan', 'icon' => 'fa-solid fa-star'],
                                 ['route' => 'owner.reports', 'label' => 'Laporan', 'icon' => 'fa-solid fa-chart-line'],
+                                ['route' => 'owner.admins.index', 'label' => 'Kelola Akun Admin', 'icon' => 'fa-solid fa-user-tie'],
                             ];
                         @endphp
                         @foreach($menuItems as $item)
