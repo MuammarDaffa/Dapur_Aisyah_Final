@@ -46,10 +46,6 @@
                         @enderror
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Konfirmasi Password Awal <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" name="password_confirmation" required minlength="8">
-                    </div>
 
                     <div class="d-flex justify-content-between align-items-center">
                         <a href="{{ route('owner.admins.index') }}" class="btn btn-secondary px-4">Batal</a>

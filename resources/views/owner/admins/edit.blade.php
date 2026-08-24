@@ -37,7 +37,22 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Password Baru</label>
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" minlength="8">
+                        <div class="form-text">Biarkan kosong jika tidak ingin mengubah password. Minimal 8 karakter.</div>
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" {{ old('is_active', $admin->is_active) ? 'checked' : '' }}>
+                            <label class="form-check-label fw-bold" for="is_active">Status Aktif</label>
+                        </div>
+                        <div class="form-text mt-1">Centang untuk mengaktifkan akun. Jika tidak dicentang, admin ini tidak akan bisa login.</div>
+                    </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <a href="{{ route('owner.admins.index') }}" class="btn btn-secondary px-4">Batal</a>
                         <button type="submit" class="btn btn-primary px-4 fw-bold">

@@ -46,52 +46,6 @@
                                             <a href="{{ route('owner.admins.edit', $admin->id) }}" class="btn btn-sm btn-outline-primary" title="Edit Data">
                                                 <i class="fa-solid fa-pen"></i>
                                             </a>
-                                            
-                                            <!-- Reset Password (Modal) -->
-                                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#resetModal{{ $admin->id }}" title="Reset Password">
-                                                <i class="fa-solid fa-key"></i>
-                                            </button>
-
-                                            <!-- Toggle Status -->
-                                            <form action="{{ route('owner.admins.toggle_status', $admin->id) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                <button type="button" class="btn btn-sm {{ $admin->is_active ? 'btn-outline-danger' : 'btn-outline-success' }}" 
-                                                    onclick="confirmDeleteForm(this.form, 'Apakah Anda yakin ingin {{ $admin->is_active ? 'menonaktifkan' : 'mengaktifkan' }} admin ini?')" 
-                                                    title="{{ $admin->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
-                                                    <i class="fa-solid {{ $admin->is_active ? 'fa-ban' : 'fa-check' }}"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-
-                                        <!-- Reset Password Modal -->
-                                        <div class="modal fade text-start" id="resetModal{{ $admin->id }}" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <form action="{{ route('owner.admins.update_password', $admin->id) }}" method="POST">
-                                                        @csrf
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Reset Password Admin</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p class="text-muted mb-3">Masukkan password baru untuk <strong>{{ $admin->name }}</strong>.</p>
-                                                            <div class="mb-3">
-                                                                <label class="form-label fw-bold">Password Baru</label>
-                                                                <input type="password" class="form-control" name="password" required minlength="8">
-                                                                <div class="form-text">Minimal 8 karakter.</div>
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label class="form-label fw-bold">Konfirmasi Password Baru</label>
-                                                                <input type="password" class="form-control" name="password_confirmation" required minlength="8">
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                            <button type="submit" class="btn btn-warning">Reset Password</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
                                         </div>
                                     </td>
                                 </tr>
