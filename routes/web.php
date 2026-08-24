@@ -139,6 +139,7 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::post('/admins', [AdminAccountController::class, 'store'])->name('admins.store');
     Route::get('/admins/{id}/edit', [AdminAccountController::class, 'edit'])->name('admins.edit');
     Route::put('/admins/{id}', [AdminAccountController::class, 'update'])->name('admins.update');
+    Route::put('/admins/{id}/password', [AdminAccountController::class, 'updatePassword'])->name('admins.update_password');
 });
 
 

@@ -71,20 +71,34 @@ class AdminAccountController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($admin->id)],
             'phone' => ['nullable', 'string', 'max:20'],
-            'password' => ['nullable', 'string', 'min:8'],
         ]);
 
         $admin->name = $request->name;
         $admin->email = $request->email;
         $admin->phone = $request->phone;
         $admin->is_active = $request->has('is_active');
-        
-        if ($request->filled('password')) {
-            $admin->password = Hash::make($request->password);
-        }
-
         $admin->save();
 
-        return redirect()->route('owner.admins.index')->with('success', 'Profil admin berhasil diperbarui.');
+        return redirect()->route('owner.admins.edit', $admin->id)->with('success', 'Informasi admin berhasil diperbarui.');
+    }
+
+    /**
+     * Mengubah password admin
+     */
+    public function updatePassword(Request $request, $id)
+    {
+        $admin = User::where('role', 'admin')->findOrFail($id);
+
+        $request->validate([
+            'password' => ['required', 'string', 'min:8'],
+        ], [
+            'password.required' => 'Password baru harus diisi jika ingin mereset password.',
+            'password.min' => 'Password minimal harus 8 karakter.'
+        ]);
+
+        $admin->password = Hash::make($request->password);
+        $admin->save();
+
+        return redirect()->route('owner.admins.edit', $admin->id)->with('success', 'Password admin berhasil di-reset.');
     }
 }

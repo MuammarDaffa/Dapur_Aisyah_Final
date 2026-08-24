@@ -103,29 +103,41 @@
             
             <div class="app-content">
                 <div class="container-fluid">
-                    <!-- Flash Messages -->
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
-                    @if(session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            {{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
-                    @if($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
+                    <!-- Flash Messages (SweetAlert) -->
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            @if(session('success'))
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: '{{ session('success') }}',
+                                    confirmButtonColor: '#3085d6',
+                                });
+                            @endif
+
+                            @if(session('error'))
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal!',
+                                    text: '{{ session('error') }}',
+                                    confirmButtonColor: '#d33',
+                                });
+                            @endif
+
+                            @if($errors->any())
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Terjadi Kesalahan!',
+                                    html: '<ul style="text-align: left; margin-bottom: 0;">' +
+                                          @foreach($errors->all() as $error)
+                                          '<li>{{ $error }}</li>' +
+                                          @endforeach
+                                          '</ul>',
+                                    confirmButtonColor: '#d33',
+                                });
+                            @endif
+                        });
+                    </script>
 
                     <!-- Content -->
                     @yield('content')
