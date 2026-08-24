@@ -64,7 +64,7 @@
                                     <td class="align-middle">
                                         <span class="d-block">Katering {{ ucfirst($p->tipe_layanan) }}</span>
                                     </td>
-                                    <td class="align-middle fw-bold">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
+                                    <td class="align-middle ">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
                                     <td class="align-middle ">
                                         <span class="badge text-bg-{{ $p->status_pembayaran_color }} mb-1">
                                             {{ $p->status_pembayaran_label }}

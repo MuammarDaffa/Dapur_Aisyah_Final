@@ -68,12 +68,12 @@
                     <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
                         @php
                             $menuItems = [
+                                ['route' => 'owner.admins.index', 'label' => 'Kelola Akun Admin', 'icon' => 'fa-solid fa-user-tie'],
+                                ['route' => 'owner.reports', 'label' => 'Laporan', 'icon' => 'fa-solid fa-chart-line'],
                                 ['route' => 'owner.dashboard', 'label' => 'Dashboard', 'icon' => 'fa-solid fa-house'],
                                 ['route' => 'owner.pesanan', 'label' => 'Pesanan', 'icon' => 'fa-solid fa-shopping-cart'],
                                 ['route' => 'owner.customers', 'label' => 'Pelanggan', 'icon' => 'fa-solid fa-users'],
                                 ['route' => 'owner.ulasan', 'label' => 'Ulasan', 'icon' => 'fa-solid fa-star'],
-                                ['route' => 'owner.reports', 'label' => 'Laporan', 'icon' => 'fa-solid fa-chart-line'],
-                                ['route' => 'owner.admins.index', 'label' => 'Kelola Akun Admin', 'icon' => 'fa-solid fa-user-tie'],
                             ];
                         @endphp
                         @foreach($menuItems as $item)
@@ -127,12 +127,7 @@
                             @if($errors->any())
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Terjadi Kesalahan!',
-                                    html: '<ul style="text-align: left; margin-bottom: 0;">' +
-                                          @foreach($errors->all() as $error)
-                                          '<li>{{ $error }}</li>' +
-                                          @endforeach
-                                          '</ul>',
+                                    title: '{{ $errors->first() }}',
                                     confirmButtonColor: '#d33',
                                 });
                             @endif
@@ -172,8 +167,7 @@
     }
     window.confirmDelete = function(formId, message) {
         Swal.fire({
-            title: 'Hapus Data?',
-            text: message || "Data ini tidak dapat dikembalikan!",
+            title: message || "Apakah Anda yakin ingin menghapus data ini?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -187,8 +181,7 @@
     };
     window.confirmDeleteForm = function(form, message) {
         Swal.fire({
-            title: 'Hapus Data?',
-            text: message || "Data ini tidak dapat dikembalikan!",
+            title: message || "Apakah Anda yakin ingin menghapus data ini?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',

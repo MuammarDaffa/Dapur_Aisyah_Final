@@ -19,13 +19,7 @@ class AdminAccountController extends Controller
         return view('owner.admins.index', compact('admins'));
     }
 
-    /**
-     * Menampilkan form tambah admin
-     */
-    public function create()
-    {
-        return view('owner.admins.create');
-    }
+
 
     /**
      * Menyimpan admin baru
@@ -37,6 +31,8 @@ class AdminAccountController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8'],
+        ], [
+            'email.unique' => 'Email sudah digunakan.',
         ]);
 
         User::create([
@@ -50,14 +46,7 @@ class AdminAccountController extends Controller
         return redirect()->route('owner.admins.index')->with('success', 'Akun admin berhasil ditambahkan.');
     }
 
-    /**
-     * Menampilkan form edit admin
-     */
-    public function edit($id)
-    {
-        $admin = User::where('role', 'admin')->findOrFail($id);
-        return view('owner.admins.edit', compact('admin'));
-    }
+
 
     /**
      * Menyimpan perubahan profil admin
@@ -70,35 +59,25 @@ class AdminAccountController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($admin->id)],
             'phone' => ['nullable', 'string', 'max:20'],
+            'password' => ['nullable', 'string', 'min:8'],
+        ], [
+            'email.unique' => 'Email sudah digunakan.',
         ]);
 
         $admin->name = $request->name;
         $admin->email = $request->email;
         $admin->phone = $request->phone;
+        
+        if ($request->filled('password')) {
+            $admin->password = Hash::make($request->password);
+        }
+
         $admin->save();
 
-        return redirect()->route('owner.admins.edit', $admin->id)->with('success', 'Informasi admin berhasil diperbarui.');
+        return redirect()->route('owner.admins.index')->with('success', 'Data admin berhasil diperbarui.');
     }
 
-    /**
-     * Mengubah password admin
-     */
-    public function updatePassword(Request $request, $id)
-    {
-        $admin = User::where('role', 'admin')->findOrFail($id);
 
-        $request->validate([
-            'password' => ['required', 'string', 'min:8'],
-        ], [
-            'password.required' => 'Password baru harus diisi jika ingin mereset password.',
-            'password.min' => 'Password minimal harus 8 karakter.'
-        ]);
-
-        $admin->password = Hash::make($request->password);
-        $admin->save();
-
-        return redirect()->route('owner.admins.edit', $admin->id)->with('success', 'Password admin berhasil di-reset.');
-    }
 
     /**
      * Menghapus admin

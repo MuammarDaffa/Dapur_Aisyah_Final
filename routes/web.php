@@ -135,11 +135,8 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
 
     // Kelola Admin
     Route::get('/admins', [AdminAccountController::class, 'index'])->name('admins.index');
-    Route::get('/admins/create', [AdminAccountController::class, 'create'])->name('admins.create');
     Route::post('/admins', [AdminAccountController::class, 'store'])->name('admins.store');
-    Route::get('/admins/{id}/edit', [AdminAccountController::class, 'edit'])->name('admins.edit');
     Route::put('/admins/{id}', [AdminAccountController::class, 'update'])->name('admins.update');
-    Route::put('/admins/{id}/password', [AdminAccountController::class, 'updatePassword'])->name('admins.update_password');
     Route::delete('/admins/{id}', [AdminAccountController::class, 'destroy'])->name('admins.destroy');
 });
 
