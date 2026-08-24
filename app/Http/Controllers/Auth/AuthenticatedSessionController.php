@@ -38,8 +38,8 @@ class AuthenticatedSessionController extends Controller
 
         // Role-based redirect
         return match ($request->user()->role) {
-            'admin' => redirect()->intended(route('admin.dashboard')),
-            'owner' => redirect()->intended(route('owner.dashboard')),
+            'admin' => redirect()->intended(route('admin.catering.harian')),
+            'owner' => redirect()->intended(route('owner.admins.index')),
             default => redirect()->intended(route('landing')),
         };
     }
