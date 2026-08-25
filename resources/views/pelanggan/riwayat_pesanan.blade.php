@@ -45,6 +45,7 @@
                                         <th class="py-3">Tanggal Pesanan</th>
                                         <th class="py-3">Tipe Katering</th>
                                         <th class="py-3 text-end">Total</th>
+                                        <th class="py-3 text-center">Kode Pengambilan</th>
                                         <th class="py-3 text-center">Status Pembayaran</th>
                                         <th class="py-3 text-center">Status Pesanan</th>
                                         <th class="py-3 text-center">Aksi</th>
@@ -61,6 +62,13 @@
                                         <td class="py-3 text-start" data-sort="{{ $pesanan->created_at->format('YmdHis') }}">{{ $pesanan->created_at->format('d M Y') }}</td>
                                         <td class="py-3">{{ $tipeLayanan }}</td>
                                         <td class="py-3 text-end">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
+                                        <td class="py-3 text-center fw-bold">
+                                            @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
+                                                {{ $pesanan->kode_pengambilan ?? '-' }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td class="py-3 text-center">
                                             <span class="badge bg-{{ $pesanan->status_pembayaran_color }}">{{ $pesanan->status_pembayaran_label }}</span>
                                         </td>

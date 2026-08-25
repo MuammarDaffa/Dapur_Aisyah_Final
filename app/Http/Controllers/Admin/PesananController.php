@@ -58,7 +58,20 @@ class PesananController extends Controller
         $validated = $request->validate([
             'status_pembayaran' => 'nullable|in:belum_dibayar,dp,lunas',
             'status_pesanan' => 'nullable|in:diproses,dibatalkan,selesai',
+            'kode_pengambilan' => 'nullable|string',
         ]);
+
+        if (isset($validated['status_pesanan']) && $validated['status_pesanan'] === Pesanan::PESANAN_SELESAI) {
+            if ($pesanan->status_pembayaran !== Pesanan::PEMBAYARAN_LUNAS) {
+                return back()->with('error', 'Pesanan belum lunas sehingga belum memiliki kode pengambilan.');
+            }
+            if (empty($validated['kode_pengambilan'])) {
+                return back()->with('error', 'Kode pengambilan wajib dimasukkan.');
+            }
+            if ($validated['kode_pengambilan'] !== $pesanan->kode_pengambilan) {
+                return back()->with('error', 'Kode pengambilan tidak valid.');
+            }
+        }
 
         OrderService::updateStatus($pesanan, $validated['status_pembayaran'] ?? null, $validated['status_pesanan'] ?? null);
 

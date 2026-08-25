@@ -188,12 +188,19 @@
                     @csrf @method('PUT')
                     <div class="form-group mb-3">
                         <label>Status Pesanan</label>
-                        <select name="status_pesanan" class="form-select">
+                        <select name="status_pesanan" id="statusPesananSelect" class="form-select">
                             @foreach(['diproses'=>'Diproses','dibatalkan'=>'Dibatalkan','selesai'=>'Selesai'] as $k=>$v)
                             <option value="{{ $k }}" {{ $pesanan->status_pesanan==$k?'selected':'' }}>{{ $v }}</option>
                             @endforeach
                         </select>
                     </div>
+
+                    <div class="form-group mb-3" id="kodePengambilanContainer" style="display: none;">
+                        <label>Kode Pengambilan</label>
+                        <input type="text" name="kode_pengambilan" class="form-control" placeholder="Masukkan kode pengambilan">
+                        <!-- <small class="text-muted">Kode wajib dimasukkan untuk menyelesaikan pesanan.</small> -->
+                    </div>
+
                     <button type="submit" class="btn btn-primary w-100 mb-3"> Update Status</button>
                 </form>
 
@@ -204,3 +211,25 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const statusSelect = document.getElementById('statusPesananSelect');
+        const kodeContainer = document.getElementById('kodePengambilanContainer');
+
+        function toggleKodeInput() {
+            if (statusSelect.value === 'selesai') {
+                kodeContainer.style.display = 'block';
+            } else {
+                kodeContainer.style.display = 'none';
+            }
+        }
+
+        if (statusSelect) {
+            statusSelect.addEventListener('change', toggleKodeInput);
+            toggleKodeInput(); // initial check
+        }
+    });
+</script>
+@endpush

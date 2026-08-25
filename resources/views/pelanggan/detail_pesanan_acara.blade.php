@@ -124,6 +124,17 @@
                         </div>
                     </div>
                     @endif
+
+                    @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS && !empty($pesanan->kode_pengambilan))
+                        <hr class="my-4">
+                        <div class="d-flex mb-2 align-items-center">
+                            <strong class="text-muted" style="width: 180px; flex-shrink: 0;">Kode Pengambilan</strong>
+                            <div class="fw-semibold" style="width: 15px; flex-shrink: 0;">:</div>
+                            <div class="fw-bold text-primary flex-grow-1 fs-4">
+                                {{ $pesanan->kode_pengambilan }}
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 

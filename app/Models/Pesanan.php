@@ -21,6 +21,7 @@ class Pesanan extends Model
 
     protected $fillable = [
         'nomor_pesanan',
+        'kode_pengambilan',
         'user_id',
         'tipe_layanan',
         'menu_id',
@@ -118,6 +119,15 @@ class Pesanan extends Model
         }
 
         return "ORD-{$date}-{$nextNumber}";
+    }
+
+    public static function generateKodePengambilan(): string
+    {
+        do {
+            $code = strtoupper(\Illuminate\Support\Str::random(6));
+        } while (static::where('kode_pengambilan', $code)->exists());
+
+        return $code;
     }
 
     // === Relationships ===

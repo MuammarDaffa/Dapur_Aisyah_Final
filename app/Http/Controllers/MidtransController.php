@@ -38,6 +38,9 @@ class MidtransController extends Controller
                     } elseif ($jenisPembayaran === 'PELUNASAN') {
                         // Jika Pelunasan, ubah status_pembayaran jadi LUNAS
                         $pesanan->status_pembayaran = Pesanan::PEMBAYARAN_LUNAS;
+                        if (is_null($pesanan->kode_pengambilan)) {
+                            $pesanan->kode_pengambilan = Pesanan::generateKodePengambilan();
+                        }
                     }
 
                     // Jika status_pesanan masih null, ubah menjadi diproses
