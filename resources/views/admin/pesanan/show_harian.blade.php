@@ -193,7 +193,7 @@
                     <div class="form-group mb-3">
                         <label>Status Pesanan</label>
                         <select name="status_pesanan" id="statusPesananSelect" class="form-select" {{ $isFinalStatus ? 'disabled' : '' }}>
-                            @foreach(['diproses'=>'Diproses','dibatalkan'=>'Dibatalkan','selesai'=>'Selesai'] as $k=>$v)
+                            @foreach(['diproses'=>'Diproses','selesai'=>'Selesai'] as $k=>$v)
                             <option value="{{ $k }}" {{ $pesanan->status_pesanan==$k?'selected':'' }}>{{ $v }}</option>
                             @endforeach
                         </select>
