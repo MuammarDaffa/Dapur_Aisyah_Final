@@ -55,6 +55,10 @@ class PesananController extends Controller
 
     public function updateStatus(Request $request, Pesanan $pesanan)
     {
+        if (in_array($pesanan->status_pesanan, [Pesanan::PESANAN_SELESAI, Pesanan::PESANAN_DIBATALKAN])) {
+            return back()->with('error', 'Status pesanan yang sudah selesai atau dibatalkan tidak dapat diubah lagi.');
+        }
+
         $validated = $request->validate([
             'status_pembayaran' => 'nullable|in:belum_dibayar,dp,lunas',
             'status_pesanan' => 'nullable|in:diproses,dibatalkan,selesai',

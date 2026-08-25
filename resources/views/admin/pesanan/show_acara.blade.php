@@ -147,12 +147,16 @@
                 <h3 class="card-title">Aksi Pesanan</h3>
             </div>
             <div class="card-body">
+                @php
+                    $isFinalStatus = in_array($pesanan->status_pesanan, ['selesai', 'dibatalkan']);
+                @endphp
+
                 {{-- Form Update Status --}}
                 <form id="statusForm" action="{{ route('admin.pesanan.status', $pesanan) }}" method="POST">
                     @csrf @method('PUT')
                     <div class="form-group mb-3">
                         <label>Status Pesanan</label>
-                        <select name="status_pesanan" id="statusPesananSelect" class="form-select">
+                        <select name="status_pesanan" id="statusPesananSelect" class="form-select" {{ $isFinalStatus ? 'disabled' : '' }}>
                             @foreach(['diproses'=>'Diproses','dibatalkan'=>'Dibatalkan','selesai'=>'Selesai'] as $k=>$v)
                             <option value="{{ $k }}" {{ $pesanan->status_pesanan==$k?'selected':'' }}>{{ $v }}</option>
                             @endforeach
@@ -161,11 +165,11 @@
                     
                     <div class="form-group mb-3" id="kodePengambilanContainer" style="display: none;">
                         <label>Kode Pengambilan</label>
-                        <input type="text" name="kode_pengambilan" class="form-control" placeholder="Masukkan kode pengambilan">
+                        <input type="text" name="kode_pengambilan" class="form-control" placeholder="Masukkan kode pengambilan" {{ $isFinalStatus ? 'disabled' : '' }} value="{{ $pesanan->kode_pengambilan }}">
                         <!-- <small class="text-muted">Kode wajib dimasukkan untuk menyelesaikan pesanan.</small> -->
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 mb-3">Update Status</button>
+                    <button type="submit" class="btn btn-primary w-100 mb-3" {{ $isFinalStatus ? 'disabled' : '' }}>Update Status</button>
                 </form>
 
 
