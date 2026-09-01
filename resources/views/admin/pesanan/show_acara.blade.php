@@ -165,7 +165,7 @@
                     
                     <div class="form-group mb-3" id="kodePengambilanContainer" style="display: none;">
                         <label>Kode Pengambilan</label>
-                        <input type="text" name="kode_pengambilan" class="form-control" placeholder="Masukkan kode pengambilan" {{ $isFinalStatus ? 'disabled' : '' }} value="{{ $pesanan->kode_pengambilan }}">
+                        <input type="text" name="kode_pengambilan" class="form-control" placeholder="Masukkan kode pengambilan" {{ $isFinalStatus ? 'disabled' : '' }} value="{{ $isFinalStatus ? $pesanan->kode_pengambilan : '' }}">
                         <!-- <small class="text-muted">Kode wajib dimasukkan untuk menyelesaikan pesanan.</small> -->
                     </div>
 

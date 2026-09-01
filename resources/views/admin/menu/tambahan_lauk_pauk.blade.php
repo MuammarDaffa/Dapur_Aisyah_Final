@@ -46,10 +46,10 @@
                                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditIsi{{ $item->id }}">
                                         Edit
                                     </button>
-                                    <form action="{{ route('admin.menu.tambahan.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus item ini?');">
+                                    <form id="delete-form-{{ $item->id }}" action="{{ route('admin.menu.tambahan.destroy', $item->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        <button type="button" class="btn btn-danger btn-sm btn-delete" data-id="{{ $item->id }}" data-nama="{{ $item->nama }}">Hapus</button>
                                     </form>
                                 </td>
                             </tr>
@@ -148,6 +148,28 @@
             }
             input.addEventListener('input', function(e) {
                 this.value = formatRupiah(this.value);
+            });
+        });
+
+        // SweetAlert delete confirmation
+        document.querySelectorAll('.btn-delete').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const nama = this.dataset.nama;
+                Swal.fire({
+                    title: 'Hapus Item?',
+                    text: 'Yakin ingin menghapus "' + nama + '"?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('delete-form-' + id).submit();
+                    }
+                });
             });
         });
     });
