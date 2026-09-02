@@ -688,52 +688,52 @@
     <style>
         .testimonials .testimonial-item {
             box-sizing: content-box;
-            text-align: center;
-            min-height: 320px;
+            text-align: left;
+            min-height: 200px;
         }
-        .testimonials .testimonial-item .testimonial-img {
-            width: 90px;
-            height: 90px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 4px solid #fff;
-            margin: 0 auto;
-            background-color: #ce1212;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            font-weight: bold;
+        .testimonials .testimonial-content {
+            border-left: 3px solid #ce1212;
+            padding-left: 30px;
         }
-        .testimonials .testimonial-item h3 {
+        .testimonials .testimonial-content p {
+            font-style: italic;
             font-size: 18px;
+            color: #37373f;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .testimonials .testimonial-content h3 {
+            font-size: 16px;
             font-weight: bold;
             margin: 10px 0 5px 0;
             color: #37373f;
+            text-transform: uppercase;
         }
-        .testimonials .testimonial-item h4 {
-            font-size: 14px;
+        .testimonials .testimonial-content h4 {
+            font-size: 12px;
             color: #999;
-            margin: 0;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
         }
-        .testimonials .testimonial-item .stars {
-            margin: 10px 0;
-        }
-        .testimonials .testimonial-item .stars i {
+        .testimonials .testimonial-content .stars i {
             color: #ffc107;
-            margin: 0 1px;
+            font-size: 14px;
         }
-        .testimonials .testimonial-item .quote-icon-left,
-        .testimonials .testimonial-item .quote-icon-right {
-            color: rgba(206, 18, 18, 0.4);
-            font-size: 26px;
-            line-height: 0;
+        /* Custom Carousel Indicators */
+        .testimonials .carousel-indicators {
+            bottom: -30px;
         }
-        .testimonials .testimonial-item p {
-            font-style: italic;
-            margin: 0 auto 15px auto;
-            color: #4f4f5a;
+        .testimonials .carousel-indicators [data-bs-target] {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #d3d3d3;
+            margin: 0 5px;
+            border: none;
+            opacity: 1;
+        }
+        .testimonials .carousel-indicators .active {
+            background-color: #ce1212;
         }
     </style>
 
@@ -746,18 +746,24 @@
                 <p>Apa Kata <span>Mereka?</span></p>
             </div>
             
-            <div id="carouselTestimoni" class="carousel slide" data-bs-ride="carousel">
+            <div id="carouselTestimoni" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+                <div class="carousel-indicators">
+                    @foreach($ulasan as $key => $item)
+                        <button type="button" data-bs-target="#carouselTestimoni" data-bs-slide-to="{{ $key }}" class="{{ $key == 0 ? 'active' : '' }}" aria-current="{{ $key == 0 ? 'true' : 'false' }}"></button>
+                    @endforeach
+                </div>
+                
                 <div class="carousel-inner pb-5">
                     @foreach($ulasan as $key => $item)
                     <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
                         <div class="testimonial-item">
-                            <div class="row gy-4 justify-content-center">
-                                <div class="col-lg-6">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8">
                                     <div class="testimonial-content">
                                         <p>
-                                            <i class="fa-solid fa-quote-left quote-icon-left"></i>
-                                            <span>{{ $item->komentar ?? 'Pelayanan sangat memuaskan dan rasa makanannya lezat!' }}</span>
-                                            <i class="fa-solid fa-quote-right quote-icon-right"></i>
+                                            <i class="fa-solid fa-quote-left quote-icon-left" style="color: #ce1212; font-size: 24px; margin-right: 10px;"></i>
+                                            {{ $item->komentar ?? 'Pelayanan sangat memuaskan dan rasa makanannya lezat!' }}
+                                            <i class="fa-solid fa-quote-right quote-icon-right" style="color: rgba(206,18,18,0.3); font-size: 24px; margin-left: 10px;"></i>
                                         </p>
                                         <h3>{{ $item->user->name ?? 'Pelanggan Setia' }}</h3>
                                         <h4>Pelanggan</h4>
@@ -766,25 +772,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-2 text-center">
-                                    <div class="testimonial-img shadow">
-                                        {{ strtoupper(substr($item->user->name ?? 'P', 0, 1)) }}
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
                     @endforeach
-                </div>
-                
-                <!-- Navigation Buttons -->
-                <div class="d-flex justify-content-center gap-3 mt-2">
-                    <button class="btn btn-light rounded-circle shadow-sm" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="prev" style="width: 50px; height: 50px;">
-                        <i class="fa-solid fa-arrow-left text-dark"></i>
-                    </button>
-                    <button class="btn btn-light rounded-circle shadow-sm" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="next" style="width: 50px; height: 50px;">
-                        <i class="fa-solid fa-arrow-right text-dark"></i>
-                    </button>
                 </div>
             </div>
         </div>

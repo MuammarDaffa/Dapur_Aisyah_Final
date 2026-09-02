@@ -161,7 +161,7 @@
             --default-color: #212529;
             --heading-color: #37373f;
             --nav-color: #7f7f90;
-            --nav-hover-color: #ce1212;
+            --nav-hover-color: #000;
             color: var(--default-color);
             background-color: var(--background-color);
             padding: 15px 0;
@@ -179,33 +179,59 @@
         .header .logo h1 span {
             color: #ce1212;
         }
-        .navmenu a {
+        .navmenu .nav-link {
             color: var(--nav-color);
             font-family: 'Inter', sans-serif;
             font-size: 15px;
             font-weight: 600;
-            padding: 10px 15px;
+            padding: 10px 15px !important;
             text-decoration: none;
             transition: 0.3s;
+            position: relative;
         }
-        .navmenu a:hover, .navmenu .active {
-            color: var(--nav-hover-color);
-            border-bottom: 2px solid var(--nav-hover-color);
+        .navmenu .nav-link:hover, .navmenu .nav-link.active {
+            color: var(--nav-hover-color) !important;
+            background-color: transparent !important;
+        }
+        .navmenu .nav-link:hover::before, .navmenu .nav-link.active::before {
+            content: "";
+            position: absolute;
+            bottom: 2px;
+            left: 15px;
+            right: 15px;
+            height: 2px;
+            background: #ce1212;
+        }
+        .btn-outline-getstarted {
+            color: #ce1212;
+            background: transparent;
+            border: 2px solid #ce1212;
+            font-size: 14px;
+            padding: 6px 25px;
+            border-radius: 50px;
+            transition: 0.3s;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .btn-outline-getstarted:hover {
+            color: #ffffff;
+            background: #ce1212;
         }
         .btn-getstarted {
             color: #ffffff;
             background: #ce1212;
+            border: 2px solid #ce1212;
             font-size: 14px;
-            padding: 8px 25px;
-            margin: 0 0 0 30px;
+            padding: 6px 25px;
             border-radius: 50px;
             transition: 0.3s;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
         }
         .btn-getstarted:hover {
             color: #ffffff;
-            background: rgba(206, 18, 18, 0.8);
+            background: rgba(206, 18, 18, 0.9);
+            border-color: rgba(206, 18, 18, 0.9);
         }
     </style>
 
@@ -220,12 +246,12 @@
                 <h1 class="sitename">Dapur<span>Aisyah</span></h1>
             </a>
 
-            <nav id="navmenu" class="navmenu navbar navbar-expand-lg">
-                <button class="navbar-toggler border-0 shadow-none d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <nav id="navmenu" class="navmenu navbar navbar-expand-lg flex-grow-1">
+                <button class="navbar-toggler border-0 shadow-none d-lg-none ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
                     <i class="fa-solid fa-bars"></i>
                 </button>
                 <div class="collapse navbar-collapse" id="mainNavbar">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('landing') && request()->hash == '' ? 'active' : '' }}" href="{{ request()->routeIs('landing') ? '#hero' : route('landing').'#hero' }}">Beranda</a>
                         </li>
@@ -260,7 +286,7 @@
                                 <button type="submit" class="btn text-danger fw-bold ms-2 border-0 bg-transparent">Keluar</button>
                             </form>
                         @else
-                            <a href="{{ route('login') }}" class="text-dark fw-bold text-decoration-none ms-3">Masuk</a>
+                            <a href="{{ route('login') }}" class="btn-outline-getstarted">Masuk</a>
                             <a href="{{ route('register') }}" class="btn-getstarted">Daftar</a>
                         @endauth
                     </div>
