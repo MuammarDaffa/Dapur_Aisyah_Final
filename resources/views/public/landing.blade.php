@@ -112,72 +112,132 @@
     </style>
 
     <style>
-        /* Yummy Hero Exact Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Bungee+Inline&display=swap');
+
+        /* Custom Hero Styles Matching Image */
         .hero {
             width: 100%;
             min-height: 100vh;
             position: relative;
-            padding: 120px 0 60px 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('images/acara.jpg') }}') center/cover no-repeat;
             display: flex;
             align-items: center;
+            justify-content: center;
+            text-align: center;
         }
-        .hero h1 {
-            margin: 0;
-            font-size: 64px;
-            font-weight: 700;
-            font-family: 'Amatic SC', sans-serif;
-            color: #37373f;
-        }
-        .hero p {
-            color: #4f4f5a;
-            margin: 15px 0 0 0;
-            font-size: 20px;
-        }
-        .hero .btn-get-started {
-            color: #ffffff;
-            background: #ce1212;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            font-size: 15px;
-            letter-spacing: 1px;
-            display: inline-block;
-            padding: 12px 36px;
-            border-radius: 50px;
-            transition: 0.5s;
-            box-shadow: 0 8px 28px rgba(206, 18, 18, 0.2);
-            text-decoration: none;
-        }
-        .hero .btn-get-started:hover {
-            background: rgba(206, 18, 18, 0.8);
-            box-shadow: 0 8px 28px rgba(206, 18, 18, 0.45);
-        }
-        .hero .btn-watch-video {
-            font-size: 16px;
-            transition: 0.5s;
-            margin-left: 25px;
-            color: #37373f;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .hero .btn-watch-video i {
-            color: #ce1212;
-            font-size: 32px;
-            transition: 0.3s;
-            line-height: 0;
-            margin-right: 8px;
-        }
-        .hero .btn-watch-video:hover {
-            color: #ce1212;
-        }
-        .hero .hero-img img {
-            animation: up-down 2s ease-in-out infinite alternate-reverse both;
-        }
-        @keyframes up-down {
-            0% { transform: translateY(10px); }
-            100% { transform: translateY(-10px); }
+        
+        .hero-content {
+            z-index: 10;
+            padding: 0 15px;
         }
 
-        /* Yummy Section Title Exact Styles */
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-family: 'Bungee Inline', cursive;
+            color: #ffffff;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            text-transform: uppercase;
+            text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .hero-buttons {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .hero .btn-order {
+            background-color: #ce1212;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            padding: 12px 35px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: 2px solid #ce1212;
+        }
+
+        .hero .btn-order:hover {
+            background-color: transparent;
+            color: #ce1212;
+        }
+
+        .hero .btn-menu {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            padding: 12px 35px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: 2px solid #ffffff;
+            backdrop-filter: blur(5px);
+        }
+
+        .hero .btn-menu:hover {
+            background-color: #ffffff;
+            color: #37373f;
+        }
+
+        /* Carousel Navigation Controls - Image Style */
+        .hero-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 40px;
+            pointer-events: none;
+        }
+
+        .hero-nav button {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            pointer-events: auto;
+            transition: 0.3s;
+        }
+
+        .hero-nav button:hover {
+            color: #ce1212;
+            transform: scale(1.2);
+        }
+
+        /* Carousel Dots */
+        .hero-dots {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .hero-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: transparent;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .hero-dots span.active {
+            background: white;
+            box-shadow: 0 0 10px white;
+        }
+
+        /* Yummy Section Title Exact Styles (Kept for other sections) */
         .section-title h2 {
             font-size: 14px;
             font-weight: 500;
@@ -202,21 +262,26 @@
     </style>
 
     <section id="hero" class="hero section-item">
-      <div class="container">
-        <div class="row gy-4 justify-content-center justify-content-lg-between">
-          <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
-            <h1 class="animate__animated animate__fadeInUp">Citarasa Rumah,<br>Standar Gourmet</h1>
-            <p class="animate__animated animate__fadeInUp animate__delay-1s">Bukan sekadar makanan, ini adalah simfoni gizi dan rasa. Disiapkan khusus dengan bahan segar terbaik untuk kesehatan dan kebahagiaan Anda setiap harinya.</p>
-            <div class="d-flex align-items-center mt-4 animate__animated animate__fadeInUp animate__delay-1s">
-              <a href="#services" class="btn-get-started">Pesan Sekarang</a>
-              <a href="#about" class="btn-watch-video d-flex align-items-center"><i class="fa-regular fa-circle-play"></i><span>Lihat Profil Kami</span></a>
+        <div class="hero-content">
+            <h1 class="animate__animated animate__fadeInDown">
+                CITARASA RUMAH<br>STANDAR GOURMET
+            </h1>
+            <div class="hero-buttons animate__animated animate__fadeInUp animate__delay-1s">
+                <a href="#services" class="btn-order">Order Now</a>
+                <a href="#menu" class="btn-menu">View Menu</a>
             </div>
-          </div>
-          <div class="col-lg-5 order-1 order-lg-2 hero-img animate__animated animate__fadeInRight">
-            <img src="{{ asset('images/katering.png') }}" class="img-fluid rounded-circle" alt="">
-          </div>
         </div>
-      </div>
+
+        <!-- Decorative elements to match the image carousel look -->
+        <div class="hero-nav">
+            <button><i class="fa-solid fa-chevron-left"></i></button>
+            <button><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="hero-dots">
+            <span class="active"></span>
+            <span></span>
+            <span></span>
+        </div>
     </section>
 
     <!-- Script for smooth scroll -->
@@ -297,107 +362,158 @@
     </section>
 
     <style>
-        /* Yummy Menu Exact Styles */
-        .menu .nav-tabs {
-            border: 0;
-            justify-content: center;
-        }
-        .menu .nav-link {
-            margin: 0 10px;
+        /* New Menu Section Layout Matching Image */
+        .menu-tab-custom {
+            border: none;
+            border-bottom: 2px solid #e9ecef;
+            background: transparent;
+            border-radius: 0;
             padding: 10px 30px;
-            transition: 0.3s;
+            margin: 0 10px;
             color: #37373f;
-            border-radius: 50px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-bottom: 0;
-            font-weight: 500;
+            opacity: 0.7;
+            transition: 0.3s;
         }
-        .menu .nav-link.active {
-            background: #ce1212;
-            color: #fff;
-            border-color: #ce1212;
+        .menu-tab-custom.active {
+            border-bottom: 3px solid #ce1212 !important;
+            opacity: 1;
+            background: transparent !important;
+            color: #37373f !important;
         }
-        .menu .menu-item {
-            text-align: center;
+        .menu-tab-custom i {
+            color: #ce1212;
+            font-size: 2.5rem;
+            margin-right: 15px;
+            transition: 0.3s;
+        }
+        .menu-tab-custom:hover {
+            opacity: 1;
+        }
+        .menu-tab-custom h6 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .menu-tab-custom small {
+            font-size: 13px;
+            color: #8a8a8a;
+        }
+
+        .menu-list-item {
+            display: flex;
+            align-items: center;
             margin-bottom: 30px;
         }
-        .menu .menu-img {
-            width: 100%;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            height: 250px;
+        .menu-list-img {
+            width: 80px;
+            height: 80px;
             object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
         }
-        .menu .menu-item h4 {
-            font-size: 22px;
+        .menu-list-content {
+            width: 100%;
+            padding-left: 20px;
+        }
+        .menu-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+        .menu-list-title {
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 5px;
-            color: #37373f;
+            color: #1a1a2e;
+            margin: 0;
         }
-        .menu .menu-item .price {
-            font-size: 24px;
+        .menu-list-price {
+            font-size: 20px;
             font-weight: 700;
             color: #ce1212;
             margin: 0;
         }
-        .menu .menu-item .ingredients {
+        .menu-list-desc {
+            font-size: 14px;
             color: #8a8a8a;
-            margin-bottom: 10px;
+            font-style: italic;
+            margin: 0;
         }
     </style>
 
     <!-- Menu Section -->
-    <section id="menu" class="menu section-item py-5 bg-light">
+    <section id="menu" class="menu section-item py-5 bg-white">
         <div class="container py-5">
             <div class="section-title text-center mb-5">
                 <h2>Menu Pilihan</h2>
                 <p>Lihat Hidangan <span>Spesial Kami</span></p>
             </div>
 
-            <ul class="nav nav-tabs justify-content-center mb-5" id="menu-tab" role="tablist">
+            <ul class="nav nav-tabs justify-content-center mb-5 border-0" id="menu-tab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="pills-harian-tab" data-bs-toggle="pill" data-bs-target="#pills-harian" type="button" role="tab" aria-selected="true">Katering Harian</button>
+                    <button class="nav-link menu-tab-custom active" id="pills-harian-tab" data-bs-toggle="pill" data-bs-target="#pills-harian" type="button" role="tab" aria-selected="true">
+                        <i class="fa-solid fa-mug-hot"></i>
+                        <div class="text-start">
+                            <small class="d-block">Pilihan</small>
+                            <h6>Harian</h6>
+                        </div>
+                    </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="pills-acara-tab" data-bs-toggle="pill" data-bs-target="#pills-acara" type="button" role="tab" aria-selected="false">Katering Acara</button>
+                    <button class="nav-link menu-tab-custom" id="pills-acara-tab" data-bs-toggle="pill" data-bs-target="#pills-acara" type="button" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-burger"></i>
+                        <div class="text-start">
+                            <small class="d-block">Spesial</small>
+                            <h6>Acara</h6>
+                        </div>
+                    </button>
                 </li>
             </ul>
 
             <div class="tab-content" id="pills-tabContent">
                 <!-- Tab Harian -->
                 <div class="tab-pane fade show active" id="pills-harian" role="tabpanel" aria-labelledby="pills-harian-tab">
-                    <div class="row g-4">
+                    <div class="row">
                         @forelse($menuHarian as $menu)
-                        <div class="col-lg-4 col-md-6">
-                            <div class="menu-item">
-                                <img src="{{ asset('storage/' . $menu->gambar) }}" onerror="this.src='{{ asset('images/harian.png') }}'" class="menu-img" alt="{{ $menu->nama_menu }}">
-                                <h4>{{ $menu->nama_menu }}</h4>
-                                <p class="ingredients">{{ Str::limit($menu->deskripsi, 60) }}</p>
-                                <p class="price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
+                        <div class="col-lg-6">
+                            <div class="menu-list-item">
+                                <img src="{{ asset('storage/' . $menu->gambar) }}" onerror="this.src='{{ asset('images/harian.png') }}'" class="menu-list-img" alt="{{ $menu->nama_menu }}">
+                                <div class="menu-list-content">
+                                    <div class="menu-list-header">
+                                        <h4 class="menu-list-title">{{ $menu->nama_menu }}</h4>
+                                        <h4 class="menu-list-price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</h4>
+                                    </div>
+                                    <p class="menu-list-desc">{{ Str::limit($menu->deskripsi, 80) }}</p>
+                                </div>
                             </div>
                         </div>
                         @empty
-                        <div class="col-12 text-center text-secondary">Belum ada menu harian.</div>
+                        <div class="col-12 text-center text-secondary py-4">Belum ada menu harian.</div>
                         @endforelse
                     </div>
                 </div>
                 <!-- Tab Acara -->
                 <div class="tab-pane fade" id="pills-acara" role="tabpanel" aria-labelledby="pills-acara-tab">
-                    <div class="row g-4">
+                    <div class="row">
                         @forelse($menuAcara as $menu)
-                        <div class="col-lg-4 col-md-6">
-                            <div class="menu-item">
-                                <img src="{{ asset('storage/' . $menu->gambar) }}" onerror="this.src='{{ asset('images/acara.jpg') }}'" class="menu-img" alt="{{ $menu->nama_menu }}">
-                                <h4>{{ $menu->nama_menu }}</h4>
-                                <p class="ingredients">{{ Str::limit($menu->deskripsi, 60) }}</p>
-                                <p class="price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
+                        <div class="col-lg-6">
+                            <div class="menu-list-item">
+                                <img src="{{ asset('storage/' . $menu->gambar) }}" onerror="this.src='{{ asset('images/acara.jpg') }}'" class="menu-list-img" alt="{{ $menu->nama_menu }}">
+                                <div class="menu-list-content">
+                                    <div class="menu-list-header">
+                                        <h4 class="menu-list-title">{{ $menu->nama_menu }}</h4>
+                                        <h4 class="menu-list-price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</h4>
+                                    </div>
+                                    <p class="menu-list-desc">{{ Str::limit($menu->deskripsi, 80) }}</p>
+                                </div>
                             </div>
                         </div>
                         @empty
-                        <div class="col-12 text-center text-secondary">Belum ada menu acara.</div>
+                        <div class="col-12 text-center text-secondary py-4">Belum ada menu acara.</div>
                         @endforelse
                     </div>
                 </div>

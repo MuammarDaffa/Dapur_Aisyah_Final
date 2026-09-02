@@ -253,7 +253,7 @@
                             @elseif(Auth::user()->role === 'admin')
                                 <a href="{{ route('admin.dashboard') }}" class="btn-getstarted">Dashboard Admin</a>
                             @else
-                                <a href="{{ route('pelanggan.dashboard') }}" class="btn-getstarted">Profil & Pesanan</a>
+                                <a href="{{ route('pelanggan.riwayat') }}" class="btn-getstarted">Profil & Pesanan</a>
                             @endif
                             <form method="POST" action="{{ route('logout') }}" class="m-0">
                                 @csrf
@@ -393,74 +393,127 @@
     <main>
         @yield('content')
     </main>
-    <!-- Bento Style Footer -->
-    <footer class="footer-premium mt-auto pt-5">
-        <div class="container py-4">
-            <div class="row g-4">
-                
-                <!-- Bento Box 1: Brand -->
-                <div class="col-lg-5 col-md-12">
-                    <div class="bento-footer-box dark-box d-flex flex-column justify-content-between relative overflow-hidden" style="background: url('https://www.transparenttextures.com/patterns/cubes.png'), var(--forest-green);">
-                        <div style="z-index: 1;">
-                            <h3 class="fs-2 fw-bold mb-4 d-flex align-items-center gap-3">
-                                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-lg" style="width: 50px; height: 50px;">
-                                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid p-2">
-                                </div>
-                                Dapur Aisyah
-                            </h3>
-                            <p class="mb-5 opacity-75 fs-5" style="line-height: 1.8; max-width: 90%;">
-                                Menghadirkan simfoni citarasa organik rumahan untuk gaya hidup modern Anda di Pontianak.
-                            </p>
-                        </div>
-                        <div class="d-flex gap-3" style="z-index: 1;">
-                            <a href="#" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center fs-5 shadow-sm" style="width: 50px; height: 50px; color: var(--forest-green);"><i class="fa-brands fa-instagram"></i></a>
-                            <a href="#" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center fs-5 shadow-sm" style="width: 50px; height: 50px; color: var(--forest-green);"><i class="fa-brands fa-whatsapp"></i></a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Bento Box 2: Links -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="bento-footer-box">
-                        <h4 class="fs-5 text-dark mb-4 fw-bold">Eksplorasi</h4>
-                        <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
-                            <li><a href="{{ request()->routeIs('landing') ? '#hero' : route('landing').'#hero' }}" class="footer-link"><i class="fa-solid fa-arrow-right-long me-2 text-primary-mc"></i> Beranda</a></li>
-                            <li><a href="{{ request()->routeIs('landing') ? '#services' : route('landing').'#services' }}" class="footer-link"><i class="fa-solid fa-arrow-right-long me-2 text-primary-mc"></i> Pilihan Katering</a></li>
-                            <li><a href="{{ request()->routeIs('landing') ? '#about' : route('landing').'#about' }}" class="footer-link"><i class="fa-solid fa-arrow-right-long me-2 text-primary-mc"></i> Filosofi Kami</a></li>
-                            <li><a href="{{ request()->routeIs('landing') ? '#testimonials' : route('landing').'#testimonials' }}" class="footer-link"><i class="fa-solid fa-arrow-right-long me-2 text-primary-mc"></i> Cerita Pelanggan</a></li>
-                        </ul>
+    <style>
+        /* Yummy Footer Styles */
+        .footer {
+            font-size: 14px;
+            background-color: #1f1f24;
+            padding: 50px 0;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: auto;
+        }
+        .footer .icon {
+            margin-right: 15px;
+            font-size: 24px;
+            line-height: 1;
+            color: #ce1212;
+        }
+        .footer h4 {
+            font-size: 16px;
+            font-weight: bold;
+            position: relative;
+            padding-bottom: 5px;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+        .footer .footer-links {
+            margin-bottom: 30px;
+        }
+        .footer p {
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+        .footer .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-right: 10px;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .footer .social-links a:hover {
+            color: #fff;
+            border-color: #fff;
+            background: #ce1212;
+        }
+        .footer .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 30px;
+        }
+        .footer .credits {
+            padding-top: 4px;
+            text-align: center;
+            font-size: 13px;
+        }
+        .footer .credits a {
+            color: #ce1212;
+            text-decoration: none;
+            font-weight: 500;
+        }
+    </style>
+
+    <!-- Yummy Footer -->
+    <footer id="footer" class="footer">
+        <div class="container">
+            <div class="row gy-3">
+                <div class="col-lg-3 col-md-6 d-flex">
+                    <i class="fa-solid fa-location-dot icon"></i>
+                    <div>
+                        <h4>Alamat Kami</h4>
+                        <p>
+                            Jl. Contoh Pontianak No. 123<br>
+                            Pontianak, Kalimantan Barat<br>
+                        </p>
                     </div>
                 </div>
 
-                <!-- Bento Box 3: Contact -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="bento-footer-box accent-box mb-4">
-                        <h4 class="fs-5 mb-3 fw-bold">Pusat Bantuan</h4>
-                        <a href="#" class="text-white text-decoration-none fs-2 fw-bold d-block mb-1">0812-3456-7890</a>
-                        <span class="opacity-75">Tersedia via WhatsApp</span>
+                <div class="col-lg-3 col-md-6 footer-links d-flex">
+                    <i class="fa-solid fa-phone icon"></i>
+                    <div>
+                        <h4>Pusat Bantuan</h4>
+                        <p>
+                            <strong>Telepon:</strong> 0812-3456-7890<br>
+                            <strong>Email:</strong> info@dapuraisyah.com<br>
+                        </p>
                     </div>
-                    <div class="bento-footer-box p-4" style="height: auto;">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                                <i class="fa-solid fa-location-dot text-primary-mc fs-5"></i>
-                            </div>
-                            <div>
-                                <span class="d-block fw-bold text-dark">Dapur Utama</span>
-                                <span class="text-secondary small">Jl. Contoh Pontianak No. 123</span>
-                            </div>
-                        </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 footer-links d-flex">
+                    <i class="fa-regular fa-clock icon"></i>
+                    <div>
+                        <h4>Jam Operasional</h4>
+                        <p>
+                            <strong>Senin - Sabtu:</strong> 08.00 - 17.00<br>
+                            <strong>Minggu:</strong> Tutup
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 footer-links">
+                    <h4>Ikuti Kami</h4>
+                    <div class="social-links d-flex">
+                        <a href="#" class="facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Copyright Bottom -->
-        <div class="container pb-4 pt-3">
-            <div class="bg-white rounded-pill px-4 py-3 shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-center">
-                <p class="mb-0 text-secondary small fw-bold">&copy; {{ date('Y') }} Dapur Aisyah.</p>
-                <div class="small fw-bold" style="color: var(--primary-terracotta);">
-                    Dirancang dengan ❤️ & 🍃
-                </div>
+
+        <div class="container">
+            <div class="copyright">
+                &copy; Copyright <strong><span>Dapur Aisyah</span></strong>. All Rights Reserved
+            </div>
+            <div class="credits">
+                Dirancang dengan <a href="#">Yummy Style</a>
             </div>
         </div>
     </footer>
