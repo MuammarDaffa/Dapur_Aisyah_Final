@@ -190,7 +190,7 @@
                 <h2 class="fs-1 fw-bold text-dark">Layanan Katering <span class="text-primary-mc">Kami</span></h2>
             </div>
             
-            <div class="row justify-content-center g-5">
+            <div class="services-container">
                 @forelse($services as $service)
                     @php
                         $serviceUrl = $service->tipe_layanan === 'acara' ? route('pelanggan.acara.lokasi') : route('pelanggan.harian.lokasi');
@@ -201,22 +201,26 @@
                             : 'Menu bergizi yang berganti setiap hari. Solusi makan siang cerdas untuk gaya hidup produktif Anda.';
                     @endphp
                     
-                    <div class="col-md-6 col-lg-5">
-                        <div class="service-bento h-100 d-flex flex-column">
-                            <div class="position-relative">
-                                <img src="{{ $bgImage }}" alt="{{ $service->nama }}">
-                                <div class="position-absolute top-0 start-0 m-4 bg-white px-3 py-2 rounded-pill shadow-sm fw-bold text-dark d-flex align-items-center gap-2">
-                                    <div class="bg-primary-mc rounded-circle" style="width:8px; height:8px;"></div>
+                    <div class="row align-items-center mb-5 {{ $loop->last ? '' : 'pb-5' }}">
+                        <!-- Image Column -->
+                        <div class="col-lg-6 mb-4 mb-lg-0 {{ $loop->even ? 'order-lg-2' : '' }}">
+                            <div class="position-relative overflow-hidden shadow-sm" style="border-radius: 32px; height: 450px;">
+                                <img src="{{ $bgImage }}" alt="{{ $service->nama }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                <div class="position-absolute top-0 start-0 m-4 bg-white px-4 py-2 rounded-pill shadow-sm fw-bold text-dark d-flex align-items-center gap-2">
+                                    <div class="bg-primary-mc rounded-circle" style="width:10px; height:10px;"></div>
                                     {{ ucfirst($service->tipe_layanan) }}
                                 </div>
                             </div>
-                            <div class="service-bento-content d-flex flex-column flex-grow-1 text-center">
-                                <h3 class="fs-3 fw-bold text-dark mb-3">{{ $service->nama }}</h3>
-                                <p class="text-secondary mb-4 flex-grow-1" style="line-height: 1.7;">{{ $desc }}</p>
-                                <a href="{{ $serviceUrl }}" class="btn btn-outline-dark rounded-pill fw-bold w-100 py-3 border-2 hover-bg-dark">
-                                    Lihat Menu <i class="fa-solid fa-arrow-right ms-2"></i>
-                                </a>
-                            </div>
+                        </div>
+                        
+                        <!-- Text Column -->
+                        <div class="col-lg-6 {{ $loop->even ? 'order-lg-1 pe-lg-5' : 'ps-lg-5' }}">
+                            <h3 class="display-5 fw-bold text-dark mb-4">{{ $service->nama }}</h3>
+                            <p class="text-secondary fs-5 mb-5" style="line-height: 1.8;">{{ $desc }}</p>
+                            
+                            <a href="{{ $serviceUrl }}" class="btn btn-outline-dark rounded-pill fw-bold px-5 py-3 border-2 hover-bg-dark d-inline-flex align-items-center gap-3" style="transition: all 0.3s ease;">
+                                Lihat Menu <i class="fa-solid fa-arrow-right"></i>
+                            </a>
                         </div>
                     </div>
                 @empty
