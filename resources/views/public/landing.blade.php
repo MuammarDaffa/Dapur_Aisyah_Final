@@ -1,227 +1,297 @@
 @extends('layouts.app')
 
-@section('title', 'Katering Online Terpercaya Pontianak')
+@section('title', 'Katering Organik & Premium Pontianak')
 
 @section('content')
     <style>
-       
+        /* Modern Organic Gourmet - Landing Styles */
         .hero-section {
-            height: 100vh;
             min-height: 100vh;
             display: flex;
             align-items: center;
-            justify-content: center;
+            background-color: var(--bg-cream);
+            position: relative;
+            overflow: hidden;
+            padding-top: 100px;
         }
-        .hero-bg {
-            transition: opacity 800ms ease-in-out;
+        
+        .organic-blob-1 {
+            position: absolute;
+            top: -10%; left: -10%;
+            width: 600px; height: 600px;
+            background: var(--forest-green);
+            opacity: 0.03;
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            animation: morph 15s ease-in-out infinite alternate;
+            z-index: 0;
         }
-        .hero-btn {
-            background-color: #f97316; /* primary orange color */
-            color: #ffffff;
-            border: 2px solid #f97316;
-            transition: all 250ms ease-in-out;
+
+        .organic-blob-2 {
+            position: absolute;
+            bottom: -20%; right: -5%;
+            width: 800px; height: 800px;
+            background: var(--primary-terracotta);
+            opacity: 0.03;
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation: morph 20s ease-in-out infinite alternate-reverse;
+            z-index: 0;
         }
-        .hero-btn:hover {
-            background-color: transparent;
-            color: #f97316;
-            border-color: #f97316;
+
+        @keyframes morph {
+            0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: rotate(0deg); }
+            100% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; transform: rotate(10deg); }
         }
-        .hero-btn:active {
-            transform: translateY(1px);
+
+        .hero-title {
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            line-height: 1.1;
+            font-weight: 800;
+            color: var(--forest-green);
+            letter-spacing: -0.03em;
         }
-        @media (min-width: 640px) and (max-width: 1023px) {
-            .hero-section {
-                height: 100vh;
-                min-height: 100vh;
-                padding: 6rem 1rem;
-            }
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            color: #475569;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
         }
-        @media (min-width: 1024px) {
-            .hero-section {
-                height: 100vh;
-                min-height: 100vh;
-            }
+
+        /* Bento Features */
+        .bento-feature {
+            background: white;
+            border-radius: var(--bento-radius);
+            padding: 40px;
+            height: 100%;
+            box-shadow: var(--soft-shadow);
+            transition: all 0.4s ease;
         }
-        .section-item {
-            min-height: calc(100vh - 64px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-top: 5rem;
-            padding-bottom: 5rem;
-            scroll-margin-top: 64px;
+        .bento-feature:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(44, 74, 59, 0.1);
         }
+
+        .service-bento {
+            position: relative;
+            border-radius: var(--bento-radius);
+            overflow: hidden;
+            background: white;
+            box-shadow: var(--soft-shadow);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .service-bento:hover {
+            transform: scale(1.02);
+            border-color: var(--primary-terracotta);
+            box-shadow: 0 25px 50px rgba(224, 93, 54, 0.15);
+        }
+        .service-bento img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+        .service-bento:hover img {
+            transform: scale(1.05);
+        }
+        .service-bento-content {
+            padding: 30px;
+            background: white;
+        }
+
+        /* Abstract Image Frame */
+        .image-frame-organic {
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(44,74,59,0.15);
+            transition: all 0.5s ease;
+        }
+        
+        .section-item { scroll-margin-top: 100px; }
     </style>
 
-    <!-- Hero Section -->
-    <section id="hero" class="position-relative overflow-hidden d-flex align-items-center justify-content-center text-center hero-section w-100 section-item" style="background-color: #333;">
-        <!-- Background Container -->
-        <div class="position-absolute top-0 start-0 w-100 h-100">
-            <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: url('{{ asset('images/katering.png') }}'); background-size: cover; background-position: center;"></div>
-            <!-- Dark Overlay -->
-            <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark" style="opacity: 0.6;"></div>
-        </div>
+    <!-- Oversized Hero Section -->
+    <section id="hero" class="hero-section section-item">
+        <div class="organic-blob-1"></div>
+        <div class="organic-blob-2"></div>
 
-        <!-- Content Container -->
-            <div class="position-relative container d-flex flex-column align-items-center justify-content-center h-100d z-1" style="z-index: 2;">
-                <h1 class="display-2 fw-bold text-warning mb-4" style="max-width: 800px;">
-                    Dapur Aisyah 
-                </h1>
-                <h4 class="display-8 fw-bold text-white mb-5 pb-3" style="max-width: 700px;">
-                    Katering Rumahan Berkualitas Premium
-                </h4>
-                <div class="mt-5 mb-4 pb-4">
-                    <a href="#services" class="btn btn-warning text-white btn-lg rounded-0 px-5 py-3 fw-bold shadow scroll-to-services">
-                        Pesan Sekarang
-                    </a>
-                </div>
-                <marquee class="fs-5 text-light mb-5 text-2xl" style="max-width: 700px;">
-                    Nikmati masakan rumahan berkualitas untuk kebutuhan harian atau acara kantor.
-                </marquee>
+        <div class="container position-relative z-1 text-center">
+            <div class="d-inline-flex align-items-center gap-2 bg-white rounded-pill px-4 py-2 shadow-sm mb-4 border border-light animate__animated animate__fadeInDown">
+                <span class="d-flex align-items-center justify-content-center bg-primary-mc rounded-circle" style="width: 10px; height: 10px;"></span>
+                <span class="fw-bold text-secondary small text-uppercase tracking-wider">Katering Premium Pontianak</span>
             </div>
+            
+            <h1 class="hero-title mb-4 animate__animated animate__fadeInUp">
+                Citarasa Rumah,<br>
+                <span class="text-primary-mc" style="font-style: italic; font-weight: 700;">Standar Gourmet.</span>
+            </h1>
+            
+            <p class="hero-subtitle mb-5 animate__animated animate__fadeInUp animate__delay-1s">
+                Bukan sekadar makanan, ini adalah simfoni gizi dan rasa. Disiapkan khusus dengan bahan segar terbaik untuk kesehatan dan kebahagiaan Anda.
+            </p>
+            
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center animate__animated animate__fadeInUp animate__delay-1s">
+                <a href="#services" class="btn btn-primary-mc fs-5 text-decoration-none shadow-lg">
+                    Mulai Eksplorasi <i class="fa-solid fa-arrow-down ms-2"></i>
+                </a>
+            </div>
+
+            <!-- Floating Hero Elements -->
+            <div class="mt-5 pt-4 position-relative mx-auto" style="max-width: 900px; height: 400px;">
+                <!-- Bento Style Hero Images -->
+                <div class="row g-4 h-100">
+                    <div class="col-md-7 h-100">
+                        <div class="rounded-4 overflow-hidden h-100 shadow-lg" style="border-radius: 32px !important;">
+                            <img src="{{ asset('images/katering.png') }}" class="w-100 h-100" style="object-fit: cover;" alt="Premium Food">
+                        </div>
+                    </div>
+                    <div class="col-md-5 h-100 d-flex flex-column gap-4">
+                        <div class="bg-white rounded-4 p-4 shadow-sm h-50 d-flex flex-column justify-content-center align-items-center text-center" style="border-radius: 32px !important;">
+                            <h2 class="display-4 fw-bold text-primary-mc mb-0">100%</h2>
+                            <p class="text-secondary fw-bold mb-0">Halal & Higienis</p>
+                        </div>
+                        <div class="text-white rounded-4 p-4 shadow-sm h-50 d-flex flex-column justify-content-center align-items-center text-center" style="border-radius: 32px !important; background-color: var(--forest-green);">
+                            <i class="fa-solid fa-leaf fs-1 mb-2 text-warning"></i>
+                            <p class="fw-bold mb-0 fs-5">Bahan Segar Pilihan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
+    <!-- Script for smooth scroll -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const scrollBtn = document.querySelector('.scroll-to-services');
-            if (scrollBtn) {
-                scrollBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const target = document.getElementById('services');
-                    if (target) {
-                        const navOffset = 64;
-                        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navOffset;
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            }
-
-            // Main Navbar Smooth Scroll & Active Status (Scroll Spy)
-            const mainNavLinks = document.querySelectorAll('.main-nav-link');
-            const scrollLinks = document.querySelectorAll('.main-nav-link, .logo-nav-link, .footer-nav-link');
-            const sections = document.querySelectorAll('section.section-item[id]');
-
-            // Smooth Scroll on Link Click
+            const scrollLinks = document.querySelectorAll('a[href^="#"]');
             scrollLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('data-target');
+                    const targetId = this.getAttribute('href').substring(1);
+                    if(!targetId) return;
+                    
                     const targetEl = document.getElementById(targetId);
                     if (targetEl) {
-                        const navOffset = 64;
+                        e.preventDefault();
+                        const navOffset = 100;
                         const targetPosition = targetEl.getBoundingClientRect().top + window.pageYOffset - navOffset;
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
-                        });
+                        window.scrollTo({ top: targetPosition, behavior: 'smooth' });
                     }
                 });
             });
-
-            // Active Navigation on Scroll (Scroll Spy)
-            function updateActiveNavigation() {
-                if (window.innerWidth < 768 || mainNavLinks.length === 0) return;
-
-                const scrollPos = window.pageYOffset + 80;
-                let currentSectionId = 'hero';
-
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    const sectionHeight = section.offsetHeight;
-                    if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
-                        currentSectionId = section.getAttribute('id');
-                    }
-                });
-
-                // If scrolled near bottom of page, activate the last visible section ('testimonials' if present, otherwise 'about')
-                if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 50) {
-                    const testimonialsSection = document.getElementById('testimonials');
-                    const aboutSection = document.getElementById('about');
-                    if (testimonialsSection) {
-                        currentSectionId = 'testimonials';
-                    } else if (aboutSection) {
-                        currentSectionId = 'about';
-                    }
-                }
-
-                mainNavLinks.forEach(link => {
-                    const targetId = link.getAttribute('data-target');
-                    if (targetId === currentSectionId) {
-                        link.classList.remove('text-gray-600', 'border-transparent');
-                        link.classList.add('text-orange-600', 'border-orange-500');
-                    } else {
-                        link.classList.remove('text-orange-600', 'border-orange-500');
-                        link.classList.add('text-gray-600', 'border-transparent');
-                    }
-                });
-            }
-
-            window.addEventListener('scroll', updateActiveNavigation, { passive: true });
-            window.addEventListener('resize', updateActiveNavigation, { passive: true });
-            updateActiveNavigation(); // Initial check
         });
     </script>
 
-    <!-- Services Section -->
-    <section id="services" class="py-16 bg-white section-item">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="fs-2 fw-bold text-secondary">Layanan <span class="text-warning">Katering</span> Kami</h2>
-                <p class="mt-3 text-secondary max-w-2xl mx-auto">Pilih layanan katering sesuai kebutuhan Anda</p>
+    <!-- Services Section (Bento Cards) -->
+    <section id="services" class="py-5 section-item mt-5">
+        <div class="container mx-auto px-4 pt-5">
+            <div class="text-center mb-5 pb-3">
+                <span class="text-primary-mc fw-bold tracking-wider text-uppercase d-block mb-2">Pilihan Cerdas</span>
+                <h2 class="fs-1 fw-bold text-dark">Layanan Katering <span class="text-primary-mc">Kami</span></h2>
             </div>
-            <div class="row row-cols-1 sm:row-cols-2 lg:row-cols-{{ count($services) > 2 ? '3' : count($services) }} g-3 items-stretch">
+            
+            <div class="row justify-content-center g-5">
                 @forelse($services as $service)
                     @php
-                        $serviceUrl = $service->tipe_layanan === 'acara'
-                            ? route('pelanggan.acara.lokasi')
-                            : route('pelanggan.harian.lokasi');
-                        $bgImage = $service->tipe_layanan === 'acara'
-                            ? asset('images/acara.jpg')
-                            : asset('images/harian.png');
+                        $serviceUrl = $service->tipe_layanan === 'acara' ? route('pelanggan.acara.lokasi') : route('pelanggan.harian.lokasi');
+                        $bgImage = $service->tipe_layanan === 'acara' ? asset('images/acara.jpg') : asset('images/harian.png');
+                        $icon = $service->tipe_layanan === 'acara' ? 'fa-calendar-star' : 'fa-sun';
+                        $desc = $service->tipe_layanan === 'acara' 
+                            ? 'Sajikan hidangan istimewa tanpa repot untuk momen spesial, rapat penting, atau perayaan keluarga Anda.' 
+                            : 'Menu bergizi yang berganti setiap hari. Solusi makan siang cerdas untuk gaya hidup produktif Anda.';
                     @endphp
-                    <a href="{{ $serviceUrl }}" class="group position-relative rounded-2xl border border-secondary hover:-translate-y-1 shadow-sm d-flex flex-column h-100 overflow-hidden text-decoration-none transition-all duration-300" style="min-height: 250px;">
-                        <!-- Background Image -->
-                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: url('{{ $bgImage }}'); background-size: cover; background-position: center; transition: transform 0.3s ease-in-out;"></div>
-                        
-                        <!-- Overlay Gelap -->
-                        <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-75 group-hover:opacity-50 transition-opacity duration-300"></div>
-                        
-                        <!-- Konten -->
-                        <div class="p-6 flex-grow-1 d-flex flex-column justify-content-center text-center position-relative" style="z-index: 1;">
-                            <h3 class="fs-2 fw-bold text-white mb-0" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.7);">{{ $service->nama }}</h3>
+                    
+                    <div class="col-md-6 col-lg-5">
+                        <div class="service-bento h-100 d-flex flex-column">
+                            <div class="position-relative">
+                                <img src="{{ $bgImage }}" alt="{{ $service->nama }}">
+                                <div class="position-absolute top-0 start-0 m-4 bg-white px-3 py-2 rounded-pill shadow-sm fw-bold text-dark d-flex align-items-center gap-2">
+                                    <div class="bg-primary-mc rounded-circle" style="width:8px; height:8px;"></div>
+                                    {{ ucfirst($service->tipe_layanan) }}
+                                </div>
+                            </div>
+                            <div class="service-bento-content d-flex flex-column flex-grow-1 text-center">
+                                <h3 class="fs-3 fw-bold text-dark mb-3">{{ $service->nama }}</h3>
+                                <p class="text-secondary mb-4 flex-grow-1" style="line-height: 1.7;">{{ $desc }}</p>
+                                <a href="{{ $serviceUrl }}" class="btn btn-outline-dark rounded-pill fw-bold w-100 py-3 border-2 hover-bg-dark">
+                                    Lihat Menu <i class="fa-solid fa-arrow-right ms-2"></i>
+                                </a>
+                            </div>
                         </div>
-                    </a>
+                    </div>
                 @empty
-                    <div class="col-12 text-center py-12">
-                        <h3 class="fs-4 fw-medium text-secondary mb-2">Belum Ada Layanan</h3>
-                        <p class="text-secondary">Mohon maaf, layanan katering saat ini sedang tidak tersedia.</p>
+                    <div class="col-12 text-center py-5">
+                        <div class="bg-white p-5 rounded-4 shadow-sm border border-light mx-auto" style="max-width: 500px; border-radius: 32px !important;">
+                            <div class="bg-light rounded-circle d-flex justify-content-center align-items-center mx-auto mb-4" style="width:80px; height:80px;">
+                                <i class="fa-solid fa-box-open fs-2 text-secondary"></i>
+                            </div>
+                            <h3 class="fs-4 fw-bold text-dark mb-2">Belum Ada Layanan</h3>
+                            <p class="text-secondary mb-0">Kami sedang meracik menu terbaik untuk Anda. Silakan kembali nanti.</p>
+                        </div>
                     </div>
                 @endforelse
             </div>
         </div>
     </section>
 
-    <!-- Tentang Dapur Aisyah Section -->
-    <section id="about" class="py-16 bg-light section-item">
+    <!-- Filosofi Section (Bento Grid) -->
+    <section id="about" class="py-5 section-item">
         <div class="container py-5">
-            <div class="row align-items-center">
-                <!-- Kolom Kiri: Gambar -->
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <div class="w-100 rounded overflow-hidden shadow border border-secondary" style="height: 350px;">
-                        <img src="{{ asset('images/tim_katering.png') }}" alt="Tentang Dapur Aisyah" class="w-100 h-100 object-fit-cover">
+            <div class="row g-4 align-items-center">
+                <!-- Left: Big Bento Image -->
+                <div class="col-lg-5 mb-5 mb-lg-0">
+                    <div class="image-frame-organic mx-auto">
+                        <img src="{{ asset('images/tim_katering.png') }}" alt="Filosofi Dapur Aisyah" class="w-100" style="height: 600px; object-fit: cover;">
                     </div>
                 </div>
-                <!-- Kolom Kanan: Judul & Deskripsi -->
-                <div class="col-lg-6 px-lg-5">
+                <!-- Right: Bento Details -->
+                <div class="col-lg-7 ps-lg-5">
+                    <span class="text-primary-mc fw-bold tracking-wider text-uppercase d-block mb-2">Filosofi Kami</span>
                     <h2 class="fs-1 fw-bold text-dark mb-4">
-                        Tentang <span class="text-warning">Dapur Aisyah</span>
+                        Lebih dari Sekadar <span style="color: var(--forest-green);">Makanan</span>
                     </h2>
-                    <p class="text-secondary fs-5 leading-relaxed" style="text-align: justify; line-height: 1.8;">
-                        Dapur Aisyah adalah penyedia layanan katering rumahan yang menyajikan hidangan berkualitas untuk kebutuhan harian maupun berbagai acara. Dengan bahan segar, cita rasa rumahan, dan pelayanan yang terpercaya, kami berkomitmen memberikan pengalaman terbaik di setiap sajian.
+                    <p class="text-secondary fs-5 mb-5" style="line-height: 1.8;">
+                        Di Dapur Aisyah, kami percaya bahwa makanan yang baik adalah fondasi hari yang luar biasa. Kami memadukan resep otentik warisan keluarga dengan standar kebersihan modern.
                     </p>
+                    
+                    <div class="row g-4">
+                        <div class="col-sm-6">
+                            <div class="bento-feature p-4">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
+                                    <i class="fa-solid fa-leaf fs-4 text-primary-mc"></i>
+                                </div>
+                                <h4 class="fw-bold fs-5 text-dark mb-2">Bahan Organik</h4>
+                                <p class="text-secondary small mb-0">Sayuran segar dari petani lokal pilihan.</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="bento-feature p-4">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
+                                    <i class="fa-solid fa-temperature-half fs-4 text-primary-mc"></i>
+                                </div>
+                                <h4 class="fw-bold fs-5 text-dark mb-2">Dimasak Sempurna</h4>
+                                <p class="text-secondary small mb-0">Teknik memasak sehat tanpa mengurangi cita rasa.</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="bento-feature p-4">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
+                                    <i class="fa-solid fa-box-open fs-4 text-primary-mc"></i>
+                                </div>
+                                <h4 class="fw-bold fs-5 text-dark mb-2">Kemasan Aman</h4>
+                                <p class="text-secondary small mb-0">Menggunakan wadah ramah lingkungan & higienis (Food Grade).</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="bento-feature p-4" style="background-color: var(--forest-green); color: white;">
+                                <div class="bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
+                                    <i class="fa-solid fa-truck-fast fs-4 text-warning"></i>
+                                </div>
+                                <h4 class="fw-bold fs-5 text-white mb-2">Tepat Waktu</h4>
+                                <p class="text-light opacity-75 small mb-0">Diantar hangat saat jam makan Anda.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -229,31 +299,49 @@
 
     <!-- Testimonials -->
     @if($ulasan->count() > 0)
-    <section id="testimonials" class="py-5 bg-white section-item">
-        <div class="container">
+    <section id="testimonials" class="py-5 section-item mb-5" style="background-color: white;">
+        <div class="container py-5">
             <div class="text-center mb-5">
-                <h2 class="fs-1 fw-bold text-dark">Apa Kata <span class="text-warning">Pelanggan</span></h2>
-                <p class="text-secondary fs-5">Ulasan dari pelanggan kami</p>
+                <span class="text-primary-mc fw-bold tracking-wider text-uppercase d-block mb-2">Cerita Pelanggan</span>
+                <h2 class="fs-1 fw-bold text-dark">Apa Kata <span style="color: var(--forest-green);">Mereka?</span></h2>
             </div>
+            
             <div class="row justify-content-center">
-                <div class="col-md-10 col-lg-8">
-                    <div id="carouselTestimoni" class="carousel carousel-dark slide text-center" data-bs-ride="carousel">
-                        <div class="carousel-inner p-4 py-5  shadow-sm" style="background-color: #f8f9fa;">
+                <div class="col-lg-10">
+                    <div id="carouselTestimoni" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner pb-5">
                             @foreach($ulasan as $key => $item)
                             <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                <h4 class="fw-bolder text-dark mb-4" style="letter-spacing: 0.5px;">{{ $item->user->name ?? 'Pelanggan' }}</h4>
-                                <p class="text-secondary fs-5 mb-0 px-md-5 px-3" style="font-style: italic; line-height: 1.6;">"{{ $item->komentar ?? 'Pelayanan sangat memuaskan!' }}"</p>
+                                <div class="text-center mx-auto" style="max-width: 800px;">
+                                    <i class="fa-solid fa-quote-left display-3 text-light mb-4"></i>
+                                    <p class="fs-3 fw-bold text-dark mb-5" style="line-height: 1.6; letter-spacing: -0.5px;">
+                                        "{{ $item->komentar ?? 'Pelayanan sangat memuaskan dan rasa makanannya lezat!' }}"
+                                    </p>
+                                    <div class="d-flex align-items-center justify-content-center gap-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm text-white fs-4 fw-bold" style="width: 60px; height: 60px; background-color: var(--primary-terracotta);">
+                                            {{ strtoupper(substr($item->user->name ?? 'P', 0, 1)) }}
+                                        </div>
+                                        <div class="text-start">
+                                            <h5 class="fw-bold text-dark mb-1">{{ $item->user->name ?? 'Pelanggan Setia' }}</h5>
+                                            <div class="text-warning small">
+                                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             @endforeach
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="prev" style="width: 10%;">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="next" style="width: 10%;">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+                        
+                        <!-- Navigation Buttons -->
+                        <div class="d-flex justify-content-center gap-3 mt-2">
+                            <button class="btn btn-light rounded-circle shadow-sm" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="prev" style="width: 50px; height: 50px;">
+                                <i class="fa-solid fa-arrow-left text-dark"></i>
+                            </button>
+                            <button class="btn btn-light rounded-circle shadow-sm" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="next" style="width: 50px; height: 50px;">
+                                <i class="fa-solid fa-arrow-right text-dark"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -261,20 +349,4 @@
     </section>
     @endif
 
-    <!-- CTA Section -->
-    <!-- <section class="py-16">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <h2 class="fs-2 md:fs-1 fw-bold text-white mb-4">Siap Memesan Katering?</h2>
-            <p class="text-primary fs-5 mb-8">Pesan sekarang dan nikmati kemudahan layanan katering online kami.</p>
-            @auth
-                <a href="{{ route('pelanggan.harian.lokasi') }}" class="d-inline-block px-10 py-4 bg-white text-primary fw-bold rounded-pill shadow-lg hover:shadow-2xl">
-                    Lihat Menu & Pesan →
-                </a>
-            @else
-                <a href="{{ route('register') }}" class="d-inline-block px-10 py-4 bg-white text-primary fw-bold rounded-pill shadow-lg hover:shadow-2xl">
-                    Daftar Gratis & Pesan →
-                </a>
-            @endauth
-        </div>
-    </section> -->
 @endsection

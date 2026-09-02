@@ -23,114 +23,290 @@
     <!-- Flatpickr Date Picker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* Custom Navbar Styling */
-        .navbar-nav .nav-item {
-            margin: 0 4px;
+        /* --- Dapur Aisyah: Modern Organic Gourmet Theme --- */
+        :root {
+            --primary-terracotta: #E05D36;
+            --primary-hover: #C84B29;
+            --forest-green: #2C4A3B;
+            --forest-hover: #1E362A;
+            --bg-cream: #F9F9F7;
+            --text-dark: #1E293B;
+            --soft-shadow: 0 12px 32px rgba(44, 74, 59, 0.08);
+            --hover-shadow: 0 20px 40px rgba(224, 93, 54, 0.15);
+            --bento-radius: 28px;
         }
+
+        body {
+            background-color: var(--bg-cream);
+            color: var(--text-dark);
+            font-family: 'Plus Jakarta Sans', 'Inter', 'Poppins', sans-serif;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-dark);
+        }
+        .text-primary-mc { color: var(--primary-terracotta) !important; }
+        .text-accent-mc { color: var(--forest-green) !important; }
+
+        /* Floating Navbar (Pill Design) */
+        .navbar-glass {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 50px;
+            margin: 20px auto;
+            max-width: 95%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.4) !important;
+            padding: 10px 20px !important;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @media (min-width: 992px) {
+            .navbar-glass { max-width: 1200px; }
+        }
+        
         .navbar-nav .nav-link {
-            color: #6c757d !important;
-            font-weight: 500;
-            padding: 8px 16px !important;
-            /* border-radius: 8px; */
-            transition: all 0.2s ease-in-out;
-        }
-        /* .navbar-nav .nav-link:hover {
-            color: #ffc107 !important; /* text-warning */
-        /* }  */
-        /* Active State */
-        .navbar-nav .nav-link.active {
-            background-color: #ffc107 !important; /* bg-warning */
-            color: #212529 !important; /* text-dark */
+            color: var(--text-dark) !important;
             font-weight: 600;
+            padding: 10px 20px !important;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+            background-color: var(--forest-green) !important;
+            color: white !important;
         }
 
-        /* Mengubah background dan warna teks dropdown item yang sedang aktif
-.dropdown-menu .dropdown-item.active, 
-.dropdown-menu .dropdown-item:active {
-    background-color: #ffc107 !important; /* Ganti dengan kode warna yang Anda inginkan (contoh: oranye) */
-    /* color: #212529 !important; Warna teks */
-/* } */ */
+        /* Premium Buttons */
+        .btn-primary-mc {
+            background-color: var(--primary-terracotta);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            padding: 12px 28px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            letter-spacing: 0.5px;
+        }
+        .btn-primary-mc:hover {
+            background-color: var(--primary-hover);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--hover-shadow);
+        }
+        .btn-accent-mc {
+            background-color: var(--forest-green);
+            color: white;
+            border-radius: 50px;
+            font-weight: 700;
+            padding: 12px 28px;
+            transition: all 0.3s ease;
+        }
+        .btn-accent-mc:hover {
+            background-color: var(--forest-hover);
+            color: white;
+            transform: translateY(-3px);
+        }
 
+        /* Bento Cards */
+        .card-premium {
+            border: none;
+            border-radius: var(--bento-radius);
+            box-shadow: var(--soft-shadow);
+            background: white;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+        }
+        .card-premium:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        /* Form Inputs */
+        .form-control-mc {
+            border-radius: 16px;
+            border: 2px solid #E2E8F0;
+            padding: 14px 20px;
+            background-color: #F8FAFC;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .form-control-mc:focus {
+            border-color: var(--forest-green);
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(44, 74, 59, 0.1);
+        }
+        
+        /* Badges */
+        .badge-mc-success {
+            background-color: var(--forest-green);
+            color: white;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Dropdown Animation */
+        .nav-item-dropdown-custom .dropdown-menu {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 12px;
+            margin-top: 15px;
+            min-width: 220px;
+        }
+        .nav-item-dropdown-custom .dropdown-item {
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-weight: 600;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+        .nav-item-dropdown-custom .dropdown-item:hover {
+            background-color: #F1F5F9;
+            color: var(--primary-terracotta);
+            transform: translateX(4px);
+        }
+
+        /* Bento Footer */
+        .footer-premium {
+            background-color: var(--bg-cream);
+            padding: 40px 0;
+            color: var(--text-dark);
+        }
+        .bento-footer-box {
+            background-color: white;
+            border-radius: var(--bento-radius);
+            padding: 35px;
+            height: 100%;
+            box-shadow: var(--soft-shadow);
+            transition: all 0.3s ease;
+        }
+        .bento-footer-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        }
+        .bento-footer-box.dark-box {
+            background-color: var(--forest-green);
+            color: white;
+        }
+        .bento-footer-box.dark-box h3, .bento-footer-box.dark-box h4 {
+            color: white;
+        }
+        .bento-footer-box.accent-box {
+            background-color: var(--primary-terracotta);
+            color: white;
+        }
+        .footer-link {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .footer-link:hover {
+            color: var(--primary-terracotta);
+            transform: translateX(5px);
+        }
     </style>
 
     @stack('styles')
 </head>
 <body class="font-sans antialiased bg-light text-secondary" {!! request()->routeIs('landing') ? 'data-bs-spy="scroll" data-bs-target="#mainNavbar" data-bs-offset="80"' : '' !!}>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top shadow-sm">
-    <div class="container">
-        <!-- Logo -->
-        <a class="navbar-brand fw-bold text-warning" href="{{ route('landing') }}#hero">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo Dapur Aisyah" height="30" class="d-inline-block align-text-top me-2">
-            Dapur Aisyah
-        </a>
+    <!-- Organic Floating Navbar -->
+    <div class="fixed-top w-100 d-flex justify-content-center" style="z-index: 1030; pointer-events: none;">
+        <nav class="navbar navbar-expand-lg navbar-light navbar-glass w-100" style="pointer-events: auto;">
+            <div class="container-fluid px-3 px-lg-4">
+                <!-- Logo -->
+                <a class="navbar-brand fw-bold text-dark fs-4 d-flex align-items-center gap-3" href="{{ route('landing') }}#hero">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px; background-color: var(--primary-terracotta);">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid p-2" style="filter: brightness(0) invert(1);">
+                    </div>
+                    <span style="letter-spacing: -1px;">Dapur<span class="text-primary-mc">Aisyah</span></span>
+                </a>
 
-        <!-- Hamburger -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+                <!-- Hamburger -->
+                <button class="navbar-toggler border-0 shadow-none bg-light rounded-circle p-2" style="width: 45px; height: 45px;" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
 
-        <!-- Navbar Links -->
-        <div class="collapse navbar-collapse" id="mainNavbar">
-            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('landing') && request()->hash == '' ? 'active' : '' }}" href="{{ request()->routeIs('landing') ? '#hero' : route('landing').'#hero' }}">Beranda</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ request()->routeIs('landing') ? '#services' : route('landing').'#services' }}">Layanan</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ request()->routeIs('landing') ? '#about' : route('landing').'#about' }}">Tentang</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ request()->routeIs('landing') ? '#testimonials' : route('landing').'#testimonials' }}">Testimoni</a>
-                </li>
-            </ul>
+                <!-- Navbar Links -->
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1 mt-3 mt-lg-0 text-center">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('landing') && request()->hash == '' ? 'active' : '' }}" href="{{ request()->routeIs('landing') ? '#hero' : route('landing').'#hero' }}">Beranda</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ request()->routeIs('landing') ? '#services' : route('landing').'#services' }}">Layanan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ request()->routeIs('landing') ? '#about' : route('landing').'#about' }}">Filosofi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ request()->routeIs('landing') ? '#testimonials' : route('landing').'#testimonials' }}">Cerita Pelanggan</a>
+                        </li>
+                    </ul>
 
-            <!-- Auth Links -->
-            <ul class="navbar-nav">
-                @if(auth()->check() && (!auth()->user()->isCustomer() || auth()->user()->hasVerifiedEmail()))
-
-                    <!-- Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ auth()->user()->name }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item {{ request()->routeIs('pelanggan.profile.edit') ? 'active' : '' }}" href="{{ route('pelanggan.profile.edit') }}">Profil Saya</a></li>
-                            <li><a class="dropdown-item {{ request()->routeIs('pelanggan.riwayat') ? 'active' : '' }}" href="{{ route('pelanggan.riwayat') }}">Riwayat Pesanan</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop" class="m-0">
+                    <!-- Auth Links -->
+                    <ul class="navbar-nav align-items-center gap-2 mt-3 mt-lg-0 justify-content-center">
+                        @if(auth()->check() && (!auth()->user()->isCustomer() || auth()->user()->hasVerifiedEmail()))
+                            <!-- Premium Dropdown -->
+                            <li class="nav-item dropdown nav-item-dropdown-custom">
+                                <a class="nav-link dropdown-toggle btn border-0 fw-bold text-dark d-flex align-items-center gap-3 p-1 pe-3 rounded-pill" style="background-color: #F1F5F9;" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="rounded-circle text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 36px; height: 36px; font-size: 0.9rem; background-color: var(--forest-green);">
+                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    </div>
+                                    {{ explode(' ', trim(auth()->user()->name))[0] }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end mt-3 animate__animated animate__zoomIn animate__faster" aria-labelledby="userDropdown">
+                                    <div class="px-3 py-2 mb-2 bg-light rounded-3 mx-2 text-center">
+                                        <p class="mb-0 fw-bold text-dark">{{ auth()->user()->name }}</p>
+                                        <p class="mb-0 small text-secondary">Pelanggan Setia</p>
+                                    </div>
+                                    <li><a class="dropdown-item d-flex align-items-center gap-3 {{ request()->routeIs('pelanggan.profile.edit') ? 'text-primary-mc' : '' }}" href="{{ route('pelanggan.profile.edit') }}"><div class="bg-light p-2 rounded-circle"><i class="fa-solid fa-user-circle"></i></div> Profil Saya</a></li>
+                                    <li><a class="dropdown-item d-flex align-items-center gap-3 {{ request()->routeIs('pelanggan.riwayat') ? 'text-primary-mc' : '' }}" href="{{ route('pelanggan.riwayat') }}"><div class="bg-light p-2 rounded-circle"><i class="fa-solid fa-receipt"></i></div> Riwayat Pesanan</a></li>
+                                    <li><hr class="dropdown-divider opacity-25"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop" class="m-0">
+                                            @csrf
+                                            <button type="button" class="dropdown-item text-danger d-flex align-items-center gap-3" onclick="confirmLogout('logout-form-desktop')"><div class="bg-danger bg-opacity-10 text-danger p-2 rounded-circle"><i class="fa-solid fa-power-off"></i></div> Keluar</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        @elseif(auth()->check() && auth()->user()->isCustomer() && !auth()->user()->hasVerifiedEmail())
+                            <li class="nav-item">
+                                <a href="{{ route('verification.notice') }}" class="nav-link text-warning fw-bold"><i class="fa-solid fa-triangle-exclamation"></i> Verifikasi Email</a>
+                            </li>
+                            <li class="nav-item">
+                                <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop-unverified" class="m-0">
                                     @csrf
-                                    <button type="button" class="dropdown-item text-danger" onclick="confirmLogout('logout-form-desktop')">Keluar</button>
+                                    <button type="button" class="btn btn-outline-danger rounded-pill px-4" onclick="confirmLogout('logout-form-desktop-unverified')">Keluar</button>
                                 </form>
                             </li>
-                        </ul>
-                    </li>
-                @elseif(auth()->check() && auth()->user()->isCustomer() && !auth()->user()->hasVerifiedEmail())
-                    <li class="nav-item">
-                        <a href="{{ route('verification.notice') }}" class="nav-link text-warning">Verifikasi Email</a>
-                    </li>
-                    <li class="nav-item">
-                        <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop-unverified" class="m-0">
-                            @csrf
-                            <button type="button" class="btn btn-link nav-link text-danger" onclick="confirmLogout('logout-form-desktop-unverified')">Keluar</button>
-                        </form>
-                    </li>
-                @else
-                    <li class="nav-item">
-                        <a href="{{ route('login') }}" class="nav-link">Masuk</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('register') }}" class="btn btn-warning text-dark px-3">Daftar</a>
-                    </li>
-                @endif
-            </ul>
-        </div>
+                        @else
+                            <li class="nav-item">
+                                <a href="{{ route('login') }}" class="nav-link fw-bold text-dark"><i class="fa-solid fa-fingerprint me-1"></i> Masuk</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('register') }}" class="btn-primary-mc text-decoration-none shadow-sm"><i class="fa-solid fa-leaf me-1"></i> Mulai Pesan</a>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </div>
-</nav>
 
     <!-- Flash Messages / Toast -->
     @if(session('success'))
@@ -256,60 +432,74 @@
     <main>
         @yield('content')
     </main>
-    <!-- Footer -->
-    <footer class="bg-dark text-light mt-5">
-        <div class="container py-5">
+    <!-- Bento Style Footer -->
+    <footer class="footer-premium mt-auto pt-5">
+        <div class="container py-4">
             <div class="row g-4">
-                <div class="col-md-4">
-                    <h3 class="fs-5 fw-bold text-white mb-3">Dapur Aisyah</h3>
-                    <p class="text-light">Platform pemesanan katering online terpercaya di Pontianak. Menyajikan menu berkualitas untuk kebutuhan harian dan acara kantor.</p>
+                
+                <!-- Bento Box 1: Brand -->
+                <div class="col-lg-5 col-md-12">
+                    <div class="bento-footer-box dark-box d-flex flex-column justify-content-between relative overflow-hidden" style="background: url('https://www.transparenttextures.com/patterns/cubes.png'), var(--forest-green);">
+                        <div style="z-index: 1;">
+                            <h3 class="fs-2 fw-bold mb-4 d-flex align-items-center gap-3">
+                                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-lg" style="width: 50px; height: 50px;">
+                                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid p-2">
+                                </div>
+                                Dapur Aisyah
+                            </h3>
+                            <p class="mb-5 opacity-75 fs-5" style="line-height: 1.8; max-width: 90%;">
+                                Menghadirkan simfoni citarasa organik rumahan untuk gaya hidup modern Anda di Pontianak.
+                            </p>
+                        </div>
+                        <div class="d-flex gap-3" style="z-index: 1;">
+                            <a href="#" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center fs-5 shadow-sm" style="width: 50px; height: 50px; color: var(--forest-green);"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center fs-5 shadow-sm" style="width: 50px; height: 50px; color: var(--forest-green);"><i class="fa-brands fa-whatsapp"></i></a>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h4 class="fs-6 fw-bold text-white text-uppercase mb-3">Menu</h4>
-                    <ul class="list-unstyled">
-                        @if(request()->routeIs('landing'))
-                            <li class="mb-2"><a href="#hero" class="text-light text-decoration-none" data-target="hero">Beranda</a></li>
-                            <li class="mb-2"><a href="#services" class="text-light text-decoration-none" data-target="services">Layanan</a></li>
-                            <li class="mb-2"><a href="#about" class="text-light text-decoration-none" data-target="about">Tentang</a></li>
-                            @if(isset($ulasan) && $ulasan->count() > 0)
-                            <li class="mb-2"><a href="#testimonials" class="text-light text-decoration-none" data-target="testimonials">Testimoni</a></li>
-                            @endif
-                        @else
-                            <li class="mb-2"><a href="{{ route('landing') }}#hero" class="text-light text-decoration-none">Beranda</a></li>
-                            <li class="mb-2"><a href="{{ route('landing') }}#services" class="text-light text-decoration-none">Layanan</a></li>
-                            <li class="mb-2"><a href="{{ route('landing') }}#about" class="text-light text-decoration-none">Tentang</a></li>
-                            <li class="mb-2"><a href="{{ route('landing') }}#testimonials" class="text-light text-decoration-none">Testimoni</a></li>
-                        @endif
-                    </ul>
+                
+                <!-- Bento Box 2: Links -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="bento-footer-box">
+                        <h4 class="fs-5 text-dark mb-4 fw-bold">Eksplorasi</h4>
+                        <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                            <li><a href="{{ request()->routeIs('landing') ? '#hero' : route('landing').'#hero' }}" class="footer-link"><i class="fa-solid fa-arrow-right-long me-2 text-primary-mc"></i> Beranda</a></li>
+                            <li><a href="{{ request()->routeIs('landing') ? '#services' : route('landing').'#services' }}" class="footer-link"><i class="fa-solid fa-arrow-right-long me-2 text-primary-mc"></i> Pilihan Katering</a></li>
+                            <li><a href="{{ request()->routeIs('landing') ? '#about' : route('landing').'#about' }}" class="footer-link"><i class="fa-solid fa-arrow-right-long me-2 text-primary-mc"></i> Filosofi Kami</a></li>
+                            <li><a href="{{ request()->routeIs('landing') ? '#testimonials' : route('landing').'#testimonials' }}" class="footer-link"><i class="fa-solid fa-arrow-right-long me-2 text-primary-mc"></i> Cerita Pelanggan</a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h4 class="fs-6 fw-bold text-white text-uppercase mb-3">Kontak</h4>
-                    <ul class="list-unstyled mb-4">
-                        <li class="mb-2 d-flex align-items-center">
-                            <svg style="width: 16px; height: 16px;" class="text-warning me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                            <span>0812-3456-7890</span>
-                        </li>
-                        <li class="mb-2 d-flex align-items-center">
-                            <svg style="width: 16px; height: 16px;" class="text-warning me-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                            <span>info@dapuraisyah.com</span>
-                        </li>
-                    </ul>
-                    <div class="w-100 rounded overflow-hidden border border-secondary shadow-sm" style="height: 150px;">
-                        <iframe 
-                            src="https://maps.google.com/maps?q=-0.060394,109.301565&z=15&output=embed" 
-                            width="100%" 
-                            height="100%" 
-                            style="border:0;" 
-                            allowfullscreen="" 
-                            loading="lazy" 
-                            referrerpolicy="no-referrer-when-downgrade"
-                            title="Lokasi Dapur Aisyah">
-                        </iframe>
+
+                <!-- Bento Box 3: Contact -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="bento-footer-box accent-box mb-4">
+                        <h4 class="fs-5 mb-3 fw-bold">Pusat Bantuan</h4>
+                        <a href="#" class="text-white text-decoration-none fs-2 fw-bold d-block mb-1">0812-3456-7890</a>
+                        <span class="opacity-75">Tersedia via WhatsApp</span>
+                    </div>
+                    <div class="bento-footer-box p-4" style="height: auto;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                <i class="fa-solid fa-location-dot text-primary-mc fs-5"></i>
+                            </div>
+                            <div>
+                                <span class="d-block fw-bold text-dark">Dapur Utama</span>
+                                <span class="text-secondary small">Jl. Contoh Pontianak No. 123</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="border-top border-secondary mt-5 pt-4 text-center text-light">
-                <p class="mb-0">&copy; {{ date('Y') }} Dapur Aisyah. Semua hak dilindungi.</p>
+        </div>
+        
+        <!-- Copyright Bottom -->
+        <div class="container pb-4 pt-3">
+            <div class="bg-white rounded-pill px-4 py-3 shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <p class="mb-0 text-secondary small fw-bold">&copy; {{ date('Y') }} Dapur Aisyah.</p>
+                <div class="small fw-bold" style="color: var(--primary-terracotta);">
+                    Dirancang dengan ❤️ & 🍃
+                </div>
             </div>
         </div>
     </footer>
