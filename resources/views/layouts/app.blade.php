@@ -29,14 +29,14 @@
     <style>
         /* --- Dapur Aisyah: Modern Organic Gourmet Theme --- */
         :root {
-            --primary-terracotta: #E05D36;
-            --primary-hover: #C84B29;
-            --forest-green: #2C4A3B;
-            --forest-hover: #1E362A;
-            --bg-cream: #F9F9F7;
-            --text-dark: #1E293B;
-            --soft-shadow: 0 12px 32px rgba(44, 74, 59, 0.08);
-            --hover-shadow: 0 20px 40px rgba(224, 93, 54, 0.15);
+            --primary-terracotta: #ce1212;
+            --primary-hover: #a30e0e;
+            --forest-green: #37373f;
+            --forest-hover: #2b2b32;
+            --bg-cream: #eeeeee;
+            --text-dark: #212529;
+            --soft-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+            --hover-shadow: 0 20px 40px rgba(206, 18, 18, 0.15);
             --bento-radius: 28px;
         }
 

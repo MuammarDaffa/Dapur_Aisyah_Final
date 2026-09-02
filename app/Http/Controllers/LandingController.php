@@ -34,6 +34,9 @@ class LandingController extends Controller
             ->take(6)
             ->get();
 
-        return view('public.landing', compact('services', 'ulasan'));
+        $menuHarian = \App\Models\Menu::where('tipe_layanan', 'harian')->take(6)->get();
+        $menuAcara = \App\Models\Menu::where('tipe_layanan', 'acara')->take(6)->get();
+
+        return view('public.landing', compact('services', 'ulasan', 'menuHarian', 'menuAcara'));
     }
 }
