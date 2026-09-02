@@ -8,9 +8,10 @@
 
     <title>{{ config('app.name', 'Dapur Aisyah') }} — @yield('title', 'Katering Online')</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=poppins:300,400,500,600,700,800&display=swap" rel="stylesheet" />
+    <!-- Fonts (Yummy Style) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -154,95 +155,77 @@
             font-size: 0.8rem;
             letter-spacing: 0.5px;
         }
-
-        /* Dropdown Animation */
-        .nav-item-dropdown-custom .dropdown-menu {
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            padding: 12px;
-            margin-top: 15px;
-            min-width: 220px;
+        /* Yummy Navbar */
+        .header {
+            --background-color: #ffffff;
+            --default-color: #212529;
+            --heading-color: #37373f;
+            --nav-color: #7f7f90;
+            --nav-hover-color: #ce1212;
+            color: var(--default-color);
+            background-color: var(--background-color);
+            padding: 15px 0;
+            transition: all 0.5s;
+            z-index: 997;
+            box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
         }
-        .nav-item-dropdown-custom .dropdown-item {
-            border-radius: 12px;
-            padding: 10px 16px;
+        .header .logo h1 {
+            font-size: 30px;
+            margin: 0;
+            font-weight: 700;
+            color: var(--heading-color);
+            font-family: 'Inter', sans-serif;
+        }
+        .header .logo h1 span {
+            color: #ce1212;
+        }
+        .navmenu a {
+            color: var(--nav-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
             font-weight: 600;
-            transition: all 0.2s;
-            color: var(--text-dark);
-        }
-        .nav-item-dropdown-custom .dropdown-item:hover {
-            background-color: #F1F5F9;
-            color: var(--primary-terracotta);
-            transform: translateX(4px);
-        }
-
-        /* Bento Footer */
-        .footer-premium {
-            background-color: var(--bg-cream);
-            padding: 40px 0;
-            color: var(--text-dark);
-        }
-        .bento-footer-box {
-            background-color: white;
-            border-radius: var(--bento-radius);
-            padding: 35px;
-            height: 100%;
-            box-shadow: var(--soft-shadow);
-            transition: all 0.3s ease;
-        }
-        .bento-footer-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-        }
-        .bento-footer-box.dark-box {
-            background-color: var(--forest-green);
-            color: white;
-        }
-        .bento-footer-box.dark-box h3, .bento-footer-box.dark-box h4 {
-            color: white;
-        }
-        .bento-footer-box.accent-box {
-            background-color: var(--primary-terracotta);
-            color: white;
-        }
-        .footer-link {
-            color: var(--text-dark);
+            padding: 10px 15px;
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
+            transition: 0.3s;
         }
-        .footer-link:hover {
-            color: var(--primary-terracotta);
-            transform: translateX(5px);
+        .navmenu a:hover, .navmenu .active {
+            color: var(--nav-hover-color);
+            border-bottom: 2px solid var(--nav-hover-color);
+        }
+        .btn-getstarted {
+            color: #ffffff;
+            background: #ce1212;
+            font-size: 14px;
+            padding: 8px 25px;
+            margin: 0 0 0 30px;
+            border-radius: 50px;
+            transition: 0.3s;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .btn-getstarted:hover {
+            color: #ffffff;
+            background: rgba(206, 18, 18, 0.8);
         }
     </style>
 
     @stack('styles')
 </head>
-<body class="font-sans antialiased bg-light text-secondary" {!! request()->routeIs('landing') ? 'data-bs-spy="scroll" data-bs-target="#mainNavbar" data-bs-offset="80"' : '' !!}>
-    <!-- Organic Floating Navbar -->
-    <div class="fixed-top w-100 d-flex justify-content-center" style="z-index: 1030; pointer-events: none;">
-        <nav class="navbar navbar-expand-lg navbar-light navbar-glass w-100" style="pointer-events: auto;">
-            <div class="container-fluid px-3 px-lg-4">
-                <!-- Logo -->
-                <a class="navbar-brand fw-bold text-dark fs-4 d-flex align-items-center gap-3" href="{{ route('landing') }}#hero">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px; background-color: var(--primary-terracotta);">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid p-2" style="filter: brightness(0) invert(1);">
-                    </div>
-                    <span style="letter-spacing: -1px;">Dapur<span class="text-primary-mc">Aisyah</span></span>
-                </a>
+<body class="font-sans antialiased text-secondary" {!! request()->routeIs('landing') ? 'data-bs-spy="scroll" data-bs-target="#navmenu" data-bs-offset="80"' : '' !!} style="background-color: #eeeeee;">
+    
+    <!-- Yummy Header -->
+    <header id="header" class="header sticky-top d-flex align-items-center">
+        <div class="container d-flex align-items-center justify-content-between">
+            <a href="{{ route('landing') }}#hero" class="logo d-flex align-items-center text-decoration-none">
+                <h1 class="sitename">Dapur<span>Aisyah</span></h1>
+            </a>
 
-                <!-- Hamburger -->
-                <button class="navbar-toggler border-0 shadow-none bg-light rounded-circle p-2" style="width: 45px; height: 45px;" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <nav id="navmenu" class="navmenu navbar navbar-expand-lg">
+                <button class="navbar-toggler border-0 shadow-none d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
                     <i class="fa-solid fa-bars"></i>
                 </button>
-
-                <!-- Navbar Links -->
                 <div class="collapse navbar-collapse" id="mainNavbar">
-                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1 mt-3 mt-lg-0 text-center">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('landing') && request()->hash == '' ? 'active' : '' }}" href="{{ request()->routeIs('landing') ? '#hero' : route('landing').'#hero' }}">Beranda</a>
                         </li>
@@ -250,63 +233,41 @@
                             <a class="nav-link" href="{{ request()->routeIs('landing') ? '#services' : route('landing').'#services' }}">Layanan</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ request()->routeIs('landing') ? '#about' : route('landing').'#about' }}">Filosofi</a>
+                            <a class="nav-link" href="{{ request()->routeIs('landing') ? '#menu' : route('landing').'#menu' }}">Menu</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ request()->routeIs('landing') ? '#testimonials' : route('landing').'#testimonials' }}">Cerita Pelanggan</a>
+                            <a class="nav-link" href="{{ request()->routeIs('landing') ? '#gallery' : route('landing').'#gallery' }}">Galeri</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ request()->routeIs('landing') ? '#testimonials' : route('landing').'#testimonials' }}">Testimoni</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ request()->routeIs('landing') ? '#about' : route('landing').'#about' }}">Tentang</a>
                         </li>
                     </ul>
 
-                    <!-- Auth Links -->
-                    <ul class="navbar-nav align-items-center gap-2 mt-3 mt-lg-0 justify-content-center">
-                        @if(auth()->check() && (!auth()->user()->isCustomer() || auth()->user()->hasVerifiedEmail()))
-                            <!-- Premium Dropdown -->
-                            <li class="nav-item dropdown nav-item-dropdown-custom">
-                                <a class="nav-link dropdown-toggle btn border-0 fw-bold text-dark d-flex align-items-center gap-3 p-1 pe-3 rounded-pill" style="background-color: #F1F5F9;" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div class="rounded-circle text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 36px; height: 36px; font-size: 0.9rem; background-color: var(--forest-green);">
-                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                                    </div>
-                                    {{ explode(' ', trim(auth()->user()->name))[0] }}
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end mt-3 animate__animated animate__zoomIn animate__faster" aria-labelledby="userDropdown">
-                                    <div class="px-3 py-2 mb-2 bg-light rounded-3 mx-2 text-center">
-                                        <p class="mb-0 fw-bold text-dark">{{ auth()->user()->name }}</p>
-                                        <p class="mb-0 small text-secondary">Pelanggan Setia</p>
-                                    </div>
-                                    <li><a class="dropdown-item d-flex align-items-center gap-3 {{ request()->routeIs('pelanggan.profile.edit') ? 'text-primary-mc' : '' }}" href="{{ route('pelanggan.profile.edit') }}"><div class="bg-light p-2 rounded-circle"><i class="fa-solid fa-user-circle"></i></div> Profil Saya</a></li>
-                                    <li><a class="dropdown-item d-flex align-items-center gap-3 {{ request()->routeIs('pelanggan.riwayat') ? 'text-primary-mc' : '' }}" href="{{ route('pelanggan.riwayat') }}"><div class="bg-light p-2 rounded-circle"><i class="fa-solid fa-receipt"></i></div> Riwayat Pesanan</a></li>
-                                    <li><hr class="dropdown-divider opacity-25"></li>
-                                    <li>
-                                        <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop" class="m-0">
-                                            @csrf
-                                            <button type="button" class="dropdown-item text-danger d-flex align-items-center gap-3" onclick="confirmLogout('logout-form-desktop')"><div class="bg-danger bg-opacity-10 text-danger p-2 rounded-circle"><i class="fa-solid fa-power-off"></i></div> Keluar</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </li>
-                        @elseif(auth()->check() && auth()->user()->isCustomer() && !auth()->user()->hasVerifiedEmail())
-                            <li class="nav-item">
-                                <a href="{{ route('verification.notice') }}" class="nav-link text-warning fw-bold"><i class="fa-solid fa-triangle-exclamation"></i> Verifikasi Email</a>
-                            </li>
-                            <li class="nav-item">
-                                <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop-unverified" class="m-0">
-                                    @csrf
-                                    <button type="button" class="btn btn-outline-danger rounded-pill px-4" onclick="confirmLogout('logout-form-desktop-unverified')">Keluar</button>
-                                </form>
-                            </li>
+                    <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                        @auth
+                            @if(Auth::user()->role === 'owner')
+                                <a href="{{ route('owner.dashboard') }}" class="btn-getstarted">Dashboard Owner</a>
+                            @elseif(Auth::user()->role === 'admin')
+                                <a href="{{ route('admin.dashboard') }}" class="btn-getstarted">Dashboard Admin</a>
+                            @else
+                                <a href="{{ route('pelanggan.dashboard') }}" class="btn-getstarted">Profil & Pesanan</a>
+                            @endif
+                            <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                @csrf
+                                <button type="submit" class="btn text-danger fw-bold ms-2 border-0 bg-transparent">Keluar</button>
+                            </form>
                         @else
-                            <li class="nav-item">
-                                <a href="{{ route('login') }}" class="nav-link fw-bold text-dark"><i class="fa-solid fa-fingerprint me-1"></i> Masuk</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('register') }}" class="btn-primary-mc text-decoration-none shadow-sm"><i class="fa-solid fa-leaf me-1"></i> Mulai Pesan</a>
-                            </li>
-                        @endif
-                    </ul>
+                            <a href="{{ route('login') }}" class="text-dark fw-bold text-decoration-none ms-3">Masuk</a>
+                            <a href="{{ route('register') }}" class="btn-getstarted">Daftar</a>
+                        @endauth
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </div>
+            </nav>
+        </div>
+    </header>
 
     <!-- Flash Messages / Toast -->
     @if(session('success'))

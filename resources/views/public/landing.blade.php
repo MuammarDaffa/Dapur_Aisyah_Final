@@ -112,38 +112,72 @@
     </style>
 
     <style>
-        /* Yummy-style Hero Animation */
-        .hero-img img {
+        /* Yummy Hero Exact Styles */
+        .hero {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            padding: 120px 0 60px 0;
+            display: flex;
+            align-items: center;
+        }
+        .hero h1 {
+            margin: 0;
+            font-size: 64px;
+            font-weight: 700;
+            font-family: 'Amatic SC', sans-serif;
+            color: #37373f;
+        }
+        .hero p {
+            color: #4f4f5a;
+            margin: 15px 0 0 0;
+            font-size: 20px;
+        }
+        .hero .btn-get-started {
+            color: #ffffff;
+            background: #ce1212;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 15px;
+            letter-spacing: 1px;
+            display: inline-block;
+            padding: 12px 36px;
+            border-radius: 50px;
+            transition: 0.5s;
+            box-shadow: 0 8px 28px rgba(206, 18, 18, 0.2);
+            text-decoration: none;
+        }
+        .hero .btn-get-started:hover {
+            background: rgba(206, 18, 18, 0.8);
+            box-shadow: 0 8px 28px rgba(206, 18, 18, 0.45);
+        }
+        .hero .btn-watch-video {
+            font-size: 16px;
+            transition: 0.5s;
+            margin-left: 25px;
+            color: #37373f;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .hero .btn-watch-video i {
+            color: #ce1212;
+            font-size: 32px;
+            transition: 0.3s;
+            line-height: 0;
+            margin-right: 8px;
+        }
+        .hero .btn-watch-video:hover {
+            color: #ce1212;
+        }
+        .hero .hero-img img {
             animation: up-down 2s ease-in-out infinite alternate-reverse both;
         }
         @keyframes up-down {
             0% { transform: translateY(10px); }
             100% { transform: translateY(-10px); }
         }
-        
-        .btn-watch-video {
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            transition: 0.3s;
-            color: var(--text-dark);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .btn-watch-video i {
-            color: var(--primary-terracotta);
-            font-size: 32px;
-            transition: 0.3s;
-            line-height: 0;
-            margin-right: 8px;
-        }
-        .btn-watch-video:hover {
-            color: var(--primary-terracotta);
-        }
-        .btn-watch-video:hover i {
-            color: var(--primary-hover);
-        }
-        
+
+        /* Yummy Section Title Exact Styles */
         .section-title h2 {
             font-size: 14px;
             font-weight: 500;
@@ -160,39 +194,29 @@
             font-size: 36px;
             font-weight: 700;
             font-family: 'Amatic SC', sans-serif;
+            color: #37373f;
         }
         .section-title p span {
-            color: var(--primary-terracotta);
+            color: #ce1212;
         }
     </style>
 
-    <!-- Yummy Style Hero Section -->
-    <section id="hero" class="hero-section section-item d-flex align-items-center" style="background-color: var(--bg-cream); min-height: 100vh; padding-top: 80px;">
-        <div class="container">
-            <div class="row justify-content-between gy-5">
-                <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center text-center text-lg-start">
-                    <h1 class="hero-title mb-4 animate__animated animate__fadeInUp" style="font-family: 'Amatic SC', sans-serif; font-size: 64px;">
-                        Nikmati Sajian Sehat<br>
-                        <span class="text-primary-mc">Kualitas Restoran</span>
-                    </h1>
-                    <p class="hero-subtitle mb-4 animate__animated animate__fadeInUp animate__delay-1s" style="font-size: 1.1rem; color: #4f4f5a;">
-                        Bukan sekadar makanan, ini adalah simfoni gizi dan rasa. Disiapkan khusus dengan bahan segar terbaik untuk kesehatan dan kebahagiaan Anda setiap harinya.
-                    </p>
-                    <div class="d-flex align-items-center justify-content-center justify-content-lg-start gap-4 animate__animated animate__fadeInUp animate__delay-1s">
-                        <a href="#services" class="btn btn-primary-mc shadow-lg rounded-pill px-4 py-2">
-                            Pesan Sekarang
-                        </a>
-                        <a href="#tentang" class="btn-watch-video">
-                            <i class="fa-regular fa-circle-play"></i><span>Lihat Profil Kami</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-5 order-1 order-lg-2 text-center text-lg-start hero-img animate__animated animate__fadeInRight">
-                    <!-- We use a food plate image or similar from assets if available, or the existing hero image but styled round -->
-                    <img src="{{ asset('images/katering.png') }}" class="img-fluid rounded-circle shadow-lg" style="width: 80%; border: 15px solid rgba(255,255,255,0.5);" alt="Hero Menu">
-                </div>
+    <section id="hero" class="hero section-item">
+      <div class="container">
+        <div class="row gy-4 justify-content-center justify-content-lg-between">
+          <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
+            <h1 class="animate__animated animate__fadeInUp">Citarasa Rumah,<br>Standar Gourmet</h1>
+            <p class="animate__animated animate__fadeInUp animate__delay-1s">Bukan sekadar makanan, ini adalah simfoni gizi dan rasa. Disiapkan khusus dengan bahan segar terbaik untuk kesehatan dan kebahagiaan Anda setiap harinya.</p>
+            <div class="d-flex align-items-center mt-4 animate__animated animate__fadeInUp animate__delay-1s">
+              <a href="#services" class="btn-get-started">Pesan Sekarang</a>
+              <a href="#about" class="btn-watch-video d-flex align-items-center"><i class="fa-regular fa-circle-play"></i><span>Lihat Profil Kami</span></a>
             </div>
+          </div>
+          <div class="col-lg-5 order-1 order-lg-2 hero-img animate__animated animate__fadeInRight">
+            <img src="{{ asset('images/katering.png') }}" class="img-fluid rounded-circle" alt="">
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Script for smooth scroll -->
@@ -272,60 +296,75 @@
         </div>
     </section>
 
+    <style>
+        /* Yummy Menu Exact Styles */
+        .menu .nav-tabs {
+            border: 0;
+            justify-content: center;
+        }
+        .menu .nav-link {
+            margin: 0 10px;
+            padding: 10px 30px;
+            transition: 0.3s;
+            color: #37373f;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-bottom: 0;
+            font-weight: 500;
+        }
+        .menu .nav-link.active {
+            background: #ce1212;
+            color: #fff;
+            border-color: #ce1212;
+        }
+        .menu .menu-item {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .menu .menu-img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            height: 250px;
+            object-fit: cover;
+        }
+        .menu .menu-item h4 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #37373f;
+        }
+        .menu .menu-item .price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ce1212;
+            margin: 0;
+        }
+        .menu .menu-item .ingredients {
+            color: #8a8a8a;
+            margin-bottom: 10px;
+        }
+    </style>
+
     <!-- Menu Section -->
-    <section id="menu" class="py-5 section-item bg-light">
+    <section id="menu" class="menu section-item py-5 bg-light">
         <div class="container py-5">
-            <div class="container section-title text-center mb-5">
+            <div class="section-title text-center mb-5">
                 <h2>Menu Pilihan</h2>
                 <p>Lihat Hidangan <span>Spesial Kami</span></p>
             </div>
 
-            <ul class="nav nav-pills justify-content-center mb-5" id="menu-tab" role="tablist">
+            <ul class="nav nav-tabs justify-content-center mb-5" id="menu-tab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active rounded-pill fw-bold px-4" id="pills-harian-tab" data-bs-toggle="pill" data-bs-target="#pills-harian" type="button" role="tab" aria-selected="true">Katering Harian</button>
+                    <button class="nav-link active" id="pills-harian-tab" data-bs-toggle="pill" data-bs-target="#pills-harian" type="button" role="tab" aria-selected="true">Katering Harian</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link rounded-pill fw-bold px-4" id="pills-acara-tab" data-bs-toggle="pill" data-bs-target="#pills-acara" type="button" role="tab" aria-selected="false">Katering Acara</button>
+                    <button class="nav-link" id="pills-acara-tab" data-bs-toggle="pill" data-bs-target="#pills-acara" type="button" role="tab" aria-selected="false">Katering Acara</button>
                 </li>
             </ul>
-            
-            <style>
-                .nav-pills .nav-link.active {
-                    background-color: var(--primary-terracotta);
-                    color: white;
-                }
-                .nav-pills .nav-link {
-                    color: var(--text-dark);
-                    margin: 0 10px;
-                    border: 1px solid transparent;
-                }
-                .nav-pills .nav-link:hover {
-                    color: var(--primary-terracotta);
-                    border-color: var(--primary-terracotta);
-                }
-                
-                .menu-item {
-                    text-align: center;
-                    margin-bottom: 30px;
-                }
-                .menu-item img {
-                    width: 100%;
-                    border-radius: 15px;
-                    margin-bottom: 15px;
-                    height: 250px;
-                    object-fit: cover;
-                }
-                .menu-item h4 {
-                    font-size: 22px;
-                    font-weight: 700;
-                    margin-bottom: 5px;
-                }
-                .menu-item .price {
-                    color: var(--primary-terracotta);
-                    font-weight: 700;
-                    font-size: 24px;
-                }
-            </style>
 
             <div class="tab-content" id="pills-tabContent">
                 <!-- Tab Harian -->
@@ -334,9 +373,9 @@
                         @forelse($menuHarian as $menu)
                         <div class="col-lg-4 col-md-6">
                             <div class="menu-item">
-                                <img src="{{ asset('storage/' . $menu->gambar) }}" onerror="this.src='{{ asset('images/harian.png') }}'" alt="{{ $menu->nama_menu }}">
+                                <img src="{{ asset('storage/' . $menu->gambar) }}" onerror="this.src='{{ asset('images/harian.png') }}'" class="menu-img" alt="{{ $menu->nama_menu }}">
                                 <h4>{{ $menu->nama_menu }}</h4>
-                                <p class="text-secondary small">{{ Str::limit($menu->deskripsi, 60) }}</p>
+                                <p class="ingredients">{{ Str::limit($menu->deskripsi, 60) }}</p>
                                 <p class="price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
                             </div>
                         </div>
@@ -351,9 +390,9 @@
                         @forelse($menuAcara as $menu)
                         <div class="col-lg-4 col-md-6">
                             <div class="menu-item">
-                                <img src="{{ asset('storage/' . $menu->gambar) }}" onerror="this.src='{{ asset('images/acara.jpg') }}'" alt="{{ $menu->nama_menu }}">
+                                <img src="{{ asset('storage/' . $menu->gambar) }}" onerror="this.src='{{ asset('images/acara.jpg') }}'" class="menu-img" alt="{{ $menu->nama_menu }}">
                                 <h4>{{ $menu->nama_menu }}</h4>
-                                <p class="text-secondary small">{{ Str::limit($menu->deskripsi, 60) }}</p>
+                                <p class="ingredients">{{ Str::limit($menu->deskripsi, 60) }}</p>
                                 <p class="price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
                             </div>
                         </div>
@@ -366,137 +405,270 @@
         </div>
     </section>
 
+    <style>
+        .gallery .gallery-item {
+            overflow: hidden;
+            border-right: 3px solid #fff;
+            border-bottom: 3px solid #fff;
+        }
+        .gallery .gallery-item img {
+            transition: all ease-in-out 0.4s;
+            height: 300px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .gallery .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+    </style>
+
     <!-- Gallery Section -->
-    <section id="gallery" class="py-5 section-item">
-        <div class="container py-5">
-            <div class="container section-title text-center mb-5">
+    <section id="gallery" class="gallery section-item py-5">
+        <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+            <div class="section-title text-center mb-5">
                 <h2>Galeri</h2>
                 <p>Cek Dapur & <span>Acara Kami</span></p>
             </div>
             
-            <div class="row g-2">
-                <div class="col-md-4">
-                    <img src="{{ asset('images/katering.png') }}" class="w-100 rounded shadow-sm" style="height: 300px; object-fit: cover;">
+            <div class="row g-0">
+                <div class="col-lg-3 col-md-4">
+                    <div class="gallery-item">
+                        <img src="{{ asset('images/katering.png') }}" class="img-fluid" alt="">
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <img src="{{ asset('images/harian.png') }}" class="w-100 rounded shadow-sm" style="height: 300px; object-fit: cover;">
+                <div class="col-lg-3 col-md-4">
+                    <div class="gallery-item">
+                        <img src="{{ asset('images/harian.png') }}" class="img-fluid" alt="">
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <img src="{{ asset('images/acara.jpg') }}" class="w-100 rounded shadow-sm" style="height: 300px; object-fit: cover;">
+                <div class="col-lg-3 col-md-4">
+                    <div class="gallery-item">
+                        <img src="{{ asset('images/acara.jpg') }}" class="img-fluid" alt="">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4">
+                    <div class="gallery-item">
+                        <img src="{{ asset('images/tim_katering.png') }}" class="img-fluid" alt="">
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Filosofi Section (Bento Grid) -->
-    <section id="about" class="py-5 section-item">
-        <div class="container py-5">
-            <div class="row g-4 align-items-center">
-                <!-- Left: Big Bento Image -->
-                <div class="col-lg-5 mb-5 mb-lg-0">
-                    <div class="image-frame-organic mx-auto">
-                        <img src="{{ asset('images/tim_katering.png') }}" alt="Filosofi Dapur Aisyah" class="w-100" style="height: 600px; object-fit: cover;">
-                    </div>
-                </div>
-                <!-- Right: Bento Details -->
-                <div class="col-lg-7 ps-lg-5">
-                    <div class="container section-title text-start mb-4">
-                        <h2>Tentang Kami</h2>
-                        <p>Lebih dari Sekadar <span>Makanan</span></p>
-                    </div>
-                    <p class="text-secondary fs-5 mb-5" style="line-height: 1.8;">
-                        Di Dapur Aisyah, kami percaya bahwa makanan yang baik adalah fondasi hari yang luar biasa. Kami memadukan resep otentik warisan keluarga dengan standar kebersihan modern.
-                    </p>
-                    
-                    <div class="row g-4">
-                        <div class="col-sm-6">
-                            <div class="bento-feature p-4">
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
-                                    <i class="fa-solid fa-leaf fs-4 text-primary-mc"></i>
-                                </div>
-                                <h4 class="fw-bold fs-5 text-dark mb-2">Bahan Organik</h4>
-                                <p class="text-secondary small mb-0">Sayuran segar dari petani lokal pilihan.</p>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="bento-feature p-4">
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
-                                    <i class="fa-solid fa-temperature-half fs-4 text-primary-mc"></i>
-                                </div>
-                                <h4 class="fw-bold fs-5 text-dark mb-2">Dimasak Sempurna</h4>
-                                <p class="text-secondary small mb-0">Teknik memasak sehat tanpa mengurangi cita rasa.</p>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="bento-feature p-4">
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
-                                    <i class="fa-solid fa-box-open fs-4 text-primary-mc"></i>
-                                </div>
-                                <h4 class="fw-bold fs-5 text-dark mb-2">Kemasan Aman</h4>
-                                <p class="text-secondary small mb-0">Menggunakan wadah ramah lingkungan & higienis (Food Grade).</p>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="bento-feature p-4" style="background-color: var(--forest-green); color: white;">
-                                <div class="bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
-                                    <i class="fa-solid fa-truck-fast fs-4 text-warning"></i>
-                                </div>
-                                <h4 class="fw-bold fs-5 text-white mb-2">Tepat Waktu</h4>
-                                <p class="text-light opacity-75 small mb-0">Diantar hangat saat jam makan Anda.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <style>
+        .about .book-a-table {
+            text-align: center;
+            padding: 30px;
+            background: #ffffff;
+            box-shadow: 0px 2px 25px rgba(0, 0, 0, 0.08);
+            margin-top: -60px;
+            position: relative;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .about .book-a-table h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #37373f;
+        }
+        .about .book-a-table p {
+            color: #ce1212;
+            font-weight: 700;
+            font-size: 24px;
+            margin: 0;
+        }
+        .about .content ul {
+            list-style: none;
+            padding: 0;
+        }
+        .about .content ul li {
+            padding: 0 0 8px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+        .about .content ul li i {
+            color: #ce1212;
+            font-size: 20px;
+            margin-right: 10px;
+            margin-top: -2px;
+        }
+        .about .content p {
+            color: #4f4f5a;
+        }
+        .about .play-btn {
+            width: 94px;
+            height: 94px;
+            background: radial-gradient(#ce1212 50%, rgba(206, 18, 18, 0.4) 52%);
+            border-radius: 50%;
+            display: block;
+            position: absolute;
+            left: calc(50% - 47px);
+            top: calc(50% - 47px);
+            overflow: hidden;
+            transition: all 0.4s;
+        }
+        .about .play-btn::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translateX(-40%) translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 15px solid #fff;
+            z-index: 100;
+            transition: all 0.4s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+        }
+        .about .play-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+
+    <!-- About Section -->
+    <section id="about" class="about section-item py-5">
+      <div class="container">
+        
+        <div class="section-title text-center mb-5">
+            <h2>Tentang Kami</h2>
+            <p>Lebih dari Sekadar <span>Makanan</span></p>
         </div>
+
+        <div class="row gy-4">
+          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+            <img src="{{ asset('images/tim_katering.png') }}" class="img-fluid mb-4 w-100" style="height: 500px; object-fit: cover;" alt="">
+            <div class="book-a-table">
+              <h3>Pusat Bantuan & Pemesanan</h3>
+              <p>+62 812 3456 7890</p>
+            </div>
+          </div>
+          <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
+            <div class="content ps-0 ps-lg-5">
+              <p class="fst-italic">
+                Di Dapur Aisyah, kami percaya bahwa makanan yang baik adalah fondasi hari yang luar biasa. Kami memadukan resep otentik warisan keluarga dengan standar kebersihan modern.
+              </p>
+              <ul>
+                <li><i class="fa-solid fa-circle-check"></i> <span><strong>Bahan Organik:</strong> Sayuran segar dari petani lokal pilihan.</span></li>
+                <li><i class="fa-solid fa-circle-check"></i> <span><strong>Dimasak Sempurna:</strong> Teknik memasak sehat tanpa mengurangi cita rasa.</span></li>
+                <li><i class="fa-solid fa-circle-check"></i> <span><strong>Kemasan Aman:</strong> Menggunakan wadah ramah lingkungan & higienis (Food Grade).</span></li>
+                <li><i class="fa-solid fa-circle-check"></i> <span><strong>Tepat Waktu:</strong> Diantar hangat saat jam makan Anda.</span></li>
+              </ul>
+              <p>
+                Kepuasan pelanggan adalah prioritas utama kami. Nikmati setiap suapan yang kami persiapkan dengan sepenuh hati.
+              </p>
+              <div class="position-relative mt-4">
+                <img src="{{ asset('images/katering.png') }}" class="img-fluid w-100" style="height: 250px; object-fit: cover;" alt="">
+                <a href="#" class="play-btn"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
+
+    <style>
+        .testimonials .testimonial-item {
+            box-sizing: content-box;
+            text-align: center;
+            min-height: 320px;
+        }
+        .testimonials .testimonial-item .testimonial-img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            margin: 0 auto;
+            background-color: #ce1212;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .testimonials .testimonial-item h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0 5px 0;
+            color: #37373f;
+        }
+        .testimonials .testimonial-item h4 {
+            font-size: 14px;
+            color: #999;
+            margin: 0;
+        }
+        .testimonials .testimonial-item .stars {
+            margin: 10px 0;
+        }
+        .testimonials .testimonial-item .stars i {
+            color: #ffc107;
+            margin: 0 1px;
+        }
+        .testimonials .testimonial-item .quote-icon-left,
+        .testimonials .testimonial-item .quote-icon-right {
+            color: rgba(206, 18, 18, 0.4);
+            font-size: 26px;
+            line-height: 0;
+        }
+        .testimonials .testimonial-item p {
+            font-style: italic;
+            margin: 0 auto 15px auto;
+            color: #4f4f5a;
+        }
+    </style>
 
     <!-- Testimonials -->
     @if($ulasan->count() > 0)
-    <section id="testimonials" class="py-5 section-item mb-5" style="background-color: white;">
+    <section id="testimonials" class="testimonials section-item py-5" style="background-color: #f2f2f2;">
         <div class="container py-5">
-            <div class="container section-title text-center mb-5">
+            <div class="section-title text-center mb-5">
                 <h2>Testimoni</h2>
                 <p>Apa Kata <span>Mereka?</span></p>
             </div>
             
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div id="carouselTestimoni" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner pb-5">
-                            @foreach($ulasan as $key => $item)
-                            <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                <div class="text-center mx-auto" style="max-width: 800px;">
-                                    <i class="fa-solid fa-quote-left display-3 text-light mb-4"></i>
-                                    <p class="fs-3 fw-bold text-dark mb-5" style="line-height: 1.6; letter-spacing: -0.5px;">
-                                        "{{ $item->komentar ?? 'Pelayanan sangat memuaskan dan rasa makanannya lezat!' }}"
-                                    </p>
-                                    <div class="d-flex align-items-center justify-content-center gap-3">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm text-white fs-4 fw-bold" style="width: 60px; height: 60px; background-color: var(--primary-terracotta);">
-                                            {{ strtoupper(substr($item->user->name ?? 'P', 0, 1)) }}
-                                        </div>
-                                        <div class="text-start">
-                                            <h5 class="fw-bold text-dark mb-1">{{ $item->user->name ?? 'Pelanggan Setia' }}</h5>
-                                            <div class="text-warning small">
-                                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                                            </div>
+            <div id="carouselTestimoni" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner pb-5">
+                    @foreach($ulasan as $key => $item)
+                    <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                        <div class="testimonial-item">
+                            <div class="row gy-4 justify-content-center">
+                                <div class="col-lg-6">
+                                    <div class="testimonial-content">
+                                        <p>
+                                            <i class="fa-solid fa-quote-left quote-icon-left"></i>
+                                            <span>{{ $item->komentar ?? 'Pelayanan sangat memuaskan dan rasa makanannya lezat!' }}</span>
+                                            <i class="fa-solid fa-quote-right quote-icon-right"></i>
+                                        </p>
+                                        <h3>{{ $item->user->name ?? 'Pelanggan Setia' }}</h3>
+                                        <h4>Pelanggan</h4>
+                                        <div class="stars">
+                                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-lg-2 text-center">
+                                    <div class="testimonial-img shadow">
+                                        {{ strtoupper(substr($item->user->name ?? 'P', 0, 1)) }}
+                                    </div>
+                                </div>
                             </div>
-                            @endforeach
-                        </div>
-                        
-                        <!-- Navigation Buttons -->
-                        <div class="d-flex justify-content-center gap-3 mt-2">
-                            <button class="btn btn-light rounded-circle shadow-sm" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="prev" style="width: 50px; height: 50px;">
-                                <i class="fa-solid fa-arrow-left text-dark"></i>
-                            </button>
-                            <button class="btn btn-light rounded-circle shadow-sm" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="next" style="width: 50px; height: 50px;">
-                                <i class="fa-solid fa-arrow-right text-dark"></i>
-                            </button>
                         </div>
                     </div>
+                    @endforeach
+                </div>
+                
+                <!-- Navigation Buttons -->
+                <div class="d-flex justify-content-center gap-3 mt-2">
+                    <button class="btn btn-light rounded-circle shadow-sm" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="prev" style="width: 50px; height: 50px;">
+                        <i class="fa-solid fa-arrow-left text-dark"></i>
+                    </button>
+                    <button class="btn btn-light rounded-circle shadow-sm" type="button" data-bs-target="#carouselTestimoni" data-bs-slide="next" style="width: 50px; height: 50px;">
+                        <i class="fa-solid fa-arrow-right text-dark"></i>
+                    </button>
                 </div>
             </div>
         </div>
