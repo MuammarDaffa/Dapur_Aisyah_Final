@@ -279,7 +279,23 @@
                             @elseif(Auth::user()->role === 'admin')
                                 <a href="{{ route('admin.dashboard') }}" class="btn-getstarted">Dashboard Admin</a>
                             @else
-                                <a href="{{ route('pelanggan.riwayat') }}" class="btn-getstarted">Profil & Pesanan</a>
+                                <div class="dropdown">
+                                    <button class="btn-getstarted dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding-top: 8px; padding-bottom: 8px;">
+                                        Profil & Pesanan
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2" style="border-radius: 8px;">
+                                        <li>
+                                            <a class="dropdown-item py-2" href="{{ route('pelanggan.profile.edit') }}">
+                                                <i class="fa-solid fa-user me-2 text-muted"></i> Profil Saya
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2" href="{{ route('pelanggan.riwayat') }}">
+                                                <i class="fa-solid fa-clock-rotate-left me-2 text-muted"></i> Riwayat Pesanan
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             @endif
                             <form method="POST" action="{{ route('logout') }}" class="m-0">
                                 @csrf

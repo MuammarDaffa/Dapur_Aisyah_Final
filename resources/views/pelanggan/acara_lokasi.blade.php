@@ -218,19 +218,16 @@
                             <textarea name="alamat_satelit" id="alamat_satelit" class="form-control form-control-mc" rows="3" required placeholder="Klik peta untuk melacak alamat otomatis, Anda juga dapat mengeditnya."></textarea>
                         </div>
                     </div>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center mb-5 pb-5 mt-4">
-                    <a href="{{ route('landing') }}" class="btn btn-outline-dark px-4 py-3 fw-bold rounded-pill border-2 hover-bg-dark">
-                        <i class="fa-solid fa-arrow-left me-2"></i> Kembali
-                    </a>
-
-                    <button type="submit" id="btn_lanjut" class="btn btn-primary-mc btn-lg rounded-pill px-5 py-4 btn-fixed-bottom d-flex align-items-center gap-3 shadow-lg">
-                        <span class="fs-5 fw-bold">Lanjutkan</span>
-                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                            <i class="fa-solid fa-arrow-right text-primary-mc"></i>
-                        </div>
-                    </button>
+                    
+                    <!-- Button Lanjutkan inside Card -->
+                    <div class="mt-4 pt-4 border-top border-light border-2">
+                        <button type="submit" id="btn_lanjut" class="btn btn-primary-mc btn-lg rounded-pill w-100 py-3 d-flex align-items-center justify-content-center gap-3 shadow-sm hover-scale">
+                            <span class="fs-5 fw-bold">Lanjutkan Pemesanan</span>
+                            <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                                <i class="fa-solid fa-arrow-right text-primary-mc fs-7"></i>
+                            </div>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>

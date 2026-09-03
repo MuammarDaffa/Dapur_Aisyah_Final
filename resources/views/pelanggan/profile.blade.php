@@ -90,23 +90,6 @@
     
     body {
         background-color: #f2f2f2;
-    }
-
-    /* Tabs */
-    .nav-tab-yummy {
-        border: 2px solid #ce1212;
-        color: #ce1212;
-        background: transparent;
-        border-radius: 50px;
-        padding: 8px 25px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: 0.3s;
-    }
-    .nav-tab-yummy:hover, .nav-tab-yummy.active {
-        background: #ce1212;
-        color: white;
-    }
 </style>
 @endpush
 
@@ -116,16 +99,6 @@
     <div class="section-title">
         <h2>Informasi Anda</h2>
         <p>Profil <span>Saya</span></p>
-    </div>
-
-    <!-- Tab Navigasi -->
-    <div class="d-flex justify-content-center gap-3 mb-4">
-        <a href="{{ route('pelanggan.riwayat') }}" class="nav-tab-yummy {{ request()->routeIs('pelanggan.riwayat') ? 'active' : '' }}">
-            <i class="fa-solid fa-clock-rotate-left me-1"></i> Riwayat Pesanan
-        </a>
-        <a href="{{ route('pelanggan.profile.edit') }}" class="nav-tab-yummy {{ request()->routeIs('pelanggan.profile.edit') ? 'active' : '' }}">
-            <i class="fa-solid fa-user me-1"></i> Profil Saya
-        </a>
     </div>
 
     <div class="row justify-content-center">
