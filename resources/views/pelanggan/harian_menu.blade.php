@@ -4,8 +4,43 @@
 @section('content')
 <style>
     .page-header {
-        padding: 60px 0 30px;
-        background-color: #fff;
+        padding: 60px 40px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 28px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    
+    .header-slider {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 0;
+    }
+    
+    .slider-img {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        transition: opacity 2s ease-in-out;
+    }
+    
+    .slider-img.active {
+        opacity: 1;
+    }
+    
+    .slider-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 100%);
+        z-index: 1;
+    }
+
+    .page-header h1, .page-header p {
+        position: relative;
+        z-index: 2;
+        color: #fff !important;
     }
     
     .menu-card {
@@ -117,16 +152,32 @@
     }
 </style>
 
-<div class="page-header">
-    <div class="container">
-        <div class="mb-4">
-            <h1 class="fs-2 fw-bold text-dark mb-2">Menu Katering Harian</h1>
-            <p class="text-secondary mb-0">Pilih menu sehat untuk jadwal Anda.</p>
+@php
+    $bgImages = collect($jadwals)->map(function($j) { 
+        return $j->menu->gambar ? asset('storage/menu/' . $j->menu->gambar) : null; 
+    })->filter()->values();
+@endphp
+<div class="container pt-4 mt-2">
+    <div class="page-header">
+        @if($bgImages->count() > 0)
+        <div class="header-slider">
+            @foreach($bgImages as $index => $img)
+                <div class="slider-img {{ $index == 0 ? 'active' : '' }}" style="background-image: url('{{ $img }}')"></div>
+            @endforeach
+            <div class="slider-overlay"></div>
+        </div>
+        @else
+        <div class="header-slider" style="background-color: #212529;"></div>
+        @endif
+
+        <div class="position-relative z-2 px-2">
+            <h1 class="fs-2 fw-bold mb-2">Menu Katering Harian</h1>
+            <!-- <p class="mb-0" style="color: rgba(255,255,255,0.85) !important;">Pilih menu sehat untuk jadwal Anda.</p> -->
         </div>
     </div>
 </div>
 
-<div class="container pb-5">
+<div class="container py-5 mt-3">
     <div class="row">
         <div class="col-12">
             @if($errors->any())
@@ -285,6 +336,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Slider Logic
+        const slides = document.querySelectorAll('.slider-img');
+        if (slides.length > 1) {
+            let currentSlide = 0;
+            setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 4000);
+        }
+
         // Stepper Logic
         document.querySelectorAll('.qty-stepper').forEach(stepper => {
             const btnMinus = stepper.querySelector('.btn-minus');
