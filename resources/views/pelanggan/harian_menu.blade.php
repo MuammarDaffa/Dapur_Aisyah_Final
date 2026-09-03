@@ -58,27 +58,18 @@
     
     .menu-img-container {
         position: relative;
-        border-bottom: 1px solid #dcdcdc;
     }
     
-    .menu-img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
+    @media (min-width: 768px) {
+        .menu-img-container {
+            border-right: 1px solid #dcdcdc;
+        }
     }
-
-    .date-badge-top {
-        position: absolute;
-        top: 15px;
-        left: 15px;
-        background-color: #fff;
-        color: #333;
-        padding: 4px 10px;
-        border-radius: 4px;
-        border: 1px solid #dcdcdc;
-        font-weight: 600;
-        font-size: 0.85rem;
-        text-transform: capitalize;
+    @media (max-width: 767px) {
+        .menu-img-container {
+            border-bottom: 1px solid #dcdcdc;
+            max-width: 100% !important;
+        }
     }
 
     .qty-stepper {
@@ -194,7 +185,7 @@
                 @csrf
                 <input type="hidden" name="pesanan_id" value="{{ isset($pesanan) ? $pesanan->id : '' }}">
 
-                <div class="row g-4 mb-5">
+                <div class="row g-4 mb-5 justify-content-center">
                     @forelse($jadwals as $jadwal)
                         @php
                             $porsiValue = 0;
@@ -209,53 +200,44 @@
                                 }
                             }
                         @endphp
-                        <div class="col-md-6 col-lg-4">
-                            <div class="jadwal-section menu-card h-100 d-flex flex-column" data-jadwal-id="{{ $jadwal->id }}">
+                        <div class="col-12 col-lg-9">
+                            <div class="jadwal-section menu-card" data-jadwal-id="{{ $jadwal->id }}">
                                 <input type="hidden" name="jadwal_ids[]" value="{{ $jadwal->id }}">
                                 
-                                <div class="menu-img-container">
-                                    @if($jadwal->menu->gambar)
-                                        <img src="{{ asset('storage/menu/' . $jadwal->menu->gambar) }}" class="menu-img" alt="{{ $jadwal->menu->nama_menu }}">
-                                    @else
-                                        <div class="bg-light d-flex align-items-center justify-content-center menu-img">
-                                            <i class="fa-solid fa-image text-secondary opacity-25" style="font-size: 3rem;"></i>
-                                        </div>
-                                    @endif
-                                    
-                                    <div class="date-badge-top shadow-sm">
-                                        {{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l') }}
-                                    </div>
-                                </div>
-                                
-                                <div class="p-4 d-flex flex-column flex-grow-1">
-                                    <h4 class="fw-bold text-dark mb-1">{{ $jadwal->menu->nama_menu }}</h4>
-                                    <p class="fw-bold text-dark mb-3" style="font-size: 1.1rem;">{{ number_format($jadwal->menu->harga, 0, ',', '.') }}</p>
-                                    
-                                    <div class="mb-3">
-                                        <span class="d-block text-secondary mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">KOMPOSISI</span>
-                                        <p class="text-dark small mb-0" style="line-height: 1.4;">{{ $jadwal->menu->deskripsi }}</p>
-                                    </div>
-                                    
-                                    <div class="mb-auto">
-                                        @if($jadwal->menu->tambahanLaukPauk->count() > 0)
-                                        <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-1" data-bs-toggle="modal" data-bs-target="#modalJadwal{{ $jadwal->id }}" style="font-size: 0.85rem;">
-                                            + Tambahan Lauk
-                                        </button>
+                                <div class="d-flex flex-column flex-md-row">
+                                    <div class="menu-img-container flex-shrink-0" style="width: 100%; max-width: 250px;">
+                                        @if($jadwal->menu->gambar)
+                                            <img src="{{ asset('storage/menu/' . $jadwal->menu->gambar) }}" class="w-100 h-100" style="object-fit: cover; min-height: 200px;" alt="{{ $jadwal->menu->nama_menu }}">
+                                        @else
+                                            <div class="bg-light d-flex align-items-center justify-content-center w-100 h-100" style="min-height: 200px;">
+                                                <i class="fa-solid fa-image text-secondary opacity-25" style="font-size: 3rem;"></i>
+                                            </div>
                                         @endif
                                     </div>
                                     
-                                    <div class="mt-4 pt-2 d-flex justify-content-between align-items-end">
-                                        <div class="pb-1">
-                                            <span class="d-block fw-bold text-dark" style="font-size: 1.1rem;">Porsi</span>
+                                    <div class="p-4 d-flex flex-column flex-grow-1">
+                                        <div class="mb-3">
+                                            <span class="text-uppercase fw-bold text-secondary small d-block mb-1" style="letter-spacing: 1px;">{{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l') }}</span>
+                                            <h4 class="fw-bold text-dark mb-1">{{ $jadwal->menu->nama_menu }}</h4>
+                                            <p class="fw-bold text-dark mb-2" style="font-size: 1.1rem;">Rp{{ number_format($jadwal->menu->harga, 0, ',', '.') }}</p>
+                                            <p class="text-dark small mb-0" style="line-height: 1.5;">{{ $jadwal->menu->deskripsi }}</p>
                                         </div>
-                                        <div class="d-flex flex-column align-items-end">
-                                            <div class="mb-2 border border-secondary rounded px-2 py-1 text-dark" style="font-size: 0.75rem;">
-                                                Sisa : {{ $jadwal->stok_tersisa }}
+                                        
+                                        <div class="mt-auto pt-3 d-flex justify-content-between align-items-end">
+                                            <div>
+                                                @if($jadwal->menu->tambahanLaukPauk->count() > 0)
+                                                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-1" data-bs-toggle="modal" data-bs-target="#modalJadwal{{ $jadwal->id }}" style="font-size: 0.85rem;">
+                                                    + Tambahan Lauk
+                                                </button>
+                                                @endif
                                             </div>
-                                            <div class="qty-stepper">
-                                                <button type="button" class="btn-step btn-minus">-</button>
-                                                <input type="number" class="qty-input" name="porsi_{{ $jadwal->id }}" value="{{ $porsiValue }}" min="0">
-                                                <button type="button" class="btn-step btn-plus">+</button>
+                                            <div class="d-flex flex-column align-items-end">
+                                                <span class="text-secondary small mb-2 fw-medium">Tersedia {{ $jadwal->stok_tersisa }} porsi</span>
+                                                <div class="qty-stepper">
+                                                    <button type="button" class="btn-step btn-minus">-</button>
+                                                    <input type="number" class="qty-input" name="porsi_{{ $jadwal->id }}" value="{{ $porsiValue }}" min="0">
+                                                    <button type="button" class="btn-step btn-plus">+</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -392,8 +374,7 @@
                     
                     if (totalItems > 0 && porsi === 0) {
                         hasTambahanWithoutPorsi = true;
-                        // For the new layout, the date is in date-badge-top
-                        const dateEl = section.querySelector('.date-badge-top');
+                        const dateEl = section.querySelector('.text-uppercase');
                         if (dateEl && !firstInvalidDate) {
                             firstInvalidDate = dateEl.innerText.trim();
                         }
