@@ -181,16 +181,27 @@
                                         <p class="text-secondary small mb-0">{{ $jadwal->menu->deskripsi }}</p>
                                     </div>
                                     
-                                    <div class="mt-auto pt-3 text-end">
-                                        <button type="button" class="btn btn-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#modalJadwal{{ $jadwal->id }}">
-                                            Atur Pesanan
-                                        </button>
+                                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="d-block fw-semibold text-dark mb-1">Porsi Utama</span>
+                                            @if($jadwal->menu->tambahanLaukPauk->count() > 0)
+                                            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalJadwal{{ $jadwal->id }}">
+                                                <i class="fa-solid fa-plus me-1"></i> Tambahan Lauk
+                                            </button>
+                                            @endif
+                                        </div>
+                                        <div class="qty-stepper" style="border-color: #ccc;">
+                                            <button type="button" class="btn-step btn-minus" style="width: 36px; height: 38px; background: #eee;">-</button>
+                                            <input type="number" class="qty-input" name="porsi_{{ $jadwal->id }}" value="{{ $porsiValue }}" min="0" style="width: 50px; height: 38px; font-size: 1.1rem; border-color: #ccc;">
+                                            <button type="button" class="btn-step btn-plus" style="width: 36px; height: 38px; background: #eee;">+</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    @if($jadwal->menu->tambahanLaukPauk->count() > 0)
                     <!-- Modal for Jadwal {{ $jadwal->id }} -->
                     <div class="modal fade" id="modalJadwal{{ $jadwal->id }}" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
@@ -200,20 +211,8 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p class="text-secondary small mb-4">{{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l, d M Y') }}</p>
+                                    <p class="text-secondary small mb-3">{{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l, d M Y') }}</p>
                                     
-                                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                                        <div>
-                                            <span class="d-block fw-semibold text-dark">Porsi Utama</span>
-                                            <span class="text-danger small">Rp {{ number_format($jadwal->menu->harga, 0, ',', '.') }} / porsi</span>
-                                        </div>
-                                        <div class="qty-stepper" style="border-color: #ccc;">
-                                            <button type="button" class="btn-step btn-minus" style="width: 36px; height: 38px; background: #eee;">-</button>
-                                            <input type="number" class="qty-input" name="porsi_{{ $jadwal->id }}" value="{{ $porsiValue }}" min="0" style="width: 50px; height: 38px; font-size: 1.1rem; border-color: #ccc;">
-                                            <button type="button" class="btn-step btn-plus" style="width: 36px; height: 38px; background: #eee;">+</button>
-                                        </div>
-                                    </div>
-
                                     <h6 class="fw-bold mb-3 text-dark">Tambahan Lauk</h6>
                                     @if($jadwal->menu->tambahanLaukPauk->count() > 0)
                                         <div class="d-flex flex-column">
@@ -242,11 +241,12 @@
                                     @endif
                                 </div>
                                 <div class="modal-footer border-top-0 pt-0">
-                                    <button type="button" class="btn btn-dark w-100 rounded-pill py-2" data-bs-dismiss="modal">Simpan Pesanan</button>
+                                    <button type="button" class="btn btn-dark w-100 rounded-pill py-2" data-bs-dismiss="modal">Simpan Tambahan</button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    @endif
                     @empty
                         <div class="col-12 text-center py-5">
                             <div class="p-5 mx-auto" style="max-width: 500px;">
@@ -307,18 +307,19 @@
                 const jadwalSections = document.querySelectorAll('.jadwal-section');
                 jadwalSections.forEach(section => {
                     const jadwalId = section.getAttribute('data-jadwal-id');
-                    const modal = document.getElementById(`modalJadwal${jadwalId}`);
-                    
-                    const porsiInput = modal.querySelector(`input[name="porsi_${jadwalId}"]`);
+                    const porsiInput = section.querySelector(`input[name="porsi_${jadwalId}"]`);
                     const porsi = parseInt(porsiInput.value) || 0;
                     
                     totalPorsi += porsi;
                     
-                    const itemsInputs = modal.querySelectorAll(`input[name^="items_${jadwalId}"]`);
+                    const modal = document.getElementById(`modalJadwal${jadwalId}`);
                     let totalItems = 0;
-                    itemsInputs.forEach(input => {
-                        totalItems += parseInt(input.value) || 0;
-                    });
+                    if(modal) {
+                        const itemsInputs = modal.querySelectorAll(`input[name^="items_${jadwalId}"]`);
+                        itemsInputs.forEach(input => {
+                            totalItems += parseInt(input.value) || 0;
+                        });
+                    }
                     
                     if (totalItems > 0 && porsi === 0) {
                         hasTambahanWithoutPorsi = true;
