@@ -9,7 +9,7 @@
     }
     
     .menu-card {
-        border-radius: 16px;
+        border-radius: 28px;
         background: #fff;
         border: 1px solid #dcdcdc;
         transition: all 0.2s ease;
