@@ -37,17 +37,55 @@
         border: 1px solid #eaeaea;
     }
 
-    .qty-input {
+    .qty-stepper {
+        display: flex;
+        align-items: center;
         border: 1px solid #eaeaea;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    .qty-stepper .btn-step {
+        background: #f8f9fa;
+        border: none;
+        color: #333;
+        width: 30px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .qty-stepper .btn-step:hover {
+        background: #e9ecef;
+    }
+
+    .qty-stepper .qty-input {
+        border: none;
+        border-left: 1px solid #eaeaea;
+        border-right: 1px solid #eaeaea;
+        border-radius: 0;
+        width: 40px;
+        height: 32px;
         text-align: center;
         font-weight: 600;
-        border-radius: 6px;
-        padding: 6px;
-        width: 60px;
+        padding: 0;
     }
-    .qty-input:focus {
+    .qty-stepper .qty-input:focus {
         outline: none;
-        border-color: var(--primary-terracotta);
+    }
+    
+    /* Remove arrows from number input */
+    .qty-stepper .qty-input::-webkit-outer-spin-button,
+    .qty-stepper .qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    .qty-stepper .qty-input[type=number] {
+        -moz-appearance: textfield;
     }
     
     .addon-item {
@@ -124,7 +162,7 @@
                                     
                                     <div class="position-absolute top-0 start-0 w-100 p-3 d-flex justify-content-between align-items-center">
                                         <div class="date-badge">
-                                            {{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('d M Y') }}
+                                            {{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l') }}
                                         </div>
                                         <span class="badge bg-dark text-white rounded-2 px-2 py-1" style="font-weight: 500;">Sisa: {{ $jadwal->stok_tersisa }}</span>
                                     </div>
@@ -157,8 +195,10 @@
                                                         <span class="d-block text-dark small">{{ $item->nama }}</span>
                                                         <span class="text-danger small">+Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
                                                     </div>
-                                                    <div>
+                                                    <div class="qty-stepper">
+                                                        <button type="button" class="btn-step btn-minus">-</button>
                                                         <input type="number" class="qty-input" name="items_{{ $jadwal->id }}[{{ $item->id }}]" value="{{ $itemCount }}" min="0">
+                                                        <button type="button" class="btn-step btn-plus">+</button>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -172,8 +212,10 @@
                                         <div>
                                             <span class="d-block fw-semibold text-dark">Porsi</span>
                                         </div>
-                                        <div>
-                                            <input type="number" class="qty-input" name="porsi_{{ $jadwal->id }}" value="{{ $porsiValue }}" min="0" style="width: 80px;">
+                                        <div class="qty-stepper" style="border-color: #ccc;">
+                                            <button type="button" class="btn-step btn-minus" style="width: 36px; height: 38px; background: #eee;">-</button>
+                                            <input type="number" class="qty-input" name="porsi_{{ $jadwal->id }}" value="{{ $porsiValue }}" min="0" style="width: 50px; height: 38px; font-size: 1.1rem; border-color: #ccc;">
+                                            <button type="button" class="btn-step btn-plus" style="width: 36px; height: 38px; background: #eee;">+</button>
                                         </div>
                                     </div>
                                 </div>
@@ -210,6 +252,25 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Stepper Logic
+        document.querySelectorAll('.qty-stepper').forEach(stepper => {
+            const btnMinus = stepper.querySelector('.btn-minus');
+            const btnPlus = stepper.querySelector('.btn-plus');
+            const input = stepper.querySelector('.qty-input');
+
+            btnMinus.addEventListener('click', () => {
+                let val = parseInt(input.value) || 0;
+                if (val > parseInt(input.min || 0)) {
+                    input.value = val - 1;
+                }
+            });
+
+            btnPlus.addEventListener('click', () => {
+                let val = parseInt(input.value) || 0;
+                input.value = val + 1;
+            });
+        });
+
         const formPilihMenu = document.getElementById('formPilihMenu');
         if(formPilihMenu) {
             formPilihMenu.addEventListener('submit', function(e) {
