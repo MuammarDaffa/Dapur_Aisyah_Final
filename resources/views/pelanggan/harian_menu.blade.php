@@ -23,7 +23,8 @@
     
     .menu-img {
         width: 100%;
-        height: 220px;
+        height: 100%;
+        min-height: 200px;
         object-fit: cover;
     }
 
@@ -147,28 +148,29 @@
                                 }
                             }
                         @endphp
-                        <div class="col-md-6 col-lg-4">
-                            <div class="jadwal-section menu-card h-100 d-flex flex-column" data-jadwal-id="{{ $jadwal->id }}">
+                        <div class="col-12">
+                            <div class="jadwal-section menu-card" data-jadwal-id="{{ $jadwal->id }}">
                                 <input type="hidden" name="jadwal_ids[]" value="{{ $jadwal->id }}">
                                 
-                                <div class="position-relative">
-                                    @if($jadwal->menu->gambar)
-                                        <img src="{{ asset('storage/menu/' . $jadwal->menu->gambar) }}" class="menu-img" alt="{{ $jadwal->menu->nama_menu }}">
-                                    @else
-                                        <div class="bg-light d-flex align-items-center justify-content-center menu-img">
-                                            <i class="fa-solid fa-image text-secondary opacity-25" style="font-size: 3rem;"></i>
+                                <div class="row g-0 h-100">
+                                    <div class="col-md-4 col-lg-3 position-relative">
+                                        @if($jadwal->menu->gambar)
+                                            <img src="{{ asset('storage/menu/' . $jadwal->menu->gambar) }}" class="menu-img" alt="{{ $jadwal->menu->nama_menu }}">
+                                        @else
+                                            <div class="bg-light d-flex align-items-center justify-content-center menu-img" style="min-height: 200px;">
+                                                <i class="fa-solid fa-image text-secondary opacity-25" style="font-size: 3rem;"></i>
+                                            </div>
+                                        @endif
+                                        
+                                        <div class="position-absolute top-0 start-0 w-100 p-3 d-flex justify-content-between align-items-center">
+                                            <div class="date-badge shadow-sm">
+                                                {{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l') }}
+                                            </div>
+                                            <span class="badge bg-dark text-white rounded-2 px-2 py-1 shadow-sm" style="font-weight: 500;">Sisa: {{ $jadwal->stok_tersisa }}</span>
                                         </div>
-                                    @endif
-                                    
-                                    <div class="position-absolute top-0 start-0 w-100 p-3 d-flex justify-content-between align-items-center">
-                                        <div class="date-badge">
-                                            {{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l') }}
-                                        </div>
-                                        <span class="badge bg-dark text-white rounded-2 px-2 py-1" style="font-weight: 500;">Sisa: {{ $jadwal->stok_tersisa }}</span>
                                     </div>
-                                </div>
-                                
-                                <div class="p-4 d-flex flex-column flex-grow-1">
+                                    
+                                    <div class="col-md-8 col-lg-9 p-4 d-flex flex-column">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <h3 class="fw-bold text-dark fs-5 mb-0">{{ $jadwal->menu->nama_menu }}</h3>
                                     </div>
@@ -179,38 +181,31 @@
                                         <p class="text-secondary small mb-0">{{ $jadwal->menu->deskripsi }}</p>
                                     </div>
                                     
-                                    <div class="mb-4 flex-grow-1">
-                                        <span class="d-block fw-semibold text-secondary small text-uppercase mb-2">Tambahan</span>
-                                        @if($jadwal->menu->tambahanLaukPauk->count() > 0)
-                                            <div class="d-flex flex-column">
-                                            @foreach($jadwal->menu->tambahanLaukPauk as $item)
-                                                @php
-                                                    $itemCount = 0;
-                                                    if ($detailLama && $detailLama->tambahanLaukPauk) {
-                                                        $itemCount = $detailLama->tambahanLaukPauk->where('id', $item->id)->count();
-                                                    }
-                                                @endphp
-                                                <div class="addon-item d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <span class="d-block text-dark small">{{ $item->nama }}</span>
-                                                        <span class="text-danger small">+Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
-                                                    </div>
-                                                    <div class="qty-stepper">
-                                                        <button type="button" class="btn-step btn-minus">-</button>
-                                                        <input type="number" class="qty-input" name="items_{{ $jadwal->id }}[{{ $item->id }}]" value="{{ $itemCount }}" min="0">
-                                                        <button type="button" class="btn-step btn-plus">+</button>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                            </div>
-                                        @else
-                                            <p class="text-muted small mb-0">-</p>
-                                        @endif
+                                    <div class="mt-auto pt-3 text-end">
+                                        <button type="button" class="btn btn-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#modalJadwal{{ $jadwal->id }}">
+                                            Atur Pesanan
+                                        </button>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal for Jadwal {{ $jadwal->id }} -->
+                    <div class="modal fade" id="modalJadwal{{ $jadwal->id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+                                <div class="modal-header border-bottom-0 pb-0">
+                                    <h5 class="modal-title fw-bold">{{ $jadwal->menu->nama_menu }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="text-secondary small mb-4">{{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l, d M Y') }}</p>
                                     
-                                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
                                         <div>
-                                            <span class="d-block fw-semibold text-dark">Porsi</span>
+                                            <span class="d-block fw-semibold text-dark">Porsi Utama</span>
+                                            <span class="text-danger small">Rp {{ number_format($jadwal->menu->harga, 0, ',', '.') }} / porsi</span>
                                         </div>
                                         <div class="qty-stepper" style="border-color: #ccc;">
                                             <button type="button" class="btn-step btn-minus" style="width: 36px; height: 38px; background: #eee;">-</button>
@@ -218,9 +213,40 @@
                                             <button type="button" class="btn-step btn-plus" style="width: 36px; height: 38px; background: #eee;">+</button>
                                         </div>
                                     </div>
+
+                                    <h6 class="fw-bold mb-3 text-dark">Tambahan Lauk</h6>
+                                    @if($jadwal->menu->tambahanLaukPauk->count() > 0)
+                                        <div class="d-flex flex-column">
+                                        @foreach($jadwal->menu->tambahanLaukPauk as $item)
+                                            @php
+                                                $itemCount = 0;
+                                                if ($detailLama && $detailLama->tambahanLaukPauk) {
+                                                    $itemCount = $detailLama->tambahanLaukPauk->where('id', $item->id)->count();
+                                                }
+                                            @endphp
+                                            <div class="addon-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <span class="d-block text-dark small">{{ $item->nama }}</span>
+                                                    <span class="text-danger small">+Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
+                                                </div>
+                                                <div class="qty-stepper">
+                                                    <button type="button" class="btn-step btn-minus">-</button>
+                                                    <input type="number" class="qty-input" name="items_{{ $jadwal->id }}[{{ $item->id }}]" value="{{ $itemCount }}" min="0">
+                                                    <button type="button" class="btn-step btn-plus">+</button>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                        </div>
+                                    @else
+                                        <p class="text-muted small mb-0">Tidak ada tambahan lauk.</p>
+                                    @endif
+                                </div>
+                                <div class="modal-footer border-top-0 pt-0">
+                                    <button type="button" class="btn btn-dark w-100 rounded-pill py-2" data-bs-dismiss="modal">Simpan Pesanan</button>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     @empty
                         <div class="col-12 text-center py-5">
                             <div class="p-5 mx-auto" style="max-width: 500px;">
@@ -281,12 +307,14 @@
                 const jadwalSections = document.querySelectorAll('.jadwal-section');
                 jadwalSections.forEach(section => {
                     const jadwalId = section.getAttribute('data-jadwal-id');
-                    const porsiInput = section.querySelector(`input[name="porsi_${jadwalId}"]`);
+                    const modal = document.getElementById(`modalJadwal${jadwalId}`);
+                    
+                    const porsiInput = modal.querySelector(`input[name="porsi_${jadwalId}"]`);
                     const porsi = parseInt(porsiInput.value) || 0;
                     
                     totalPorsi += porsi;
                     
-                    const itemsInputs = section.querySelectorAll(`input[name^="items_${jadwalId}"]`);
+                    const itemsInputs = modal.querySelectorAll(`input[name^="items_${jadwalId}"]`);
                     let totalItems = 0;
                     itemsInputs.forEach(input => {
                         totalItems += parseInt(input.value) || 0;
