@@ -267,8 +267,8 @@
                 CITARASA RUMAH<br>STANDAR GOURMET
             </h1>
             <div class="hero-buttons animate__animated animate__fadeInUp animate__delay-1s">
-                <a href="#services" class="btn-order">Order Now</a>
-                <a href="#menu" class="btn-menu">View Menu</a>
+                <a href="#services" class="btn-order">Pesan Sekarang</a>
+                <a href="#menu" class="btn-menu">Lihat Menu</a>
             </div>
         </div>
 
@@ -343,8 +343,8 @@
                                         <h3 class="display-6 fw-bold text-dark mb-4">{{ $service->nama }}</h3>
                                         <p class="text-secondary fs-5 mb-5" style="line-height: 1.8;">{{ $desc }}</p>
                                         
-                                        <div class="text-end">
-                                            <a href="{{ $serviceUrl }}" class="btn btn-dark border-0 rounded-pill fw-bold px-4 py-2 d-inline-flex align-items-center gap-2" style="background-color: #212529; color: #fff; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#343a40'" onmouseout="this.style.backgroundColor='#212529'">
+                                        <div class="{{ $service->tipe_layanan === 'acara' ? 'text-start' : 'text-end' }}">
+                                            <a href="{{ $serviceUrl }}" class="btn btn-dark border-0 rounded-pill fw-bold px-5 py-2 d-inline-flex align-items-center gap-2" style="background-color: #212529; color: #fff; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#343a40'" onmouseout="this.style.backgroundColor='#212529'">
                                                 Pesan  <i class="fa-solid fa-arrow-right"></i>
                                             </a>
                                         </div>
@@ -409,39 +409,32 @@
         }
 
         .menu-list-item {
-            display: flex;
-            align-items: center;
+            display: block;
             margin-bottom: 30px;
-        }
-        .menu-list-img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 4px;
-            flex-shrink: 0;
         }
         .menu-list-content {
             width: 100%;
-            padding-left: 20px;
         }
         .menu-list-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 8px;
+            align-items: flex-end;
             margin-bottom: 8px;
         }
         .menu-list-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a1a2e;
+            font-size: 18px;
+            font-weight: 600;
+            color: #37373f;
             margin: 0;
         }
+        .menu-list-dots {
+            flex-grow: 1;
+            border-bottom: 1px dotted #adb5bd;
+            margin: 0 10px 5px 10px;
+        }
         .menu-list-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: #ce1212;
+            font-size: 18px;
+            font-weight: 600;
+            color: #37373f;
             margin: 0;
         }
         .menu-list-desc {
@@ -449,6 +442,7 @@
             color: #8a8a8a;
             font-style: italic;
             margin: 0;
+            line-height: 1.6;
         }
     </style>
 
@@ -463,19 +457,16 @@
             <ul class="nav nav-tabs justify-content-center mb-5 border-0" id="menu-tab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link menu-tab-custom active" id="pills-harian-tab" data-bs-toggle="pill" data-bs-target="#pills-harian" type="button" role="tab" aria-selected="true">
-                        <i class="fa-solid fa-mug-hot"></i>
+                      
                         <div class="text-start">
-                            <small class="d-block">Pilihan</small>
                             <h6>Harian</h6>
                         </div>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link menu-tab-custom" id="pills-acara-tab" data-bs-toggle="pill" data-bs-target="#pills-acara" type="button" role="tab" aria-selected="false">
-                        <i class="fa-solid fa-burger"></i>
                         <div class="text-start">
-                            <small class="d-block">Spesial</small>
-                            <h6>Acara</h6>
+                            <h6>Acara Kantoran</h6>
                         </div>
                     </button>
                 </li>
@@ -488,10 +479,10 @@
                         @forelse($menuHarian as $menu)
                         <div class="col-lg-6">
                             <div class="menu-list-item">
-                                <img src="{{ asset('storage/' . $menu->gambar) }}" onerror="this.src='{{ asset('images/harian.png') }}'" class="menu-list-img" alt="{{ $menu->nama_menu }}">
                                 <div class="menu-list-content">
                                     <div class="menu-list-header">
                                         <h4 class="menu-list-title">{{ $menu->nama_menu }}</h4>
+                                        <div class="menu-list-dots"></div>
                                         <h4 class="menu-list-price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</h4>
                                     </div>
                                     <p class="menu-list-desc">{{ Str::limit($menu->deskripsi, 80) }}</p>
@@ -509,10 +500,10 @@
                         @forelse($menuAcara as $menu)
                         <div class="col-lg-6">
                             <div class="menu-list-item">
-                                <img src="{{ asset('storage/' . $menu->gambar) }}" onerror="this.src='{{ asset('images/acara.jpg') }}'" class="menu-list-img" alt="{{ $menu->nama_menu }}">
                                 <div class="menu-list-content">
                                     <div class="menu-list-header">
                                         <h4 class="menu-list-title">{{ $menu->nama_menu }}</h4>
+                                        <div class="menu-list-dots"></div>
                                         <h4 class="menu-list-price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</h4>
                                     </div>
                                     <p class="menu-list-desc">{{ Str::limit($menu->deskripsi, 80) }}</p>
