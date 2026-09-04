@@ -160,33 +160,17 @@
 
                     <h3 class="fw-bold text-dark mb-4 text-center fs-4">Pilih Opsi Pengiriman</h3>
                     
-                    <div class="row g-4 justify-content-center mb-4">
-                        <div class="col-md-6">
-                            <label class="method-card w-100 selected" id="card_ambil" for="radio_ambil">
-                                <div class="form-check d-none">
-                                    <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_ambil" value="ambil_sendiri" checked>
-                                </div>
-                                <div class="method-icon-wrapper">
-                                    <i class="fa-solid fa-store text-secondary"></i>
-                                </div>
-                                <div>
-                                    <h4 class="fw-bold text-dark mb-2">Ambil Sendiri</h4>
-                                    <p class="text-secondary small mb-0">Jemput pesanan Anda langsung di dapur kami.</p>
-                                </div>
+                    <div class="d-flex flex-column align-items-center gap-3 mb-5">
+                        <div class="form-check d-flex align-items-center" style="width: 200px;">
+                            <input class="form-check-input border-dark bg-dark" type="radio" name="metode_pengambilan" id="radio_ambil" value="ambil_sendiri" checked style="width: 1.2rem; height: 1.2rem; cursor: pointer; box-shadow: none;">
+                            <label class="form-check-label fw-bold text-dark ms-2" for="radio_ambil" style="font-size: 1.1rem; cursor: pointer;">
+                                Ambil Sendiri
                             </label>
                         </div>
-                        <div class="col-md-6">
-                            <label class="method-card w-100" id="card_antar" for="radio_antar">
-                                <div class="form-check d-none">
-                                    <input class="form-check-input" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar_ke_tempat">
-                                </div>
-                                <div class="method-icon-wrapper">
-                                    <i class="fa-solid fa-motorcycle text-primary-mc"></i>
-                                </div>
-                                <div>
-                                    <h4 class="fw-bold text-dark mb-2">Diantar ke Lokasi</h4>
-                                    <p class="text-secondary small mb-0">Pesanan akan diantar dengan aman ke tempat acara.</p>
-                                </div>
+                        <div class="form-check d-flex align-items-center" style="width: 200px;">
+                            <input class="form-check-input border-dark" type="radio" name="metode_pengambilan" id="radio_antar" value="diantar_ke_tempat" style="width: 1.2rem; height: 1.2rem; cursor: pointer; box-shadow: none;">
+                            <label class="form-check-label fw-bold text-dark ms-2" for="radio_antar" style="font-size: 1.1rem; cursor: pointer;">
+                                Diantar ke Lokasi
                             </label>
                         </div>
                     </div>
@@ -221,10 +205,10 @@
                     
                     <!-- Button Lanjutkan inside Card -->
                     <div class="mt-4 pt-4 border-top border-light border-2">
-                        <button type="submit" id="btn_lanjut" class="btn btn-primary-mc btn-lg rounded-pill w-100 py-3 d-flex align-items-center justify-content-center gap-3 shadow-sm hover-scale">
-                            <span class="fs-5 fw-bold">Lanjutkan Pemesanan</span>
+                        <button type="submit" id="btn_lanjut" class="btn btn-dark btn-lg rounded-pill w-100 py-3 d-flex align-items-center justify-content-center gap-3 shadow-sm hover-scale">
+                            <span class="fs-5 fw-bold text-white">Lanjutkan Pemesanan</span>
                             <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
-                                <i class="fa-solid fa-arrow-right text-primary-mc fs-7"></i>
+                                <i class="fa-solid fa-arrow-right text-dark fs-7"></i>
                             </div>
                         </button>
                     </div>
@@ -241,8 +225,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         const radioAmbil = document.getElementById('radio_ambil');
         const radioAntar = document.getElementById('radio_antar');
-        const cardAmbil = document.getElementById('card_ambil');
-        const cardAntar = document.getElementById('card_antar');
         
         const wadahPeta = document.getElementById('wadah_peta');
         const inputLat = document.getElementById('input_latitude');
@@ -252,9 +234,11 @@
         let marker;
 
         function togglePeta() {
+            // Update warna latar radio berdasarkan status checked agar tetap hitam
+            radioAmbil.classList.toggle('bg-dark', radioAmbil.checked);
+            radioAntar.classList.toggle('bg-dark', radioAntar.checked);
+
             if (radioAntar.checked) {
-                cardAntar.classList.add('selected');
-                cardAmbil.classList.remove('selected');
                 
                 wadahPeta.style.display = 'block';
                 inputLat.setAttribute('required', 'required');
@@ -334,8 +318,6 @@
                     }
                 }, 400); 
             } else {
-                cardAmbil.classList.add('selected');
-                cardAntar.classList.remove('selected');
                 
                 wadahPeta.style.display = 'none';
                 inputLat.removeAttribute('required');
