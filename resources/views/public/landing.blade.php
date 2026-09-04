@@ -324,26 +324,33 @@
                             : 'Menu bergizi yang berganti setiap hari. Solusi makan siang cerdas untuk gaya hidup produktif Anda.';
                     @endphp
                     
-                    <div class="row align-items-center mb-5 {{ $loop->last ? '' : 'pb-5' }}">
-                        <!-- Image Column -->
-                        <div class="col-lg-6 mb-4 mb-lg-0 {{ $loop->even ? 'order-lg-2' : '' }}">
-                            <div class="position-relative overflow-hidden shadow-sm" style="border-radius: 32px; height: 450px;">
-                                <img src="{{ $bgImage }}" alt="{{ $service->nama }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                                <div class="position-absolute top-0 start-0 m-4 bg-white px-4 py-2 rounded-pill shadow-sm fw-bold text-dark d-flex align-items-center gap-2">
-                                    <div class="bg-primary-mc rounded-circle" style="width:10px; height:10px;"></div>
-                                    {{ ucfirst($service->tipe_layanan) }}
+                    <div class="row justify-content-center mb-5 {{ $loop->last ? '' : 'pb-4' }}">
+                        <div class="col-12 col-lg-10">
+                            <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 28px;">
+                                <div class="d-flex flex-column {{ $loop->even ? 'flex-md-row-reverse' : 'flex-md-row' }}">
+                                    <!-- Image Container -->
+                                    <div class="flex-shrink-0 p-3 p-md-4" style="width: 100%; max-width: 400px;">
+                                        <div class="position-relative w-100 h-100">
+                                            <img src="{{ $bgImage }}" alt="{{ $service->nama }}" class="w-100 h-100 rounded-4" style="object-fit: cover; aspect-ratio: 4 / 3; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                                            <div class="position-absolute top-0 start-0 m-3 bg-white px-3 py-1 rounded-pill shadow-sm fw-bold text-dark" style="font-size: 0.85rem;">
+                                                {{ ucfirst($service->tipe_layanan) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Text Container -->
+                                    <div class="p-4 p-md-5 d-flex flex-column justify-content-center flex-grow-1">
+                                        <h3 class="display-6 fw-bold text-dark mb-4">{{ $service->nama }}</h3>
+                                        <p class="text-secondary fs-5 mb-5" style="line-height: 1.8;">{{ $desc }}</p>
+                                        
+                                        <div>
+                                            <a href="{{ $serviceUrl }}" class="btn btn-dark border-0 rounded-pill fw-bold px-4 py-2 d-inline-flex align-items-center gap-2" style="background-color: #212529; color: #fff; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#343a40'" onmouseout="this.style.backgroundColor='#212529'">
+                                                Lihat Menu <i class="fa-solid fa-arrow-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Text Column -->
-                        <div class="col-lg-6 {{ $loop->even ? 'order-lg-1 pe-lg-5' : 'ps-lg-5' }}">
-                            <h3 class="display-5 fw-bold text-dark mb-4">{{ $service->nama }}</h3>
-                            <p class="text-secondary fs-5 mb-5" style="line-height: 1.8;">{{ $desc }}</p>
-                            
-                            <a href="{{ $serviceUrl }}" class="btn btn-outline-dark rounded-pill fw-bold px-5 py-3 border-2 hover-bg-dark d-inline-flex align-items-center gap-3" style="transition: all 0.3s ease;">
-                                Lihat Menu <i class="fa-solid fa-arrow-right"></i>
-                            </a>
                         </div>
                     </div>
                 @empty
