@@ -339,13 +339,13 @@
                                     </div>
                                     
                                     <!-- Text Container -->
-                                    <div class="p-4 p-md-5 d-flex flex-column justify-content-center flex-grow-1">
+                                    <div class="p-4 p-md-5 d-flex flex-column justify-content-end flex-grow-1">
                                         <h3 class="display-6 fw-bold text-dark mb-4">{{ $service->nama }}</h3>
                                         <p class="text-secondary fs-5 mb-5" style="line-height: 1.8;">{{ $desc }}</p>
                                         
-                                        <div>
+                                        <div class="text-end">
                                             <a href="{{ $serviceUrl }}" class="btn btn-dark border-0 rounded-pill fw-bold px-4 py-2 d-inline-flex align-items-center gap-2" style="background-color: #212529; color: #fff; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#343a40'" onmouseout="this.style.backgroundColor='#212529'">
-                                                Lihat Menu <i class="fa-solid fa-arrow-right"></i>
+                                                Pesan  <i class="fa-solid fa-arrow-right"></i>
                                             </a>
                                         </div>
                                     </div>

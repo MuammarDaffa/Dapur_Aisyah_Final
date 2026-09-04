@@ -135,31 +135,35 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         border-radius: 8px !important;
     }
+    
+    @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+    .section-title h2 {
+        font-size: 14px;
+        font-weight: 500;
+        padding: 0;
+        line-height: 1px;
+        margin: 0 0 5px 0;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #8a8a8a;
+        font-family: 'Inter', sans-serif;
+    }
+    .section-title p {
+        margin: 0;
+        font-size: clamp(48px, 6vw, 64px);
+        font-weight: 700;
+        font-family: 'Amatic SC', sans-serif;
+        color: #37373f;
+    }
+    .section-title p span {
+        color: #ce1212;
+    }
 </style>
 
-@php
-    $bgImages = collect($jadwals)->map(function($j) { 
-        return $j->menu->gambar ? asset('storage/menu/' . $j->menu->gambar) : null; 
-    })->filter()->values();
-@endphp
-<div class="container pt-4 mt-2">
-    <div class="page-header">
-        @if($bgImages->count() > 0)
-        <div class="header-slider">
-            @foreach($bgImages as $index => $img)
-                <div class="slider-img {{ $index == 0 ? 'active' : '' }}" style="background-image: url('{{ $img }}')"></div>
-            @endforeach
-            <div class="slider-overlay"></div>
-        </div>
-        @else
-        <div class="header-slider" style="background-color: #212529;"></div>
-        @endif
-
-        <div class="position-relative z-2 px-2">
-            <h1 class="fs-2 fw-bold mb-2">Menu Katering Harian</h1>
-            <!-- <p class="mb-0" style="color: rgba(255,255,255,0.85) !important;">Pilih menu sehat untuk jadwal Anda.</p> -->
-        </div>
-    </div>
+<div class="container section-title text-center mt-5 pt-4 mb-4">
+    <p>Menu Katering <span>Harian</span></p>
 </div>
 
 <div class="container py-5 mt-3">
