@@ -220,7 +220,7 @@
                                         <div class="mt-auto pt-3 d-flex justify-content-between align-items-end">
                                             <div>
                                                 @if($jadwal->menu->tambahanLaukPauk->count() > 0)
-                                                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-1" data-bs-toggle="modal" data-bs-target="#modalJadwal{{ $jadwal->id }}" style="font-size: 0.85rem;">
+                                                <button type="button" class="btn btn-dark border-0 btn-sm rounded-pill px-3 py-1" data-bs-toggle="modal" data-bs-target="#modalJadwal{{ $jadwal->id }}" style="font-size: 0.85rem; background-color: #212529; color: #fff;">
                                                     + Tambahan Lauk
                                                 </button>
                                                 @endif
