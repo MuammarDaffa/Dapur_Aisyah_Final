@@ -60,14 +60,8 @@
         position: relative;
     }
     
-    @media (min-width: 768px) {
-        .menu-img-container {
-            border-right: 1px solid #dcdcdc;
-        }
-    }
     @media (max-width: 767px) {
         .menu-img-container {
-            border-bottom: 1px solid #dcdcdc;
             max-width: 100% !important;
         }
     }
@@ -200,16 +194,16 @@
                                 }
                             }
                         @endphp
-                        <div class="col-12 col-lg-9">
+                        <div class="col-12 col-md-10 col-lg-7">
                             <div class="jadwal-section menu-card" data-jadwal-id="{{ $jadwal->id }}">
                                 <input type="hidden" name="jadwal_ids[]" value="{{ $jadwal->id }}">
                                 
                                 <div class="d-flex flex-column flex-md-row">
-                                    <div class="menu-img-container flex-shrink-0" style="width: 100%; max-width: 250px;">
+                                    <div class="menu-img-container flex-shrink-0 p-3 pb-md-3 pb-0" style="width: 100%; max-width: 220px;">
                                         @if($jadwal->menu->gambar)
-                                            <img src="{{ asset('storage/menu/' . $jadwal->menu->gambar) }}" class="w-100 h-100" style="object-fit: cover; min-height: 200px;" alt="{{ $jadwal->menu->nama_menu }}">
+                                            <img src="{{ asset('storage/menu/' . $jadwal->menu->gambar) }}" class="w-100 rounded-4" style="object-fit: cover; aspect-ratio: 1 / 1;" alt="{{ $jadwal->menu->nama_menu }}">
                                         @else
-                                            <div class="bg-light d-flex align-items-center justify-content-center w-100 h-100" style="min-height: 200px;">
+                                            <div class="bg-light d-flex align-items-center justify-content-center w-100 rounded-4" style="aspect-ratio: 1 / 1;">
                                                 <i class="fa-solid fa-image text-secondary opacity-25" style="font-size: 3rem;"></i>
                                             </div>
                                         @endif
