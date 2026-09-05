@@ -258,17 +258,6 @@
                                     {{ $pesanan->jumlah_dp == $pesanan->total ? 'Bayar Sekarang' : 'Bayar DP Sekarang' }}
                                 </button>
                             </form>
-                        @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_DP)
-                            <div class="d-inline-flex flex-column align-items-lg-end w-100 w-lg-auto">
-                                <div class="btn btn-info text-dark fw-bold px-5 py-3 rounded-2 shadow-sm w-100 mb-2 pointer-events-none">
-                                    <i class="fa-solid fa-circle-half-stroke me-1"></i> DP Lunas
-                                </div>
-                                <span class="text-muted small">Sisa pembayaran dilunasi H-1 acara.</span>
-                            </div>
-                        @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
-                            <div class="btn btn-success fw-bold px-5 py-3 rounded-2 shadow-sm w-100 w-lg-auto pointer-events-none">
-                                <i class="fa-solid fa-check-circle me-1"></i> Pembayaran Lunas
-                            </div>
                         @endif
                     </div>
                 </div>

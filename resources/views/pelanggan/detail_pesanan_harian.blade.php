@@ -275,10 +275,6 @@
                                     Bayar Sekarang
                                 </button>
                             </form>
-                        @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
-                            <div class="btn btn-success fw-bold px-5 py-3 rounded-2 shadow-sm w-100 pointer-events-none">
-                                <i class="fa-solid fa-check-circle me-1"></i> Pembayaran Lunas
-                            </div>
                         @endif
                     </div>
                 </div>
