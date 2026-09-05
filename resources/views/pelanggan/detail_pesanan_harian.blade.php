@@ -89,58 +89,40 @@
 @endpush
 
 @section('content')
-<div class="page-header">
-    <div class="blob-header"></div>
-    <div class="container position-relative z-1">
-        <div class="text-center mb-4">
-            <span class="d-inline-flex align-items-center gap-2 bg-white rounded-pill px-4 py-2 shadow-sm mb-3 border border-light">
-                <span class="bg-primary-mc rounded-circle" style="width: 8px; height: 8px;"></span>
-                <span class="fw-bold text-secondary small text-uppercase tracking-wider">Katering Harian</span>
-            </span>
-            <h1 class="display-4 fw-bold text-dark mb-2">
-                Detail <span style="color: var(--primary-terracotta); font-style: italic;">Pesanan</span>
-            </h1>
-            <div class="d-flex justify-content-center align-items-center gap-3">
-                <span class="fs-5 text-secondary">#{{ $pesanan->nomor_pesanan }}</span>
-                @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
-                    <span class="status-badge bg-success text-white"><i class="fa-solid fa-check-circle me-1"></i> Lunas</span>
-                @else
-                    <span class="status-badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i> Belum Dibayar</span>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container mx-auto px-4 py-4 pb-5 mt-n4">
-    <div class="row g-4 justify-content-center">
+<div class="container mx-auto px-4 py-5" style="background-color: #f8f9fa; min-height: 100vh;">
+    <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <h4 class="fw-bold text-dark mb-0">
+                    Detail Pesanan Anda ({{ $pesanan->nomor_pesanan }})
+                </h4>
+            </div>
 
-            <div class="bento-box mb-4">
-                @if($pesanan->detailPesanans && $pesanan->detailPesanans->count() > 0)
-                <div class="mb-4">
-                    <h4 class="fw-bold text-dark mb-4"><i class="fa-solid fa-calendar-days text-primary-mc me-2"></i> Jadwal Menu</h4>
-                    <div class="table-responsive">
-                        <table class="table table-modern align-middle mb-0">
-                            <thead class="text-center">
-                                <tr>
-                                    @php
-                                        $isLunas = $pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS;
-                                    @endphp
-                                    <th class="text-nowrap">Hari/Tanggal</th>
-                                    <th class="text-nowrap" style="min-width: 150px;">Menu</th>
-                                    <th class="text-nowrap">Harga</th>
-                                    <th class="text-nowrap">Porsi</th>
-                                    <th class="text-nowrap" style="min-width: 150px;">Tambahan</th>
-                                    <th class="text-nowrap">Harga Tbhn</th>
-                                    <th class="text-nowrap">Jml</th>
-                                    <th class="text-nowrap">Total</th>
-                                    @if($isLunas)
-                                        <th class="text-nowrap">Opsi</th>
-                                    @endif
-                                </tr>
-                            </thead>
-                            <tbody>
+            <!-- Table Card -->
+            <div class="card border-0 shadow-sm rounded-3 mb-4">
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle text-center mb-0" style="background-color: white;">
+                        <thead class="bg-light">
+                            <tr>
+                                @php
+                                    $isLunas = $pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS;
+                                @endphp
+                                <th class="text-nowrap py-3">Hari/Tanggal</th>
+                                <th class="text-nowrap py-3" style="min-width: 150px;">Menu</th>
+                                <th class="text-nowrap py-3">Harga Menu</th>
+                                <th class="text-nowrap py-3">Porsi</th>
+                                <th class="text-nowrap py-3" style="min-width: 150px;">Tambahan</th>
+                                <th class="text-nowrap py-3">Harga Tambahan</th>
+                                <th class="text-nowrap py-3">Jumlah</th>
+                                <th class="text-nowrap py-3">Total</th>
+                                @if($isLunas)
+                                    <th class="text-nowrap py-3">Opsi</th>
+                                @endif
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if($pesanan->detailPesanans && $pesanan->detailPesanans->count() > 0)
                                 @foreach($pesanan->detailPesanans as $detail)
                                     @php
                                         $groupedItems = null;
@@ -162,47 +144,36 @@
                                     @endphp
 
                                     <tr>
-                                        <td class="text-center bg-light fw-semibold text-nowrap" rowspan="{{ $rowspan }}" style="border-radius: 15px 0 0 15px;">{{ $formattedDate }}</td>
-                                        <td rowspan="{{ $rowspan }}"><span class="fw-bold">{!! $menuName !!}</span></td>
-                                        <td class="text-end text-nowrap" rowspan="{{ $rowspan }}">
-                                            @if($detail->menu)
-                                                Rp {{ number_format($menuPrice, 0, ',', '.') }}
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td class="text-center text-nowrap" rowspan="{{ $rowspan }}">
-                                            <span class="badge bg-secondary rounded-pill px-3 py-2">{{ $detail->porsi }}</span>
-                                        </td>
+                                        <td rowspan="{{ $rowspan }}" class="text-muted text-nowrap px-3">{{ $formattedDate }}</td>
+                                        <td rowspan="{{ $rowspan }}" class="text-muted">{!! $menuName !!}</td>
+                                        <td rowspan="{{ $rowspan }}" class="text-muted text-nowrap">Rp {{ number_format($menuPrice, 0, ',', '.') }}</td>
+                                        <td rowspan="{{ $rowspan }}" class="text-muted">{{ $detail->porsi }}</td>
                                         
                                         @if($groupedItems)
-                                            <td>{{ $groupedItems[0]->nama }}</td>
-                                            <td class="text-end text-nowrap">Rp {{ number_format($groupedItems[0]->harga, 0, ',', '.') }}</td>
-                                            <td class="text-center text-nowrap">{{ $groupedItems[0]->jumlah }}</td>
+                                            <td class="text-start text-muted px-3">{{ $groupedItems[0]->nama }}</td>
+                                            <td class="text-muted text-nowrap">Rp {{ number_format($groupedItems[0]->harga, 0, ',', '.') }}</td>
+                                            <td class="text-muted">{{ $groupedItems[0]->jumlah }}</td>
                                         @else
-                                            <td class="text-center text-muted">-</td>
-                                            <td class="text-center text-muted">-</td>
-                                            <td class="text-center text-muted">-</td>
+                                            <td class="text-muted">-</td>
+                                            <td class="text-muted">-</td>
+                                            <td class="text-muted">-</td>
                                         @endif
                                         
-                                        <td class="text-end fw-bold text-primary-mc text-nowrap" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
-                                        @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
-                                            <td class="text-center text-nowrap" rowspan="{{ $rowspan }}" style="border-radius: 0 15px 15px 0;">
+                                        <td rowspan="{{ $rowspan }}" class="fw-bold text-dark text-nowrap">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                                        
+                                        @if($isLunas)
+                                            <td rowspan="{{ $rowspan }}" class="text-center text-nowrap">
                                                 @php
                                                     $today = \Carbon\Carbon::now()->startOfDay();
                                                     $deliveryDate = \Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay();
                                                 @endphp
-                                                @if($detail->is_rescheduled)
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap" disabled title="Sudah pernah diubah">
-                                                        Ubah Tgl
-                                                    </button>
-                                                @elseif($deliveryDate->lte($today))
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap" disabled title="Pesanan pada tanggal tersebut sudah tidak dapat diubah">
+                                                @if($detail->is_rescheduled || $deliveryDate->lte($today))
+                                                    <button type="button" class="btn btn-sm btn-light border text-nowrap" disabled>
                                                         Ubah Tgl
                                                     </button>
                                                 @else
-                                                    <button type="button" class="btn btn-sm btn-outline-warning rounded-pill fw-bold text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
-                                                        <i class="fa-regular fa-calendar-days"></i> Ubah Tgl
+                                                    <button type="button" class="btn btn-sm btn-outline-warning fw-bold text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
+                                                        Ubah Tgl
                                                     </button>
 
                                                     <!-- Modal Reschedule -->
@@ -241,120 +212,86 @@
                                     @if($groupedItems && $groupedItems->count() > 1)
                                         @for($i = 1; $i < $rowspan; $i++)
                                             <tr>
-                                                <td>{{ $groupedItems[$i]->nama }}</td>
-                                                <td class="text-end text-nowrap">Rp {{ number_format($groupedItems[$i]->harga, 0, ',', '.') }}</td>
-                                                <td class="text-center text-nowrap">{{ $groupedItems[$i]->jumlah }}</td>
+                                                <td class="text-start text-muted px-3">{{ $groupedItems[$i]->nama }}</td>
+                                                <td class="text-muted text-nowrap">Rp {{ number_format($groupedItems[$i]->harga, 0, ',', '.') }}</td>
+                                                <td class="text-muted">{{ $groupedItems[$i]->jumlah }}</td>
                                             </tr>
                                         @endfor
                                     @endif
                                 @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                            @else
+                                <tr>
+                                    <td colspan="9" class="text-center py-4 text-muted">Tidak ada jadwal menu</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
                 </div>
-                
-                <hr class="my-4 text-muted" style="border-style: dashed;">
-                @endif
+            </div>
 
-                <div>
-                    <h5 class="fw-bold text-dark mb-4"><i class="fa-solid fa-truck-fast text-primary-mc me-2"></i> Informasi Pengiriman</h5>
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4 h-100">
-                                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px; min-width: 50px;">
-                                    @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
-                                        <i class="fa-solid fa-motorcycle text-primary-mc fs-4"></i>
-                                    @else
-                                        <i class="fa-solid fa-store text-secondary fs-4"></i>
-                                    @endif
-                                </div>
-                                <div>
-                                    <span class="text-muted d-block small">Metode</span>
-                                    <span class="fw-bold text-dark fs-5">
-                                        @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
-                                            Diantar ke Lokasi
-                                        @else
-                                            Ambil Sendiri
-                                        @endif
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
+            <!-- Metode Pengambilan Card -->
+            <div class="card border-0 shadow-sm rounded-3 mb-4 px-4 py-3">
+                <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center">
+                    <div style="min-width: 180px;" class="text-muted">Metode Pengambilan</div>
+                    <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                        <span class="d-none d-md-inline">:</span> 
                         @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
-                        <div class="col-md-6">
-                            <div class="p-3 rounded-4 border h-100" style="background-color: var(--bg-cream); border-color: rgba(224, 93, 54, 0.2) !important;">
-                                <span class="text-muted d-block small fw-bold mb-1">Alamat Pengantaran:</span>
-                                @if($pesanan->alamat_lengkap)
-                                    <p class="mb-0 text-dark small" style="line-height: 1.6;">{{ $pesanan->alamat_lengkap }}</p>
-                                @else
-                                    <p class="mb-0 text-muted fst-italic small">Alamat belum tersedia.</p>
-                                @endif
-                            </div>
-                        </div>
+                            Diantar ke Lokasi
+                        @else
+                            Ambil Sendiri
                         @endif
                     </div>
                 </div>
-            </div>
-
-            @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
-            <div class="row g-4 mb-4">
-                <div class="col-12">
-                    <div class="bento-box">
-                        <h5 class="fw-bold text-dark mb-4"><i class="fa-solid fa-glass-water text-primary-mc me-2"></i> Pilihan Minuman</h5>
-                        <div class="row g-3">
-                            @foreach($pesanan->detailPesanans->whereNotNull('minuman_id') as $detailMinuman)
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="border-0 bg-light rounded-4 p-3 h-100">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="fw-bold text-dark fs-6">{{ $detailMinuman->minuman->nama_minuman }}</span>
-                                            <span class="fw-bold text-primary-mc">Rp {{ number_format($detailMinuman->subtotal, 0, ',', '.') }}</span>
-                                        </div>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="badge bg-secondary rounded-pill">{{ $detailMinuman->porsi }} Cup</span>
-                                            <span class="text-muted small">&times; Rp {{ number_format($detailMinuman->minuman->harga, 0, ',', '.') }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+                @if($pesanan->metode_pengambilan == 'diantar_ke_tempat' && $pesanan->alamat_lengkap)
+                <div class="d-flex flex-column flex-md-row gap-3 align-items-md-start mt-2">
+                    <div style="min-width: 180px;" class="text-muted">Alamat Pengantaran</div>
+                    <div class="text-dark">
+                        <span class="d-none d-md-inline fw-bold me-1">:</span> {{ $pesanan->alamat_lengkap }}
                     </div>
                 </div>
-            </div>
-            @endif
-
-            <div class="bento-box bento-highlight mb-5 p-4">
-                <div class="row align-items-center">
-                    <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
-                        <p class="text-secondary fw-semibold mb-1"><i class="fa-solid fa-wallet text-primary-mc me-2"></i> Total Pembayaran</p>
-                        <h1 class="fw-bold text-dark mb-0 display-5">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</h1>
+                @endif
+                @if($pesanan->catatan)
+                <div class="d-flex flex-column flex-md-row gap-3 align-items-md-start mt-2">
+                    <div style="min-width: 180px;" class="text-muted">Catatan</div>
+                    <div class="text-dark">
+                        <span class="d-none d-md-inline fw-bold me-1">:</span> {{ $pesanan->catatan }}
                     </div>
-                    <div class="col-md-6 text-center text-md-end">
+                </div>
+                @endif
+            </div>
+
+            <!-- Total Pembayaran Card -->
+            <div class="card border-0 shadow-sm rounded-3 px-4 py-4 mb-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
+                    <div>
+                        <div class="text-muted mb-1">Total Pembayaran</div>
+                        <h2 class="fw-bold text-dark mb-0">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</h2>
+                    </div>
+                    <div>
                         @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
                             <form id="form-bayar" action="{{ route('pelanggan.harian.bayar', $pesanan->id) }}" method="POST">
                                 @csrf
-                                <button id="btn-bayar" type="submit" class="btn btn-primary-mc btn-lg rounded-pill px-5 py-3 shadow-lg fw-bold w-100 w-md-auto">
-                                    <i class="fa-solid fa-money-bill-wave me-2"></i> Bayar Sekarang
+                                <button id="btn-bayar" type="submit" class="btn btn-dark fw-bold px-5 py-3 rounded-2 shadow-sm w-100">
+                                    Bayar Sekarang
                                 </button>
                             </form>
                         @elseif($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
-                            <div class="d-inline-flex align-items-center gap-2 bg-success text-white rounded-pill px-5 py-3 shadow-sm fw-bold">
-                                <i class="fa-solid fa-check-circle fs-5"></i>
-                                <span class="fs-5">Pembayaran Lunas</span>
+                            <div class="btn btn-success fw-bold px-5 py-3 rounded-2 shadow-sm w-100 pointer-events-none">
+                                <i class="fa-solid fa-check-circle me-1"></i> Pembayaran Lunas
                             </div>
                         @endif
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center justify-content-md-start gap-3 mb-5">
+            <div class="d-flex gap-3 mb-5">
                 @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
-                    <a href="{{ route('pelanggan.harian.edit_pesanan', $pesanan->id) }}" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold border-2 hover-bg-dark">
+                    <a href="{{ route('pelanggan.harian.edit_pesanan', $pesanan->id) }}" class="btn btn-outline-dark fw-bold px-4 py-2 rounded-2">
                         <i class="fa-solid fa-pen me-2"></i> Edit Pesanan
                     </a>
                 @endif
-                <a href="{{ route('pelanggan.riwayat') }}" class="btn btn-light rounded-pill px-4 py-2 fw-bold text-dark border-2 shadow-sm">
-                    <i class="fa-solid fa-arrow-left me-2"></i> Kembali ke Riwayat
+                <a href="{{ route('pelanggan.riwayat') }}" class="btn btn-light border fw-bold text-dark px-4 py-2 rounded-2 shadow-sm">
+                    Kembali ke Riwayat
                 </a>
             </div>
 
