@@ -28,7 +28,6 @@
         padding: 30px;
         position: relative;
         overflow: hidden;
-        height: 100%;
         border: 2px solid rgba(0,0,0,0.03);
     }
     
@@ -127,16 +126,16 @@
                                 @php
                                     $isLunas = $pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS;
                                 @endphp
-                                <th style="width: {{ $isLunas ? '15' : '17' }}%;">Hari/Tanggal</th>
-                                <th style="width: {{ $isLunas ? '15' : '17' }}%;">Menu</th>
-                                <th style="width: {{ $isLunas ? '12' : '13' }}%;">Harga</th>
-                                <th style="width: {{ $isLunas ? '5' : '6' }}%;">Porsi</th>
-                                <th style="width: {{ $isLunas ? '15' : '16' }}%;">Tambahan</th>
-                                <th style="width: {{ $isLunas ? '12' : '13' }}%;">Harga Tbhn</th>
-                                <th style="width: {{ $isLunas ? '5' : '6' }}%;">Jml</th>
-                                <th style="width: {{ $isLunas ? '11' : '12' }}%;">Total</th>
+                                <th class="text-nowrap">Hari/Tanggal</th>
+                                <th class="text-nowrap" style="min-width: 150px;">Menu</th>
+                                <th class="text-nowrap">Harga</th>
+                                <th class="text-nowrap">Porsi</th>
+                                <th class="text-nowrap" style="min-width: 150px;">Tambahan</th>
+                                <th class="text-nowrap">Harga Tbhn</th>
+                                <th class="text-nowrap">Jml</th>
+                                <th class="text-nowrap">Total</th>
                                 @if($isLunas)
-                                    <th style="width: 10%;">Opsi</th>
+                                    <th class="text-nowrap">Opsi</th>
                                 @endif
                             </tr>
                         </thead>
@@ -162,46 +161,46 @@
                                 @endphp
 
                                 <tr>
-                                    <td class="text-center bg-light fw-semibold" rowspan="{{ $rowspan }}" style="border-radius: 15px 0 0 15px;">{{ $formattedDate }}</td>
+                                    <td class="text-center bg-light fw-semibold text-nowrap" rowspan="{{ $rowspan }}" style="border-radius: 15px 0 0 15px;">{{ $formattedDate }}</td>
                                     <td rowspan="{{ $rowspan }}"><span class="fw-bold">{!! $menuName !!}</span></td>
-                                    <td class="text-end" rowspan="{{ $rowspan }}">
+                                    <td class="text-end text-nowrap" rowspan="{{ $rowspan }}">
                                         @if($detail->menu)
                                             Rp {{ number_format($menuPrice, 0, ',', '.') }}
                                         @else
                                             -
                                         @endif
                                     </td>
-                                    <td class="text-center" rowspan="{{ $rowspan }}">
+                                    <td class="text-center text-nowrap" rowspan="{{ $rowspan }}">
                                         <span class="badge bg-secondary rounded-pill px-3 py-2">{{ $detail->porsi }}</span>
                                     </td>
                                     
                                     @if($groupedItems)
                                         <td>{{ $groupedItems[0]->nama }}</td>
-                                        <td class="text-end">Rp {{ number_format($groupedItems[0]->harga, 0, ',', '.') }}</td>
-                                        <td class="text-center">{{ $groupedItems[0]->jumlah }}</td>
+                                        <td class="text-end text-nowrap">Rp {{ number_format($groupedItems[0]->harga, 0, ',', '.') }}</td>
+                                        <td class="text-center text-nowrap">{{ $groupedItems[0]->jumlah }}</td>
                                     @else
                                         <td class="text-center text-muted">-</td>
                                         <td class="text-center text-muted">-</td>
                                         <td class="text-center text-muted">-</td>
                                     @endif
                                     
-                                    <td class="text-end fw-bold text-primary-mc" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                                    <td class="text-end fw-bold text-primary-mc text-nowrap" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                                     @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
-                                        <td class="text-center" rowspan="{{ $rowspan }}" style="border-radius: 0 15px 15px 0;">
+                                        <td class="text-center text-nowrap" rowspan="{{ $rowspan }}" style="border-radius: 0 15px 15px 0;">
                                             @php
                                                 $today = \Carbon\Carbon::now()->startOfDay();
                                                 $deliveryDate = \Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay();
                                             @endphp
                                             @if($detail->is_rescheduled)
-                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" disabled title="Sudah pernah diubah">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap" disabled title="Sudah pernah diubah">
                                                     Ubah Tgl
                                                 </button>
                                             @elseif($deliveryDate->lte($today))
-                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" disabled title="Pesanan pada tanggal tersebut sudah tidak dapat diubah">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap" disabled title="Pesanan pada tanggal tersebut sudah tidak dapat diubah">
                                                     Ubah Tgl
                                                 </button>
                                             @else
-                                                <button type="button" class="btn btn-sm btn-outline-warning rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
+                                                <button type="button" class="btn btn-sm btn-outline-warning rounded-pill fw-bold text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
                                                     <i class="fa-regular fa-calendar-days"></i> Ubah Tgl
                                                 </button>
 
@@ -242,8 +241,8 @@
                                     @for($i = 1; $i < $rowspan; $i++)
                                         <tr>
                                             <td>{{ $groupedItems[$i]->nama }}</td>
-                                            <td class="text-end">Rp {{ number_format($groupedItems[$i]->harga, 0, ',', '.') }}</td>
-                                            <td class="text-center">{{ $groupedItems[$i]->jumlah }}</td>
+                                            <td class="text-end text-nowrap">Rp {{ number_format($groupedItems[$i]->harga, 0, ',', '.') }}</td>
+                                            <td class="text-center text-nowrap">{{ $groupedItems[$i]->jumlah }}</td>
                                         </tr>
                                     @endfor
                                 @endif

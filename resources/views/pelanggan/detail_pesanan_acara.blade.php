@@ -28,7 +28,6 @@
         padding: 30px;
         position: relative;
         overflow: hidden;
-        height: 100%;
         border: 2px solid rgba(0,0,0,0.03);
     }
     
@@ -138,9 +137,9 @@
                         <thead class="text-center">
                             <tr>
                                 <th>Menu / Item</th>
-                                <th style="width: 25%;">Harga Satuan</th>
-                                <th style="width: 15%;">Jumlah</th>
-                                <th style="width: 25%;">Subtotal</th>
+                                <th class="text-nowrap">Harga Satuan</th>
+                                <th class="text-nowrap">Jumlah</th>
+                                <th class="text-nowrap">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -162,7 +161,7 @@
                                             <div class="fw-bold fs-6 text-dark">{{ $detail->item_name ?? '-' }}</div>
                                         @endif
                                     </td>
-                                    <td class="text-end fw-semibold">
+                                    <td class="text-end fw-semibold text-nowrap">
                                         @if($detail->menu)
                                             Rp {{ number_format($detail->menu->harga, 0, ',', '.') }}
                                         @elseif($detail->minuman)
@@ -171,10 +170,10 @@
                                             -
                                         @endif
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center text-nowrap">
                                         <span class="badge bg-secondary rounded-pill px-3 py-2 fs-6">{{ $detail->porsi }}</span>
                                     </td>
-                                    <td class="text-end fw-bold text-primary-mc" style="border-radius: 0 15px 15px 0;">
+                                    <td class="text-end fw-bold text-primary-mc text-nowrap" style="border-radius: 0 15px 15px 0;">
                                         Rp {{ number_format($detail->subtotal, 0, ',', '.') }}
                                     </td>
                                 </tr>

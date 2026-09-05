@@ -8,8 +8,8 @@
             <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: url('{{ asset('images/harian.png') }}'); background-size: cover; background-position: center;"></div>
             <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-50"></div>
             <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-5">
-                <h1 class="display-4 fw-bold text-white mb-3" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Selamat Datang Kembali!</h1>
-                <p class="fs-4 text-white" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">Sudah lapar? Yuk pesan katering favoritmu sekarang.</p>
+                <h1 class="display-4 fw-bold text-white mb-3" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Selamat Datang</h1>
+            
             </div>
         </div>
 
