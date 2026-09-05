@@ -230,7 +230,7 @@
                                                 @endif
                                             </div>
                                             <div class="d-flex flex-column align-items-end">
-                                                <span class="text-secondary small mb-2 fw-medium">Tersedia {{ $jadwal->stok_tersisa }} porsi</span>
+                                                <span class="text-secondary small mb-2 fw-medium">Stok {{ $jadwal->stok_tersisa }} porsi</span>
                                                 <div class="qty-stepper">
                                                     <button type="button" class="btn-step btn-minus">-</button>
                                                     <input type="number" class="qty-input" name="porsi_{{ $jadwal->id }}" value="{{ $porsiValue }}" min="0">
