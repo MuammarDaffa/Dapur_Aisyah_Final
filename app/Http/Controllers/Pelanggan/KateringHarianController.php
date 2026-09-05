@@ -159,13 +159,13 @@ class KateringHarianController extends Controller
             }
 
             if ($porsi < 1 && $totalItemsQty > 0) {
-                return back()->withInput()->with('error', 'Anda memesan menu tambahan, namun tidak mengisi jumlah porsi utama untuk hari ' . \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l') . '.');
+                return back()->withInput()->with('error', 'Anda memesan menu tambahan, namun tidak mengisi jumlah porsi utama.');
             }
 
             if ($porsi < 1) continue;
 
             if ($jadwal->stok_tersisa < $porsi) {
-                return back()->withInput()->with('error', 'Stok untuk menu ' . $jadwal->menu->nama_menu . ' pada hari ' . \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l') . ' tidak mencukupi. Sisa stok: ' . $jadwal->stok_tersisa);
+                return back()->withInput()->with('error', 'Stok untuk menu ' . $jadwal->menu->nama_menu . ' tidak mencukupi. Sisa stok: ' . $jadwal->stok_tersisa);
             }
 
             $items = $request->input('items_' . $jadwalId, []); // Array of menu_item_id => quantity
