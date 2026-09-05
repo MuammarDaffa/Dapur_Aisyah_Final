@@ -179,7 +179,7 @@
                     <div id="wadah_peta" style="display: none;" class="mt-5 pt-4 border-top border-light border-2">
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                <i class="fa-solid fa-map-location-dot text-primary-mc fs-4"></i>
+                                <i class="fa-solid fa-map-location-dot text-dark fs-4"></i>
                             </div>
                             <div>
                                 <h4 class="fw-bold text-dark mb-0">Tentukan Lokasi</h4>
@@ -198,7 +198,7 @@
 
                         <!-- Menampilkan Hasil Peta -->
                         <div class="mt-4 bg-cream p-4 rounded-4" style="background-color: var(--bg-cream);">
-                            <label class="form-label fw-bold text-dark mb-3"><i class="fa-solid fa-house text-primary-mc me-2"></i> Alamat Lengkap Pengiriman <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold text-dark mb-3"><i class="fa-solid fa-house text-dark me-2"></i> Alamat Lengkap Pengiriman <span class="text-danger">*</span></label>
                             <textarea name="alamat_satelit" id="alamat_satelit" class="form-control form-control-mc" rows="3" required placeholder="Klik peta untuk melacak alamat otomatis, Anda juga dapat mengeditnya."></textarea>
                         </div>
                     </div>
