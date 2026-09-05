@@ -116,203 +116,212 @@
     <div class="row g-4 justify-content-center">
         <div class="col-12 col-xl-10">
 
-            @if($pesanan->detailPesanans && $pesanan->detailPesanans->count() > 0)
             <div class="bento-box mb-4">
-                <h4 class="fw-bold text-dark mb-4"><i class="fa-solid fa-calendar-days text-primary-mc me-2"></i> Jadwal Menu</h4>
-                <div class="table-responsive">
-                    <table class="table table-modern align-middle mb-0">
-                        <thead class="text-center">
-                            <tr>
-                                @php
-                                    $isLunas = $pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS;
-                                @endphp
-                                <th class="text-nowrap">Hari/Tanggal</th>
-                                <th class="text-nowrap" style="min-width: 150px;">Menu</th>
-                                <th class="text-nowrap">Harga</th>
-                                <th class="text-nowrap">Porsi</th>
-                                <th class="text-nowrap" style="min-width: 150px;">Tambahan</th>
-                                <th class="text-nowrap">Harga Tbhn</th>
-                                <th class="text-nowrap">Jml</th>
-                                <th class="text-nowrap">Total</th>
-                                @if($isLunas)
-                                    <th class="text-nowrap">Opsi</th>
-                                @endif
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($pesanan->detailPesanans as $detail)
-                                @php
-                                    $groupedItems = null;
-                                    $rowspan = 1;
-                                    if ($detail->tambahanLaukPauk && $detail->tambahanLaukPauk->count() > 0) {
-                                        $groupedItems = $detail->tambahanLaukPauk->groupBy('id')->map(function ($items) {
-                                            return (object) [
-                                                'nama' => $items->first()->nama,
-                                                'harga' => $items->first()->harga,
-                                                'jumlah' => $items->count()
-                                            ];
-                                        })->values();
-                                        $rowspan = $groupedItems->count();
-                                    }
-                                    
-                                    $menuName = $detail->menu ? $detail->menu->nama_menu : ($detail->is_rescheduled ? '-' : '<span class="text-warning"><i class="bi bi-clock-history"></i> Menunggu Jadwal Admin</span>');
-                                    $menuPrice = $detail->menu ? $detail->menu->harga : 0;
-                                    $formattedDate = $detail->tanggal_pengiriman ? \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('l, d M Y') : '-';
-                                @endphp
-
+                @if($pesanan->detailPesanans && $pesanan->detailPesanans->count() > 0)
+                <div class="mb-4">
+                    <h4 class="fw-bold text-dark mb-4"><i class="fa-solid fa-calendar-days text-primary-mc me-2"></i> Jadwal Menu</h4>
+                    <div class="table-responsive">
+                        <table class="table table-modern align-middle mb-0">
+                            <thead class="text-center">
                                 <tr>
-                                    <td class="text-center bg-light fw-semibold text-nowrap" rowspan="{{ $rowspan }}" style="border-radius: 15px 0 0 15px;">{{ $formattedDate }}</td>
-                                    <td rowspan="{{ $rowspan }}"><span class="fw-bold">{!! $menuName !!}</span></td>
-                                    <td class="text-end text-nowrap" rowspan="{{ $rowspan }}">
-                                        @if($detail->menu)
-                                            Rp {{ number_format($menuPrice, 0, ',', '.') }}
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
-                                    <td class="text-center text-nowrap" rowspan="{{ $rowspan }}">
-                                        <span class="badge bg-secondary rounded-pill px-3 py-2">{{ $detail->porsi }}</span>
-                                    </td>
-                                    
-                                    @if($groupedItems)
-                                        <td>{{ $groupedItems[0]->nama }}</td>
-                                        <td class="text-end text-nowrap">Rp {{ number_format($groupedItems[0]->harga, 0, ',', '.') }}</td>
-                                        <td class="text-center text-nowrap">{{ $groupedItems[0]->jumlah }}</td>
-                                    @else
-                                        <td class="text-center text-muted">-</td>
-                                        <td class="text-center text-muted">-</td>
-                                        <td class="text-center text-muted">-</td>
-                                    @endif
-                                    
-                                    <td class="text-end fw-bold text-primary-mc text-nowrap" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
-                                    @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
-                                        <td class="text-center text-nowrap" rowspan="{{ $rowspan }}" style="border-radius: 0 15px 15px 0;">
-                                            @php
-                                                $today = \Carbon\Carbon::now()->startOfDay();
-                                                $deliveryDate = \Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay();
-                                            @endphp
-                                            @if($detail->is_rescheduled)
-                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap" disabled title="Sudah pernah diubah">
-                                                    Ubah Tgl
-                                                </button>
-                                            @elseif($deliveryDate->lte($today))
-                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap" disabled title="Pesanan pada tanggal tersebut sudah tidak dapat diubah">
-                                                    Ubah Tgl
-                                                </button>
-                                            @else
-                                                <button type="button" class="btn btn-sm btn-outline-warning rounded-pill fw-bold text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
-                                                    <i class="fa-regular fa-calendar-days"></i> Ubah Tgl
-                                                </button>
-
-                                                <!-- Modal Reschedule -->
-                                                <div class="modal fade text-start" id="rescheduleModal{{ $detail->id }}" tabindex="-1" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content rounded-4 border-0 shadow-lg">
-                                                        <form action="{{ route('pelanggan.harian.reschedule', $detail->id) }}" method="POST">
-                                                            @csrf
-                                                            <div class="modal-header border-0 pb-0">
-                                                                <h5 class="modal-title fw-bold"><i class="fa-solid fa-calendar-day text-primary-mc me-2"></i> Ubah Tanggal Pengiriman</h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <p class="text-secondary small mb-4">Pilih tanggal baru untuk pengiriman pesanan ini.</p>
-                                                                <div class="mb-3">
-                                                                    <label class="form-label fw-bold text-dark">Tanggal Baru</label>
-                                                                    <div class="input-group">
-                                                                        <span class="input-group-text bg-light border-end-0"><i class="fa-regular fa-calendar text-primary-mc"></i></span>
-                                                                        <input type="date" class="form-control border-start-0 py-2 fw-semibold" name="new_date" min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}" required>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer border-0 pt-0">
-                                                                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Batal</button>
-                                                                <button type="submit" class="btn btn-primary-mc rounded-pill px-4 fw-bold">Simpan</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        </td>
+                                    @php
+                                        $isLunas = $pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS;
+                                    @endphp
+                                    <th class="text-nowrap">Hari/Tanggal</th>
+                                    <th class="text-nowrap" style="min-width: 150px;">Menu</th>
+                                    <th class="text-nowrap">Harga</th>
+                                    <th class="text-nowrap">Porsi</th>
+                                    <th class="text-nowrap" style="min-width: 150px;">Tambahan</th>
+                                    <th class="text-nowrap">Harga Tbhn</th>
+                                    <th class="text-nowrap">Jml</th>
+                                    <th class="text-nowrap">Total</th>
+                                    @if($isLunas)
+                                        <th class="text-nowrap">Opsi</th>
                                     @endif
                                 </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($pesanan->detailPesanans as $detail)
+                                    @php
+                                        $groupedItems = null;
+                                        $rowspan = 1;
+                                        if ($detail->tambahanLaukPauk && $detail->tambahanLaukPauk->count() > 0) {
+                                            $groupedItems = $detail->tambahanLaukPauk->groupBy('id')->map(function ($items) {
+                                                return (object) [
+                                                    'nama' => $items->first()->nama,
+                                                    'harga' => $items->first()->harga,
+                                                    'jumlah' => $items->count()
+                                                ];
+                                            })->values();
+                                            $rowspan = $groupedItems->count();
+                                        }
+                                        
+                                        $menuName = $detail->menu ? $detail->menu->nama_menu : ($detail->is_rescheduled ? '-' : '<span class="text-warning"><i class="bi bi-clock-history"></i> Menunggu Jadwal Admin</span>');
+                                        $menuPrice = $detail->menu ? $detail->menu->harga : 0;
+                                        $formattedDate = $detail->tanggal_pengiriman ? \Carbon\Carbon::parse($detail->tanggal_pengiriman)->translatedFormat('l, d M Y') : '-';
+                                    @endphp
 
-                                @if($groupedItems && $groupedItems->count() > 1)
-                                    @for($i = 1; $i < $rowspan; $i++)
-                                        <tr>
-                                            <td>{{ $groupedItems[$i]->nama }}</td>
-                                            <td class="text-end text-nowrap">Rp {{ number_format($groupedItems[$i]->harga, 0, ',', '.') }}</td>
-                                            <td class="text-center text-nowrap">{{ $groupedItems[$i]->jumlah }}</td>
-                                        </tr>
-                                    @endfor
-                                @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            @endif
+                                    <tr>
+                                        <td class="text-center bg-light fw-semibold text-nowrap" rowspan="{{ $rowspan }}" style="border-radius: 15px 0 0 15px;">{{ $formattedDate }}</td>
+                                        <td rowspan="{{ $rowspan }}"><span class="fw-bold">{!! $menuName !!}</span></td>
+                                        <td class="text-end text-nowrap" rowspan="{{ $rowspan }}">
+                                            @if($detail->menu)
+                                                Rp {{ number_format($menuPrice, 0, ',', '.') }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td class="text-center text-nowrap" rowspan="{{ $rowspan }}">
+                                            <span class="badge bg-secondary rounded-pill px-3 py-2">{{ $detail->porsi }}</span>
+                                        </td>
+                                        
+                                        @if($groupedItems)
+                                            <td>{{ $groupedItems[0]->nama }}</td>
+                                            <td class="text-end text-nowrap">Rp {{ number_format($groupedItems[0]->harga, 0, ',', '.') }}</td>
+                                            <td class="text-center text-nowrap">{{ $groupedItems[0]->jumlah }}</td>
+                                        @else
+                                            <td class="text-center text-muted">-</td>
+                                            <td class="text-center text-muted">-</td>
+                                            <td class="text-center text-muted">-</td>
+                                        @endif
+                                        
+                                        <td class="text-end fw-bold text-primary-mc text-nowrap" rowspan="{{ $rowspan }}">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                                        @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_LUNAS)
+                                            <td class="text-center text-nowrap" rowspan="{{ $rowspan }}" style="border-radius: 0 15px 15px 0;">
+                                                @php
+                                                    $today = \Carbon\Carbon::now()->startOfDay();
+                                                    $deliveryDate = \Carbon\Carbon::parse($detail->tanggal_pengiriman)->startOfDay();
+                                                @endphp
+                                                @if($detail->is_rescheduled)
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap" disabled title="Sudah pernah diubah">
+                                                        Ubah Tgl
+                                                    </button>
+                                                @elseif($deliveryDate->lte($today))
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap" disabled title="Pesanan pada tanggal tersebut sudah tidak dapat diubah">
+                                                        Ubah Tgl
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-outline-warning rounded-pill fw-bold text-nowrap" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ $detail->id }}">
+                                                        <i class="fa-regular fa-calendar-days"></i> Ubah Tgl
+                                                    </button>
 
-            <div class="row g-4 mb-4">
-                <div class="col-md-6">
-                    <div class="bento-box">
-                        <h5 class="fw-bold text-dark mb-4"><i class="fa-solid fa-truck-fast text-primary-mc me-2"></i> Informasi Pengiriman</h5>
-                        
-                        <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-light rounded-4">
-                            <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px;">
-                                @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
-                                    <i class="fa-solid fa-motorcycle text-primary-mc fs-4"></i>
-                                @else
-                                    <i class="fa-solid fa-store text-secondary fs-4"></i>
-                                @endif
-                            </div>
-                            <div>
-                                <span class="text-muted d-block small">Metode</span>
-                                <span class="fw-bold text-dark fs-5">
-                                    @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
-                                        Diantar ke Lokasi
-                                    @else
-                                        Ambil Sendiri
+                                                    <!-- Modal Reschedule -->
+                                                    <div class="modal fade text-start" id="rescheduleModal{{ $detail->id }}" tabindex="-1" aria-hidden="true">
+                                                        <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content rounded-4 border-0 shadow-lg">
+                                                            <form action="{{ route('pelanggan.harian.reschedule', $detail->id) }}" method="POST">
+                                                                @csrf
+                                                                <div class="modal-header border-0 pb-0">
+                                                                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-calendar-day text-primary-mc me-2"></i> Ubah Tanggal Pengiriman</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p class="text-secondary small mb-4">Pilih tanggal baru untuk pengiriman pesanan ini.</p>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label fw-bold text-dark">Tanggal Baru</label>
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-text bg-light border-end-0"><i class="fa-regular fa-calendar text-primary-mc"></i></span>
+                                                                            <input type="date" class="form-control border-start-0 py-2 fw-semibold" name="new_date" min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer border-0 pt-0">
+                                                                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Batal</button>
+                                                                    <button type="submit" class="btn btn-primary-mc rounded-pill px-4 fw-bold">Simpan</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </td>
+                                        @endif
+                                    </tr>
+
+                                    @if($groupedItems && $groupedItems->count() > 1)
+                                        @for($i = 1; $i < $rowspan; $i++)
+                                            <tr>
+                                                <td>{{ $groupedItems[$i]->nama }}</td>
+                                                <td class="text-end text-nowrap">Rp {{ number_format($groupedItems[$i]->harga, 0, ',', '.') }}</td>
+                                                <td class="text-center text-nowrap">{{ $groupedItems[$i]->jumlah }}</td>
+                                            </tr>
+                                        @endfor
                                     @endif
-                                </span>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <hr class="my-4 text-muted" style="border-style: dashed;">
+                @endif
+
+                <div>
+                    <h5 class="fw-bold text-dark mb-4"><i class="fa-solid fa-truck-fast text-primary-mc me-2"></i> Informasi Pengiriman</h5>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4 h-100">
+                                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px; min-width: 50px;">
+                                    @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
+                                        <i class="fa-solid fa-motorcycle text-primary-mc fs-4"></i>
+                                    @else
+                                        <i class="fa-solid fa-store text-secondary fs-4"></i>
+                                    @endif
+                                </div>
+                                <div>
+                                    <span class="text-muted d-block small">Metode</span>
+                                    <span class="fw-bold text-dark fs-5">
+                                        @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
+                                            Diantar ke Lokasi
+                                        @else
+                                            Ambil Sendiri
+                                        @endif
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
                         @if($pesanan->metode_pengambilan == 'diantar_ke_tempat')
-                            <h6 class="fw-bold text-dark mb-2">Alamat Pengantaran:</h6>
-                            <div class="p-3 bg-cream rounded-4 border" style="background-color: var(--bg-cream); border-color: rgba(224, 93, 54, 0.2) !important;">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-4 border h-100" style="background-color: var(--bg-cream); border-color: rgba(224, 93, 54, 0.2) !important;">
+                                <span class="text-muted d-block small fw-bold mb-1">Alamat Pengantaran:</span>
                                 @if($pesanan->alamat_lengkap)
-                                    <p class="mb-0 text-dark" style="line-height: 1.6;">{{ $pesanan->alamat_lengkap }}</p>
+                                    <p class="mb-0 text-dark small" style="line-height: 1.6;">{{ $pesanan->alamat_lengkap }}</p>
                                 @else
-                                    <p class="mb-0 text-muted fst-italic">Alamat belum tersedia.</p>
+                                    <p class="mb-0 text-muted fst-italic small">Alamat belum tersedia.</p>
                                 @endif
                             </div>
+                        </div>
                         @endif
                     </div>
                 </div>
+            </div>
 
-                @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
-                <div class="col-md-6">
+            @if($pesanan->detailPesanans && $pesanan->detailPesanans->whereNotNull('minuman_id')->count() > 0)
+            <div class="row g-4 mb-4">
+                <div class="col-12">
                     <div class="bento-box">
                         <h5 class="fw-bold text-dark mb-4"><i class="fa-solid fa-glass-water text-primary-mc me-2"></i> Pilihan Minuman</h5>
-                        <ul class="list-group list-group-flush gap-2">
+                        <div class="row g-3">
                             @foreach($pesanan->detailPesanans->whereNotNull('minuman_id') as $detailMinuman)
-                                <li class="list-group-item border-0 bg-light rounded-4 p-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="fw-bold text-dark fs-6">{{ $detailMinuman->minuman->nama_minuman }}</span>
-                                        <span class="fw-bold text-primary-mc">Rp {{ number_format($detailMinuman->subtotal, 0, ',', '.') }}</span>
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="border-0 bg-light rounded-4 p-3 h-100">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-bold text-dark fs-6">{{ $detailMinuman->minuman->nama_minuman }}</span>
+                                            <span class="fw-bold text-primary-mc">Rp {{ number_format($detailMinuman->subtotal, 0, ',', '.') }}</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge bg-secondary rounded-pill">{{ $detailMinuman->porsi }} Cup</span>
+                                            <span class="text-muted small">&times; Rp {{ number_format($detailMinuman->minuman->harga, 0, ',', '.') }}</span>
+                                        </div>
                                     </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="badge bg-secondary rounded-pill">{{ $detailMinuman->porsi }} Cup</span>
-                                        <span class="text-muted small">&times; Rp {{ number_format($detailMinuman->minuman->harga, 0, ',', '.') }}</span>
-                                    </div>
-                                </li>
+                                </div>
                             @endforeach
-                        </ul>
+                        </div>
                     </div>
                 </div>
-                @endif
             </div>
+            @endif
 
             <div class="bento-box bento-highlight mb-5 p-4">
                 <div class="row align-items-center">
