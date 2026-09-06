@@ -21,50 +21,69 @@
         z-index: 0;
     }
 
-    .menu-bento-card {
-        border-radius: var(--bento-radius);
-        background: white;
-        box-shadow: var(--soft-shadow);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        border: 2px solid transparent;
+    .menu-card {
+        border-radius: 28px;
+        background: #fff;
+        border: 1px solid #dcdcdc;
+        transition: all 0.2s ease;
         overflow: hidden;
-        position: relative;
-    }
-    .menu-bento-card:hover {
-        transform: translateY(-8px);
-        border-color: var(--primary-terracotta);
-        box-shadow: 0 25px 50px rgba(224, 93, 54, 0.12);
     }
     
-    .menu-bento-img {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-        border-bottom-left-radius: 30px;
-        border-bottom-right-radius: 30px;
-        transition: transform 0.6s ease;
+    .menu-card:hover {
+        border-color: #b0b0b0;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     }
-    .menu-bento-card:hover .menu-bento-img {
-        transform: scale(1.05);
+    
+    .menu-img-container {
+        position: relative;
+    }
+    
+    @media (max-width: 767px) {
+        .menu-img-container {
+            max-width: 100% !important;
+        }
     }
 
-    .qty-input-wrapper {
-        background: var(--bg-cream);
-        border-radius: 50px;
-        padding: 4px;
-        display: inline-flex;
+    .qty-stepper {
+        display: flex;
         align-items: center;
+        border: 1px solid #dcdcdc;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #f8f9fa;
     }
-    .qty-input {
+    
+    .qty-stepper .btn-step {
         background: transparent;
         border: none;
-        text-align: center;
-        font-weight: 800;
-        font-size: 1.2rem;
-        width: 70px;
-        color: var(--primary-terracotta);
+        color: #333;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
     }
-    .qty-input:focus {
+    
+    .qty-stepper .btn-step:hover {
+        background: #e9ecef;
+    }
+
+    .qty-stepper .qty-input {
+        border: none;
+        border-left: 1px solid #dcdcdc;
+        border-right: 1px solid #dcdcdc;
+        background: #fff;
+        text-align: center;
+        width: 50px;
+        height: 32px;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .qty-stepper .qty-input:focus {
         outline: none;
     }
     
@@ -138,51 +157,55 @@
                     <input type="hidden" name="pesanan_id" value="{{ $pesanan->id }}">
                 @endif
                 
-                <div class="row g-5 mb-5">
+                <div class="row justify-content-center g-4 mb-5">
                     @forelse($menus as $menu)
                         @php
                             $detail = isset($pesanan) ? $pesanan->detailPesanans->firstWhere('menu_id', $menu->id) : null;
                             $porsiValue = $detail ? $detail->porsi : '';
                         @endphp
-                        <div class="col-lg-6">
-                            <div class="menu-section menu-bento-card h-100 d-flex flex-column" data-menu-id="{{ $menu->id }}">
-                                
-                                <div class="position-relative overflow-hidden" style="border-radius: var(--bento-radius) var(--bento-radius) 30px 30px; z-index: 1;">
-                                    @if($menu->gambar)
-                                        <img src="{{ asset('storage/menu/' . $menu->gambar) }}" class="menu-bento-img" alt="{{ $menu->nama_menu }}">
-                                    @else
-                                        <div class="bg-light d-flex align-items-center justify-content-center menu-bento-img">
-                                            <i class="fa-solid fa-star text-secondary opacity-25" style="font-size: 5rem;"></i>
-                                        </div>
-                                    @endif
-                                </div>
-                                
-                                <div class="p-4 p-md-5 d-flex flex-column flex-grow-1" style="margin-top: -20px; background: white; z-index: 2; border-radius: 30px;">
-                                    <h3 class="fw-bold text-dark mb-1 fs-3">{{ $menu->nama_menu }}</h3>
-                                    @if($menu->harga > 0)
-                                        <h4 class="fw-bold text-primary-mc mb-4">Rp {{ number_format($menu->harga, 0, ',', '.') }} <span class="fs-6 text-secondary fw-medium">/ porsi</span></h4>
-                                    @endif
-                                    
-                                    <div class="mb-4 bg-cream p-4 rounded-4" style="background-color: var(--bg-cream); flex-grow: 1;">
-                                        <span class="fw-bold d-block mb-2 text-secondary small text-uppercase tracking-wider">
-                                            <i class="fa-solid fa-utensils me-2"></i>Komposisi Menu
-                                        </span>
-                                        <p class="text-dark mb-0 fw-medium" style="line-height: 1.7;">{{ $menu->deskripsi }}</p>
+                        <div class="col-12 col-md-10 col-lg-7">
+                            <div class="menu-section menu-card" data-menu-id="{{ $menu->id }}">
+                                <div class="d-flex flex-column flex-md-row">
+                                    <div class="menu-img-container flex-shrink-0 p-3 pb-md-3 pb-0" style="width: 100%; max-width: 220px;">
+                                        @if($menu->gambar)
+                                            <img src="{{ asset('storage/menu/' . $menu->gambar) }}" class="w-100 rounded-4" style="object-fit: cover; aspect-ratio: 1 / 1;" alt="{{ $menu->nama_menu }}">
+                                        @else
+                                            <div class="bg-light d-flex align-items-center justify-content-center w-100 rounded-4" style="aspect-ratio: 1 / 1;">
+                                                <i class="fa-solid fa-image text-secondary opacity-25" style="font-size: 3rem;"></i>
+                                            </div>
+                                        @endif
                                     </div>
                                     
-                                    <div class="mt-auto pt-3 border-top border-2 border-light d-flex flex-column">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <div>
-                                                <span class="d-block fw-bold text-dark fs-5">Porsi Pesanan</span>
-                                                <span class="text-secondary small">Minimal 50 porsi</span>
-                                            </div>
-                                            <div class="qty-input-wrapper shadow-sm border border-light">
-                                                <input type="number" class="qty-input porsi-input @error('porsi_'.$menu->id) is-invalid @enderror" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" value="{{ $porsiValue }}" min="0">
+                                    <div class="p-4 d-flex flex-column flex-grow-1">
+                                        <div class="mb-3">
+                                            <h4 class="fw-bold text-dark mb-1">{{ $menu->nama_menu }}</h4>
+                                            @if($menu->harga > 0)
+                                                <p class="fw-bold mb-2" style="font-size: 1.1rem; color: #ce1212 !important;">Rp{{ number_format($menu->harga, 0, ',', '.') }} <span class="fs-6 text-secondary fw-medium">/ porsi</span></p>
+                                            @endif
+                                            
+                                            <div class="mb-2 bg-cream p-3 rounded-3 mt-3" style="background-color: var(--bg-cream);">
+                                                <span class="fw-bold d-block mb-1 text-secondary" style="font-size: 0.8rem; letter-spacing: 1px;">
+                                                    <i class="fa-solid fa-utensils me-1"></i> KOMPOSISI MENU
+                                                </span>
+                                                <p class="text-dark small mb-0" style="line-height: 1.5;">{{ $menu->deskripsi }}</p>
                                             </div>
                                         </div>
-                                        <div class="invalid-feedback porsi-feedback fw-bold text-end w-100">Minimal pemesanan 50 porsi.</div>
+                                        
+                                        <div class="mt-auto pt-2 d-flex justify-content-between align-items-end">
+                                            <div>
+                                                <span class="text-secondary small fw-medium d-block mb-2">Minimal 50 porsi</span>
+                                                <div class="invalid-feedback porsi-feedback fw-bold mb-1" style="font-size: 0.75rem;">Min. 50 porsi.</div>
+                                            </div>
+                                            <div class="d-flex flex-column align-items-end">
+                                                <div class="qty-stepper">
+                                                    <button type="button" class="btn-step btn-minus">-</button>
+                                                    <input type="number" class="qty-input porsi-input @error('porsi_'.$menu->id) is-invalid @enderror" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" value="{{ $porsiValue }}" min="0">
+                                                    <button type="button" class="btn-step btn-plus">+</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                         @error('porsi_'.$menu->id)
-                                            <div class="invalid-feedback d-block fw-bold text-end w-100">{{ $message }}</div>
+                                            <div class="invalid-feedback d-block fw-bold text-end w-100 mt-1" style="font-size: 0.75rem;">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
