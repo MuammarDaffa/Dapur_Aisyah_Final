@@ -118,12 +118,10 @@
                     <table class="table table-bordered align-middle text-center mb-0" style="background-color: white;">
                         <thead class="bg-light">
                             <tr>
-                                <th class="text-nowrap py-3">Menu / Item</th>
+                                <th class="text-nowrap py-3">Menu</th>
                                 <th class="text-nowrap py-3">Harga Satuan</th>
-                                <th class="text-nowrap py-3">Porsi</th>
-                                <th class="text-nowrap py-3">Tambahan</th>
-                                <th class="text-nowrap py-3">Harga Tambahan</th>
-                                <th class="text-nowrap py-3">Jumlah</th>
+                                <th class="text-nowrap py-3">Porsi / Cup</th>
+
                                 <th class="text-nowrap py-3">Subtotal</th>
                             </tr>
                         </thead>
@@ -131,11 +129,6 @@
                             @if($pesanan->detailPesanans && $pesanan->detailPesanans->count() > 0)
                                 @foreach($pesanan->detailPesanans as $detail)
                                     @php
-                                        $rowspan = 1;
-                                        if ($detail->menu && $detail->tambahanLaukPauk && $detail->tambahanLaukPauk->count() > 0) {
-                                            $rowspan = $detail->tambahanLaukPauk->count();
-                                        }
-
                                         $menuName = '-';
                                         $menuPrice = 0;
                                         if($detail->menu){
@@ -150,36 +143,15 @@
                                     @endphp
 
                                     <tr>
-                                        <td rowspan="{{ $rowspan }}" class="text-muted text-nowrap px-3">{{ $menuName }}</td>
-                                        <td rowspan="{{ $rowspan }}" class="text-muted text-nowrap">Rp {{ number_format($menuPrice, 0, ',', '.') }}</td>
-                                        <td rowspan="{{ $rowspan }}" class="text-muted">{{ $detail->porsi }}</td>
-                                        
-                                        @if($detail->menu && $detail->tambahanLaukPauk->count() > 0)
-                                            <td class="text-start text-muted px-3">{{ $detail->tambahanLaukPauk[0]->nama }}</td>
-                                            <td class="text-muted text-nowrap">Rp {{ number_format($detail->tambahanLaukPauk[0]->harga, 0, ',', '.') }}</td>
-                                            <td class="text-muted">1</td>
-                                        @else
-                                            <td class="text-muted">-</td>
-                                            <td class="text-muted">-</td>
-                                            <td class="text-muted">-</td>
-                                        @endif
-                                        
-                                        <td rowspan="{{ $rowspan }}" class="fw-bold text-dark text-nowrap">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                                        <td class="text-muted text-nowrap px-3">{{ $menuName }}</td>
+                                        <td class="text-muted text-nowrap">Rp {{ number_format($menuPrice, 0, ',', '.') }}</td>
+                                        <td class="text-muted">{{ $detail->porsi }}</td>
+                                        <td class="fw-bold text-dark text-nowrap">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                                     </tr>
-
-                                    @if($detail->menu && $detail->tambahanLaukPauk->count() > 1)
-                                        @for($i = 1; $i < $rowspan; $i++)
-                                            <tr>
-                                                <td class="text-start text-muted px-3">{{ $detail->tambahanLaukPauk[$i]->nama }}</td>
-                                                <td class="text-muted text-nowrap">Rp {{ number_format($detail->tambahanLaukPauk[$i]->harga, 0, ',', '.') }}</td>
-                                                <td class="text-muted">1</td>
-                                            </tr>
-                                        @endfor
-                                    @endif
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="7" class="text-center py-4 text-muted">Tidak ada detail menu</td>
+                                    <td colspan="4" class="text-center py-4 text-muted">Tidak ada detail menu</td>
                                 </tr>
                             @endif
                         </tbody>
@@ -237,7 +209,7 @@
                         @if($pesanan->sisa_pembayaran > 0)
                         <div class="d-flex justify-content-between">
                             <span class="text-secondary">Sisa Pelunasan</span>
-                            <span class="fw-bold text-danger">Rp {{ number_format($pesanan->sisa_pembayaran, 0, ',', '.') }}</span>
+                            <span class="fw-bold ">Rp {{ number_format($pesanan->sisa_pembayaran, 0, ',', '.') }}</span>
                         </div>
                         @endif
                     </div>
