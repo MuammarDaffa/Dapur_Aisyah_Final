@@ -366,6 +366,32 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Stepper Logic
+        const steppers = document.querySelectorAll('.qty-stepper');
+        steppers.forEach(stepper => {
+            const btnMinus = stepper.querySelector('.btn-minus');
+            const btnPlus = stepper.querySelector('.btn-plus');
+            const input = stepper.querySelector('.qty-input');
+
+            if(btnMinus && btnPlus && input) {
+                btnMinus.addEventListener('click', function() {
+                    let value = parseInt(input.value) || 0;
+                    if (value > 0) {
+                        input.value = value - 1;
+                    }
+                });
+
+                btnPlus.addEventListener('click', function() {
+                    let value = parseInt(input.value) || 0;
+                    if (value === 0) {
+                        input.value = 50; // Langsung lompat ke min 50
+                    } else {
+                        input.value = value + 1;
+                    }
+                });
+            }
+        });
+
         // Toggle Check Card style
         const drinkCards = document.querySelectorAll('.drink-check-card');
         drinkCards.forEach(card => {
