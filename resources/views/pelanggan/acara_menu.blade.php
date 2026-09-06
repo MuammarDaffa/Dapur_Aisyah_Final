@@ -183,12 +183,7 @@
                                                 <p class="fw-bold mb-2" style="font-size: 1.1rem; color: #ce1212 !important;">Rp{{ number_format($menu->harga, 0, ',', '.') }} <span class="fs-6 text-secondary fw-medium">/ porsi</span></p>
                                             @endif
                                             
-                                            <div class="mb-2 bg-cream p-3 rounded-3 mt-3" style="background-color: var(--bg-cream);">
-                                                <span class="fw-bold d-block mb-1 text-secondary" style="font-size: 0.8rem; letter-spacing: 1px;">
-                                                    <i class="fa-solid fa-utensils me-1"></i> KOMPOSISI MENU
-                                                </span>
-                                                <p class="text-dark small mb-0" style="line-height: 1.5;">{{ $menu->deskripsi }}</p>
-                                            </div>
+                                            <p class="text-dark small mb-0" style="line-height: 1.5;">{{ $menu->deskripsi }}</p>
                                         </div>
                                         
                                         <div class="mt-auto pt-2 d-flex justify-content-between align-items-end">
