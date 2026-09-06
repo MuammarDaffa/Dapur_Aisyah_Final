@@ -96,22 +96,22 @@
     }
 
     .drink-check-card {
-        background: var(--bg-cream);
-        border: 2px solid transparent;
-        border-radius: 20px;
-        padding: 16px 20px;
-        transition: all 0.3s ease;
+        padding: 8px 0;
+        transition: all 0.2s ease;
         cursor: pointer;
     }
-    .drink-check-card:hover {
-        background: white;
-        border-color: #E2E8F0;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    .drink-check-card .drink-name,
+    .drink-check-card .drink-price {
+        color: #37373f;
+        transition: color 0.2s ease;
     }
-    .drink-check-card.checked {
-        background: white;
-        border-color: var(--primary-terracotta);
-        box-shadow: 0 10px 25px rgba(224, 93, 54, 0.1);
+    .drink-check-card:hover .drink-name,
+    .drink-check-card:hover .drink-price {
+        color: var(--primary-terracotta);
+    }
+    .drink-check-card.checked .drink-name,
+    .drink-check-card.checked .drink-price {
+        color: var(--primary-terracotta);
     }
 
     .btn-fixed-bottom {
@@ -163,7 +163,7 @@
                             $detail = isset($pesanan) ? $pesanan->detailPesanans->firstWhere('menu_id', $menu->id) : null;
                             $porsiValue = $detail ? $detail->porsi : '';
                         @endphp
-                        <div class="col-12 col-md-10 col-lg-7">
+                        <div class="col-12 col-md-11 col-lg-9">
                             <div class="menu-section menu-card" data-menu-id="{{ $menu->id }}">
                                 <div class="d-flex flex-column flex-md-row">
                                     <div class="menu-img-container flex-shrink-0 p-3 pb-md-3 pb-0" style="width: 100%; max-width: 220px;">
@@ -186,17 +186,15 @@
                                             <p class="text-dark small mb-0" style="line-height: 1.5;">{{ $menu->deskripsi }}</p>
                                         </div>
                                         
-                                        <div class="mt-auto pt-2 d-flex justify-content-between align-items-end">
-                                            <div>
-                                                <span class="text-secondary small fw-medium d-block mb-2">Minimal 50 porsi</span>
-                                                <div class="invalid-feedback porsi-feedback fw-bold mb-1" style="font-size: 0.75rem;">Min. 50 porsi.</div>
-                                            </div>
+                                        <div class="mt-auto pt-2 d-flex justify-content-end align-items-end">
                                             <div class="d-flex flex-column align-items-end">
+                                                <span class="text-secondary small fw-medium d-block mb-2">Minimal 50 porsi</span>
                                                 <div class="qty-stepper">
                                                     <button type="button" class="btn-step btn-minus">-</button>
                                                     <input type="number" class="qty-input porsi-input @error('porsi_'.$menu->id) is-invalid @enderror" name="porsi_{{ $menu->id }}" id="porsi_{{ $menu->id }}" value="{{ $porsiValue }}" min="0">
                                                     <button type="button" class="btn-step btn-plus">+</button>
                                                 </div>
+                                                <div class="invalid-feedback porsi-feedback fw-bold mt-1" style="font-size: 0.75rem;">Min. 50 porsi.</div>
                                             </div>
                                         </div>
                                         @error('porsi_'.$menu->id)
@@ -220,7 +218,9 @@
                 </div>
                 
                 @if(isset($minumans) && $minumans->count() > 0)
-                <div class="bento-addon-box" id="minuman_section">
+                <div class="row justify-content-center g-4 mb-5">
+                    <div class="col-12 col-md-11 col-lg-9">
+                        <div class="bento-addon-box" id="minuman_section">
                     <div class="d-flex align-items-center gap-3 mb-4">
                         <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                             <i class="fa-solid fa-glass-water text-primary-mc fs-4"></i>
@@ -248,13 +248,12 @@
                                     }
                                 }
                             @endphp
-                            <div class="col-md-6">
-                                <label class="drink-check-card w-100 d-flex justify-content-between align-items-center {{ $isChecked ? 'checked' : '' }}" for="minuman_{{ $minuman->id }}">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <input class="form-check-input minuman-checkbox m-0 border-secondary shadow-none" type="checkbox" name="minuman_ids[]" value="{{ $minuman->id }}" id="minuman_{{ $minuman->id }}" {{ $isChecked ? 'checked' : '' }} style="width: 1.5rem; height: 1.5rem; border-radius: 6px;">
-                                        <span class="fw-bold text-dark fs-5">{{ $minuman->nama_minuman }}</span>
-                                    </div>
-                                    <span class="text-primary-mc fw-bold bg-white px-3 py-1 rounded-pill shadow-sm">+Rp {{ number_format($minuman->harga, 0, ',', '.') }}</span>
+                            <div class="col-12">
+                                <label class="drink-check-card w-100 d-flex align-items-center {{ $isChecked ? 'checked' : '' }}" for="minuman_{{ $minuman->id }}">
+                                    <input class="form-check-input minuman-checkbox m-0 border-secondary shadow-none me-3" type="checkbox" name="minuman_ids[]" value="{{ $minuman->id }}" id="minuman_{{ $minuman->id }}" {{ $isChecked ? 'checked' : '' }} style="width: 1.25rem; height: 1.25rem; border-radius: 4px;">
+                                    <span class="fw-bold fs-5 drink-name">{{ $minuman->nama_minuman }}</span>
+                                    <div class="flex-grow-1 mx-3" style="border-bottom: 2px dotted #dcdcdc; position: relative; top: -2px;"></div>
+                                    <span class="fw-bold fs-5 drink-price">Rp {{ number_format($minuman->harga, 0, ',', '.') }}</span>
                                 </label>
                             </div>
                         @endforeach
@@ -277,10 +276,14 @@
                     @error('jumlah_cup_minuman')
                         <div class="invalid-feedback d-block fw-bold text-end mt-2">{{ $message }}</div>
                     @enderror
+                        </div>
+                    </div>
                 </div>
                 @endif
 
-                <div class="bento-addon-box">
+                <div class="row justify-content-center g-4 mb-5">
+                    <div class="col-12 col-md-11 col-lg-9">
+                        <div class="bento-addon-box">
                     <div class="d-flex align-items-center gap-3 mb-4">
                         <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                             <i class="fa-solid fa-pen-to-square text-primary-mc fs-4"></i>
@@ -291,6 +294,8 @@
                     @error('catatan')
                         <div class="invalid-feedback d-block fw-bold mt-2">{{ $message }}</div>
                     @enderror
+                        </div>
+                    </div>
                 </div>
             
                 <div class="d-flex justify-content-between align-items-center mb-5 pb-5 mt-4">
