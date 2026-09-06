@@ -141,7 +141,7 @@
                     <div class="mb-5 border-bottom pb-5">
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                <i class="fa-regular fa-calendar-check text-primary-mc fs-4"></i>
+                                <i class="fa-regular fa-calendar-check text-dark fs-4"></i>
                             </div>
                             <div>
                                 <h4 class="fw-bold text-dark mb-0">Tanggal Acara</h4>
@@ -153,7 +153,7 @@
                             $minDate = \Carbon\Carbon::now()->addDays(5)->format('Y-m-d');
                         @endphp
                         <div class="input-group input-group-lg w-100 bg-white shadow-sm rounded-pill p-2" style="border: 2px solid #E2E8F0;">
-                            <span class="input-group-text bg-transparent border-0 pe-1 ps-4"><i class="fa-regular fa-calendar text-primary-mc fs-5"></i></span>
+                            <span class="input-group-text bg-transparent border-0 pe-1 ps-4"><i class="fa-regular fa-calendar text-dark fs-5"></i></span>
                             <input type="date" name="tanggal_acara" id="tanggal_acara" class="form-control border-0 shadow-none py-2 fs-5 fw-bold text-dark" required min="{{ $minDate }}" style="background: transparent;">
                         </div>
                     </div>
