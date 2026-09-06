@@ -411,6 +411,7 @@
             form.addEventListener('submit', function(e) {
                 let isValid = true;
                 let isAnyMenuSelected = false;
+                let errorMessages = [];
 
                 document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
                 document.querySelectorAll('.minuman-feedback, .jumlah-cup-feedback, .porsi-feedback').forEach(el => {
@@ -431,6 +432,9 @@
                                 porsiFeedback.classList.remove('d-none');
                                 porsiFeedback.classList.add('d-block');
                             }
+                            
+                            const menuName = section.querySelector('h4').innerText;
+                            errorMessages.push('Porsi untuk <b>' + menuName + '</b> minimal 50 porsi.');
                             isValid = false;
                         }
                     }
@@ -455,6 +459,7 @@
                             cupFeedback.classList.remove('d-none');
                             cupFeedback.classList.add('d-block');
                         }
+                        errorMessages.push('Anda memilih tambahan minuman, mohon isi <b>Jumlah Cup</b>.');
                         isValid = false;
                     } else if (hasJumlahCup && !isMinumanChecked) {
                         const minumanFeedback = minumanSection.querySelector('.minuman-feedback');
@@ -462,16 +467,26 @@
                             minumanFeedback.classList.remove('d-none');
                             minumanFeedback.classList.add('d-block');
                         }
+                        errorMessages.push('Anda mengisi Jumlah Cup, tetapi <b>belum memilih jenis minuman</b>.');
                         isValid = false;
                     }
                 }
 
                 if (!isValid) {
                     e.preventDefault();
+                    
+                    let errorHtml = '<div class="text-start" style="color: #555; font-size: 0.95rem;">' +
+                                    '<p class="mb-2">Silakan perbaiki kesalahan berikut:</p>' +
+                                    '<ul class="mb-0 ps-3">';
+                    errorMessages.forEach(msg => {
+                        errorHtml += '<li class="mb-1">' + msg + '</li>';
+                    });
+                    errorHtml += '</ul></div>';
+
                     Swal.fire({
                         icon: 'warning',
                         title: 'Perhatian',
-                        text: 'Terdapat kesalahan pada isian form. Silakan lengkapi data yang wajib.',
+                        html: errorHtml,
                         confirmButtonColor: '#f97316'
                     });
                     return false;
