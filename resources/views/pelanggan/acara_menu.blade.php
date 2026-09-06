@@ -220,16 +220,11 @@
                 @if(isset($minumans) && $minumans->count() > 0)
                 <div class="row justify-content-center g-4 mb-5">
                     <div class="col-12 col-md-11 col-lg-9">
-                        <div class="bento-addon-box" id="minuman_section">
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                            <i class="fa-solid fa-glass-water text-primary-mc fs-4"></i>
-                        </div>
-                        <div>
-                            <h3 class="fw-bold text-dark mb-0">Tambahan Minuman</h3>
-                            <p class="text-secondary mb-0">Sempurnakan hidangan acara Anda dengan minuman segar pilihan.</p>
-                        </div>
-                    </div>
+                        <div class="bg-white rounded-4 p-4 p-md-5 border" id="minuman_section">
+                            <div class="mb-4">
+                                <h4 class="fw-bold text-dark mb-1">Tambahan Minuman</h4>
+                                <p class="text-secondary small mb-0">Sempurnakan hidangan acara Anda dengan minuman segar pilihan.</p>
+                            </div>
                     
                     <div class="row g-3 mb-4 checkbox-group">
                         @foreach($minumans as $minuman)
@@ -263,13 +258,13 @@
                         @enderror
                     </div>
 
-                    <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between bg-cream p-4 rounded-4 border border-light" style="background-color: var(--bg-cream);">
-                        <div class="mb-3 mb-sm-0">
-                            <span class="d-block fw-bold text-dark fs-5">Jumlah Cup</span>
-                            <span class="text-secondary small">Berlaku untuk semua jenis minuman terpilih.</span>
+                    <div class="d-flex justify-content-between align-items-center mt-4 pt-4" style="border-top: 1px solid #eee;">
+                        <div>
+                            <span class="fw-bold text-dark d-block">Jumlah Cup</span>
+                            <span class="text-secondary small">Berlaku untuk semua minuman terpilih.</span>
                         </div>
-                        <div class="qty-input-wrapper shadow-sm bg-white" style="border: 2px solid #E2E8F0;">
-                            <input type="number" class="qty-input @error('jumlah_cup_minuman') is-invalid @enderror" name="jumlah_cup_minuman" id="jumlah_cup_minuman" value="{{ old('jumlah_cup_minuman', $minumanValue ?: '') }}" min="1" placeholder="0">
+                        <div>
+                            <input type="number" class="form-control text-center @error('jumlah_cup_minuman') is-invalid @enderror" name="jumlah_cup_minuman" id="jumlah_cup_minuman" value="{{ old('jumlah_cup_minuman', $minumanValue ?: '') }}" min="1" placeholder="0" style="width: 80px; font-weight: bold;">
                         </div>
                     </div>
                     <div class="invalid-feedback jumlah-cup-feedback d-none fw-bold text-end mt-2">Jumlah cup wajib diisi minimal 1.</div>
@@ -283,14 +278,11 @@
 
                 <div class="row justify-content-center g-4 mb-5">
                     <div class="col-12 col-md-11 col-lg-9">
-                        <div class="bento-addon-box">
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                            <i class="fa-solid fa-pen-to-square text-primary-mc fs-4"></i>
-                        </div>
-                        <h3 class="fw-bold text-dark mb-0">Catatan Khusus</h3>
-                    </div>
-                    <textarea class="form-control form-control-mc @error('catatan') is-invalid @enderror" name="catatan" id="catatan" rows="4" placeholder="Contoh: Tolong disajikan prasmanan dan bumbu pisah.">{{ old('catatan', isset($pesanan) ? $pesanan->catatan : '') }}</textarea>
+                        <div class="bg-white rounded-4 p-4 p-md-5 border">
+                            <div class="mb-4">
+                                <h4 class="fw-bold text-dark mb-1">Catatan Khusus</h4>
+                            </div>
+                            <textarea class="form-control form-control-mc @error('catatan') is-invalid @enderror" name="catatan" id="catatan" rows="3" placeholder="Contoh: Tolong disajikan prasmanan dan bumbu pisah.">{{ old('catatan', isset($pesanan) ? $pesanan->catatan : '') }}</textarea>
                     @error('catatan')
                         <div class="invalid-feedback d-block fw-bold mt-2">{{ $message }}</div>
                     @enderror
