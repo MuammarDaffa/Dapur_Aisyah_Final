@@ -172,7 +172,7 @@
                                     <td class="fw-bold">{{ $pesanan->nomor_pesanan }}</td>
                                     <td data-sort="{{ $pesanan->created_at->format('YmdHis') }}">{{ $pesanan->created_at->format('d M Y') }}</td>
                                     <td><span class="badge bg-light text-dark border">{{ $tipeLayanan }}</span></td>
-                                    <td class="text-end fw-bold" style="color: #ce1212;">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
+                                    <td class="text-end fw-bold" style="color: #000000ff;">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
                                     <td class="text-center">
                                         <span class="badge badge-yummy bg-{{ $pesanan->status_pembayaran_color }}">{{ $pesanan->status_pembayaran_label }}</span>
                                     </td>

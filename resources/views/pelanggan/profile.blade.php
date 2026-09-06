@@ -104,13 +104,6 @@
     <div class="row justify-content-center">
         <div class="col-12 col-md-8 col-lg-6">
             
-            <div class="yummy-card mb-4 text-center">
-                <div class="profile-avatar">
-                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                </div>
-                <h3 class="fw-bold mb-1" style="color: #37373f;">{{ $user->name }}</h3>
-                <span class="badge rounded-pill bg-light text-dark border"><i class="fa-solid fa-star text-warning"></i> Pelanggan Setia</span>
-            </div>
 
             <div class="yummy-card mb-4">
                 <h5 class="fw-bold mb-4" style="color: #37373f; border-bottom: 2px solid #f2f2f2; padding-bottom: 15px;">Informasi Akun</h5>
@@ -159,10 +152,6 @@
                 </form>
             </div>
 
-            <div class="text-center mt-5 text-muted">
-                <p class="mb-2">Butuh Bantuan? Hubungi layanan pelanggan kami.</p>
-                <a href="#" class="text-decoration-none" style="color: #ce1212;"><i class="fa-brands fa-whatsapp"></i> Hubungi CS</a>
-            </div>
 
         </div>
     </div>
