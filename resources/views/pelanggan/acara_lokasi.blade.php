@@ -12,6 +12,19 @@
         overflow: hidden;
     }
     
+    @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap');
+    .section-title p {
+        margin: 0;
+        font-size: clamp(48px, 6vw, 64px);
+        font-weight: 700;
+        font-family: 'Amatic SC', sans-serif;
+        color: #37373f;
+    }
+    .section-title p span {
+        color: #ce1212;
+    }
+
+    
     .blob-header {
         position: absolute;
         top: -50px; left: -10%;
@@ -98,15 +111,8 @@
 <div class="page-header">
     <div class="blob-header"></div>
     <div class="container position-relative z-1">
-        <div class="text-center mb-4">
-            <span class="d-inline-flex align-items-center gap-2 bg-white rounded-pill px-4 py-2 shadow-sm mb-3 border border-light">
-                <span class="bg-primary-mc rounded-circle" style="width: 8px; height: 8px;"></span>
-                <span class="fw-bold text-secondary small text-uppercase tracking-wider">Katering Acara Kantoran</span>
-            </span>
-            <h1 class="display-4 fw-bold text-dark mb-3">
-                Tanggal & Lokasi <span style="color: var(--primary-terracotta); font-style: italic;">Acara</span>
-            </h1>
-            <p class="text-secondary fs-5 max-w-2xl mx-auto">Tentukan kapan dan dimana acara istimewa Anda akan diselenggarakan.</p>
+        <div class="text-center mb-4 section-title">
+            <p>Tanggal & Lokasi <span>Acara</span></p>
         </div>
     </div>
 </div>
