@@ -132,6 +132,56 @@
     .section-title p span {
         color: #ce1212;
     }
+    /* Responsive Typography & Spacing */
+    @media (max-width: 767px) {
+        .menu-img-container {
+            max-width: 100% !important;
+        }
+        .menu-img-container img {
+            aspect-ratio: 16 / 9 !important;
+        }
+        .menu-card .p-4 {
+            padding: 1.25rem !important;
+        }
+        .menu-card h4 {
+            font-size: 1.15rem !important;
+        }
+        .menu-card p.fw-bold[style*="font-size"] {
+            font-size: 1rem !important;
+        }
+        .menu-card p.text-dark.small {
+            font-size: 0.8rem !important;
+        }
+        
+        .addon-section {
+            padding: 1.25rem !important;
+        }
+        .addon-section h4 {
+            font-size: 1.15rem !important;
+        }
+        .addon-section p.small, .addon-section span.small {
+            font-size: 0.8rem !important;
+        }
+        
+        .drink-name, .drink-price {
+            font-size: 0.95rem !important;
+        }
+        .minuman-checkbox {
+            width: 1.1rem !important;
+            height: 1.1rem !important;
+            margin-right: 0.5rem !important;
+        }
+        
+        .qty-stepper {
+            transform: scale(0.9);
+            transform-origin: right center;
+        }
+        #jumlah_cup_minuman {
+            width: 60px !important;
+            font-size: 0.9rem;
+            padding: 0.25rem;
+        }
+    }
 </style>
 
 <div class="container section-title text-center mt-5 pt-4 mb-4">
@@ -220,7 +270,7 @@
                 @if(isset($minumans) && $minumans->count() > 0)
                 <div class="row justify-content-center g-4 mb-5">
                     <div class="col-12 col-md-11 col-lg-9">
-                        <div class="bg-white rounded-4 p-4 p-md-5 border" id="minuman_section">
+                        <div class="bg-white rounded-4 p-4 p-md-5 border addon-section" id="minuman_section">
                             <div class="mb-4">
                                 <h4 class="fw-bold text-dark mb-1">Tambahan Minuman</h4>
                                 <p class="text-secondary small mb-0">Sempurnakan hidangan acara Anda dengan minuman segar pilihan.</p>
@@ -278,7 +328,7 @@
 
                 <div class="row justify-content-center g-4 mb-5">
                     <div class="col-12 col-md-11 col-lg-9">
-                        <div class="bg-white rounded-4 p-4 p-md-5 border">
+                        <div class="bg-white rounded-4 p-4 p-md-5 border addon-section">
                             <div class="mb-4">
                                 <h4 class="fw-bold text-dark mb-1">Catatan Khusus</h4>
                             </div>
