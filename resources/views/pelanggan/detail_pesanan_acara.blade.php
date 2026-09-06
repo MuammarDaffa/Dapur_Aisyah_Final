@@ -226,39 +226,43 @@
             </div>
 
             <!-- Total Pembayaran Card -->
-            <div class="card border-0 shadow-sm rounded-3 px-4 py-4 mb-4">
-                <div class="row align-items-center g-4">
-                    <div class="col-lg-6">
-                        <div class="d-flex justify-content-between mb-3 pb-2 border-bottom">
-                            <span class="text-muted">Total Keseluruhan</span>
-                            <span class="fw-bold fs-5 text-dark">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</span>
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <div class="row g-4 align-items-center">
+                    <!-- Kolom Kiri: Informasi Keseluruhan -->
+                    <div class="col-lg-5">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-secondary">Total Keseluruhan</span>
+                            <span class="fw-bold text-dark">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</span>
                         </div>
                         @if($pesanan->sisa_pembayaran > 0)
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="text-muted">Sisa Pelunasan</span>
-                            <span class="fw-bold fs-5 text-danger">Rp {{ number_format($pesanan->sisa_pembayaran, 0, ',', '.') }}</span>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-secondary">Sisa Pelunasan</span>
+                            <span class="fw-bold text-danger">Rp {{ number_format($pesanan->sisa_pembayaran, 0, ',', '.') }}</span>
                         </div>
                         @endif
-                        
-                        <div class="mt-2">
-                            @if($pesanan->jumlah_dp == $pesanan->total)
-                                <div class="text-muted mb-1">Total Pembayaran (Lunas)</div>
-                            @else
-                                <div class="text-muted mb-1">Tagihan Saat Ini (DP 50%)</div>
-                            @endif
-                            <h2 class="fw-bold text-dark mb-0">Rp {{ number_format($pesanan->jumlah_dp, 0, ',', '.') }}</h2>
-                        </div>
                     </div>
                     
-                    <div class="col-lg-6 text-lg-end">
-                        @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
-                            <form id="form-bayar" action="{{ route('pelanggan.acara.bayar_dp', $pesanan->id) }}" method="POST">
-                                @csrf
-                                <button id="btn-bayar" type="submit" class="btn btn-dark fw-bold px-5 py-3 rounded-2 shadow-sm w-100 w-lg-auto">
-                                    {{ $pesanan->jumlah_dp == $pesanan->total ? 'Bayar Sekarang' : 'Bayar DP Sekarang' }}
-                                </button>
-                            </form>
-                        @endif
+                    <!-- Kolom Kanan: Tagihan Saat Ini & Aksi Pembayaran -->
+                    <div class="col-lg-7">
+                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-light p-3 rounded-3 gap-3">
+                            <div>
+                                @if($pesanan->jumlah_dp == $pesanan->total)
+                                    <span class="text-secondary small fw-medium d-block mb-1">Total Pembayaran (Lunas)</span>
+                                @else
+                                    <span class="text-secondary small fw-medium d-block mb-1">Tagihan Saat Ini (DP 50%)</span>
+                                @endif
+                                <h3 class="fw-bold text-dark mb-0">Rp {{ number_format($pesanan->jumlah_dp, 0, ',', '.') }}</h3>
+                            </div>
+                            
+                            @if($pesanan->status_pembayaran === \App\Models\Pesanan::PEMBAYARAN_BELUM_DIBAYAR)
+                                <form id="form-bayar" action="{{ route('pelanggan.acara.bayar_dp', $pesanan->id) }}" method="POST" class="m-0">
+                                    @csrf
+                                    <button id="btn-bayar" type="submit" class="btn btn-dark fw-bold px-4 py-2 rounded-3 w-100">
+                                        {{ $pesanan->jumlah_dp == $pesanan->total ? 'Bayar Sekarang' : 'Bayar DP Sekarang' }}
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
