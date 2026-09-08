@@ -332,9 +332,6 @@
                                     <div class="flex-shrink-0 p-3 p-md-4" style="width: 100%; max-width: 400px;">
                                         <div class="position-relative w-100 h-100">
                                             <img src="{{ $bgImage }}" alt="{{ $service->nama }}" class="w-100 h-100 rounded-4" style="object-fit: cover; aspect-ratio: 4 / 3; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                                            <div class="position-absolute top-0 start-0 m-3 bg-white px-3 py-1 rounded-pill shadow-sm fw-bold text-dark" style="font-size: 0.85rem;">
-                                                {{ ucfirst($service->tipe_layanan) }}
-                                            </div>
                                         </div>
                                     </div>
                                     
