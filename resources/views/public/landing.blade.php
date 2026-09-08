@@ -161,13 +161,25 @@
 
         .hero h1 {
             margin: 0;
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-family: 'Bungee Inline', cursive;
+            font-size: clamp(5rem, 12vw, 9rem);
+            font-family: 'Amatic SC', sans-serif;
+            font-weight: 700;
             color: #ffffff;
-            letter-spacing: 2px;
-            line-height: 1.2;
+            letter-spacing: 4px;
+            line-height: 1.1;
             text-transform: uppercase;
             text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .hero p.subtitle {
+            margin: 15px auto 0 auto;
+            max-width: 800px;
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
+            color: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            text-shadow: 1px 2px 6px rgba(0,0,0,0.6);
+            letter-spacing: 1px;
         }
 
         .hero-buttons {
@@ -299,8 +311,11 @@
         </div>
         <div class="hero-content">
             <h1 class="animate__animated animate__fadeInDown">
-                CITARASA RUMAH<br>STANDAR GOURMET
+                Dapur Aisyah
             </h1>
+            <p class="subtitle animate__animated animate__fadeInUp">
+                Katering Rumahan Berkualitas Premium
+            </p>
             <div class="hero-buttons animate__animated animate__fadeInUp animate__delay-1s">
                 <a href="#services" class="btn-order">Pesan Sekarang</a>
                 <a href="#menu" class="btn-menu">Lihat Menu</a>
@@ -730,7 +745,7 @@
               <ul>
                 <li><i class="fa-solid fa-circle-check"></i> <span><strong>Bahan Organik:</strong> Sayuran segar dari petani lokal pilihan.</span></li>
                 <li><i class="fa-solid fa-circle-check"></i> <span><strong>Dimasak Sempurna:</strong> Teknik memasak sehat tanpa mengurangi cita rasa.</span></li>
-                <li><i class="fa-solid fa-circle-check"></i> <span><strong>Kemasan Aman:</strong> Menggunakan wadah ramah lingkungan & higienis (Food Grade).</span></li>
+                <li><i class="fa-solid fa-circle-check"></i> <span><strong>Kemasan Aman:</strong> Menggunakan wadah ramah lingkungan & higienis.</span></li>
                 <li><i class="fa-solid fa-circle-check"></i> <span><strong>Tepat Waktu:</strong> Diantar hangat saat jam makan Anda.</span></li>
               </ul>
             </div>
@@ -820,10 +835,6 @@
                                             <i class="fa-solid fa-quote-right quote-icon-right" style="color: rgba(206,18,18,0.3); font-size: 24px; margin-left: 10px;"></i>
                                         </p>
                                         <h3>{{ $item->user->name ?? 'Pelanggan Setia' }}</h3>
-                                        <h4>Pelanggan</h4>
-                                        <div class="stars">
-                                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                                        </div>
                                     </div>
                                 </div>
                             </div>

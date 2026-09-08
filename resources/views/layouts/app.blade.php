@@ -506,40 +506,15 @@
     <footer id="footer" class="footer">
         <div class="container">
             <div class="row gy-3">
-                <div class="col-lg-3 col-md-6 d-flex">
+                <div class="col-lg-6 col-md-6 d-flex">
                     <i class="fa-solid fa-location-dot icon"></i>
-                    <div>
+                    <div style="width: 100%;">
                         <h4>Alamat Kami</h4>
-                        <p>
-                            Jl. Contoh Pontianak No. 123<br>
-                            Pontianak, Kalimantan Barat<br>
-                        </p>
+                        <iframe src="https://maps.google.com/maps?q=-0.060394,109.301565&z=15&output=embed" width="100%" height="120" style="border:0; border-radius: 8px; margin-top: 5px;" allowfullscreen="" loading="lazy"></iframe>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 footer-links d-flex">
-                    <i class="fa-solid fa-phone icon"></i>
-                    <div>
-                        <h4>Pusat Bantuan</h4>
-                        <p>
-                            <strong>Telepon:</strong> 0812-3456-7890<br>
-                            <strong>Email:</strong> info@dapuraisyah.com<br>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 footer-links d-flex">
-                    <i class="fa-regular fa-clock icon"></i>
-                    <div>
-                        <h4>Jam Operasional</h4>
-                        <p>
-                            <strong>Senin - Sabtu:</strong> 08.00 - 17.00<br>
-                            <strong>Minggu:</strong> Tutup
-                        </p>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 footer-links">
+                <div class="col-lg-6 col-md-6 footer-links">
                     <h4>Ikuti Kami</h4>
                     <div class="social-links d-flex">
                         <a href="#" class="facebook"><i class="fa-brands fa-facebook-f"></i></a>
