@@ -456,33 +456,45 @@
             position: relative;
             padding-bottom: 5px;
             color: #fff;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .footer .footer-info p {
+            line-height: 1.6;
+            margin-bottom: 0;
+            color: rgba(255, 255, 255, 0.8);
         }
         .footer .footer-links {
             margin-bottom: 30px;
         }
-        .footer p {
-            line-height: 1.5;
-            margin-bottom: 0;
+        .footer .footer-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
-        .footer .social-links a {
+        .footer .footer-links ul li {
+            padding: 8px 0;
             display: flex;
             align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-right: 10px;
-            transition: 0.3s;
-            text-decoration: none;
         }
-        .footer .social-links a:hover {
+        .footer .footer-links ul li a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .footer .footer-links ul li a:hover {
             color: #fff;
-            border-color: #fff;
-            background: #ce1212;
+        }
+        .footer .footer-contact .contact-info p {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .footer .footer-contact .contact-info p i {
+            color: #ce1212;
+            font-size: 16px;
+            margin-right: 12px;
         }
         .footer .copyright {
             text-align: center;
@@ -505,22 +517,36 @@
     <!-- Yummy Footer -->
     <footer id="footer" class="footer">
         <div class="container">
-            <div class="row gy-3">
-                <div class="col-lg-6 col-md-6 d-flex">
-                    <i class="fa-solid fa-location-dot icon"></i>
-                    <div style="width: 100%;">
-                        <h4>Alamat Kami</h4>
-                        <iframe src="https://maps.google.com/maps?q=-0.060394,109.301565&z=15&output=embed" width="100%" height="120" style="border:0; border-radius: 8px; margin-top: 5px;" allowfullscreen="" loading="lazy"></iframe>
-                    </div>
+            <div class="row gy-4">
+                <!-- Column 1: Info -->
+                <div class="col-lg-5 col-md-12 footer-info">
+                    <h4 style="text-transform: none; font-size: 20px;">Dapur Aisyah</h4>
+                    <p style="padding-right: 20px;">
+                        Platform pemesanan katering online terpercaya di Pontianak. Menyajikan menu berkualitas untuk kebutuhan harian dan acara kantor.
+                    </p>
                 </div>
 
-                <div class="col-lg-6 col-md-6 footer-links">
-                    <h4>Ikuti Kami</h4>
-                    <div class="social-links d-flex">
-                        <a href="#" class="facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                        <a href="#" class="instagram"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#" class="whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+                <!-- Column 2: Menu Links -->
+                <div class="col-lg-3 col-md-6 footer-links">
+                    
+                    <ul>
+                        <li><a href="{{ request()->routeIs('landing') ? '#hero' : route('landing').'#hero' }}">Beranda</a></li>
+                        <li><a href="{{ request()->routeIs('landing') ? '#services' : route('landing').'#services' }}">Layanan</a></li>
+                        <li><a href="{{ request()->routeIs('landing') ? '#menu' : route('landing').'#menu' }}">Menu</a></li>
+                        <li><a href="{{ request()->routeIs('landing') ? '#gallery' : route('landing').'#gallery' }}">Galeri</a></li>
+                        <li><a href="{{ request()->routeIs('landing') ? '#testimonials' : route('landing').'#testimonials' }}">Testimoni</a></li>
+                        <li><a href="{{ request()->routeIs('landing') ? '#about' : route('landing').'#about' }}">Tentang</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Contact & Map -->
+                <div class="col-lg-4 col-md-6 footer-contact">
+                    <h4>KONTAK</h4>
+                    <div class="contact-info">
+                        <p><i class="fa-solid fa-phone"></i> 0812-3456-7890</p>
+                        <p><i class="fa-regular fa-envelope"></i> info@dapuraisyah.com</p>
                     </div>
+                    <iframe src="https://maps.google.com/maps?q=-0.060394,109.301565&z=15&output=embed" width="100%" height="150" style="border:0; border-radius: 8px; margin-top: 10px;" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
         </div>
@@ -528,9 +554,6 @@
         <div class="container">
             <div class="copyright">
                 &copy; Copyright <strong><span>Dapur Aisyah</span></strong>. All Rights Reserved
-            </div>
-            <div class="credits">
-                Dirancang dengan <a href="#">Yummy Style</a>
             </div>
         </div>
     </footer>

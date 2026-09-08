@@ -77,7 +77,7 @@
 
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn-primary-mc btn-lg fs-5">
-                            <i class="fa-solid fa-user-check me-2"></i> Daftar Sekarang
+                             Daftar Sekarang
                         </button>
                     </div>
 
