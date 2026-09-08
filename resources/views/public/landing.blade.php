@@ -682,75 +682,30 @@
     </section>
 
     <style>
-        .about .book-a-table {
-            text-align: center;
-            padding: 30px;
-            background: #ffffff;
-            box-shadow: 0px 2px 25px rgba(0, 0, 0, 0.08);
-            margin-top: -60px;
-            position: relative;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .about .book-a-table h3 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #37373f;
-        }
-        .about .book-a-table p {
-            color: #ce1212;
-            font-weight: 700;
-            font-size: 24px;
-            margin: 0;
-        }
         .about .content ul {
             list-style: none;
             padding: 0;
+            margin-top: 20px;
         }
         .about .content ul li {
-            padding: 0 0 8px 0;
+            padding: 0 0 16px 0;
             display: flex;
             align-items: flex-start;
+            font-size: 1.1rem;
+            color: #4f4f5a;
+            line-height: 1.6;
         }
         .about .content ul li i {
             color: #ce1212;
-            font-size: 20px;
-            margin-right: 10px;
-            margin-top: -2px;
+            font-size: 22px;
+            margin-right: 15px;
+            margin-top: 2px;
         }
         .about .content p {
             color: #4f4f5a;
-        }
-        .about .play-btn {
-            width: 94px;
-            height: 94px;
-            background: radial-gradient(#ce1212 50%, rgba(206, 18, 18, 0.4) 52%);
-            border-radius: 50%;
-            display: block;
-            position: absolute;
-            left: calc(50% - 47px);
-            top: calc(50% - 47px);
-            overflow: hidden;
-            transition: all 0.4s;
-        }
-        .about .play-btn::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translateX(-40%) translateY(-50%);
-            width: 0;
-            height: 0;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-left: 15px solid #fff;
-            z-index: 100;
-            transition: all 0.4s cubic-bezier(0.55, 0.055, 0.675, 0.19);
-        }
-        .about .play-btn:hover {
-            transform: scale(1.1);
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: 0;
         }
     </style>
 
@@ -763,15 +718,11 @@
             <p>Lebih dari Sekadar <span>Makanan</span></p>
         </div>
 
-        <div class="row gy-4">
-          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
-            <img src="{{ asset('images/tim_katering.png') }}" class="img-fluid mb-4 w-100" style="height: 500px; object-fit: cover;" alt="">
-            <div class="book-a-table">
-              <h3>Pusat Bantuan & Pemesanan</h3>
-              <p>+62 812 3456 7890</p>
-            </div>
+        <div class="row gy-4 align-items-center">
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <img src="{{ asset('images/tim_katering.png') }}" class="img-fluid rounded-4 w-100 shadow-sm" style="object-fit: cover; aspect-ratio: 4/3;" alt="Dapur Aisyah">
           </div>
-          <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="250">
             <div class="content ps-0 ps-lg-5">
               <p class="fst-italic">
                 Di Dapur Aisyah, kami percaya bahwa makanan yang baik adalah fondasi hari yang luar biasa. Kami memadukan resep otentik warisan keluarga dengan standar kebersihan modern.
@@ -782,13 +733,6 @@
                 <li><i class="fa-solid fa-circle-check"></i> <span><strong>Kemasan Aman:</strong> Menggunakan wadah ramah lingkungan & higienis (Food Grade).</span></li>
                 <li><i class="fa-solid fa-circle-check"></i> <span><strong>Tepat Waktu:</strong> Diantar hangat saat jam makan Anda.</span></li>
               </ul>
-              <p>
-                Kepuasan pelanggan adalah prioritas utama kami. Nikmati setiap suapan yang kami persiapkan dengan sepenuh hati.
-              </p>
-              <div class="position-relative mt-4">
-                <img src="{{ asset('images/katering.png') }}" class="img-fluid w-100" style="height: 250px; object-fit: cover;" alt="">
-                <a href="#" class="play-btn"></a>
-              </div>
             </div>
           </div>
         </div>
