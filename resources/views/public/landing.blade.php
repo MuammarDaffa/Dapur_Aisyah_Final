@@ -119,11 +119,39 @@
             width: 100%;
             min-height: 100vh;
             position: relative;
-            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('images/acara.jpg') }}') center/cover no-repeat;
+            background-color: #000; /* Fallback to avoid white flash */
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
+            overflow: hidden;
+        }
+
+        .hero-bg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .hero-bg.active {
+            opacity: 1;
+            z-index: 2;
         }
         
         .hero-content {
@@ -196,6 +224,7 @@
             justify-content: space-between;
             padding: 0 40px;
             pointer-events: none;
+            z-index: 10;
         }
 
         .hero-nav button {
@@ -220,6 +249,7 @@
             transform: translateX(-50%);
             display: flex;
             gap: 10px;
+            z-index: 10;
         }
 
         .hero-dots span {
@@ -262,6 +292,11 @@
     </style>
 
     <section id="hero" class="hero section-item">
+        <div class="hero-bg-container">
+            <div class="hero-bg active" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('images/katering.png') }}');"></div>
+            <div class="hero-bg" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('images/katering2.png') }}');"></div>
+            <div class="hero-bg" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('images/katering3.png') }}');"></div>
+        </div>
         <div class="hero-content">
             <h1 class="animate__animated animate__fadeInDown">
                 CITARASA RUMAH<br>STANDAR GOURMET
@@ -272,21 +307,22 @@
             </div>
         </div>
 
-        <!-- Decorative elements to match the image carousel look -->
+        <!-- Carousel navigation -->
         <div class="hero-nav">
-            <button><i class="fa-solid fa-chevron-left"></i></button>
-            <button><i class="fa-solid fa-chevron-right"></i></button>
+            <button id="hero-prev"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="hero-next"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
         <div class="hero-dots">
-            <span class="active"></span>
-            <span></span>
-            <span></span>
+            <span class="dot active" data-index="0"></span>
+            <span class="dot" data-index="1"></span>
+            <span class="dot" data-index="2"></span>
         </div>
     </section>
 
-    <!-- Script for smooth scroll -->
+    <!-- Script for smooth scroll and hero carousel -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Smooth Scroll
             const scrollLinks = document.querySelectorAll('a[href^="#"]');
             scrollLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
@@ -302,6 +338,85 @@
                     }
                 });
             });
+
+            // Hero Crossfade Carousel
+            const heroBgs = document.querySelectorAll('.hero-bg');
+            if(heroBgs.length > 0) {
+                const dots = document.querySelectorAll('.hero-dots .dot');
+                const btnPrev = document.getElementById('hero-prev');
+                const btnNext = document.getElementById('hero-next');
+                let currentIndex = 0;
+                const totalImages = heroBgs.length;
+                let autoPlayInterval;
+
+                // Preload all images to prevent empty screens
+                const imageUrls = [
+                    "{{ asset('images/katering.png') }}",
+                    "{{ asset('images/katering2.png') }}",
+                    "{{ asset('images/katering3.png') }}"
+                ];
+                imageUrls.forEach(url => {
+                    const img = new Image();
+                    img.src = url;
+                });
+
+                function showImage(index) {
+                    // Update z-index so the incoming image is on top during transition
+                    heroBgs.forEach(bg => {
+                        bg.classList.remove('active');
+                        bg.style.zIndex = 1;
+                    });
+                    
+                    dots.forEach(dot => dot.classList.remove('active'));
+                    
+                    heroBgs[index].classList.add('active');
+                    heroBgs[index].style.zIndex = 2;
+                    if(dots[index]) dots[index].classList.add('active');
+                }
+
+                function nextImage() {
+                    currentIndex = (currentIndex + 1) % totalImages;
+                    showImage(currentIndex);
+                }
+
+                function prevImage() {
+                    currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+                    showImage(currentIndex);
+                }
+
+                if(btnNext) {
+                    btnNext.addEventListener('click', () => {
+                        nextImage();
+                        resetAutoPlay();
+                    });
+                }
+
+                if(btnPrev) {
+                    btnPrev.addEventListener('click', () => {
+                        prevImage();
+                        resetAutoPlay();
+                    });
+                }
+
+                dots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        currentIndex = index;
+                        showImage(currentIndex);
+                        resetAutoPlay();
+                    });
+                });
+
+                function startAutoPlay() {
+                    autoPlayInterval = setInterval(nextImage, 5000); // 5s interval
+                }
+
+                function resetAutoPlay() {
+                    clearInterval(autoPlayInterval);
+                    startAutoPlay();
+                }
+
+                startAutoPlay();
+            }
         });
     </script>
 
