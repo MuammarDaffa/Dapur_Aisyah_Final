@@ -17,7 +17,6 @@
         <div class="col-lg-6 d-flex align-items-center justify-content-center py-5" style="background-color: var(--bg-light); min-height: calc(100vh - 70px);">
             <div class="w-100 px-4 px-md-5" style="max-width: 500px;">
                 <div class="text-center mb-5">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" width="80" class="mb-3">
                     <h2 class="fw-bold text-dark">Masuk ke Akun</h2>
                     <p class="text-secondary">Masukkan email dan password Anda</p>
                 </div>
@@ -73,7 +72,7 @@
 
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn-primary-mc btn-lg fs-5">
-                            <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Masuk Sekarang
+                             Masuk Sekarang
                         </button>
                     </div>
 
