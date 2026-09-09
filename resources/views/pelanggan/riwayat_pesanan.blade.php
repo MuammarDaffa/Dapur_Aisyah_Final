@@ -51,12 +51,14 @@
         text-transform: uppercase;
         font-size: 0.75rem;
         letter-spacing: 1px;
+        white-space: nowrap;
     }
     .table-modern tbody td {
         border-bottom: 1px solid #f2f2f2;
         padding: 15px 10px;
         vertical-align: middle;
         color: #37373f;
+        white-space: nowrap;
     }
     .table-modern tbody tr:hover td {
         background-color: #fafafa;
@@ -127,7 +129,7 @@
 @endpush
 
 @section('content')
-<div class="container py-5" style="margin-top: 80px;">
+<div class="container-fluid px-4 px-lg-5 py-5" style="margin-top: 80px;">
     
     <div class="section-title">
         <h2>Aktivitas Anda</h2>
@@ -135,7 +137,7 @@
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-12 col-xl-10">
+        <div class="col-12">
 
             @if($riwayatPesanan->isEmpty())
                 <div class="yummy-card text-center py-5">
@@ -159,6 +161,7 @@
                                     <th>Tipe</th>
                                     <th class="text-end">Total</th>
                                     <th class="text-center">Pembayaran</th>
+                                    <th class="text-center">Kode Pengambilan</th>
                                     <th class="text-center">Status</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
@@ -175,6 +178,9 @@
                                     <td class="text-end fw-bold" style="color: #000000ff;">Rp {{ number_format($pesanan->total, 0, ',', '.') }}</td>
                                     <td class="text-center">
                                         <span class="badge badge-yummy bg-{{ $pesanan->status_pembayaran_color }}">{{ $pesanan->status_pembayaran_label }}</span>
+                                    </td>
+                                    <td class="text-center fw-bold" style="color: #000000ff; letter-spacing: 1px;">
+                                        {{ $pesanan->kode_pengambilan ?? '-' }}
                                     </td>
                                     <td class="text-center">
                                         @if(!is_null($pesanan->status_pesanan))
