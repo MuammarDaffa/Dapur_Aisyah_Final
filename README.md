@@ -1,4 +1,4 @@
-# 🍲 Dapur Aisyah - Catering Management System
+# Dapur Aisyah - Catering Management System
 
 **Dapur Aisyah** adalah sebuah sistem informasi berbasis web dan *e-commerce* sederhana yang dirancang khusus untuk mempermudah manajemen dan pemesanan katering, mencakup layanan **Katering Harian** dan **Katering Acara**.
 
