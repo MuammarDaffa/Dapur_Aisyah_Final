@@ -54,14 +54,14 @@ Sistem ini memiliki 3 Role Utama yang dibatasi keamanan aksesnya menggunakan *Mi
 
 ## 💻 Tech Stack
 
-* 🐘 **Programming Language:** PHP 8.2+
-* 🔴 **Framework:** Laravel 11
-* 🎨 **Frontend:** Blade Templates, Tailwind CSS, Alpine.js
-* 🔐 **Authentication:** Laravel Breeze
-* 🗄️ **Database:** SQLite / MySQL / PostgreSQL (Tergantung konfigurasi `.env`)
-* 💳 **Payment Gateway:** Midtrans (midtrans-php)
-* 📄 **PDF Generator:** barryvdh/laravel-dompdf
-* ⚡ **Build Tool:** Vite
+* **Programming Language:** PHP 8.2+
+* **Framework:** Laravel 11
+* **Frontend:** Blade Templates, Tailwind CSS, Alpine.js
+* **Authentication:** Laravel Breeze
+* **Database:** SQLite / MySQL / PostgreSQL (Tergantung konfigurasi `.env`)
+* **Payment Gateway:** Midtrans (midtrans-php)
+* **PDF Generator:** barryvdh/laravel-dompdf
+* **Build Tool:** Vite
 
 ---
 
