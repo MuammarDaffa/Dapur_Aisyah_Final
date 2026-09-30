@@ -11,26 +11,26 @@ Project ini dibuat untuk mendigitalisasi proses pemesanan dari sisi pelanggan da
 ## ✨ Features
 
 ### 🛒 Fitur Pelanggan
-* 🍱 **Pemesanan Fleksibel**: Mendukung layanan Katering Harian & Katering Acara.
-* 💳 **Pembayaran Online**: Terintegrasi penuh via Midtrans (Mendukung Pembayaran Penuh & Uang Muka / DP).
-* 📅 **Reschedule**: Fitur penjadwalan ulang pengiriman katering sesuai kebutuhan.
-* ⏱️ **Riwayat Real-time**: Melacak status dan riwayat pesanan secara *real-time*.
-* ⭐ **Ulasan (Review)**: Mengelola profil pelanggan dan memberikan ulasan pelayanan katering.
+* **Pemesanan Fleksibel**: Mendukung layanan Katering Harian & Katering Acara.
+* **Pembayaran Online**: Terintegrasi penuh via Midtrans (Mendukung Pembayaran Penuh & Uang Muka / DP).
+* **Reschedule**: Fitur penjadwalan ulang pengiriman katering sesuai kebutuhan.
+* **Riwayat Real-time**: Melacak status dan riwayat pesanan secara *real-time*.
+* **Ulasan (Review)**: Mengelola profil pelanggan dan memberikan ulasan pelayanan katering.
 
 ### 🛠️ Fitur Admin
-* 📊 **Dashboard Pesanan**: Memantau pesanan yang masuk secara *real-time*.
-* 🔄 **Status Katering**: Memperbarui status pesanan (Konfirmasi, Proses, Kirim, Selesai).
-* 📆 **Jadwal Harian**: Manajemen penjadwalan menu katering harian.
-* 📦 **Stok Katering Acara**: Mengontrol dan manajemen stok porsi katering acara.
-* 📝 **CRUD Menu Lengkap**: Mengelola data Menu Katering, Tambahan Lauk Pauk, dan Minuman.
+* **Dashboard Pesanan**: Memantau pesanan yang masuk secara *real-time*.
+* **Status Katering**: Memperbarui status pesanan (Konfirmasi, Proses, Kirim, Selesai).
+* **Jadwal Harian**: Manajemen penjadwalan menu katering harian.
+* **Stok Katering Acara**: Mengontrol dan manajemen stok porsi katering acara.
+* **CRUD Menu Lengkap**: Mengelola data Menu Katering, Tambahan Lauk Pauk, dan Minuman.
 
 ### 👑 Fitur Owner
-* 📈 **Dashboard Monitoring**: Memantau performa bisnis dan ringkasan pesanan secara menyeluruh.
-* 👥 **Daftar Pelanggan**: Melihat basis data pelanggan yang terdaftar.
-* 🛡️ **Moderasi Ulasan**: Melakukan moderasi (menghapus) ulasan pelanggan jika melanggar ketentuan.
-* 💰 **Laporan Penjualan**: Melihat rekapitulasi laporan penjualan dan transaksi katering.
-* 📄 **Cetak & Ekspor Laporan**: Fitur *generate* dan ekspor laporan keuangan menjadi format PDF.
-* 🔐 **Manajemen Akun Admin**: Mengontrol akses dengan menambah, mengedit, atau menghapus akun admin.
+* **Dashboard Monitoring**: Memantau performa bisnis dan ringkasan pesanan secara menyeluruh.
+* **Daftar Pelanggan**: Melihat basis data pelanggan yang terdaftar.
+* **Moderasi Ulasan**: Melakukan moderasi (menghapus) ulasan pelanggan jika melanggar ketentuan.
+* **Laporan Penjualan**: Melihat rekapitulasi laporan penjualan dan transaksi katering.
+* **Cetak & Ekspor Laporan**: Fitur *generate* dan ekspor laporan keuangan menjadi format PDF.
+* **Manajemen Akun Admin**: Mengontrol akses dengan menambah, mengedit, atau menghapus akun admin.
 
 ---
 
@@ -38,17 +38,17 @@ Project ini dibuat untuk mendigitalisasi proses pemesanan dari sisi pelanggan da
 
 Sistem ini memiliki 3 Role Utama yang dibatasi keamanan aksesnya menggunakan *Middleware*:
 
-1. 👤 **Pelanggan (Customer):** Menggunakan fitur publik untuk mengeksplor menu, melakukan pemesanan katering, dan pembayaran.
-2. 👨‍💻 **Admin:** Mengoperasikan aplikasi sehari-hari, menerima pesanan, mengurus operasional, dan memperbarui katering.
-3. 👑 **Owner:** Memantau analitik pesanan, mencetak laporan keuangan bulanan, dan mengelola akses karyawan (admin).
+1. **Pelanggan (Customer):** Menggunakan fitur publik untuk mengeksplor menu, melakukan pemesanan katering, dan pembayaran.
+2. **Admin:** Mengoperasikan aplikasi sehari-hari, menerima pesanan, mengurus operasional, dan memperbarui katering.
+3. **Owner:** Memantau analitik pesanan, mencetak laporan keuangan bulanan, dan mengelola akses karyawan (admin).
 
 ---
 
 ## 🚀 Application Flow
 
-1. 🌐 **Guest Flow:** Pengunjung membuka website ➔ Memilih tipe layanan (Harian/Acara) ➔ Memilih lokasi pengiriman ➔ Melihat daftar menu yang tersedia.
-2. 🛒 **Customer Flow:** Pelanggan Login ➔ Mengisi *form* detail pemesanan ➔ Melakukan pembayaran via Midtrans ➔ Memantau status pesanan di halaman Riwayat Pesanan.
-3. 🛠️ **Admin Flow:** Admin Login ➔ Mengecek pesanan baru di Dashboard Admin ➔ Memperbarui status katering yang sedang diproses agar pelanggan tahu pesanannya sedang dikerjakan.
+1. **Guest Flow:** Pengunjung membuka website ➔ Memilih tipe layanan (Harian/Acara) ➔ Memilih lokasi pengiriman ➔ Melihat daftar menu yang tersedia.
+2. **Customer Flow:** Pelanggan Login ➔ Mengisi *form* detail pemesanan ➔ Melakukan pembayaran via Midtrans ➔ Memantau status pesanan di halaman Riwayat Pesanan.
+3. **Admin Flow:** Admin Login ➔ Mengecek pesanan baru di Dashboard Admin ➔ Memperbarui status katering yang sedang diproses agar pelanggan tahu pesanannya sedang dikerjakan.
 
 ---
 
@@ -69,19 +69,19 @@ Sistem ini memiliki 3 Role Utama yang dibatasi keamanan aksesnya menggunakan *Mi
 
 *Berikut adalah cuplikan antarmuka (UI) dari sistem Dapur Aisyah:*
 
-### 🏠 Landing Page
+### Landing Page
 ![Screenshot - Home](public/images/Landing.png)
 
-### 🍔 Halaman Pemesanan & Menu
+### Halaman Pemesanan & Menu
 ![Screenshot - Menu Pemesanan](public/images/halamanMenu.png)
 
-### 🕒 Riwayat Pesanan (Pelanggan)
+### Riwayat Pesanan (Pelanggan)
 ![Screenshot - Riwayat Pesanan](public/images/riwayatPemesanan.png)
 
-### 📋 Manajemen Pesanan (Admin)
+### Manajemen Pesanan (Admin)
 ![Screenshot - Admin Pesanan](public/images/ManajemenPesanan.png)
 
-### 📊 Laporan Penjualan (Owner)
+### Laporan Penjualan (Owner)
 ![Screenshot - Laporan Owner](public/images/LaporanPenjualan.png)
 
 ---
