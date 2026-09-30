@@ -59,20 +59,20 @@ Sistem ini memiliki 3 Role Utama yang dibatasi menggunakan Middleware:
 
 *Berikut adalah tampilan sistem dari Dapur Aisyah:*
 
-**Landing Page**  
-![Screenshot - Home](docs/screenshots/home.png)
+### Landing Page
+![Screenshot - Home](public/images/Landing.png)
 
-**Halaman Pemesanan & Menu**  
-![Screenshot - Menu Pemesanan](docs/screenshots/menu.png)
+### Halaman Pemesanan & Menu
+![Screenshot - Menu Pemesanan](public/images/halamanMenu.png)
 
-**Riwayat Pesanan (Pelanggan)**  
-![Screenshot - Riwayat Pesanan](docs/screenshots/riwayat-pesanan.png)
+### Riwayat Pesanan (Pelanggan)
+![Screenshot - Riwayat Pesanan](public/images/riwayatPemesanan.png)
 
-**Manajemen Pesanan (Admin)**  
-![Screenshot - Admin Pesanan](docs/screenshots/admin-pesanan.png)
+### Manajemen Pesanan (Admin)
+![Screenshot - Admin Pesanan](public/images/ManajemenPesanan.png)
 
-**Laporan Penjualan (Owner)**  
-![Screenshot - Laporan Owner](docs/screenshots/owner-laporan.png)
+### Laporan Penjualan (Owner)
+![Screenshot - Laporan Owner](public/images/LaporanPenjualan.png)
 
 ## Project Structure
 
